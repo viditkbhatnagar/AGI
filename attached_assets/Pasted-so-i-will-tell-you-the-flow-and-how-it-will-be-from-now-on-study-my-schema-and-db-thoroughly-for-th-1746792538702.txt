@@ -1,0 +1,18 @@
+so i will tell you the flow and how it will be from now on, study my schema and db thoroughly for this
+
+login page - same design we had earlier, just there are two parties now student and admin, no one else
+if student logs in with there credentials they will be redirected to student dashboard and if admin logs in with theirs they will be logged in to admin dashbaord, check my api's and server side code everyting
+student dashboard will have home page tab, courses tab (which will contain all the resources and recordings documents everything), live classees tab, support tab and logout
+on the home page we will show all the realtime data like certification progress, overall overview, watch time of the courses and everyhting that we have in server side, courses tab will show the recordings and documents , and watch time will be recorded and updated in the watch time history, live classes (when scheduled) students will be notified and will attend live classes on google meet as earlier, support page for any help and logout
+student journey, logs into portal, checks their home dashboard for progress and everything, goes to courses tab, courses will be divided into modules
+so each module will have videos and related content for it and a quiz, student needs to watch all videos and go through all document and attempt the quiz(pass or fail doesnt matter, scores will be stored and students can re attempt to improve score, mandatory to attempt though), after only attempting module 1 fully, student can go to modules2 to module N
+
+courses- now we have two tyes of courses only
+
+standalone certifications ( chrm,cppm,cscp, etc..)(will have live classes)
+course with MBA(6 month MBA block + recorded sessions of the standalone courses)
+admin dashboard will have a dashboard home page, where admin can check total courses running, total students and their details each and everything , admin will have right to add a course and enroll a student , and admin will schedule the live classes as well which will be reflected on student dashboard and theirs as well
+
+please go through my models,db configuration, schema's eveyhting in detail and we will use that approch throughly
+
+attaching my flow chart and database screenshots also, please go thorugh this, read my files again of server side and use them and design UI for this
