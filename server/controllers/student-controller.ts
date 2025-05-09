@@ -240,6 +240,60 @@ export const updateNotifySettings = async (req: Request, res: Response) => {
   }
 };
 
+// Get enrolled courses
+export const getCourses = async (req: Request, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Not authenticated' });
+    }
+
+    // Find student by user ID
+    const student = await Student.findOne({ userId: req.user.id });
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    // Get enrollments for this student
+    const enrollments = await Enrollment.find({ studentId: student._id });
+    
+    // Get course details for each enrollment
+    const enrolledCourses = [];
+    for (const enrollment of enrollments) {
+      const course = await Course.findOne({ slug: enrollment.courseSlug });
+      if (course) {
+        // Calculate progress
+        const totalModules = course.modules.length;
+        const completedModules = enrollment.completedModules.filter(m => m.completed).length;
+        const progress = totalModules > 0 ? Math.round((completedModules / totalModules) * 100) : 0;
+        
+        enrolledCourses.push({
+          id: course._id,
+          slug: course.slug,
+          title: course.title,
+          type: course.type,
+          progress,
+          modules: course.modules.map(module => ({
+            title: module.title,
+            videoCount: module.videos.length,
+            documentCount: module.documents.length
+          })),
+          enrollment: {
+            id: enrollment._id,
+            enrollDate: enrollment.enrollDate,
+            validUntil: enrollment.validUntil,
+            completedModules: enrollment.completedModules
+          }
+        });
+      }
+    }
+    
+    res.status(200).json(enrolledCourses);
+  } catch (error) {
+    console.error('Get enrolled courses error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 // Helper function to format watch time from seconds to hours and minutes
 function formatWatchTime(seconds: number): string {
   const hours = Math.floor(seconds / 3600);

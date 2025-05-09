@@ -13,7 +13,7 @@ export function StudentCourses() {
   const { student } = useAuth();
   
   const { data: enrollments, isLoading, error } = useQuery({
-    queryKey: ['/api/enrollments/student', student?.id],
+    queryKey: ['/api/student/courses'],
     enabled: !!student?.id
   });
   
@@ -56,13 +56,13 @@ export function StudentCourses() {
       <h1 className="text-2xl font-bold text-gray-800 mb-6">My Courses</h1>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {enrollments.map((enrollment) => (
-          <Card key={enrollment._id} className="overflow-hidden dashboard-card">
+        {enrollments.map((course) => (
+          <Card key={course.id} className="overflow-hidden dashboard-card">
             <div className="p-6">
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex-shrink-0">
                   <div className="h-32 w-32 bg-primary-100 rounded-lg flex items-center justify-center">
-                    {enrollment.course?.type === 'with-mba' ? (
+                    {course.type === 'with-mba' ? (
                       <GraduationCap className="h-16 w-16 text-primary" />
                     ) : (
                       <BookOpen className="h-16 w-16 text-primary" />
@@ -74,20 +74,20 @@ export function StudentCourses() {
                   <div className="flex justify-between">
                     <div>
                       <h2 className="text-xl font-semibold text-gray-800 mb-1">
-                        {enrollment.course?.title}
+                        {course.title}
                       </h2>
                       <Badge variant="outline" className={
-                        enrollment.course?.type === 'with-mba' 
+                        course.type === 'with-mba' 
                           ? 'bg-purple-100 text-purple-800' 
                           : 'bg-primary-100 text-primary-800'
                       }>
-                        {enrollment.course?.type === 'with-mba' ? 'With MBA' : 'Standalone'}
+                        {course.type === 'with-mba' ? 'With MBA' : 'Standalone'}
                       </Badge>
                     </div>
                     
                     <div className="hidden sm:block">
                       <ProgressRing
-                        value={enrollment.progress || 0}
+                        value={course.progress || 0}
                         size={80}
                         strokeWidth={8}
                       />
@@ -98,31 +98,31 @@ export function StudentCourses() {
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
                       <div className="text-sm">
                         <span className="text-gray-500">Enrolled:</span>{" "}
-                        <span className="font-medium">{formatDate(enrollment.enrollDate)}</span>
+                        <span className="font-medium">{formatDate(course.enrollment.enrollDate)}</span>
                       </div>
                       <div className="text-sm">
                         <span className="text-gray-500">Valid until:</span>{" "}
-                        <span className="font-medium">{formatDate(enrollment.validUntil)}</span>
+                        <span className="font-medium">{formatDate(course.enrollment.validUntil)}</span>
                       </div>
                     </div>
                     
                     <div className="sm:hidden mb-4">
                       <div className="flex items-center gap-4">
                         <ProgressRing
-                          value={enrollment.progress || 0}
+                          value={course.progress || 0}
                           size={60}
                           strokeWidth={6}
                         />
                         <div>
-                          <div className="text-sm font-medium">{enrollment.progress || 0}% Complete</div>
+                          <div className="text-sm font-medium">{course.progress || 0}% Complete</div>
                           <div className="text-xs text-gray-500">
-                            {formatTimeRemaining(enrollment.validUntil)} remaining
+                            {formatTimeRemaining(course.enrollment.validUntil)} remaining
                           </div>
                         </div>
                       </div>
                     </div>
                     
-                    <Link href={`/student/courses/${enrollment.course?.slug}`}>
+                    <Link href={`/student/courses/${course.slug}`}>
                       <Button className="w-full sm:w-auto">
                         <Play className="mr-2 h-4 w-4" />
                         Continue Learning

@@ -25,6 +25,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/student/profile", auth, requireStudent, studentController.getProfile);
   app.put("/api/student/profile", auth, requireStudent, studentController.updateProfile);
   app.put("/api/student/notify-settings", auth, requireStudent, studentController.updateNotifySettings);
+  app.get("/api/student/courses", auth, requireStudent, studentController.getCourses);
 
   // ADMIN ROUTES
   app.get("/api/admin/dashboard", auth, requireAdmin, adminController.getDashboardStats);
