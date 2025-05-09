@@ -1,0 +1,66 @@
+Certified Supply Chain Professional": {
+    videos: [
+      { title: "Introduction to Supply Chain Management", id: "xIY097gEXjk" },
+      { title: "Procurement and Supplier Management", id: "bPgheptnmWs" },
+      { title: "Production and Operations Management", id: "operationsmanagement101" },
+      { title: "Logistics and Distribution Management", id: "p3-JiamZALw" },
+      { title: "Inventory Management", id: "0ZDrpf5aMiw" },
+      { title: "Supply Chain Risk Management", id: "Cu1ZUBCiMHw" },
+      { title: "Lean and Agile Supply Chain Strategies", id: "c/WorldofProcurement" },
+      { title: "Technology in Supply Chain Management", id: "SXDvHgjRNDQ" },
+      { title: "Strategic Sourcing and Global Procurement", id: "WKeCZqB2qaA" },
+      { title: "Sustainability and Ethics in Supply Chain", id: "a0VFCFBV9nI" }
+    ],
+    documents: {
+      "Other Reading Materials": [
+        {
+          title: "Unit specifications and Assessment_Certified Supply Chain Professional",
+          url: "https://docs.google.com/document/d/1Kl1_z9n9hDplq6jVSnlRgKQdif_CPAMR/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
+        },
+        {
+          title: "Transport, Logistics and Distribution Management",
+          url: "https://docs.google.com/presentation/d/1aX0MMkHBIIUfg9k1wdjy998UyCV6zYPl/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
+        },
+        {
+          title: "Technology in Supply Chain Management",
+          url: "https://docs.google.com/presentation/d/1XSCY2287CNovLPrLpfsS4UBmZM-wYrIH/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
+        },
+        {
+          title: "Sustainability and Ethics in Supply Chain",
+          url: "https://docs.google.com/presentation/d/1a8jRCsho6xYxTRKeVIysr2aBNzL78fB2/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
+        },
+        {
+          title: "Supply Chain Risk Management",
+          url: "https://docs.google.com/presentation/d/1M0K0gK7-6UbCtq7Qi39mqZDLDMlJ9k2p/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
+        },
+        {
+          title: "Strategic Sourcing and Global Procurement",
+          url: "https://docs.google.com/presentation/d/1cxjhIFrRe0bTzR8H9Xo9WFFadffy-DLW/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
+        },
+        {
+          title: "Production and Operations Management",
+          url: "https://docs.google.com/presentation/d/1r0XXI8OgZ2V3oPQ5o5BxKZeMeCEqDtoS/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
+        },
+        {
+          title: "Procurement and Supplier Management",
+          url: "https://docs.google.com/presentation/d/16AQqJBa8Q-iiZtuaq46bPylG3HULX5h4/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
+        },
+        {
+          title: "Lean and Agile Supply Chain Strategies",
+          url: "https://docs.google.com/presentation/d/1FGIOR5p-5NiTXp99bkNPp3T0pke-BIjN/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
+        },
+        {
+          title: "Inventory Management",
+          url: "https://docs.google.com/presentation/d/1ZhOvlPh7V0nfpttHG1YJ19u_nNxT4Z8-/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
+        },
+        {
+          title: "Introduction to SCM",
+          url: "https://docs.google.com/presentation/d/1yC2Tct2l9ciX34-08PIbLLkvqk3Q3bJD/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
+        },
+        {
+          title: "CSCP",
+          url: "https://docs.google.com/spreadsheets/d/1A4j-mG8BQwRHZIDLgSSGYr8G5uaV820ZTCqeFDwW4MA/edit?usp=share_link"
+        }
+      ]
+    }
+  }

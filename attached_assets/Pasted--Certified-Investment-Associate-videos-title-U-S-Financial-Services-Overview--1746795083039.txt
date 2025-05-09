@@ -1,0 +1,55 @@
+ "Certified Investment Associate": {
+    videos: [
+      { title: "U.S. Financial Services Overview & Client Types", id: "1tE9sUcTuJw" },
+      { title: "Fundamentals of Investment Products", id: "gn5zSwzTSL8" },
+      { title: "Mutual Fund and Retirement Plan Structures", id: "jkUABXJkZmg" },
+      { title: "Basics of Insurance and Annuities", id: "kHOxvNpA4Go" },
+      { title: "Brokerage Operations & Trade Support", id: "nZL4nxRkKk8" },
+      { title: "Compliance, KYC & FINRA Rules", id: "EvXz2cdu3Fo" },
+      { title: "Ethics, Suitability, and Fiduciary Standards", id: "YZK3ySGL7Gk" }
+    ],
+    documents: {
+      "Reading Materials": [
+        {
+          title: "Unit Specifications Certified Investment Management Associate",
+          url: "https://docs.google.com/document/d/1lJP4dTHU91gCPRaAW1N5Rdiq-ptpVBIT/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
+        },
+        {
+          title: "Risk Measurement and Management",
+          url: "https://docs.google.com/presentation/d/1ZYUr7EJ3CA6-2zLKHUtQvnhWo9RaSFM5/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
+        },
+        {
+          title: "Portfolio Construction and Management",
+          url: "https://docs.google.com/presentation/d/11UZiR71wXazOaKj6hy2F18LzIAwvypOm/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
+        },
+        {
+          title: "Investment Policy",
+          url: "https://docs.google.com/presentation/d/1-0Nc9oMlSBEZv5FIkhtxycicg4GPoRCT/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
+        },
+        {
+          title: "Investment Management Overview",
+          url: "https://docs.google.com/presentation/d/1GXyfWieUR9bsceClGxDDXcfUUM5SpQfw/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
+        },
+        {
+          title: "Financial Calculator NPV & IRR",
+          url: "https://drive.google.com/file/d/18slln9Bk7G7h66tUhEPY82y4hvy5r2BP/view?usp=share_link"
+        },
+        {
+          title: "Ethics in Investment Management",
+          url: "https://docs.google.com/presentation/d/1gAPX8NemVgQvMN8xw4aWH_BiTYxndghi/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
+        },
+        {
+          title: "CIA Entry Level",
+          url: "https://docs.google.com/spreadsheets/d/1jLQ9y6F_dvvSBAOitljL_jO7yYp-LyI3TSIqZQATi8w/edit?usp=share_link"
+        },
+        {
+          title: "Capital Markets",
+          url: "https://docs.google.com/presentation/d/1zKWRf6iWM6kvduiAV379U0c3lQ63XAuu/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
+        },
+        {
+          title: "Alternative Investments",
+          url: "https://docs.google.com/presentation/d/1P7y0idi-xU16xbuh7wI9wwBwMWdTJQAe/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
+        }
+      ]
+    }
+  },

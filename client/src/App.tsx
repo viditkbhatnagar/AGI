@@ -14,6 +14,7 @@ import StudentCourses from "@/pages/student/courses";
 import StudentCourseDetail from "@/pages/student/course-detail";
 import StudentLiveClasses from "@/pages/student/live-classes";
 import StudentSupport from "@/pages/student/support";
+import StudentProfile from "@/pages/student/profile";
 
 // Admin Pages
 import AdminDashboard from "@/pages/admin/dashboard";
