@@ -29,7 +29,8 @@ async function fixStudentRelationship() {
     console.log('Found Peter student:', peterStudent._id);
     
     // Update the student record with userId
-    peterStudent.userId = peterUser._id;
+    // Need to cast to any since the model was updated after this document was created
+    (peterStudent as any).userId = peterUser._id;
     await peterStudent.save();
     
     console.log('Updated Peter student with userId:', peterUser._id);
