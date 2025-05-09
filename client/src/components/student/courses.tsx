@@ -1,0 +1,182 @@
+import { useQuery } from "@tanstack/react-query";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Link } from "wouter";
+import { Badge } from "@/components/ui/badge";
+import { BookOpen, GraduationCap, Play, PlayCircle, Search } from "lucide-react";
+import { formatDate, formatTimeRemaining } from "@/lib/utils";
+import { ProgressRing } from "@/components/ui/progress-ring";
+import { useAuth } from "@/lib/auth-provider";
+
+export function StudentCourses() {
+  const { student } = useAuth();
+  
+  const { data: enrollments, isLoading, error } = useQuery({
+    queryKey: ['/api/enrollments/student', student?.id],
+    enabled: !!student?.id
+  });
+  
+  if (isLoading) {
+    return <CoursesSkeleton />;
+  }
+  
+  if (error) {
+    return (
+      <div className="p-6">
+        <h1 className="text-2xl font-bold text-gray-800 mb-4">My Courses</h1>
+        <Card>
+          <CardContent className="p-6">
+            <p className="text-red-500">Error loading courses data. Please try again later.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+  
+  if (!enrollments || enrollments.length === 0) {
+    return (
+      <div className="p-6">
+        <h1 className="text-2xl font-bold text-gray-800 mb-4">My Courses</h1>
+        <Card>
+          <CardContent className="p-10 text-center">
+            <BookOpen className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-800 mb-2">No Courses Found</h3>
+            <p className="text-gray-500 max-w-md mx-auto mb-6">
+              You are not enrolled in any courses yet. Please contact the administration if you believe this is an error.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="p-4 md:p-6">
+      <h1 className="text-2xl font-bold text-gray-800 mb-6">My Courses</h1>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {enrollments.map((enrollment) => (
+          <Card key={enrollment._id} className="overflow-hidden dashboard-card">
+            <div className="p-6">
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex-shrink-0">
+                  <div className="h-32 w-32 bg-primary-100 rounded-lg flex items-center justify-center">
+                    {enrollment.course?.type === 'with-mba' ? (
+                      <GraduationCap className="h-16 w-16 text-primary" />
+                    ) : (
+                      <BookOpen className="h-16 w-16 text-primary" />
+                    )}
+                  </div>
+                </div>
+                
+                <div className="flex-1">
+                  <div className="flex justify-between">
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-800 mb-1">
+                        {enrollment.course?.title}
+                      </h2>
+                      <Badge variant="outline" className={
+                        enrollment.course?.type === 'with-mba' 
+                          ? 'bg-purple-100 text-purple-800' 
+                          : 'bg-primary-100 text-primary-800'
+                      }>
+                        {enrollment.course?.type === 'with-mba' ? 'With MBA' : 'Standalone'}
+                      </Badge>
+                    </div>
+                    
+                    <div className="hidden sm:block">
+                      <ProgressRing
+                        value={enrollment.progress || 0}
+                        size={80}
+                        strokeWidth={8}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                      <div className="text-sm">
+                        <span className="text-gray-500">Enrolled:</span>{" "}
+                        <span className="font-medium">{formatDate(enrollment.enrollDate)}</span>
+                      </div>
+                      <div className="text-sm">
+                        <span className="text-gray-500">Valid until:</span>{" "}
+                        <span className="font-medium">{formatDate(enrollment.validUntil)}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="sm:hidden mb-4">
+                      <div className="flex items-center gap-4">
+                        <ProgressRing
+                          value={enrollment.progress || 0}
+                          size={60}
+                          strokeWidth={6}
+                        />
+                        <div>
+                          <div className="text-sm font-medium">{enrollment.progress || 0}% Complete</div>
+                          <div className="text-xs text-gray-500">
+                            {formatTimeRemaining(enrollment.validUntil)} remaining
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <Link href={`/student/courses/${enrollment.course?.slug}`}>
+                      <Button className="w-full sm:w-auto">
+                        <Play className="mr-2 h-4 w-4" />
+                        Continue Learning
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CoursesSkeleton() {
+  return (
+    <div className="p-4 md:p-6">
+      <Skeleton className="h-8 w-48 mb-6" />
+      
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {[1, 2].map((i) => (
+          <Card key={i} className="overflow-hidden">
+            <div className="p-6">
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Skeleton className="h-32 w-32 rounded-lg" />
+                
+                <div className="flex-1">
+                  <div className="flex justify-between">
+                    <div>
+                      <Skeleton className="h-7 w-48 mb-2" />
+                      <Skeleton className="h-6 w-24" />
+                    </div>
+                    
+                    <Skeleton className="hidden sm:block h-20 w-20 rounded-full" />
+                  </div>
+                  
+                  <div className="mt-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                      <Skeleton className="h-5 w-40" />
+                      <Skeleton className="h-5 w-40" />
+                    </div>
+                    
+                    <Skeleton className="h-10 w-full sm:w-40" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default StudentCourses;

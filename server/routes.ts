@@ -1,0 +1,67 @@
+import type { Express } from "express";
+import { createServer, type Server } from "http";
+import { storage } from "./storage";
+import { auth } from "./middleware/auth";
+import { requireAdmin, requireStudent, requireAuth } from "./middleware/require-auth";
+
+// Controllers
+import * as authController from "./controllers/auth-controller";
+import * as adminController from "./controllers/admin-controller";
+import * as studentController from "./controllers/student-controller";
+import * as courseController from "./controllers/course-controller";
+import * as enrollmentController from "./controllers/enrollment-controller";
+import * as liveClassController from "./controllers/liveclass-controller";
+
+export async function registerRoutes(app: Express): Promise<Server> {
+  // AUTH ROUTES
+  app.post("/api/auth/login", authController.login);
+  app.post("/api/auth/register", auth, requireAdmin, authController.register);
+  app.get("/api/auth/me", auth, authController.getCurrentUser);
+  app.post("/api/auth/change-password", auth, authController.changePassword);
+
+  // STUDENT ROUTES
+  app.get("/api/student/dashboard", auth, requireStudent, studentController.getDashboard);
+  app.post("/api/student/watch-time", auth, requireStudent, studentController.recordWatchTime);
+  app.get("/api/student/profile", auth, requireStudent, studentController.getProfile);
+  app.put("/api/student/profile", auth, requireStudent, studentController.updateProfile);
+  app.put("/api/student/notify-settings", auth, requireStudent, studentController.updateNotifySettings);
+
+  // ADMIN ROUTES
+  app.get("/api/admin/dashboard", auth, requireAdmin, adminController.getDashboardStats);
+  app.get("/api/admin/students", auth, requireAdmin, adminController.getAllStudents);
+  app.get("/api/admin/students/:id", auth, requireAdmin, adminController.getStudent);
+  app.post("/api/admin/students", auth, requireAdmin, adminController.createStudent);
+  app.put("/api/admin/students/:id", auth, requireAdmin, adminController.updateStudent);
+  app.delete("/api/admin/students/:id", auth, requireAdmin, adminController.deleteStudent);
+
+  // COURSE ROUTES
+  app.get("/api/courses", auth, courseController.getAllCourses);
+  app.get("/api/courses/:slug", auth, courseController.getCourse);
+  app.post("/api/courses", auth, requireAdmin, courseController.createCourse);
+  app.put("/api/courses/:slug", auth, requireAdmin, courseController.updateCourse);
+  app.delete("/api/courses/:slug", auth, requireAdmin, courseController.deleteCourse);
+  app.get("/api/student/courses/:slug", auth, requireStudent, courseController.getStudentCourse);
+
+  // ENROLLMENT ROUTES
+  app.get("/api/enrollments", auth, requireAdmin, enrollmentController.getAllEnrollments);
+  app.get("/api/enrollments/course/:courseSlug", auth, requireAdmin, enrollmentController.getEnrollmentsByCourse);
+  app.get("/api/enrollments/student/:studentId", auth, requireAuth, enrollmentController.getEnrollmentsByStudent);
+  app.post("/api/enrollments", auth, requireAdmin, enrollmentController.createEnrollment);
+  app.put("/api/enrollments/:id", auth, requireAdmin, enrollmentController.updateEnrollment);
+  app.delete("/api/enrollments/:id", auth, requireAdmin, enrollmentController.deleteEnrollment);
+  app.post("/api/student/module-complete", auth, requireStudent, enrollmentController.completeModule);
+  app.post("/api/student/quiz-attempt", auth, requireStudent, enrollmentController.recordQuizAttempt);
+
+  // LIVE CLASS ROUTES
+  app.get("/api/live-classes", auth, requireAdmin, liveClassController.getAllLiveClasses);
+  app.get("/api/live-classes/upcoming", auth, requireAdmin, liveClassController.getUpcomingLiveClasses);
+  app.get("/api/live-classes/course/:courseSlug", auth, requireAdmin, liveClassController.getLiveClassesByCourse);
+  app.get("/api/student/live-classes", auth, requireStudent, liveClassController.getStudentLiveClasses);
+  app.post("/api/live-classes", auth, requireAdmin, liveClassController.createLiveClass);
+  app.put("/api/live-classes/:id", auth, requireAdmin, liveClassController.updateLiveClass);
+  app.delete("/api/live-classes/:id", auth, requireAdmin, liveClassController.deleteLiveClass);
+
+  const httpServer = createServer(app);
+
+  return httpServer;
+}
