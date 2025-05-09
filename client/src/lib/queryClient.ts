@@ -24,7 +24,10 @@ export async function apiRequest(
     headers['Authorization'] = `Bearer ${token}`;
   }
   
-  const res = await fetch(url, {
+  // Ensure we're using the API endpoint, not the frontend route
+  const apiUrl = url.startsWith('/api') ? url : `/api${url}`;
+  
+  const res = await fetch(apiUrl, {
     method,
     headers,
     body: data ? JSON.stringify(data) : undefined,
@@ -48,7 +51,12 @@ export const getQueryFn: <T>(options: {
       headers['Authorization'] = `Bearer ${token}`;
     }
     
-    const res = await fetch(queryKey[0] as string, {
+    // Ensure we're using the API endpoint, not the frontend route
+    const url = (queryKey[0] as string).startsWith('/api') 
+      ? (queryKey[0] as string) 
+      : `/api${queryKey[0]}`;
+      
+    const res = await fetch(url, {
       credentials: "include",
       headers,
     });
