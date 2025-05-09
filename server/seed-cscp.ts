@@ -106,110 +106,120 @@ async function seedCSCP() {
               {
                 title: 'Introduction to Supply Chain Management',
                 duration: 45,
-                url: 'https://agi-courses.s3.amazonaws.com/cscp/module1/video1.mp4',
+                url: 'https://www.youtube.com/watch?v=xIY097gEXjk',
+                videoId: 'xIY097gEXjk',
               },
               {
-                title: 'Supply Chain Strategy and Design',
+                title: 'Inventory Management',
                 duration: 38,
-                url: 'https://agi-courses.s3.amazonaws.com/cscp/module1/video2.mp4',
+                url: 'https://www.youtube.com/watch?v=0ZDrpf5aMiw',
+                videoId: '0ZDrpf5aMiw',
               },
               {
-                title: 'Demand Planning and Forecasting',
+                title: 'Supply Chain Risk Management',
                 duration: 42,
-                url: 'https://agi-courses.s3.amazonaws.com/cscp/module1/video3.mp4',
+                url: 'https://www.youtube.com/watch?v=Cu1ZUBCiMHw',
+                videoId: 'Cu1ZUBCiMHw',
               },
               {
-                title: 'Inventory Management Fundamentals',
+                title: 'Technology in Supply Chain Management',
                 duration: 40,
-                url: 'https://agi-courses.s3.amazonaws.com/cscp/module1/video4.mp4',
+                url: 'https://www.youtube.com/watch?v=SXDvHgjRNDQ',
+                videoId: 'SXDvHgjRNDQ',
               }
             ],
             documents: [
               {
-                title: 'Supply Chain Management Overview',
-                url: 'https://agi-courses.s3.amazonaws.com/cscp/module1/doc1.pdf',
+                title: 'Introduction to SCM',
+                url: 'https://docs.google.com/presentation/d/1yC2Tct2l9ciX34-08PIbLLkvqk3Q3bJD/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true',
               },
               {
-                title: 'Strategic Planning Framework',
-                url: 'https://agi-courses.s3.amazonaws.com/cscp/module1/doc2.pdf',
+                title: 'Inventory Management',
+                url: 'https://docs.google.com/presentation/d/1ZhOvlPh7V0nfpttHG1YJ19u_nNxT4Z8-/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true',
               },
               {
-                title: 'Forecasting Techniques Guide',
-                url: 'https://agi-courses.s3.amazonaws.com/cscp/module1/doc3.pdf',
+                title: 'Supply Chain Risk Management',
+                url: 'https://docs.google.com/presentation/d/1M0K0gK7-6UbCtq7Qi39mqZDLDMlJ9k2p/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true',
               },
               {
-                title: 'Inventory Control Methods',
-                url: 'https://agi-courses.s3.amazonaws.com/cscp/module1/doc4.pdf',
+                title: 'Technology in Supply Chain Management',
+                url: 'https://docs.google.com/presentation/d/1XSCY2287CNovLPrLpfsS4UBmZM-wYrIH/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true',
               },
             ],
             quizId: 'cscp-m1-quiz',
           },
           {
-            title: 'Procurement and Supplier Management',
+            title: 'Procurement and Strategy',
             videos: [
               {
-                title: 'Strategic Sourcing Principles',
+                title: 'Procurement and Supplier Management',
                 duration: 35,
-                url: 'https://agi-courses.s3.amazonaws.com/cscp/module2/video1.mp4',
+                url: 'https://www.youtube.com/watch?v=bPgheptnmWs',
+                videoId: 'bPgheptnmWs',
               },
               {
-                title: 'Supplier Relationship Management',
+                title: 'Strategic Sourcing and Global Procurement',
                 duration: 40,
-                url: 'https://agi-courses.s3.amazonaws.com/cscp/module2/video2.mp4',
+                url: 'https://www.youtube.com/watch?v=WKeCZqB2qaA',
+                videoId: 'WKeCZqB2qaA',
               },
               {
-                title: 'Negotiation Techniques and Contract Management',
+                title: 'Lean and Agile Supply Chain Strategies',
                 duration: 38,
-                url: 'https://agi-courses.s3.amazonaws.com/cscp/module2/video3.mp4',
+                url: 'https://www.youtube.com/watch?v=c/WorldofProcurement',
+                videoId: 'c/WorldofProcurement',
               }
             ],
             documents: [
               {
-                title: 'Procurement Strategy Best Practices',
-                url: 'https://agi-courses.s3.amazonaws.com/cscp/module2/doc1.pdf',
+                title: 'Procurement and Supplier Management',
+                url: 'https://docs.google.com/presentation/d/16AQqJBa8Q-iiZtuaq46bPylG3HULX5h4/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true',
               },
               {
-                title: 'Supplier Evaluation Framework',
-                url: 'https://agi-courses.s3.amazonaws.com/cscp/module2/doc2.pdf',
+                title: 'Strategic Sourcing and Global Procurement',
+                url: 'https://docs.google.com/presentation/d/1cxjhIFrRe0bTzR8H9Xo9WFFadffy-DLW/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true',
               },
               {
-                title: 'Contract Management Guide',
-                url: 'https://agi-courses.s3.amazonaws.com/cscp/module2/doc3.pdf',
+                title: 'Lean and Agile Supply Chain Strategies',
+                url: 'https://docs.google.com/presentation/d/1FGIOR5p-5NiTXp99bkNPp3T0pke-BIjN/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true',
               }
             ],
             quizId: 'cscp-m2-quiz',
           },
           {
-            title: 'Logistics and Distribution',
+            title: 'Logistics and Sustainability',
             videos: [
               {
-                title: 'Transportation Modes and Management',
+                title: 'Logistics and Distribution Management',
                 duration: 42,
-                url: 'https://agi-courses.s3.amazonaws.com/cscp/module3/video1.mp4',
+                url: 'https://www.youtube.com/watch?v=p3-JiamZALw',
+                videoId: 'p3-JiamZALw',
               },
               {
-                title: 'Warehouse Design and Operations',
+                title: 'Production and Operations Management',
                 duration: 39,
-                url: 'https://agi-courses.s3.amazonaws.com/cscp/module3/video2.mp4',
+                url: 'https://www.youtube.com/watch?v=operationsmanagement101',
+                videoId: 'operationsmanagement101',
               },
               {
-                title: 'International Logistics and Trade Compliance',
+                title: 'Sustainability and Ethics in Supply Chain',
                 duration: 45,
-                url: 'https://agi-courses.s3.amazonaws.com/cscp/module3/video3.mp4',
+                url: 'https://www.youtube.com/watch?v=a0VFCFBV9nI',
+                videoId: 'a0VFCFBV9nI',
               }
             ],
             documents: [
               {
-                title: 'Transportation Cost Optimization',
-                url: 'https://agi-courses.s3.amazonaws.com/cscp/module3/doc1.pdf',
+                title: 'Transport, Logistics and Distribution Management',
+                url: 'https://docs.google.com/presentation/d/1aX0MMkHBIIUfg9k1wdjy998UyCV6zYPl/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true',
               },
               {
-                title: 'Warehouse Layout Best Practices',
-                url: 'https://agi-courses.s3.amazonaws.com/cscp/module3/doc2.pdf',
+                title: 'Production and Operations Management',
+                url: 'https://docs.google.com/presentation/d/1r0XXI8OgZ2V3oPQ5o5BxKZeMeCEqDtoS/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true',
               },
               {
-                title: 'Global Trade Regulations Guide',
-                url: 'https://agi-courses.s3.amazonaws.com/cscp/module3/doc3.pdf',
+                title: 'Sustainability and Ethics in Supply Chain',
+                url: 'https://docs.google.com/presentation/d/1a8jRCsho6xYxTRKeVIysr2aBNzL78fB2/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true',
               }
             ],
             quizId: 'cscp-m3-quiz',
