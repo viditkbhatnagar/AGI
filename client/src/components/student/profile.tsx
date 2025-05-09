@@ -1,12 +1,9 @@
 import { useState, useEffect } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth-provider";
-import { apiRequest } from "@/lib/queryClient";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Save } from "lucide-react";
 import { z } from "zod";
@@ -26,11 +23,45 @@ export function Profile() {
   const { toast } = useToast();
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const [studentData, setStudentData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   
-  const { data: studentData, isLoading, refetch } = useQuery({
-    queryKey: ['/api/student/profile'],
-    enabled: !!user,
-  });
+  // Direct fetch from MongoDB
+  const fetchProfileData = async () => {
+    if (!user?.id) return;
+    
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/student/profile', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      console.log('Profile data from MongoDB:', data);
+      setStudentData(data);
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching profile data:', err);
+      setError(err instanceof Error ? err : new Error('Failed to fetch profile data'));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  useEffect(() => {
+    if (user?.id) {
+      fetchProfileData();
+    }
+  }, [user?.id]);
   
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -52,33 +83,38 @@ export function Profile() {
     }
   }, [studentData, form]);
   
-  const updateProfileMutation = useMutation({
-    mutationFn: async (data: ProfileFormValues) => {
-      const response = await apiRequest('PUT', '/api/student/profile', data);
+  const onSubmit = async (data: ProfileFormValues) => {
+    setIsSaving(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/student/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(data)
+      });
+      
       if (!response.ok) {
         throw new Error("Failed to update profile");
       }
-      return response.json();
-    },
-    onSuccess: () => {
+      
       toast({
         title: "Profile updated",
         description: "Your profile has been updated successfully",
       });
       setIsEditing(false);
-      refetch();
-    },
-    onError: (error) => {
+      fetchProfileData(); // Refresh data
+    } catch (error) {
       toast({
         title: "Error",
-        description: error.message || "Failed to update profile",
+        description: error instanceof Error ? error.message : "Failed to update profile",
         variant: "destructive",
       });
-    },
-  });
-  
-  const onSubmit = (data: ProfileFormValues) => {
-    updateProfileMutation.mutate(data);
+    } finally {
+      setIsSaving(false);
+    }
   };
   
   if (isLoading) {
@@ -149,9 +185,9 @@ export function Profile() {
                 <div className="flex gap-4">
                   <Button 
                     type="submit" 
-                    disabled={updateProfileMutation.isPending}
+                    disabled={isSaving}
                   >
-                    {updateProfileMutation.isPending ? (
+                    {isSaving ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Saving...
