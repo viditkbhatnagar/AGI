@@ -188,9 +188,9 @@ export function StudentDashboard() {
                 <p className="text-sm font-medium text-gray-500">Completed Modules</p>
                 <p className="text-lg font-semibold text-gray-800">{completedModules || "0 of 0"}</p>
                 <p className="text-xs text-gray-500 mt-1">
-                  {completedModules === "0 of 0" ? 
-                    "No modules available" : 
-                    `Last completed: ${course?.completedModules > 0 ? `Module ${course.completedModules}` : "None"}`}
+                  {completedModules === "0 of 0" 
+                    ? "No modules available" 
+                    : `Last completed: ${course?.completedModules ? `Module ${course.completedModules}` : "None"}`}
                 </p>
               </div>
             </div>

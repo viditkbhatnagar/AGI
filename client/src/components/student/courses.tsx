@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -10,16 +9,49 @@ import { ProgressRing } from "@/components/ui/progress-ring";
 import { useAuth } from "@/lib/auth-provider";
 import { useEffect, useState } from "react";
 
+// Types based on API response from server
+interface CourseModule {
+  title: string;
+  videoCount: number;
+  documentCount: number;
+}
+
+interface CompletedModule {
+  moduleIndex: number;
+  completed: boolean;
+  completedAt: string | null;
+  _id: string;
+}
+
+interface CourseEnrollment {
+  id: string;
+  enrollDate: string;
+  validUntil: string;
+  completedModules: CompletedModule[];
+}
+
+interface CourseData {
+  id: string;
+  slug: string;
+  title: string;
+  type: 'standalone' | 'with-mba';
+  progress: number;
+  modules: CourseModule[];
+  enrollment: CourseEnrollment;
+}
+
 export function StudentCourses() {
   const { student } = useAuth();
-  const [coursesData, setCoursesData] = useState<any[]>([]);
-  const [isDirectLoading, setIsDirectLoading] = useState(false);
-  const [directError, setDirectError] = useState<Error | null>(null);
+  const [coursesData, setCoursesData] = useState<CourseData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
   
-  // Direct fetch to ensure we get the latest data
+  // Fetch enrolled courses from API
   useEffect(() => {
-    const fetchCoursesDirectly = async () => {
-      setIsDirectLoading(true);
+    const fetchCourses = async () => {
+      if (!student?.id) return;
+      
+      setIsLoading(true);
       try {
         const token = localStorage.getItem('token');
         const response = await fetch('/api/student/courses', {
@@ -33,40 +65,40 @@ export function StudentCourses() {
         }
         
         const data = await response.json();
-        console.log('Direct fetch courses data:', data);
+        console.log('Courses data:', data);
         setCoursesData(Array.isArray(data) ? data : []);
-        setDirectError(null);
+        setError(null);
       } catch (err) {
-        console.error('Direct fetch error:', err);
-        setDirectError(err instanceof Error ? err : new Error('Failed to fetch courses'));
+        console.error('Error fetching courses:', err);
+        setError(err instanceof Error ? err : new Error('Failed to fetch courses'));
       } finally {
-        setIsDirectLoading(false);
+        setIsLoading(false);
       }
     };
     
-    if (student?.id) {
-      fetchCoursesDirectly();
-    }
-  }, [student]);
+    fetchCourses();
+  }, [student?.id]);
   
-  // Use the directly fetched data instead of React Query
-  if (isDirectLoading) {
+  // Display loading skeleton
+  if (isLoading) {
     return <CoursesSkeleton />;
   }
   
-  if (directError) {
+  // Display error message if fetch failed
+  if (error) {
     return (
       <div className="p-6">
         <h1 className="text-2xl font-bold text-gray-800 mb-4">My Courses</h1>
         <Card>
           <CardContent className="p-6">
-            <p className="text-red-500">Error loading courses data: {directError.message}</p>
+            <p className="text-red-500">Error loading courses data: {error.message}</p>
           </CardContent>
         </Card>
       </div>
     );
   }
   
+  // Display empty state if no courses
   if (coursesData.length === 0) {
     return (
       <div className="p-6">

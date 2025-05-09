@@ -5,12 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Save } from "lucide-react";
+import { AlertCircle, Loader2, Save } from "lucide-react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
+// Form validation schema
 const profileSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   phone: z.string().min(10, "Phone number must be at least 10 characters"),
@@ -19,16 +21,31 @@ const profileSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
+// Profile data structure from API
+interface ProfileData {
+  id: string;
+  name: string;
+  phone: string | null;
+  address: string | null;
+  dob: string | null;
+  pathway: 'standalone' | 'with-mba';
+  notifySettings?: {
+    courseProgress: boolean;
+    quizSummary: boolean;
+    certificateReady: boolean;
+  };
+}
+
 export function Profile() {
   const { toast } = useToast();
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
-  const [studentData, setStudentData] = useState<any>(null);
+  const [studentData, setStudentData] = useState<ProfileData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   
-  // Direct fetch from MongoDB
+  // Fetch profile data from API
   const fetchProfileData = async () => {
     if (!user?.id) return;
     
@@ -46,7 +63,7 @@ export function Profile() {
       }
       
       const data = await response.json();
-      console.log('Profile data from MongoDB:', data);
+      console.log('Profile data:', data);
       setStudentData(data);
       setError(null);
     } catch (err) {
@@ -57,12 +74,14 @@ export function Profile() {
     }
   };
   
+  // Fetch profile data on component mount
   useEffect(() => {
     if (user?.id) {
       fetchProfileData();
     }
   }, [user?.id]);
   
+  // Setup form with validation
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
@@ -83,6 +102,7 @@ export function Profile() {
     }
   }, [studentData, form]);
   
+  // Handle form submission
   const onSubmit = async (data: ProfileFormValues) => {
     setIsSaving(true);
     try {
@@ -97,18 +117,22 @@ export function Profile() {
       });
       
       if (!response.ok) {
-        throw new Error("Failed to update profile");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to update profile");
       }
       
+      // Show success message
       toast({
         title: "Profile updated",
         description: "Your profile has been updated successfully",
       });
+      
       setIsEditing(false);
       fetchProfileData(); // Refresh data
     } catch (error) {
+      // Show error message
       toast({
-        title: "Error",
+        title: "Error updating profile",
         description: error instanceof Error ? error.message : "Failed to update profile",
         variant: "destructive",
       });
@@ -121,6 +145,22 @@ export function Profile() {
     return (
       <div className="p-6 flex justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+  
+  if (error) {
+    return (
+      <div className="p-4 md:p-6">
+        <h1 className="text-2xl font-bold text-gray-800 mb-6">My Profile</h1>
+        <Alert variant="destructive" className="mb-6">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>
+            {error.message || "Failed to load profile data. Please try again later."}
+          </AlertDescription>
+        </Alert>
+        <Button onClick={fetchProfileData}>Retry</Button>
       </div>
     );
   }
