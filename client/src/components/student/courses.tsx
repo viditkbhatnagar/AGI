@@ -4,49 +4,70 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "wouter";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, GraduationCap, Play, PlayCircle, Search } from "lucide-react";
+import { BookOpen, GraduationCap, Play } from "lucide-react";
 import { formatDate, formatTimeRemaining } from "@/lib/utils";
 import { ProgressRing } from "@/components/ui/progress-ring";
 import { useAuth } from "@/lib/auth-provider";
+import { useEffect, useState } from "react";
 
 export function StudentCourses() {
-  const { student, isAuthenticated, user } = useAuth();
+  const { student } = useAuth();
+  const [coursesData, setCoursesData] = useState<any[]>([]);
+  const [isDirectLoading, setIsDirectLoading] = useState(false);
+  const [directError, setDirectError] = useState<Error | null>(null);
   
-  console.log('Auth status:', { isAuthenticated, user, student });
+  // Direct fetch to ensure we get the latest data
+  useEffect(() => {
+    const fetchCoursesDirectly = async () => {
+      setIsDirectLoading(true);
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('/api/student/courses', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        console.log('Direct fetch courses data:', data);
+        setCoursesData(Array.isArray(data) ? data : []);
+        setDirectError(null);
+      } catch (err) {
+        console.error('Direct fetch error:', err);
+        setDirectError(err instanceof Error ? err : new Error('Failed to fetch courses'));
+      } finally {
+        setIsDirectLoading(false);
+      }
+    };
+    
+    if (student?.id) {
+      fetchCoursesDirectly();
+    }
+  }, [student]);
   
-  const enrolledCoursesQuery = useQuery<any[]>({
-    queryKey: ['/api/student/courses'],
-    enabled: !!student?.id
-  });
-  
-  const { data: enrolledCourses, isLoading, error } = enrolledCoursesQuery;
-  
-  // Log data and errors for debugging
-  console.log('Query state:', {
-    data: enrolledCourses,
-    error,
-    isLoading,
-    fetchStatus: enrolledCoursesQuery.fetchStatus
-  });
-  
-  if (isLoading) {
+  // Use the directly fetched data instead of React Query
+  if (isDirectLoading) {
     return <CoursesSkeleton />;
   }
   
-  if (error) {
+  if (directError) {
     return (
       <div className="p-6">
         <h1 className="text-2xl font-bold text-gray-800 mb-4">My Courses</h1>
         <Card>
           <CardContent className="p-6">
-            <p className="text-red-500">Error loading courses data. Please try again later.</p>
+            <p className="text-red-500">Error loading courses data: {directError.message}</p>
           </CardContent>
         </Card>
       </div>
     );
   }
   
-  if (!enrolledCourses || enrolledCourses.length === 0) {
+  if (coursesData.length === 0) {
     return (
       <div className="p-6">
         <h1 className="text-2xl font-bold text-gray-800 mb-4">My Courses</h1>
@@ -68,7 +89,7 @@ export function StudentCourses() {
       <h1 className="text-2xl font-bold text-gray-800 mb-6">My Courses</h1>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {enrolledCourses?.map((course) => (
+        {coursesData.map((course) => (
           <Card key={course.id} className="overflow-hidden dashboard-card">
             <div className="p-6">
               <div className="flex flex-col sm:flex-row gap-4">
