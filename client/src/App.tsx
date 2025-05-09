@@ -15,6 +15,7 @@ import StudentCourseDetail from "@/pages/student/course-detail";
 import StudentLiveClasses from "@/pages/student/live-classes";
 import StudentSupport from "@/pages/student/support";
 import StudentProfile from "@/pages/student/profile";
+import StudentDebug from "@/pages/student/debug";
 
 // Admin Pages
 import AdminDashboard from "@/pages/admin/dashboard";
@@ -36,6 +37,7 @@ function Router() {
       <Route path="/student/live-classes" component={StudentLiveClasses} />
       <Route path="/student/profile" component={StudentProfile} />
       <Route path="/student/support" component={StudentSupport} />
+      <Route path="/student/debug" component={StudentDebug} />
       
       {/* Admin Routes */}
       <Route path="/admin" component={AdminDashboard} />
