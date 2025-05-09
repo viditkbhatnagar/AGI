@@ -12,7 +12,7 @@ import { useAuth } from "@/lib/auth-provider";
 export function StudentCourses() {
   const { student } = useAuth();
   
-  const { data: enrollments, isLoading, error } = useQuery({
+  const { data: enrolledCourses, isLoading, error } = useQuery<any[]>({
     queryKey: ['/api/student/courses'],
     enabled: !!student?.id
   });
@@ -34,7 +34,7 @@ export function StudentCourses() {
     );
   }
   
-  if (!enrollments || enrollments.length === 0) {
+  if (!enrolledCourses || enrolledCourses.length === 0) {
     return (
       <div className="p-6">
         <h1 className="text-2xl font-bold text-gray-800 mb-4">My Courses</h1>
@@ -56,7 +56,7 @@ export function StudentCourses() {
       <h1 className="text-2xl font-bold text-gray-800 mb-6">My Courses</h1>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {enrollments.map((course) => (
+        {enrolledCourses?.map((course) => (
           <Card key={course.id} className="overflow-hidden dashboard-card">
             <div className="p-6">
               <div className="flex flex-col sm:flex-row gap-4">
