@@ -12,7 +12,8 @@ import {
   School, 
   Settings, 
   Users, 
-  Video
+  Video,
+  UserCircle
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-provider";
 
@@ -112,6 +113,13 @@ export function Sidebar({ className, isMobile, onClose }: SidebarProps) {
               icon={<CalendarClock className="h-4 w-4" />} 
               label="Live Classes" 
               isActive={isActive('/student/live-classes')} 
+              onClick={handleLinkClick}
+            />
+            <NavItem 
+              href="/student/profile" 
+              icon={<UserCircle className="h-4 w-4" />} 
+              label="My Profile" 
+              isActive={isActive('/student/profile')} 
               onClick={handleLinkClick}
             />
             <NavItem 

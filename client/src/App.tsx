@@ -34,6 +34,7 @@ function Router() {
       <Route path="/student/courses" component={StudentCourses} />
       <Route path="/student/courses/:slug" component={StudentCourseDetail} />
       <Route path="/student/live-classes" component={StudentLiveClasses} />
+      <Route path="/student/profile" component={StudentProfile} />
       <Route path="/student/support" component={StudentSupport} />
       
       {/* Admin Routes */}
