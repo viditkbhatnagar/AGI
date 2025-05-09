@@ -5,6 +5,7 @@
 import mongoose from 'mongoose';
 import { Course } from './models/course';
 import { Student } from './models/student';
+import { User } from './models/user';
 import { Enrollment } from './models/enrollment';
 import { LiveClass } from './models/liveclass';
 import { connectDB } from './db';
@@ -15,10 +16,15 @@ async function seedCIA() {
     await connectDB();
     console.log('Connected to MongoDB');
     
-    // Find Peter Parker's student account
-    const peterStudent = await Student.findOne({ email: 'peter@example.com' });
+    // Find Peter Parker's student account by querying user first
+    const peterUser = await User.findOne({ username: 'peterparker' });
+    if (!peterUser) {
+      throw new Error('Peter Parker user not found! Run seed.ts first.');
+    }
+    
+    const peterStudent = await Student.findOne({ userId: peterUser._id });
     if (!peterStudent) {
-      throw new Error('Peter Parker student not found! Run seed.ts first.');
+      throw new Error('Peter Parker student profile not found! Run seed.ts first.');
     }
     console.log('Found Peter Parker student:', peterStudent._id);
 
