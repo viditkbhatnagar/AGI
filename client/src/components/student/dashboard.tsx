@@ -1,22 +1,66 @@
-import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/lib/auth-provider";
 import { Link } from "wouter";
 import { ProgressRing } from "@/components/ui/progress-ring";
-import { CalendarClock, ChevronRight, Clock, Medal, PlayCircle, School, Target } from "lucide-react";
+import { 
+  CalendarClock, 
+  Clock, 
+  Medal, 
+  PlayCircle, 
+  School, 
+  Target 
+} from "lucide-react";
 import { formatDateTime, formatTimeRemaining } from "@/lib/utils";
 import { useState, useEffect } from "react";
 
+// Types based on API response from server
+interface DashboardData {
+  student: {
+    id: string;
+    name: string;
+    pathway: string;
+  };
+  courseProgress: number;
+  completedModules: string;
+  watchTime: {
+    total: string;
+    thisWeek: string;
+  };
+  certificationProgress: number;
+  course: {
+    slug: string;
+    title: string;
+    type: string;
+    progress: number;
+    totalModules: number;
+    completedModules: number;
+    enrollment: {
+      enrollDate: string;
+      validUntil: string;
+    };
+  } | null;
+  upcomingLiveClasses: Array<{
+    _id: string;
+    title: string;
+    courseSlug: string;
+    description: string;
+    meetLink: string;
+    startTime: string;
+    endTime: string;
+    status: string;
+  }>;
+}
+
 export function StudentDashboard() {
   const { student } = useAuth();
-  const [dashboardData, setDashboardData] = useState<any>(null);
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   
-  // Direct fetch from MongoDB to ensure we're using fresh data
   useEffect(() => {
+    // Function to fetch dashboard data from API
     const fetchDashboardData = async () => {
       if (!student?.id) return;
       
@@ -34,7 +78,7 @@ export function StudentDashboard() {
         }
         
         const data = await response.json();
-        console.log('Dashboard data from MongoDB:', data);
+        console.log('Dashboard data:', data);
         setDashboardData(data);
         setError(null);
       } catch (err) {
@@ -48,10 +92,12 @@ export function StudentDashboard() {
     fetchDashboardData();
   }, [student?.id]);
   
+  // Display loading skeleton
   if (isLoading) {
     return <DashboardSkeleton />;
   }
   
+  // Display error message if fetch failed
   if (error) {
     return (
       <div className="p-6">
@@ -65,6 +111,7 @@ export function StudentDashboard() {
     );
   }
   
+  // Display message if no data available
   if (!dashboardData) {
     return (
       <div className="p-6">
@@ -90,8 +137,9 @@ export function StudentDashboard() {
   
   return (
     <div className="p-4 md:p-6">
+      {/* Welcome Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-        <h1 className="font-inter text-2xl font-bold text-gray-800">
+        <h1 className="text-2xl font-bold text-gray-800">
           Welcome back, {student?.name?.split(' ')[0]}!
         </h1>
         <div className="mt-2 md:mt-0">
@@ -192,7 +240,7 @@ export function StudentDashboard() {
       {course && (
         <Card className="mb-6">
           <div className="px-5 py-4 border-b border-gray-200">
-            <h2 className="font-inter text-lg font-medium text-gray-800">My Course</h2>
+            <h2 className="text-lg font-medium text-gray-800">My Course</h2>
           </div>
           <CardContent className="p-5">
             <div className="flex flex-col md:flex-row items-start md:items-center">
@@ -235,11 +283,11 @@ export function StudentDashboard() {
       {/* Upcoming Live Classes */}
       <Card>
         <div className="px-5 py-4 border-b border-gray-200">
-          <h2 className="font-inter text-lg font-medium text-gray-800">Upcoming Live Classes</h2>
+          <h2 className="text-lg font-medium text-gray-800">Upcoming Live Classes</h2>
         </div>
         <CardContent className="p-5">
           {upcomingLiveClasses?.length > 0 ? (
-            upcomingLiveClasses.map((liveClass: any) => (
+            upcomingLiveClasses.map((liveClass) => (
               <div key={liveClass._id} className="border border-gray-200 rounded-lg p-4 mb-4">
                 <div className="flex flex-col md:flex-row md:items-center justify-between">
                   <div>
