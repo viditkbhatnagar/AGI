@@ -18,6 +18,7 @@ export interface IStudent {
   address: string;
   dob: Date;
   pathway: 'standalone' | 'with-mba';
+  userId: mongoose.Types.ObjectId; // Reference to User model
   eventLogs: Array<{
     type: string;
     message: string;
@@ -59,6 +60,11 @@ const StudentSchema = new Schema<IStudentDocument>({
     type: String, 
     enum: ['standalone', 'with-mba'], 
     required: true 
+  },
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   },
   eventLogs: [{
     type: { type: String, required: true },

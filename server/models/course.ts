@@ -6,6 +6,7 @@ interface IModule {
     title: string;
     url: string;
     duration: number;
+    videoId?: string; // YouTube video ID
   }>;
   documents: Array<{
     title: string;
@@ -47,7 +48,8 @@ const CourseSchema = new Schema<ICourseDocument>({
     videos: [{
       title: { type: String, required: true },
       url: { type: String, required: true },
-      duration: { type: Number, required: true }
+      duration: { type: Number, required: true },
+      videoId: { type: String }
     }],
     documents: [{
       title: { type: String, required: true },
@@ -60,7 +62,8 @@ const CourseSchema = new Schema<ICourseDocument>({
     videos: [{
       title: { type: String, required: true },
       url: { type: String, required: true },
-      duration: { type: Number, required: true }
+      duration: { type: Number, required: true },
+      videoId: { type: String }
     }],
     documents: [{
       title: { type: String, required: true },
