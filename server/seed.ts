@@ -33,29 +33,29 @@ async function seed() {
     await admin.save();
     console.log('Admin created:', admin._id);
     
-    // Create student user
-    console.log('Creating student user...');
-    const studentUser = new User({
-      username: 'student',
-      email: 'student@example.com',
+    // Create Peter Parker student user
+    console.log('Creating Peter Parker student user...');
+    const peterUser = new User({
+      username: 'peterparker',
+      email: 'peter@example.com',
       password: 'password', // will be hashed by the model pre-save hook
       role: 'student',
     });
-    await studentUser.save();
-    console.log('Student user created:', studentUser._id);
+    await peterUser.save();
+    console.log('Peter Parker user created:', peterUser._id);
     
-    // Create student profile
-    console.log('Creating student profile...');
-    const student = new Student({
-      name: 'Test Student',
-      userId: studentUser._id,
+    // Create Peter Parker student profile
+    console.log('Creating Peter Parker student profile...');
+    const peter = new Student({
+      name: 'Peter Parker',
+      userId: peterUser._id,
       pathway: 'standalone',
-      address: '123 Test Street, Test City',
-      phone: '+1234567890',
-      dob: new Date(1990, 0, 1),
+      address: '20 Ingram St, Forest Hills, NY',
+      phone: '+17185551212',
+      dob: new Date(2000, 5, 12), // June 12, 2000
     });
-    await student.save();
-    console.log('Student profile created:', student._id);
+    await peter.save();
+    console.log('Student profile created:', peter._id);
     
     // Create courses
     console.log('Creating courses...');
@@ -169,7 +169,7 @@ async function seed() {
     // Create enrollments
     console.log('Creating enrollments...');
     const enrollment1 = new Enrollment({
-      studentId: student._id,
+      studentId: peter._id,
       courseSlug: course1.slug,
       enrollDate: new Date(),
       validUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year
