@@ -10,11 +10,23 @@ import { ProgressRing } from "@/components/ui/progress-ring";
 import { useAuth } from "@/lib/auth-provider";
 
 export function StudentCourses() {
-  const { student } = useAuth();
+  const { student, isAuthenticated, user } = useAuth();
   
-  const { data: enrolledCourses, isLoading, error } = useQuery<any[]>({
+  console.log('Auth status:', { isAuthenticated, user, student });
+  
+  const enrolledCoursesQuery = useQuery<any[]>({
     queryKey: ['/api/student/courses'],
     enabled: !!student?.id
+  });
+  
+  const { data: enrolledCourses, isLoading, error } = enrolledCoursesQuery;
+  
+  // Log data and errors for debugging
+  console.log('Query state:', {
+    data: enrolledCourses,
+    error,
+    isLoading,
+    fetchStatus: enrolledCoursesQuery.fetchStatus
   });
   
   if (isLoading) {
