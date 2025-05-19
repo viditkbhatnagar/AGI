@@ -41,7 +41,7 @@ export function LiveClasses() {
             <div className="space-y-4">
               {(data as any[]).map((liveClass: any) => (
                 <div key={liveClass._id} className="border border-gray-200 rounded-lg p-4">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
                       <div className="flex items-center">
                         <Video className="text-primary mr-2 h-5 w-5" />
@@ -68,7 +68,7 @@ export function LiveClasses() {
                         <p className="mt-2 text-sm text-gray-600">{liveClass.description}</p>
                       )}
                     </div>
-                    <div className="mt-4 md:mt-0">
+                    <div className="mt-4 sm:mt-0">
                       <Button className="w-full md:w-auto" disabled={new Date(liveClass.startTime) > new Date()}>
                         <ExternalLink className="h-4 w-4 mr-2" />
                         {new Date(liveClass.startTime) <= new Date() ? 'Join Now' : 'Join at Scheduled Time'}
@@ -106,14 +106,14 @@ function LiveClassesSkeleton() {
         <CardContent className="p-6">
           {[1, 2, 3].map((i) => (
             <div key={i} className="border border-gray-200 rounded-lg p-4 mb-4">
-              <div className="flex flex-col md:flex-row justify-between">
-                <div className="w-full md:w-2/3">
+              <div className="flex flex-col sm:flex-row justify-between gap-4">
+                <div className="w-full sm:w-2/3">
                   <Skeleton className="h-6 w-48 mb-2" />
                   <Skeleton className="h-4 w-32 mb-2" />
                   <Skeleton className="h-4 w-56 mb-3" />
                   <Skeleton className="h-4 w-full" />
                 </div>
-                <Skeleton className="h-10 w-32 mt-4 md:mt-0" />
+                <Skeleton className="h-10 w-32 mt-4 sm:mt-0" />
               </div>
             </div>
           ))}

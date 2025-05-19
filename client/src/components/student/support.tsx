@@ -41,7 +41,7 @@ export function Support() {
         <p className="text-gray-500 mt-1">Get help with your courses or technical issues</p>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <Card>
             <CardHeader>
@@ -79,7 +79,7 @@ export function Support() {
                   </RadioGroup>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                   <div className="space-y-2">
                     <Label htmlFor="name">Full Name</Label>
                     <Input 
@@ -115,7 +115,7 @@ export function Support() {
                   />
                 </div>
                 
-                <Button type="submit" disabled={isSubmitting}>
+                <Button type="submit" className="w-full sm:w-auto" disabled={isSubmitting}>
                   {isSubmitting ? "Submitting..." : "Submit Support Request"}
                 </Button>
               </form>

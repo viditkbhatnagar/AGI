@@ -110,7 +110,12 @@ export function CourseDetail({ slug }: CourseDetailProps) {
       return;
     }
     const { questions } = await res.json();
-    setQuizQuestions(questions);
+    const mapped = questions.map((q: any) => ({
+      prompt: q.text ?? q.prompt,
+      options: q.choices ?? q.options,
+      correctIndex: q.correctIndex
+    }));
+    setQuizQuestions(mapped);
     setQuizModuleIndex(moduleIndex);
   };
 
@@ -233,12 +238,13 @@ export function CourseDetail({ slug }: CourseDetailProps) {
   return (
     <div className="p-4 md:p-6">
       {selectedVideoUrl && (
-        <div ref={mediaRef} className="mb-6">
+        <div ref={mediaRef} className="mb-6 relative pt-[56.25%]"> {/* 16:9 */}
           <ReactPlayer
             url={selectedVideoUrl}
             controls
             width="100%"
-            height="480px"
+            height="100%"
+            className="absolute top-0 left-0"
             onProgress={({ playedSeconds }) => {
               recordWatchTimeThrottled(playedSeconds);
             }}
@@ -253,9 +259,8 @@ export function CourseDetail({ slug }: CourseDetailProps) {
         <div ref={mediaRef} className="mb-6">
           <iframe
             src={selectedDocUrl}
-            width="100%"
-            height="600px"
-            className="border"
+            className="border w-full h-[60vh] md:h-[70vh]"
+            allow="fullscreen"
           />
         </div>
       )}
@@ -268,6 +273,9 @@ export function CourseDetail({ slug }: CourseDetailProps) {
             </Button>
           </Link>
           <h1 className="text-2xl font-bold text-gray-800">{course?.title}</h1>
+          {course?.description && (
+            <p className="mt-1 text-gray-600">{course.description}</p>
+          )}
         </div>
       </div>
       
@@ -282,7 +290,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
               <ProgressRing value={course?.progress ?? 0} size={144} />
             </div>
             <div className="w-full md:w-3/4">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm font-medium text-gray-500">Modules Completed</p>
                   <p className="text-lg font-semibold text-gray-800">
@@ -420,7 +428,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                             </div>
                           </div>
                           {/* Resources tiles */}
-                          <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Videos Section */}
                             <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg">
                               <h5 className="text-lg font-semibold text-blue-800 mb-3">Videos</h5>
@@ -459,14 +467,18 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                           {/* Quiz */}
                           <div>
                             <h4 className="text-md font-medium text-gray-700 mb-2">Quiz</h4>
-                            {module.quizAttempts > 0 ? (
-                              <p>Best Score: {module.avgQuizScore}%</p>
-                            ) : module.percentComplete >= 67 ? (
+                            {module.isCompleted ? (
+                              <p className="text-gray-800">Module already completed</p>
+                            ) : module.isLocked ? (
+                              <p>Locked - Complete previous module to unlock</p>
+                            ) : module.percentComplete < 65 ? (
+                              <p className="text-gray-600">
+                                Reach at least 65 % progress in this module to unlock the quiz.
+                              </p>
+                            ) : (
                               <Button onClick={() => handleTakeQuiz(index)}>
                                 Take Quiz
                               </Button>
-                            ) : (
-                              <p>Complete all videos and documents to unlock quiz</p>
                             )}
                           </div>
                         </>

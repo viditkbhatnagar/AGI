@@ -19,12 +19,14 @@ export default function DailyStreak({ dailyWatchTime }: Props) {
   }
 
   return (
-    <div className="p-4 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-lg">
+    <div className="p-4 sm:p-6 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-lg">
       <div className="flex items-center text-yellow-800">
-        <span className="text-2xl mr-2">🔥</span>
+        <span className="text-2xl sm:text-3xl mr-2">🔥</span>
         <div>
-          <div className="text-lg font-semibold">{streak}-Day Streak</div>
-          <div className="text-sm">Keep it going!</div>
+          <div className="text-base sm:text-lg md:text-xl font-semibold">
+            {streak}-Day Streak
+          </div>
+          <div className="text-xs sm:text-sm">Keep it going!</div>
         </div>
       </div>
     </div>

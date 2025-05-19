@@ -1,4 +1,3 @@
-// client/src/components/student/QuizScoresChart.tsx
 import React from 'react';
 // Make sure you’ve installed recharts: npm install recharts
 import {
@@ -27,33 +26,43 @@ export default function QuizScoresChart({ data }: QuizScoresChartProps) {
     return <p className="text-center text-gray-500">No quiz data available.</p>;
   }
 
+  // Ensure enough horizontal space so legend and slices don't crowd on mobile
+  const baseWidth = Math.max(data.length * 120, 320); // at least 320 px
+
   return (
-    <ResponsiveContainer width="100%" height={250}>
-      <PieChart>
-        <Pie
-          data={data}
-          dataKey="score"
-          nameKey="title"
-          cx="50%"
-          cy="50%"
-          outerRadius={80}
-          label={({ name, percent }) => `${name}: ${Math.round(percent * 100)}%`}
-        >
-          {data.map((entry, index) => (
-            <Cell key={entry.title} fill={COLORS[index % COLORS.length]} />
-          ))}
-        </Pie>
-        <Tooltip 
-          formatter={(value: number) => `${value}%`} 
-          wrapperStyle={{ outline: 'none' }}
-        />
-        <Legend 
-          layout="horizontal" 
-          verticalAlign="bottom" 
-          align="center"
-          iconType="circle"
-        />
-      </PieChart>
-    </ResponsiveContainer>
+    <div className="overflow-x-auto pb-2">
+      <ResponsiveContainer width={baseWidth} height={250}>
+        <PieChart>
+          <Pie
+            data={data}
+            dataKey="score"
+            nameKey="title"
+            cx="50%"
+            cy="50%"
+            outerRadius={80}
+            label={({ name, percent }) =>
+              `${name}: ${Math.round(percent * 100)}%`
+            }
+          >
+            {data.map((entry, index) => (
+              <Cell
+                key={entry.title}
+                fill={COLORS[index % COLORS.length]}
+              />
+            ))}
+          </Pie>
+          <Tooltip
+            formatter={(value: number) => `${value}%`}
+            wrapperStyle={{ outline: 'none' }}
+          />
+          <Legend
+            layout="horizontal"
+            verticalAlign="bottom"
+            align="center"
+            iconType="circle"
+          />
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
   );
 }

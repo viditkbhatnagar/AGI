@@ -169,7 +169,7 @@ export function Profile() {
     <div className="p-4 md:p-6">
       <h1 className="text-2xl font-bold text-gray-800 mb-6">My Profile</h1>
       
-      <Card className="max-w-3xl">
+      <Card className="w-full max-w-3xl">
         <CardHeader>
           <CardTitle>Personal Information</CardTitle>
           <CardDescription>
@@ -179,7 +179,10 @@ export function Profile() {
         <CardContent>
           {isEditing ? (
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="grid grid-cols-1 sm:grid-cols-2 gap-6"
+              >
                 <FormField
                   control={form.control}
                   name="name"
@@ -222,7 +225,7 @@ export function Profile() {
                   )}
                 />
                 
-                <div className="flex gap-4">
+                <div className="flex gap-4 sm:col-span-2">
                   <Button 
                     type="submit" 
                     disabled={isSaving}
@@ -250,7 +253,7 @@ export function Profile() {
               </form>
             </Form>
           ) : (
-            <div className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
                 <h3 className="font-medium text-sm text-gray-500">Full Name</h3>
                 <p className="mt-1">{studentData?.name || "-"}</p>
@@ -285,9 +288,11 @@ export function Profile() {
                 </p>
               </div>
               
-              <Button onClick={() => setIsEditing(true)}>
-                Edit Profile
-              </Button>
+              <div className="sm:col-span-2">
+                <Button onClick={() => setIsEditing(true)}>
+                  Edit Profile
+                </Button>
+              </div>
             </div>
           )}
         </CardContent>

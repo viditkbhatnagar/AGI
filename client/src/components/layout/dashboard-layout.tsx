@@ -50,17 +50,17 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       />
       
       <div
-        className={`fixed inset-y-0 left-0 w-64 md:w-64 z-50 md:relative md:translate-x-0 transform transition duration-200 ${
+        className={`fixed inset-y-0 left-0 w-64 md:w-64 md:hidden z-50 md:relative md:translate-x-0 transform transition duration-200 ${
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <Sidebar isMobile={true} onClose={toggleMobileMenu} />
       </div>
-      
-      {/* Hidden on mobile */}
-      {/* <div className="hidden md:block md:w-64">
+
+      {/* Sidebar for desktop screens */}
+      <div className="hidden md:block md:w-64">
         <Sidebar />
-      </div> */}
+      </div>
       
       {/* Main Content */}
       <div className="flex flex-col flex-1 overflow-hidden">

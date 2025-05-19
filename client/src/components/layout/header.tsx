@@ -35,10 +35,10 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
           <Button variant="ghost" size="icon" className="md:hidden" onClick={onMobileMenuToggle}>
             <Menu className="h-6 w-6" />
           </Button>
-          <img src={logoImg} alt="AGI.online" className="h-8" />
+          <img src={logoImg} alt="AGI.online" className="h-8 w-auto max-w-[120px]" />
         </div>
 
-        <div className="flex-1 text-center">
+        <div className="flex-1 text-center hidden sm:block">
           <div className="text-sm font-bold text-gray-900">
             <span className="mr-4">
               {currentTime.toLocaleDateString('en-US', {

@@ -6,6 +6,33 @@ const COLORS = [ "#A8D5E2", "#E2A8C6", "#F2D388", "#B8E986", "#D4A5A5", "#D8C1A5
 
 type Props = { modules: { title: string; percentComplete: number }[] };
 
+// Custom Y-axis tick: truncate long names and show full text on hover
+const AdaptiveTick = (props: any) => {
+  const { x, y, payload } = props;
+  const text: string = payload.value;
+
+  // Truncate if longer than 35 characters
+  const MAX = 35;
+  const display = text.length > MAX ? text.slice(0, MAX) + "…" : text;
+
+  // Slightly reduce font size for anything > 25 chars
+  const fontSize = text.length > 25 ? 12 : 14;
+
+  return (
+    <text
+      x={x}
+      y={y}
+      dy={3}
+      textAnchor="end"
+      fill="#374151"
+      fontSize={fontSize}
+    >
+      <title>{text}</title> {/* tooltip with full title */}
+      {display}
+    </text>
+  );
+};
+
 export default function ModuleBreakdown({ modules }: Props) {
   const data = useMemo(() =>
     modules.map((m, i) => ({
@@ -15,12 +42,15 @@ export default function ModuleBreakdown({ modules }: Props) {
     })),
     [modules]
   );
+  // Dynamic height: ~34 px per bar, with a sensible minimum
+  const chartHeight = Math.max(modules.length * 34, 200);
 
   return (
     <Card className="shadow-sm hover:shadow-lg transition-shadow mb-6">
       <div className="px-5 py-4 border-b"><h2 className="text-lg font-medium">Module Progress</h2></div>
       <CardContent>
-        <ResponsiveContainer width="100%" height={200}>
+        <div className="overflow-x-auto pb-2">
+          <ResponsiveContainer width="100%" height={chartHeight}>
           <BarChart
             data={data}
             layout="vertical"
@@ -31,19 +61,17 @@ export default function ModuleBreakdown({ modules }: Props) {
               type="category"
               dataKey="name"
               width={250}
-              tick={{
-                fontSize: 14,
-                fill: "#374151"
-              }}
+              tick={<AdaptiveTick />}
             />
             <Tooltip formatter={(v: number) => `${v}%`} />
-            <Bar dataKey="value" radius={[0, 5, 5, 0]} barSize={20} isAnimationActive={false}>
+            <Bar dataKey="value" radius={[0, 5, 5, 0]} barSize={24} isAnimationActive={false}>
               {data.map((entry, idx) => (
                 <Cell key={`cell-${idx}`} fill={entry.fill} />
               ))}
             </Bar>
           </BarChart>
-        </ResponsiveContainer>
+          </ResponsiveContainer>
+        </div>
       </CardContent>
     </Card>
   );

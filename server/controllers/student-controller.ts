@@ -34,8 +34,6 @@ export const getDashboard = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Course not found' });
     }
 
-    // Load quiz documents for this course
-    const quizzes = await Quiz.find({ courseSlug: course.slug });
 
     const enrollmentCompletedModules = enrollment.completedModules || [];
     const completedSet = new Set(
@@ -49,59 +47,73 @@ export const getDashboard = async (req: Request, res: Response) => {
     const quizRecords  = enrollment.quizAttempts || [];
 
     // Compute per-module data (including percentComplete and completion status)
-    // Two-pass approach: first gather module info, then set isLocked in a second map
-    const moduleData = course.modules.map((module, idx) => {
-      // Video progress
-      const totalVideos = module.videos.length;
-      const watchedVideos = new Set(
-        watchRecords
-          .filter(wt => wt.moduleIndex === idx)
-          .map(wt => wt.videoIndex)
-      ).size;
-      const percentWatched = totalVideos
-        ? (watchedVideos / totalVideos) * 100
-        : 0;
+    // Gather module data asynchronously to allow awaiting quiz fetches
+    const moduleData = await Promise.all(
+      course.modules.map(async (module, idx) => {
+        // Video progress
+        const totalVideos = module.videos.length;
+        const watchedVideos = new Set(
+          watchRecords
+            .filter(wt => wt.moduleIndex === idx)
+            .map(wt => wt.videoIndex)
+        ).size;
+        const percentWatched = totalVideos
+          ? (watchedVideos / totalVideos) * 100
+          : 0;
 
-      // Document progress
-      const totalDocs = module.documents.length;
-      const viewedDocs = docRecords.filter(dv => dv.moduleIndex === idx).length;
-      const percentViewed = totalDocs
-        ? (viewedDocs / totalDocs) * 100
-        : 0;
+        // Document progress
+        const totalDocs = module.documents.length;
+        const viewedDocs = docRecords.filter(dv => dv.moduleIndex === idx).length;
+        const percentViewed = totalDocs
+          ? (viewedDocs / totalDocs) * 100
+          : 0;
 
-      // Quiz progress
-      const quizDone = quizRecords.some(qa => qa.moduleIndex === idx);
-      const quizPercent = quizDone ? 100 : 0;
+        // Quiz progress
+        const quizDone = quizRecords.some(qa => qa.moduleIndex === idx);
+        const quizPercent = quizDone ? 100 : 0;
 
-      // Quiz attempt statistics for this module
-      const moduleAttempts = quizRecords.filter(a => a.moduleIndex === idx);
-      const quizAttempts = moduleAttempts.length;
-      const avgQuizScore = quizAttempts > 0
-        ? Math.max(...moduleAttempts.map(a => a.score))
-        : 0;
+        // Quiz attempt statistics for this module
+        const moduleAttempts = quizRecords.filter(a => a.moduleIndex === idx);
+        const quizAttempts = moduleAttempts.length;
+        const avgQuizScore = quizAttempts > 0
+          ? Math.max(...moduleAttempts.map(a => a.score))
+          : 0;
 
-      // Final completion percentage
-      const percentComplete = Math.round(
-        (percentWatched + percentViewed + quizPercent) / 3
-      );
+        // Final completion percentage
+        const percentComplete = Math.round(
+          (percentWatched + percentViewed + quizPercent) / 3
+        );
 
-      // Find quiz for this module, if any
-      const quiz = quizzes.find(q => q.moduleIndex === idx);
-      const isCompleted = completedSet.has(idx);
-      return {
-        title: module.title,
-        videos: module.videos,
-        documents: module.documents,
-        quizId: module.quizId,
-        percentComplete,
-        isCompleted,
-        completedAt: (enrollmentCompletedModules.find(c => c.moduleIndex === idx)?.completedAt) || null,
-        // Attach the quiz questions array
-        questions: quiz ? quiz.questions : [],
-        quizAttempts,
-        avgQuizScore
-      };
-    });
+        // Dynamically fetch quiz for this module, if any
+        let quiz: any = null;
+        if (module.quizId) {
+          if (mongoose.Types.ObjectId.isValid(module.quizId as any)) {
+            // Normal case: quizId is a real ObjectId string
+            quiz = await Quiz.findById(module.quizId);
+          } else {
+            // Legacy seed data used a slug‑style string (e.g. "cscp-module-1-quiz")
+            quiz = await Quiz.findOne({ courseSlug: course.slug, moduleIndex: idx });
+          }
+        } else {
+          // Fallback – look up by course + module
+          quiz = await Quiz.findOne({ courseSlug: course.slug, moduleIndex: idx });
+        }
+        const isCompleted = completedSet.has(idx);
+        return {
+          title: module.title,
+          videos: module.videos,
+          documents: module.documents,
+          quizId: module.quizId,
+          percentComplete,
+          isCompleted,
+          completedAt: (enrollmentCompletedModules.find(c => c.moduleIndex === idx)?.completedAt) || null,
+          // Attach the quiz questions array
+          questions: quiz?.questions || [],
+          quizAttempts,
+          avgQuizScore
+        };
+      })
+    );
     // Now, add isLocked property based on previous module's completion (using completedSet)
     const modules = moduleData.map((mod, idx, arr) => ({
       ...mod,

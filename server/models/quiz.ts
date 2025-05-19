@@ -1,30 +1,33 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-interface IQuizQuestion {
-  prompt: string;
-  options: string[];
+export interface Question {
+  text: string;
+  // you can support multiple choice, true/false, etc
+  choices: string[];
   correctIndex: number;
 }
+// interface IQuizQuestion {
+//   prompt: string;
+//   options: string[];
+//   correctIndex: number;
+// }
 
 export interface IQuiz extends Document {
   courseSlug: string;      // the course this quiz belongs to
   moduleIndex: number;     // which module this quiz is for
-  questions: IQuizQuestion[];
+  questions: Question[];
 }
 
-const QuizSchema = new Schema<IQuiz>(
-  {
-    courseSlug: { type: String, required: true },
-    moduleIndex: { type: Number, required: true },
-    questions: [
-      {
-        prompt: { type: String, required: true },
-        options: [{ type: String, required: true }],
-        correctIndex: { type: Number, required: true },
-      }
-    ]
-  },
-  { timestamps: true }
-);
+const QuizSchema = new Schema<IQuiz>({
+  courseSlug:  { type: String, required: true, index: true },
+  moduleIndex: { type: Number, required: true, index: true },
+  questions: [
+    {
+      text:         { type: String, required: true },
+      choices:      [{ type: String, required: true }],
+      correctIndex: { type: Number, required: true },
+    }
+  ]
+});
 
 export default mongoose.model<IQuiz>('Quiz', QuizSchema);

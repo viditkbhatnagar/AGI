@@ -207,7 +207,7 @@ export function StudentDashboard() {
       /> */}
       
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 mb-6">
         {/* Course Progress */}
         <Card className="dashboard-card border-l-4 border-indigo-600 bg-gradient-to-r from-indigo-200 to-indigo-100 shadow-sm hover:shadow-lg transition-shadow duration-200 ease-in-out">
           <CardContent className="p-4">
@@ -329,7 +329,7 @@ export function StudentDashboard() {
       </div>
       
       {/* My Course & Streak/Tip & Daily Watch Time (3-column layout) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         {/* My Course */}
         {course && (
           <Card className="shadow-sm hover:shadow-lg transition-shadow duration-200 ease-in-out">
@@ -427,11 +427,11 @@ export function StudentDashboard() {
 
 
       {/* Module Progress Breakdown & Time Allocation (side by side) */}
-      <div className="grid grid-cols-1 md:grid-cols-10 gap-4 mb-6">
-        <div className="md:col-span-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div className="md:col-span-1">
           <ModuleBreakdown modules={dashboardData.course?.modules || []} />
         </div>
-        <div className="md:col-span-10">
+        <div className="md:col-span-1">
           <TimeAllocation
             data={[
               { name: "Total time in minutes you previewed the documents till date :", value: dashboardData.documentsViewed * 2 },
@@ -497,7 +497,7 @@ function DashboardSkeleton() {
         <Skeleton className="h-10 w-36 mt-2 md:mt-0" />
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 mb-6">
         {[1, 2, 3, 4].map((i) => (
           <Card key={i} className="dashboard-card">
             <CardContent className="p-4">

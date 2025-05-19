@@ -103,7 +103,7 @@ export function StudentCourses() {
     <div className="p-4 md:p-6">
       <h1 className="text-2xl font-bold text-gray-800 mb-6">My Courses</h1>
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
         {coursesData.map((course) => (
           <Card key={course.id} className="overflow-hidden dashboard-card bg-white hover:bg-primary-50 border border-transparent hover:border-primary transition">
             <div className="h-1 bg-gradient-to-r from-primary to-secondary" />
@@ -134,7 +134,7 @@ export function StudentCourses() {
                       </Badge>
                     </div>
                     
-                    {/* <div className="hidden sm:block">
+                    {/* <div className="hidden md:block">
                       <ProgressRing
                         value={course?.progress ?? 0}
                         size={80}
@@ -155,7 +155,7 @@ export function StudentCourses() {
                       </div>
                     </div>
                     
-                    <div className="sm:hidden mb-4">
+                    <div className="md:hidden mb-4">
                       <div className="flex items-center gap-4">
                         <ProgressRing
                           value={course.progress || 0}
@@ -200,7 +200,7 @@ function CoursesSkeleton() {
     <div className="p-4 md:p-6">
       <Skeleton className="h-8 w-48 mb-6" />
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
         {[1, 2].map((i) => (
           <Card key={i} className="overflow-hidden">
             <div className="p-6">

@@ -56,35 +56,35 @@ export function Sidebar({ className, isMobile, onClose }: SidebarProps) {
             </p>
             <NavItem 
               href="/admin" 
-              icon={<LayoutDashboard className="h-4 w-4" />} 
+              icon={<LayoutDashboard className="h-4 w-4 md:h-5 md:w-5" />} 
               label="Overview" 
               isActive={isActive('/admin') && !location.includes('/admin/')} 
               onClick={handleLinkClick}
             />
             <NavItem 
               href="/admin/students" 
-              icon={<Users className="h-4 w-4" />} 
+              icon={<Users className="h-4 w-4 md:h-5 md:w-5" />} 
               label="Students" 
               isActive={isActive('/admin/students')} 
               onClick={handleLinkClick}
             />
             <NavItem 
               href="/admin/courses" 
-              icon={<School className="h-4 w-4" />} 
+              icon={<School className="h-4 w-4 md:h-5 md:w-5" />} 
               label="Courses" 
               isActive={isActive('/admin/courses')} 
               onClick={handleLinkClick}
             />
             <NavItem 
               href="/admin/enrollments" 
-              icon={<GraduationCap className="h-4 w-4" />} 
+              icon={<GraduationCap className="h-4 w-4 md:h-5 md:w-5" />} 
               label="Progress" 
               isActive={isActive('/admin/enrollments')} 
               onClick={handleLinkClick}
             />
             <NavItem 
               href="/admin/live-classes" 
-              icon={<Video className="h-4 w-4" />} 
+              icon={<Video className="h-4 w-4 md:h-5 md:w-5" />} 
               label="Live Classes" 
               isActive={isActive('/admin/live-classes')} 
               onClick={handleLinkClick}
@@ -97,35 +97,35 @@ export function Sidebar({ className, isMobile, onClose }: SidebarProps) {
             </p>
             <NavItem 
               href="/student" 
-              icon={<Home className="h-4 w-4" />} 
+              icon={<Home className="h-4 w-4 md:h-5 md:w-5" />} 
               label="Home" 
               isActive={isActive('/student') && !location.includes('/student/')} 
               onClick={handleLinkClick}
             />
             <NavItem 
               href="/student/courses" 
-              icon={<BookOpen className="h-4 w-4" />} 
+              icon={<BookOpen className="h-4 w-4 md:h-5 md:w-5" />} 
               label="My Courses" 
               isActive={isActive('/student/courses')} 
               onClick={handleLinkClick}
             />
             <NavItem 
               href="/student/live-classes" 
-              icon={<CalendarClock className="h-4 w-4" />} 
+              icon={<CalendarClock className="h-4 w-4 md:h-5 md:w-5" />} 
               label="Live Classes" 
               isActive={isActive('/student/live-classes')} 
               onClick={handleLinkClick}
             />
             <NavItem 
               href="/student/profile" 
-              icon={<UserCircle className="h-4 w-4" />} 
+              icon={<UserCircle className="h-4 w-4 md:h-5 md:w-5" />} 
               label="My Profile" 
               isActive={isActive('/student/profile')} 
               onClick={handleLinkClick}
             />
             <NavItem 
               href="/student/support" 
-              icon={<Settings className="h-4 w-4" />} 
+              icon={<Settings className="h-4 w-4 md:h-5 md:w-5" />} 
               label="Support" 
               isActive={isActive('/student/support')} 
               onClick={handleLinkClick}
@@ -143,8 +143,8 @@ export function Sidebar({ className, isMobile, onClose }: SidebarProps) {
             if (isMobile && onClose) onClose();
           }}
         >
-          <LogOut className="mr-2 h-4 w-4" />
-          <span>Logout</span>
+          <LogOut className="mr-2 h-4 w-4 md:h-5 md:w-5" />
+          <span className="text-sm md:text-base">Logout</span>
         </Button>
       </div>
     </div>
@@ -173,7 +173,9 @@ function NavItem({ href, icon, label, isActive, onClick }: NavItemProps) {
         onClick={onClick}
       >
         {icon}
-        <span className="ml-2">{label}</span>
+        <span className="ml-2 text-sm md:text-base whitespace-nowrap">
+          {label}
+        </span>
       </Button>
     </Link>
   );
