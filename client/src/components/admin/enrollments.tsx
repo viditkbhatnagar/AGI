@@ -108,7 +108,7 @@ export function Enrollments() {
                 <TableHead>Enrollment Date</TableHead>
                 <TableHead>Valid Until</TableHead>
                 <TableHead>Progress</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                {/* <TableHead className="text-right">Actions</TableHead> */}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -142,27 +142,34 @@ export function Enrollments() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div>
-                        <div className="text-sm text-gray-900 mb-1">
-                          {enrollment.completedModules?.length > 0 
-                            ? `${Math.round((enrollment.completedModules.filter(m => m.completed).length / 
-                              enrollment.completedModules.length) * 100)}% Complete`
-                            : "Not started"}
-                        </div>
-                        <div className="w-full h-1.5 bg-gray-200 rounded-full">
-                          <div 
-                            className="h-full bg-primary rounded-full" 
-                            style={{ 
-                              width: enrollment.completedModules?.length > 0 
-                                ? `${Math.round((enrollment.completedModules.filter(m => m.completed).length / 
-                                  enrollment.completedModules.length) * 100)}%`
-                                : "0%"
-                            }}
-                          />
-                        </div>
-                      </div>
+                      {(() => {
+                        // calculate against totalModules provided by server
+                        const totalModules   = enrollment.totalModules || 0;
+                        const completedCount = enrollment.completedModules
+                          ? enrollment.completedModules.filter(m => m.completed).length
+                          : 0;
+                        const percentComplete = totalModules
+                          ? Math.round((completedCount / totalModules) * 100)
+                          : 0;
+
+                        return (
+                          <div>
+                            <div className="text-sm text-gray-900 mb-1">
+                              {percentComplete > 0
+                                ? `${percentComplete}% Complete`
+                                : 'Not started'}
+                            </div>
+                            <div className="w-full h-1.5 bg-gray-200 rounded-full">
+                              <div
+                                className="h-full bg-primary rounded-full"
+                                style={{ width: `${percentComplete}%` }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })()}
                     </TableCell>
-                    <TableCell className="text-right">
+                    {/* <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
                         <Button variant="ghost" size="icon" onClick={() => setLocation(`/admin/enrollments/${enrollment._id}`)}>
                           <Eye className="h-4 w-4" />
@@ -174,7 +181,7 @@ export function Enrollments() {
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
-                    </TableCell>
+                    </TableCell> */}
                   </TableRow>
                 ))
               ) : (

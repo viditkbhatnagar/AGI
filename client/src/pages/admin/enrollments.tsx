@@ -6,7 +6,7 @@ export default function EnrollmentsPage() {
   return (
     <DashboardLayout>
       <Helmet>
-        <title>Enrollments | AGI.online</title>
+        <title>Enrollments | AGI</title>
         <meta name="description" content="Manage student enrollments, track progress, and extend access periods." />
       </Helmet>
       <Enrollments />

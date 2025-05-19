@@ -8,6 +8,7 @@ interface ICompletedModule {
 
 interface IQuizAttempt {
   quizId: string;
+  moduleIndex: number;
   score: number;
   maxScore: number;
   attemptedAt: Date;
@@ -49,8 +50,10 @@ const EnrollmentSchema = new Schema<IEnrollmentDocument>({
     completed: { type: Boolean, default: false },
     completedAt: { type: Date }
   }],
+  
   quizAttempts: [{
     quizId: { type: String, required: true },
+    //moduleIndex: { type: Number, required: true },
     score: { type: Number, required: true },
     maxScore: { type: Number, required: true },
     attemptedAt: { type: Date, default: Date.now },

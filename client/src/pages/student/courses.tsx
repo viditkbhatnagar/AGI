@@ -6,7 +6,7 @@ export default function Courses() {
   return (
     <DashboardLayout>
       <Helmet>
-        <title>My Courses | AGI.online</title>
+        <title>My Courses | AGI</title>
         <meta name="description" content="View all your enrolled courses, track progress, and continue learning." />
       </Helmet>
       <StudentCourses />

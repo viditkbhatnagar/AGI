@@ -43,52 +43,150 @@ export const getStudent = async (req: Request, res: Response) => {
 };
 
 // Create a new student and user
-export const createStudent = async (req: Request, res: Response) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
+// export const createStudent = async (req: Request, res: Response) => {
+//   const session = await mongoose.startSession();
+//   session.startTransaction();
   
+//   try {
+//     const { name, email, password, phone, address, dob, pathway, courseSlug } = req.body;
+    
+    
+//     // Create user first
+//     const username = email.split('@')[0]; // Simple username generation
+    
+//     const newUser = new User({
+//       username,
+//       email,
+//       password,
+//       role: 'student'
+//     });
+    
+//     await newUser.save({ session });
+    
+//     // Then create student record
+//     const newStudent = new Student({
+//       name,
+//       phone: phone || '',
+//       address: address || '',
+//       dob: dob ? new Date(dob) : null,
+//       pathway,
+//       userId: newUser._id
+//     });
+    
+//     await newStudent.save({ session });
+    
+//     // Enroll student in the chosen course
+//     const course = await Course.findOne({ slug: courseSlug }).session(session);
+//     if (!course) {
+//       await session.abortTransaction();
+//       session.endSession();
+//       return res.status(404).json({ message: `Course '${courseSlug}' not found` });
+//     }
+    
+//     const newEnrollment = new Enrollment({
+//       studentId: newStudent._id,
+//       courseSlug,
+//       enrollDate: new Date(),
+//       validUntil: new Date(Date.now() + 365*24*60*60*1000), // 1 year from now
+//       completedModules: []
+//     });
+//     await newEnrollment.save({ session });
+    
+//     await session.commitTransaction();
+//     session.endSession();
+    
+//     res.status(201).json({
+//       message: 'Student created and enrolled successfully',
+//       student: newStudent,
+//       enrollment: newEnrollment
+//     });
+//   } catch (error) {
+//     await session.abortTransaction();
+//     session.endSession();
+    
+//     console.error('Create student error:', error);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// };
+
+export const createStudent = async (req: Request, res: Response) => {
   try {
-    const { name, email, password, phone, address, dob, pathway } = req.body;
-    
-    // Create user first
-    const username = email.split('@')[0]; // Simple username generation
-    
-    const newUser = new User({
+    const {
+      email,
+      password,
+      name,
+      phone,
+      address,
+      dob,
+      pathway,
+      courseSlug
+    } = req.body;
+
+    // Derive a simple username from email prefix
+    const username = email.split('@')[0];
+
+    // 1) Create the User account
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email already in use' });
+    }
+    const user = new User({
       username,
       email,
       password,
       role: 'student'
     });
-    
-    await newUser.save({ session });
-    
-    // Then create student record
-    const newStudent = new Student({
+    await user.save();
+
+    // 2) Create the Student profile
+    const student = new Student({
+      userId: user._id,
       name,
-      phone: phone || '',
-      address: address || '',
-      dob: dob ? new Date(dob) : null,
-      pathway,
-      userId: newUser._id
+      phone,
+      address,
+      dob: dob ? new Date(dob) : undefined,
+      pathway
     });
-    
-    await newStudent.save({ session });
-    
-    await session.commitTransaction();
-    session.endSession();
-    
+    await student.save();
+
+    // 3) Enroll them in the selected course
+    const course = await Course.findOne({ slug: courseSlug });
+    if (!course) {
+      return res.status(404).json({ message: 'Course not found' });
+    }
+    const enrollDate = new Date();
+    const validUntil = new Date(enrollDate);
+    validUntil.setFullYear(validUntil.getFullYear() + 1);
+
+    const enrollment = new Enrollment({
+      studentId:   student._id,
+      courseSlug,
+      enrollDate,
+      validUntil,
+      completedModules: [],
+      quizAttempts:     [],
+      watchTime:        []
+    });
+    await enrollment.save();
+
+    // 4) Return the newly created student record
     res.status(201).json({
-      message: 'Student created successfully',
-      student: newStudent
+      message: 'Student created and enrolled successfully',
+      student: {
+        id:       student._id,
+        userId:   user._id,
+        name:     student.name,
+        pathway:  student.pathway,
+        enrollDate: enrollment.enrollDate,
+        validUntil: enrollment.validUntil
+      }
     });
   } catch (error) {
-    await session.abortTransaction();
-    session.endSession();
-    
-    console.error('Create student error:', error);
+    console.error('Error creating student:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
+
 
 // Update student
 export const updateStudent = async (req: Request, res: Response) => {

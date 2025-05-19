@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { Course } from '../models/course';
 import { Enrollment } from '../models/enrollment';
 import { Student } from '../models/student';
+import { desc } from 'drizzle-orm';
 
 // Get all courses
 export const getAllCourses = async (req: Request, res: Response) => {
@@ -10,6 +11,18 @@ export const getAllCourses = async (req: Request, res: Response) => {
     res.status(200).json(courses);
   } catch (error) {
     console.error('Get all courses error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// List minimal course info for admin dropdowns
+export const listCourses = async (req: Request, res: Response) => {
+  try {
+    // Fetch only slug and title for the dropdown
+    const courses = await Course.find({}, 'slug title');
+    res.status(200).json(courses);
+  } catch (error) {
+    console.error('List courses error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
@@ -233,3 +246,13 @@ function formatWatchTime(seconds: number): string {
   
   return `${hours}h ${minutes}m`;
 }
+
+export default {
+  getAllCourses,
+  getCourse,
+  createCourse,
+  updateCourse,
+  deleteCourse,
+  getStudentCourse,
+  listCourses
+};

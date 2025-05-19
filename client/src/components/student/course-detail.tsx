@@ -1,4 +1,29 @@
+// Convert Google Drive share URL into an embeddable preview URL
+function toGooglePreviewUrl(url: string) {
+  const match = url.match(/\/d\/([^\/]+)/);
+  if (match) {
+    const id = match[1];
+    // Presentation (Slides)
+    if (url.includes('/presentation/')) {
+      return `https://docs.google.com/presentation/d/${id}/preview`;
+    }
+    // Document (Docs)
+    if (url.includes('/document/')) {
+      return `https://docs.google.com/document/d/${id}/preview`;
+    }
+    // Spreadsheet (Sheets)
+    if (url.includes('/spreadsheets/')) {
+      return `https://docs.google.com/spreadsheets/d/${id}/preview`;
+    }
+  }
+  return url;
+}
+
 import { useQuery } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
+import throttle from "lodash/throttle";
+import { useEffect, useState, useRef } from "react";
+import ReactPlayer from "react-player";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -8,6 +33,7 @@ import {
   BookOpen,
   Check,
   ChevronRight,
+  ChevronDown,
   Clock,
   FileText,
   Lock,
@@ -17,16 +43,110 @@ import {
 import { Link } from "wouter";
 import { Badge } from "@/components/ui/badge";
 import { formatDate, formatDateTime, formatWatchTime } from "@/lib/utils";
+import { useParams } from "wouter";
+
+import QuizForm from "@/components/student/QuizForm";
 
 interface CourseDetailProps {
   slug: string;
 }
 
 export function CourseDetail({ slug }: CourseDetailProps) {
+  const queryClient = useQueryClient();
   const { data, isLoading, error } = useQuery({
-    queryKey: [`/api/student/courses/${slug}`],
-    enabled: !!slug
+    queryKey: ['studentDashboard'],
+    queryFn: async () => {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Not authenticated");
+      const res = await fetch(`/api/student/dashboard`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error(`Error ${res.status}: ${res.statusText}`);
+      return res.json();
+    }
   });
+
+  const course = data?.course;
+  const watchTime = data?.watchTime;
+  // Compute dynamic summary stats from modules
+  const modulesArray = course?.modules || [];
+  const completedCount = modulesArray.filter(m => m.isCompleted).length;
+  const totalModules = modulesArray.length;
+  const completedModulesCount = modulesArray.filter(m => m.isCompleted).length;
+  const quizModules = modulesArray.filter(m => m.quizAttempts > 0);
+  const quizPerformance = quizModules.length > 0
+    ? Math.round(quizModules.reduce((sum, m) => sum + m.avgQuizScore, 0) / quizModules.length)
+    : null;
+  // Use the fetched course’s slug for quiz requests
+  const courseSlug = course?.slug;
+
+  // const courseProgress = totalModules > 0
+  // ? Math.round((completedModulesCount / totalModules) * 100)
+  // : 0;
+
+  // Determine which module is the current one (first not completed)
+  const currentModuleIndex = course?.modules.findIndex(m => !m.isCompleted) ?? -1;
+
+  const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | null>(null);
+  const [selectedDocUrl, setSelectedDocUrl] = useState<string | null>(null);
+  const [selectedVideoIndex, setSelectedVideoIndex] = useState<number>(0);
+  const lastSentRef = useRef<number>(0);
+
+  // Media container ref for scrolling into view
+  const mediaRef = useRef<HTMLDivElement>(null);
+
+  // Quiz state and handlers
+  const [quizModuleIndex, setQuizModuleIndex] = useState<number | null>(null);
+  const [quizQuestions, setQuizQuestions] = useState<any[]>([]);
+
+  const handleTakeQuiz = async (moduleIndex: number) => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    const res = await fetch(`/api/student/quiz/${courseSlug}/${moduleIndex}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!res.ok) {
+      console.error("Failed to load quiz");
+      return;
+    }
+    const { questions } = await res.json();
+    setQuizQuestions(questions);
+    setQuizModuleIndex(moduleIndex);
+  };
+
+  const handleQuizSubmit = async (answers: number[]) => {
+    if (quizModuleIndex === null) return;
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    await fetch("/api/student/quiz-attempt", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        slug: courseSlug,
+        moduleIndex: quizModuleIndex,
+        answers,
+      }),
+    });
+    queryClient.invalidateQueries(['studentDashboard']);
+    setQuizModuleIndex(null);
+  };
+
+  const [expanded, setExpanded] = useState<boolean[]>([]);
+  useEffect(() => {
+    if (course?.modules) {
+      setExpanded(course.modules.map(() => true));
+    }
+  }, [course]);
+
+  useEffect(() => {
+    if ((selectedVideoUrl || selectedDocUrl) && mediaRef.current) {
+      mediaRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [selectedVideoUrl, selectedDocUrl]);
+
   
   if (isLoading) {
     return <CourseDetailSkeleton />;
@@ -52,8 +172,93 @@ export function CourseDetail({ slug }: CourseDetailProps) {
     );
   }
   
+  // Helper to open the next unwatched video (or first video) in a new tab
+  const openNextVideo = (videos: Array<{ url: string; watched?: boolean }>) => {
+    if (!videos || !videos.length) return;
+    // find the first unwatched video, or fallback to the first
+    const nextVideo = videos.find(v => !v.watched) ?? videos[0];
+    setSelectedVideoUrl(nextVideo.url);
+  };
+  
+  // Record watch time to backend (throttled)
+  const recordWatchTime = async (secondsDelta: number) => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    await fetch("/api/student/watch-time", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        slug,
+        moduleIndex: currentModuleIndex,
+        videoIndex: selectedVideoIndex,
+        duration: secondsDelta,
+      }),
+    });
+    // Refresh data for dynamic progress update
+    queryClient.invalidateQueries(['studentDashboard']);
+  };
+  const recordWatchTimeThrottled = throttle((playedSeconds: number) => {
+    const delta = playedSeconds - lastSentRef.current;
+    if (delta > 1) {
+      recordWatchTime(delta);
+      lastSentRef.current = playedSeconds;
+    }
+  }, 10000);
+
+  const handleDocPreview = async (docUrl: string) => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    // send original URL to backend
+    await fetch("/api/student/view-document", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        slug,
+        moduleIndex: currentModuleIndex,
+        docUrl,
+      }),
+    });
+    queryClient.invalidateQueries(['studentDashboard']);
+    // convert to embeddable URL for iframe
+    const embedUrl = toGooglePreviewUrl(docUrl);
+    setSelectedDocUrl(embedUrl);
+  };
+  
   return (
     <div className="p-4 md:p-6">
+      {selectedVideoUrl && (
+        <div ref={mediaRef} className="mb-6">
+          <ReactPlayer
+            url={selectedVideoUrl}
+            controls
+            width="100%"
+            height="480px"
+            onProgress={({ playedSeconds }) => {
+              recordWatchTimeThrottled(playedSeconds);
+            }}
+            onEnded={() => {
+              const finalDelta = lastSentRef.current ? lastSentRef.current : 0;
+              if (finalDelta > 0) recordWatchTime(finalDelta);
+            }}
+          />
+        </div>
+      )}
+      {selectedDocUrl && (
+        <div ref={mediaRef} className="mb-6">
+          <iframe
+            src={selectedDocUrl}
+            width="100%"
+            height="600px"
+            className="border"
+          />
+        </div>
+      )}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div>
           <Link href="/student/courses">
@@ -62,7 +267,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
               Back to Courses
             </Button>
           </Link>
-          <h1 className="text-2xl font-bold text-gray-800">{data.course.title}</h1>
+          <h1 className="text-2xl font-bold text-gray-800">{course?.title}</h1>
         </div>
       </div>
       
@@ -74,48 +279,60 @@ export function CourseDetail({ slug }: CourseDetailProps) {
         <CardContent className="p-5">
           <div className="flex flex-col md:flex-row items-start">
             <div className="w-full md:w-1/4 mb-4 md:mb-0 flex justify-center">
-              <ProgressRing value={data.progress} size={144} />
+              <ProgressRing value={course?.progress ?? 0} size={144} />
             </div>
             <div className="w-full md:w-3/4">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm font-medium text-gray-500">Modules Completed</p>
                   <p className="text-lg font-semibold text-gray-800">
-                    {data.completedModules} of {data.totalModules} modules
+                    {completedCount} of {totalModules} modules
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
-                    {data.progress < 100 
+                    {(course?.progress ?? 0) < 100 
                       ? "Keep going! You're making great progress."
                       : "Congratulations! You've completed all modules."}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-500">Total Watch Time</p>
-                  <p className="text-lg font-semibold text-gray-800">{data.totalWatchTime}</p>
+                  <p className="text-lg font-semibold text-gray-800">{watchTime?.total}</p>
                   <p className="text-xs text-gray-500 mt-1">
-                    You've watched {Math.round(data.progress)}% of course content.
+                    You've watched {(course?.progress ?? 0) ? Math.round(course.progress) : 0}% of course content.
                   </p>
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-500">Quiz Performance</p>
-                  <p className="text-lg font-semibold text-gray-800">
-                    {data.modules.some(m => m.avgQuizScore) 
-                      ? `${Math.round(data.modules.reduce((sum, m) => sum + (m.avgQuizScore || 0), 0) / 
-                          data.modules.filter(m => m.avgQuizScore).length)}% average score`
-                      : "No quizzes attempted yet"}
-                  </p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Based on {data.modules.filter(m => m.quizAttempts > 0).length} completed quizzes.
-                  </p>
+                  {data.quizPerformance !== null ? (
+                    <>
+                      <p className="text-lg font-semibold text-gray-800">
+                        {data.quizPerformance}% average score
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Your Best Score from Each attempt is used to calculate this average.
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Based on {completedCount} completed {completedCount > 1 ? 'quizzes' : 'quiz'}.
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-lg font-semibold text-gray-800">
+                      No quizzes attempted yet
+                    </p>
+                  )}
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-500">Course Valid Until</p>
                   <p className="text-lg font-semibold text-gray-800">
-                    {formatDate(data.enrollment.validUntil)}
+                    {formatDate(course?.enrollment.validUntil)}
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
-                    You have access for {Math.ceil((new Date(data.enrollment.validUntil).getTime() - 
-                    new Date().getTime()) / (1000 * 60 * 60 * 24 * 30))} more months.
+                    {course?.enrollment?.validUntil
+                      ? `You have access for ${Math.ceil(
+                          (new Date(course.enrollment.validUntil).getTime() - new Date().getTime()) /
+                          (1000 * 60 * 60 * 24 * 30)
+                        )} more months.`
+                      : ""}
                   </p>
                 </div>
               </div>
@@ -130,7 +347,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
           <h2 className="font-inter text-lg font-medium text-gray-800">Course Modules</h2>
         </div>
         <div className="divide-y divide-gray-200">
-          {data.modules.map((module, index) => (
+          {course?.modules.map((module, index) => (
             <div key={index} className={`p-5 ${module.isLocked ? 'opacity-60' : ''} ${index === 2 ? 'bg-primary-50' : ''}`}>
               <div className="flex items-start">
                 <div className="flex-shrink-0 mt-1">
@@ -151,60 +368,109 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                   </span>
                 </div>
                 <div className="ml-4 flex-1">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between">
-                    <div>
-                      <h3 className="text-lg font-medium text-gray-800">{module.title}</h3>
-                      <p className="text-gray-500 text-sm mt-1">
-                        {module.isCompleted 
-                          ? `Completed on ${formatDate(module.completedAt)}`
-                          : module.isLocked 
-                            ? `Locked - Complete previous module to unlock`
-                            : `In progress - ${Math.round((module.videos.filter(v => v.watched).length / module.videos.length) * 100)}% complete`}
-                      </p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          setExpanded(prev => {
+                            const next = [...prev];
+                            next[index] = !next[index];
+                            return next;
+                          });
+                        }}
+                      >
+                        {expanded[index] ? <ChevronDown /> : <ChevronRight />}
+                      </Button>
+                      <h3 className="text-lg font-medium text-gray-800 ml-2">{module.title}</h3>
                     </div>
                     <div className="mt-2 md:mt-0">
-                      {module.isCompleted ? (
+                      {module.isCompleted && (
                         <span className="inline-flex items-center px-2 py-1 text-xs font-medium rounded bg-green-100 text-green-800">
                           <Check className="h-3 w-3 mr-1" />
                           Completed
                         </span>
-                      ) : !module.isLocked ? (
-                        <Button>Continue</Button>
-                      ) : null}
+                      )}
                     </div>
                   </div>
+                  <p className="text-gray-500 text-sm mt-1">
+                    {module.isCompleted
+                      ? `Completed on ${formatDate(module.completedAt)}`
+                      : module.isLocked
+                        ? `Locked - Complete previous module to unlock`
+                        : `In progress - ${module.percentComplete}% complete`}
+                  </p>
                   
-                  {!module.isLocked && (
-                    <>
-                      {!module.isCompleted && (
-                        <div className="mt-2">
-                          <div className="w-full h-2 bg-gray-200 rounded-full">
-                            <div 
-                              className="h-full bg-primary rounded-full" 
-                              style={{ width: `${Math.round((module.videos.filter(v => v.watched).length / module.videos.length) * 100)}%` }}
-                            />
+                  {expanded[index] && (
+                    module.isLocked
+                      ? (
+                        <p className="mt-4 text-gray-500 italic">
+                          Locked - Complete previous module to unlock
+                        </p>
+                      ) : (
+                        <>
+                          {/* Progress bar */}
+                          <div className="mt-2">
+                            <div className="w-full h-2 bg-gray-200 rounded-full">
+                              <div
+                                className="h-full bg-primary rounded-full"
+                                style={{ width: `${module.percentComplete}%` }}
+                              />
+                            </div>
                           </div>
-                        </div>
-                      )}
-                      <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-2">
-                        <div className="flex items-center text-sm">
-                          <Video className="text-gray-400 mr-1 h-4 w-4" />
-                          <span>{module.videos.length} videos</span>
-                        </div>
-                        <div className="flex items-center text-sm">
-                          <FileText className="text-gray-400 mr-1 h-4 w-4" />
-                          <span>{module.documents.length} documents</span>
-                        </div>
-                        <div className="flex items-center text-sm">
-                          <BookOpen className="text-gray-400 mr-1 h-4 w-4" />
-                          <span>
-                            {module.quizAttempts > 0 
-                              ? `Quiz Score: ${module.bestQuizScore}%` 
-                              : "Quiz required to complete"}
-                          </span>
-                        </div>
-                      </div>
-                    </>
+                          {/* Resources tiles */}
+                          <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            {/* Videos Section */}
+                            <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg">
+                              <h5 className="text-lg font-semibold text-blue-800 mb-3">Videos</h5>
+                              <div className="space-y-2">
+                                {module.videos.map((video, vidIdx) => (
+                                  <div key={vidIdx} className="flex justify-between items-center bg-white p-3 rounded-md shadow-sm">
+                                    <span className="text-gray-800 truncate">{video.title ?? `Video ${vidIdx + 1}`}</span>
+                                    <Button
+                                      onClick={() => {
+                                        setSelectedVideoUrl(video.url);
+                                        setSelectedVideoIndex(vidIdx);
+                                        lastSentRef.current = 0;
+                                      }}
+                                    >
+                                      Continue
+                                    </Button>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                            {/* Documents Section */}
+                            <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg">
+                              <h5 className="text-lg font-semibold text-green-800 mb-3">Documents</h5>
+                              <div className="space-y-2">
+                                {module.documents.map((doc, docIdx) => (
+                                  <div key={docIdx} className="flex justify-between items-center bg-white p-3 rounded-md shadow-sm">
+                                    <span className="text-gray-800 truncate">{doc.title ?? `Document ${docIdx + 1}`}</span>
+                                    <Button onClick={() => handleDocPreview(doc.url)}>
+                                      Preview
+                                    </Button>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                          {/* Quiz */}
+                          <div>
+                            <h4 className="text-md font-medium text-gray-700 mb-2">Quiz</h4>
+                            {module.quizAttempts > 0 ? (
+                              <p>Best Score: {module.avgQuizScore}%</p>
+                            ) : module.percentComplete >= 67 ? (
+                              <Button onClick={() => handleTakeQuiz(index)}>
+                                Take Quiz
+                              </Button>
+                            ) : (
+                              <p>Complete all videos and documents to unlock quiz</p>
+                            )}
+                          </div>
+                        </>
+                      )
                   )}
                 </div>
               </div>
@@ -212,6 +478,29 @@ export function CourseDetail({ slug }: CourseDetailProps) {
           ))}
         </div>
       </Card>
+      {/* Quiz Modal/Form */}
+      {quizModuleIndex !== null && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+          onClick={() => setQuizModuleIndex(null)}
+        >
+          <div
+            className="bg-white rounded-lg p-6 max-w-2xl w-full relative"
+            onClick={e => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setQuizModuleIndex(null)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+            >
+              &#x2715;
+            </button>
+            <QuizForm
+              questions={quizQuestions}
+              onSubmit={handleQuizSubmit}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

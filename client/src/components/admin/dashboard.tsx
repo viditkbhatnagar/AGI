@@ -16,7 +16,7 @@ import { formatDateTime } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
 export function AdminDashboard() {
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery<{ coursesBreakdown: { standalone: number; withMba: number }, totalEnrollments: number, totalStudents: number, newStudentsThisMonth: number, totalCourses: number, upcomingLiveClasses: number, nextLiveClass: { startTime: string } }>({
     queryKey: ['/api/admin/dashboard']
   });
   
@@ -39,21 +39,21 @@ export function AdminDashboard() {
   
   // Transform course breakdown data for chart
   const courseChartData = [
-    { name: "Standalone", value: data.coursesBreakdown.standalone },
-    { name: "With MBA", value: data.coursesBreakdown.withMba },
+    { name: "Standalone", value: data?.coursesBreakdown?.standalone ?? 0 },
+    { name: "With MBA", value: data?.coursesBreakdown?.withMba ?? 0 },
   ];
   
   const COLORS = ['#3f51b5', '#ff5722', '#4caf50', '#9c27b0'];
   
   // Create enrollment trend data
-  const enrollmentTrendData = [
-    { name: 'Jan', enrollments: 4 },
-    { name: 'Feb', enrollments: 7 },
-    { name: 'Mar', enrollments: 5 },
-    { name: 'Apr', enrollments: 8 },
-    { name: 'May', enrollments: data.totalEnrollments > 10 ? data.totalEnrollments - 10 : 10 },
-    { name: 'Jun', enrollments: data.totalEnrollments },
-  ];
+  // const enrollmentTrendData = [
+  //   { name: 'Jan', enrollments: 4 },
+  //   { name: 'Feb', enrollments: 7 },
+  //   { name: 'Mar', enrollments: 5 },
+  //   { name: 'Apr', enrollments: 8 },
+  //   { name: 'May', enrollments: data.totalEnrollments > 10 ? data.totalEnrollments - 10 : 10 },
+  //   { name: 'Jun', enrollments: data.totalEnrollments },
+  // ];
   
   return (
     <div className="p-4 md:p-6">
@@ -86,10 +86,10 @@ export function AdminDashboard() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-500">Total Students</p>
-                <p className="text-xl font-semibold text-gray-800">{data.totalStudents}</p>
+                <p className="text-xl font-semibold text-gray-800">{data?.totalStudents}</p>
                 <p className="text-xs text-green-600 mt-1">
                   <span className="inline-block align-middle border-t-0 border-l-[4px] border-r-[4px] border-b-[4px] border-solid border-transparent border-b-green-600 mt-[-2px] mr-[2px]"></span>
-                  {data.newStudentsThisMonth} new this month
+                  {data?.newStudentsThisMonth} new this month
                 </p>
               </div>
             </div>
@@ -105,9 +105,9 @@ export function AdminDashboard() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-500">Active Courses</p>
-                <p className="text-xl font-semibold text-gray-800">{data.totalCourses}</p>
+                <p className="text-xl font-semibold text-gray-800">{data?.totalCourses}</p>
                 <p className="text-xs text-gray-500 mt-1">
-                  {data.coursesBreakdown.standalone} standalone, {data.coursesBreakdown.withMba} with MBA
+                  {data?.coursesBreakdown?.standalone} standalone, {data?.coursesBreakdown?.withMba} with MBA
                 </p>
               </div>
             </div>
@@ -123,7 +123,7 @@ export function AdminDashboard() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-500">Active Enrollments</p>
-                <p className="text-xl font-semibold text-gray-800">{data.totalEnrollments}</p>
+                <p className="text-xl font-semibold text-gray-800">{data?.totalEnrollments}</p>
                 <p className="text-xs text-gray-500 mt-1">95% completion rate</p>
               </div>
             </div>
@@ -139,8 +139,8 @@ export function AdminDashboard() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-500">Upcoming Live Classes</p>
-                <p className="text-xl font-semibold text-gray-800">{data.upcomingLiveClasses}</p>
-                {data.nextLiveClass ? (
+                <p className="text-xl font-semibold text-gray-800">{data?.upcomingLiveClasses ?? 0}</p>
+                {data?.nextLiveClass ? (
                   <p className="text-xs text-gray-500 mt-1">
                     Next: {formatDateTime(data.nextLiveClass.startTime)}
                   </p>
@@ -154,9 +154,9 @@ export function AdminDashboard() {
       </div>
       
       {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      
         {/* Enrollment Trend */}
-        <Card>
+        {/* <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-medium text-gray-800">Enrollment Trend</h3>
@@ -177,8 +177,8 @@ export function AdminDashboard() {
               </ResponsiveContainer>
             </div>
           </CardContent>
-        </Card>
-        
+        </Card> */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Course Distribution */}
         <Card>
           <CardContent className="pt-6">
@@ -214,44 +214,7 @@ export function AdminDashboard() {
             </div>
           </CardContent>
         </Card>
-      </div>
-      
-      {/* Recent Activity and Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2">
-          <div className="px-5 py-4 border-b border-gray-200 flex justify-between items-center">
-            <h2 className="font-inter text-lg font-medium text-gray-800">Recent Activity</h2>
-            <Link href="/admin/students">
-              <Button variant="link" size="sm">View All</Button>
-            </Link>
-          </div>
-          <CardContent className="p-0">
-            <div className="divide-y divide-gray-200">
-              {[
-                { name: "Alice Johnson", action: "enrolled in", course: "Certified Human Resource Manager", time: "2 hours ago" },
-                { name: "Bob Smith", action: "completed module 1 of", course: "MBA + Certified HR Manager", time: "Yesterday" },
-                { name: "Carol Davis", action: "attempted quiz for", course: "Certified Project Manager", time: "2 days ago" },
-                { name: "Dave Wilson", action: "registered for", course: "Supply Chain Professional", time: "3 days ago" },
-              ].map((activity, index) => (
-                <div key={index} className="py-3 px-5 hover:bg-gray-50">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0 h-10 w-10 bg-primary-100 rounded-full flex items-center justify-center">
-                      <span className="font-medium text-primary-700">{activity.name.split(" ").map(n => n[0]).join("")}</span>
-                    </div>
-                    <div className="ml-3">
-                      <p className="text-sm text-gray-800">
-                        <span className="font-medium">{activity.name}</span> {activity.action}{" "}
-                        <span className="font-medium">{activity.course}</span>
-                      </p>
-                      <p className="text-xs text-gray-500">{activity.time}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-        
+
         <Card>
           <div className="px-5 py-4 border-b border-gray-200">
             <h2 className="font-inter text-lg font-medium text-gray-800">Quick Actions</h2>
@@ -301,6 +264,45 @@ export function AdminDashboard() {
             </div>
           </CardContent>
         </Card>
+      </div>
+      
+      {/* Recent Activity and Quick Actions */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* <Card className="lg:col-span-2">
+          <div className="px-5 py-4 border-b border-gray-200 flex justify-between items-center">
+            <h2 className="font-inter text-lg font-medium text-gray-800">Recent Activity</h2>
+            <Link href="/admin/students">
+              <Button variant="link" size="sm">View All</Button>
+            </Link>
+          </div>
+          <CardContent className="p-0">
+            <div className="divide-y divide-gray-200">
+              {[
+                { name: "Alice Johnson", action: "enrolled in", course: "Certified Human Resource Manager", time: "2 hours ago" },
+                { name: "Bob Smith", action: "completed module 1 of", course: "MBA + Certified HR Manager", time: "Yesterday" },
+                { name: "Carol Davis", action: "attempted quiz for", course: "Certified Project Manager", time: "2 days ago" },
+                { name: "Dave Wilson", action: "registered for", course: "Supply Chain Professional", time: "3 days ago" },
+              ].map((activity, index) => (
+                <div key={index} className="py-3 px-5 hover:bg-gray-50">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 h-10 w-10 bg-primary-100 rounded-full flex items-center justify-center">
+                      <span className="font-medium text-primary-700">{activity.name.split(" ").map(n => n[0]).join("")}</span>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-gray-800">
+                        <span className="font-medium">{activity.name}</span> {activity.action}{" "}
+                        <span className="font-medium">{activity.course}</span>
+                      </p>
+                      <p className="text-xs text-gray-500">{activity.time}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card> */}
+        
+        
       </div>
     </div>
   );

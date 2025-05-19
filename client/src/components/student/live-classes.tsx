@@ -39,7 +39,7 @@ export function LiveClasses() {
         <CardContent className="p-6">
           {data?.length > 0 ? (
             <div className="space-y-4">
-              {data.map((liveClass) => (
+              {(data as any[]).map((liveClass: any) => (
                 <div key={liveClass._id} className="border border-gray-200 rounded-lg p-4">
                   <div className="flex flex-col md:flex-row md:items-center justify-between">
                     <div>

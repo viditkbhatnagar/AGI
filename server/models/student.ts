@@ -7,6 +7,18 @@ interface IWatchTime {
   duration: number; // in seconds
 }
 
+interface IDocView {
+  date: Date;
+  moduleIndex: number;
+  docUrl: string;
+}
+
+interface IQuizAttempt {
+  moduleIndex: number;
+  score: number;
+  date: Date;
+}
+
 interface INotifySetting {
   email: boolean;
   sms: boolean;
@@ -36,6 +48,8 @@ export interface IStudent {
     certificateReady: INotifySetting;
   };
   watchTime: IWatchTime[];
+  docViews: IDocView[];
+  quizAttempts: IQuizAttempt[];
   enrollment: mongoose.Types.ObjectId;
 }
 
@@ -91,12 +105,31 @@ const StudentSchema = new Schema<IStudentDocument>({
       sms: { type: Boolean, default: true }
     }
   },
-  watchTime: [{
-    date: { type: Date, default: Date.now },
-    moduleIndex: { type: Number, required: true },
-    videoIndex: { type: Number, required: true },
-    duration: { type: Number, required: true }
-  }],
+  watchTime: {
+    type: [{
+      date: { type: Date, default: Date.now },
+      moduleIndex: { type: Number, required: true },
+      videoIndex: { type: Number, required: true },
+      duration: { type: Number, required: true }
+    }],
+    default: []
+  },
+  docViews: {
+    type: [{
+      date: { type: Date, default: Date.now },
+      moduleIndex: { type: Number, required: true },
+      docUrl: { type: String, required: true }
+    }],
+    default: []
+  },
+  quizAttempts: {
+    type: [{
+      moduleIndex: { type: Number, required: true },
+      score: { type: Number, required: true },
+      date: { type: Date, default: Date.now }
+    }],
+    default: []
+  },
   enrollment: {
     type: Schema.Types.ObjectId,
     ref: 'Enrollment'

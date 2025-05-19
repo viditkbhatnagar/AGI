@@ -9,7 +9,7 @@ export default function CourseDetailPage() {
   return (
     <DashboardLayout>
       <Helmet>
-        <title>Course Details | AGI.online</title>
+        <title>Course Details | AGI</title>
         <meta name="description" content="View detailed information about your course, modules, and progress." />
       </Helmet>
       <CourseDetail slug={slug || ''} />

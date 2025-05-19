@@ -42,9 +42,10 @@ export function Sidebar({ className, isMobile, onClose }: SidebarProps) {
   };
   
   return (
-    <div className={cn("flex flex-col h-full bg-sidebar text-sidebar-foreground border-r border-sidebar-border", className)}>
-      <div className="flex items-center justify-center h-16 border-b border-sidebar-border">
-        <h1 className="font-inter font-bold text-2xl">AGI.online</h1>
+    <div className={cn("flex flex-col h-full bg-gray-950 text-white border-r border-gray-800", className)}>
+      <div className="flex items-center justify-center h-16">
+        <h1 className="font-inter font-bold text-3xl">AGI</h1>
+        <h1 className="font-inter font-bold text-3xl"></h1>
       </div>
       
       <ScrollArea className="flex-1 py-2">
@@ -77,7 +78,7 @@ export function Sidebar({ className, isMobile, onClose }: SidebarProps) {
             <NavItem 
               href="/admin/enrollments" 
               icon={<GraduationCap className="h-4 w-4" />} 
-              label="Enrollments" 
+              label="Progress" 
               isActive={isActive('/admin/enrollments')} 
               onClick={handleLinkClick}
             />

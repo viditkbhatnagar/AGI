@@ -1,19 +1,28 @@
+import mongoose from 'mongoose';
 import { Request, Response } from 'express';
 import { LiveClass } from '../models/liveclass';
 import { Course } from '../models/course';
 import { Student } from '../models/student';
 import { Enrollment } from '../models/enrollment';
 
+
+
 // Create a new live class
 export const createLiveClass = async (req: Request, res: Response) => {
   try {
-    const { courseSlug, title, description, meetLink, startTime, endTime } = req.body;
+    const { courseSlug, title, description, meetLink, startTime, endTime, studentIds } = req.body;
     
     // Check if course exists
     const course = await Course.findOne({ slug: courseSlug });
     if (!course) {
       return res.status(404).json({ message: 'Course not found' });
     }
+    
+    // Validate and convert studentIds to ObjectId[]
+    if (!Array.isArray(studentIds) || studentIds.length === 0) {
+      return res.status(400).json({ message: 'studentIds must be a non-empty array' });
+    }
+    const studentObjectIds = studentIds.map((id: string) => new mongoose.Types.ObjectId(id));
     
     // Create new live class
     const newLiveClass = new LiveClass({
@@ -23,7 +32,8 @@ export const createLiveClass = async (req: Request, res: Response) => {
       meetLink,
       startTime: new Date(startTime),
       endTime: new Date(endTime),
-      status: 'scheduled'
+      status: 'scheduled',
+      studentIds: studentObjectIds
     });
     
     await newLiveClass.save();
@@ -56,12 +66,18 @@ export const getAllLiveClasses = async (req: Request, res: Response) => {
 // Get upcoming live classes
 export const getUpcomingLiveClasses = async (req: Request, res: Response) => {
   try {
-    const now = new Date();
-    
+    if (!req.user) {
+      return res.status(401).json({ message: 'Not authenticated' });
+    }
+    const student = await Student.findOne({ userId: req.user.id });
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
     const liveClasses = await LiveClass.find({
-      startTime: { $gte: now },
-      status: 'scheduled'
-    }).sort({ startTime: 1 });
+      studentIds: student._id,
+      status: 'scheduled',
+    }).sort({ startTime: -1 });
     
     res.status(200).json(liveClasses);
   } catch (error) {
@@ -98,17 +114,11 @@ export const getStudentLiveClasses = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Student not found' });
     }
     
-    // Get student's enrollments
-    const enrollments = await Enrollment.find({ studentId: student._id });
-    const courseSlugList = enrollments.map(e => e.courseSlug);
-    
-    // Get live classes for enrolled courses
-    const now = new Date();
+    // Fetch all scheduled classes (past and future) for this student, newest first
     const liveClasses = await LiveClass.find({
-      courseSlug: { $in: courseSlugList },
-      startTime: { $gte: now },
+      studentIds: student._id,
       status: 'scheduled'
-    }).sort({ startTime: 1 });
+    }).sort({ startTime: -1 });
     
     // Add course details to each live class
     const liveClassesWithCourses = await Promise.all(

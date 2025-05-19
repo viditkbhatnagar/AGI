@@ -8,6 +8,7 @@ export interface ILiveClass {
   startTime: Date;
   endTime: Date;
   status: 'scheduled' | 'completed' | 'cancelled';
+  studentIds?: string;
 }
 
 export interface ILiveClassDocument extends ILiveClass, Document {}
@@ -43,7 +44,13 @@ const LiveClassSchema = new Schema<ILiveClassDocument>({
     enum: ['scheduled', 'completed', 'cancelled'],
     default: 'scheduled',
     required: true 
-  }
+  },
+  // Add this field to track which students are invited
+  studentIds: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Student',
+    required: true
+  }]
 }, { timestamps: true });
 
 export const LiveClass = mongoose.model<ILiveClassDocument>('LiveClass', LiveClassSchema);

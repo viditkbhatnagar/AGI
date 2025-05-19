@@ -23,6 +23,8 @@ import AdminStudents from "@/pages/admin/students";
 import AdminCourses from "@/pages/admin/courses";
 import AdminEnrollments from "@/pages/admin/enrollments";
 import AdminLiveClasses from "@/pages/admin/live-classes";
+import AddStudent from "@/pages/admin/AddStudent";
+import ScheduleLiveClass from "@/pages/admin/ScheduleLiveClass";
 
 function Router() {
   return (
@@ -40,11 +42,13 @@ function Router() {
       <Route path="/student/debug" component={StudentDebug} />
       
       {/* Admin Routes */}
-      <Route path="/admin" component={AdminDashboard} />
+      <Route path="/admin/students/new" component={AddStudent} />
+      <Route path="/admin/live-classes/new" component={ScheduleLiveClass} />
       <Route path="/admin/students" component={AdminStudents} />
       <Route path="/admin/courses" component={AdminCourses} />
       <Route path="/admin/enrollments" component={AdminEnrollments} />
       <Route path="/admin/live-classes" component={AdminLiveClasses} />
+      <Route path="/admin" component={AdminDashboard} />
       
       {/* Default Route - Redirect based on user role */}
       <Route path="/">

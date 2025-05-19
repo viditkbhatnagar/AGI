@@ -7,7 +7,8 @@ import { BookOpen, GraduationCap, Play } from "lucide-react";
 import { formatDate, formatTimeRemaining } from "@/lib/utils";
 import { ProgressRing } from "@/components/ui/progress-ring";
 import { useAuth } from "@/lib/auth-provider";
-import { useEffect, useState } from "react";
+//import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 // Types based on API response from server
 interface CourseModule {
@@ -34,6 +35,7 @@ interface CourseData {
   id: string;
   slug: string;
   title: string;
+  description?: string;
   type: 'standalone' | 'with-mba';
   progress: number;
   modules: CourseModule[];
@@ -42,42 +44,23 @@ interface CourseData {
 
 export function StudentCourses() {
   const { student } = useAuth();
-  const [coursesData, setCoursesData] = useState<CourseData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-  
-  // Fetch enrolled courses from API
-  useEffect(() => {
-    const fetchCourses = async () => {
-      if (!student?.id) return;
-      
-      setIsLoading(true);
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch('/api/student/courses', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        
-        if (!response.ok) {
-          throw new Error(`Error ${response.status}: ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        console.log('Courses data:', data);
-        setCoursesData(Array.isArray(data) ? data : []);
-        setError(null);
-      } catch (err) {
-        console.error('Error fetching courses:', err);
-        setError(err instanceof Error ? err : new Error('Failed to fetch courses'));
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    fetchCourses();
-  }, [student?.id]);
+  const {
+        data: coursesData = [],
+        isLoading,
+        error
+      } = useQuery<CourseData[], Error>({
+        queryKey: ["/api/student/courses"],
+        queryFn: async () => {
+          const token = localStorage.getItem("token");
+          if (!token) throw new Error("Not authenticated");
+          const res = await fetch("/api/student/courses", {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+         if (!res.ok) throw new Error(`Error ${res.status}: ${res.statusText}`);
+          return res.json();
+       }
+      });
+
   
   // Display loading skeleton
   if (isLoading) {
@@ -122,11 +105,12 @@ export function StudentCourses() {
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {coursesData.map((course) => (
-          <Card key={course.id} className="overflow-hidden dashboard-card">
+          <Card key={course.id} className="overflow-hidden dashboard-card bg-white hover:bg-primary-50 border border-transparent hover:border-primary transition">
+            <div className="h-1 bg-gradient-to-r from-primary to-secondary" />
             <div className="p-6">
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex-shrink-0">
-                  <div className="h-32 w-32 bg-primary-100 rounded-lg flex items-center justify-center">
+                  <div className="h-32 w-32 bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg flex items-center justify-center">
                     {course.type === 'with-mba' ? (
                       <GraduationCap className="h-16 w-16 text-primary" />
                     ) : (
@@ -150,13 +134,13 @@ export function StudentCourses() {
                       </Badge>
                     </div>
                     
-                    <div className="hidden sm:block">
+                    {/* <div className="hidden sm:block">
                       <ProgressRing
-                        value={course.progress || 0}
+                        value={course?.progress ?? 0}
                         size={80}
                         strokeWidth={8}
                       />
-                    </div>
+                    </div> */}
                   </div>
                   
                   <div className="mt-4">
@@ -193,7 +177,14 @@ export function StudentCourses() {
                         Continue Learning
                       </Button>
                     </Link>
+                    
+                    {course.description && (
+  <p className="mt-2 text-sm text-gray-600">
+    {course.description}
+  </p>)}
+                    
                   </div>
+                  
                 </div>
               </div>
             </div>

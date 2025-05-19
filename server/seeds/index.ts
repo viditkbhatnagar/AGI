@@ -12,114 +12,10 @@ import { Student } from '../models/student';
 import { Course } from '../models/course';
 import { Enrollment } from '../models/enrollment';
 import { LiveClass } from '../models/liveclass';
+import Quiz from '../models/quiz';
 
 // Course data
 const coursesData = {
-  "certified-investment-associate": {
-    title: "Certified Investment Associate",
-    slug: "certified-investment-associate",
-    type: "standalone",
-    description: "This certification prepares you for roles in financial services with a focus on investment products, regulations, and client management",
-    modules: [
-      {
-        title: "Financial Services Overview",
-        videos: [
-          {
-            title: "U.S. Financial Services Overview & Client Types",
-            duration: 45,
-            url: "https://www.youtube.com/watch?v=1tE9sUcTuJw",
-          },
-          {
-            title: "Fundamentals of Investment Products",
-            duration: 50,
-            url: "https://www.youtube.com/watch?v=gn5zSwzTSL8",
-          }
-        ],
-        documents: [
-          {
-            title: "Unit Specifications Certified Investment Management Associate",
-            url: "https://docs.google.com/document/d/1lJP4dTHU91gCPRaAW1N5Rdiq-ptpVBIT/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
-          },
-          {
-            title: "Investment Management Overview",
-            url: "https://docs.google.com/presentation/d/1GXyfWieUR9bsceClGxDDXcfUUM5SpQfw/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
-          }
-        ],
-        quizId: "cia-module-1-quiz",
-      },
-      {
-        title: "Investment Funds and Retirement",
-        videos: [
-          {
-            title: "Mutual Fund and Retirement Plan Structures",
-            duration: 55,
-            url: "https://www.youtube.com/watch?v=jkUABXJkZmg",
-          },
-          {
-            title: "Basics of Insurance and Annuities",
-            duration: 40,
-            url: "https://www.youtube.com/watch?v=kHOxvNpA4Go",
-          }
-        ],
-        documents: [
-          {
-            title: "Risk Measurement and Management",
-            url: "https://docs.google.com/presentation/d/1ZYUr7EJ3CA6-2zLKHUtQvnhWo9RaSFM5/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
-          },
-          {
-            title: "Portfolio Construction and Management",
-            url: "https://docs.google.com/presentation/d/11UZiR71wXazOaKj6hy2F18LzIAwvypOm/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
-          }
-        ],
-        quizId: "cia-module-2-quiz",
-      },
-      {
-        title: "Brokerage and Compliance",
-        videos: [
-          {
-            title: "Brokerage Operations & Trade Support",
-            duration: 45,
-            url: "https://www.youtube.com/watch?v=nZL4nxRkKk8",
-          },
-          {
-            title: "Compliance, KYC & FINRA Rules",
-            duration: 50,
-            url: "https://www.youtube.com/watch?v=EvXz2cdu3Fo",
-          },
-          {
-            title: "Ethics, Suitability, and Fiduciary Standards",
-            duration: 60,
-            url: "https://www.youtube.com/watch?v=YZK3ySGL7Gk",
-          }
-        ],
-        documents: [
-          {
-            title: "Investment Policy",
-            url: "https://docs.google.com/presentation/d/1-0Nc9oMlSBEZv5FIkhtxycicg4GPoRCT/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
-          },
-          {
-            title: "Ethics in Investment Management",
-            url: "https://docs.google.com/presentation/d/1gAPX8NemVgQvMN8xw4aWH_BiTYxndghi/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
-          },
-          {
-            title: "Capital Markets",
-            url: "https://docs.google.com/presentation/d/1zKWRf6iWM6kvduiAV379U0c3lQ63XAuu/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
-          },
-          {
-            title: "Alternative Investments",
-            url: "https://docs.google.com/presentation/d/1P7y0idi-xU16xbuh7wI9wwBwMWdTJQAe/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
-          }
-        ],
-        quizId: "cia-module-3-quiz",
-      }
-    ],
-    liveClassConfig: {
-      enabled: true,
-      frequency: "weekly",
-      dayOfWeek: "Wednesday",
-      durationMin: 60,
-    }
-  },
   "certified-supply-chain-professional": {
     title: "Certified Supply Chain Professional",
     slug: "certified-supply-chain-professional",
@@ -162,7 +58,7 @@ const coursesData = {
           {
             title: "Production and Operations Management",
             duration: 55,
-            url: "https://www.youtube.com/watch?v=operationsmanagement101",
+            url: "https://www.youtube.com/watch?v=0ZDrpf5aMiw",
           },
           {
             title: "Inventory Management",
@@ -268,61 +164,108 @@ const coursesData = {
       durationMin: 90,
     }
   },
-  "intro-to-ai": {
-    title: "Introduction to Artificial Intelligence",
-    slug: "intro-to-ai",
+  "certified-investment-associate": {
+    title: "Certified Investment Associate",
+    slug: "certified-investment-associate",
     type: "standalone",
-    description: "Learn the fundamentals of AI, machine learning, and their applications in various industries",
+    description: "This certification prepares you for roles in financial services with a focus on investment products, regulations, and client management",
     modules: [
       {
-        title: "Getting Started with AI",
+        title: "Financial Services Overview",
         videos: [
           {
-            title: "What is Artificial Intelligence?",
-            duration: 30,
-            url: "https://example.com/video1",
+            title: "U.S. Financial Services Overview & Client Types",
+            duration: 45,
+            url: "https://www.youtube.com/watch?v=1tE9sUcTuJw",
           },
           {
-            title: "History of AI",
-            duration: 25,
-            url: "https://example.com/video2",
+            title: "Fundamentals of Investment Products",
+            duration: 50,
+            url: "https://www.youtube.com/watch?v=gn5zSwzTSL8",
           }
         ],
         documents: [
           {
-            title: "AI Basics",
-            url: "https://example.com/doc1",
+            title: "Unit Specifications Certified Investment Management Associate",
+            url: "https://docs.google.com/document/d/1lJP4dTHU91gCPRaAW1N5Rdiq-ptpVBIT/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
+          },
+          {
+            title: "Investment Management Overview",
+            url: "https://docs.google.com/presentation/d/1GXyfWieUR9bsceClGxDDXcfUUM5SpQfw/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
           }
         ],
-        quizId: "ai-module-1-quiz",
+        quizId: "cia-module-1-quiz",
       },
       {
-        title: "Machine Learning Fundamentals",
+        title: "Investment Funds and Retirement",
         videos: [
           {
-            title: "Introduction to Machine Learning",
-            duration: 35,
-            url: "https://example.com/video3",
+            title: "Mutual Fund and Retirement Plan Structures",
+            duration: 55,
+            url: "https://www.youtube.com/watch?v=jkUABXJkZmg",
           },
           {
-            title: "Supervised vs Unsupervised Learning",
+            title: "Basics of Insurance and Annuities",
             duration: 40,
-            url: "https://example.com/video4",
+            url: "https://www.youtube.com/watch?v=kHOxvNpA4Go",
           }
         ],
         documents: [
           {
-            title: "ML Algorithms",
-            url: "https://example.com/doc2",
+            title: "Risk Measurement and Management",
+            url: "https://docs.google.com/presentation/d/1ZYUr7EJ3CA6-2zLKHUtQvnhWo9RaSFM5/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
+          },
+          {
+            title: "Portfolio Construction and Management",
+            url: "https://docs.google.com/presentation/d/11UZiR71wXazOaKj6hy2F18LzIAwvypOm/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
           }
         ],
-        quizId: "ai-module-2-quiz",
+        quizId: "cia-module-2-quiz",
+      },
+      {
+        title: "Brokerage and Compliance",
+        videos: [
+          {
+            title: "Brokerage Operations & Trade Support",
+            duration: 45,
+            url: "https://www.youtube.com/watch?v=nZL4nxRkKk8",
+          },
+          {
+            title: "Compliance, KYC & FINRA Rules",
+            duration: 50,
+            url: "https://www.youtube.com/watch?v=EvXz2cdu3Fo",
+          },
+          {
+            title: "Ethics, Suitability, and Fiduciary Standards",
+            duration: 60,
+            url: "https://www.youtube.com/watch?v=YZK3ySGL7Gk",
+          }
+        ],
+        documents: [
+          {
+            title: "Investment Policy",
+            url: "https://docs.google.com/presentation/d/1-0Nc9oMlSBEZv5FIkhtxycicg4GPoRCT/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
+          },
+          {
+            title: "Ethics in Investment Management",
+            url: "https://docs.google.com/presentation/d/1gAPX8NemVgQvMN8xw4aWH_BiTYxndghi/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
+          },
+          {
+            title: "Capital Markets",
+            url: "https://docs.google.com/presentation/d/1zKWRf6iWM6kvduiAV379U0c3lQ63XAuu/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
+          },
+          {
+            title: "Alternative Investments",
+            url: "https://docs.google.com/presentation/d/1P7y0idi-xU16xbuh7wI9wwBwMWdTJQAe/edit?usp=share_link&ouid=108184073387637142973&rtpof=true&sd=true"
+          }
+        ],
+        quizId: "cia-module-3-quiz",
       }
     ],
     liveClassConfig: {
       enabled: true,
       frequency: "weekly",
-      dayOfWeek: "Friday",
+      dayOfWeek: "Wednesday",
       durationMin: 60,
     }
   }
@@ -413,6 +356,29 @@ async function seed() {
     await peter.save();
     console.log('Student profile created:', peter._id);
     
+    // Create Bruce Wayne student user
+    console.log('Creating Bruce Wayne student user...');
+    const bruceUser = new User({
+      username: 'brucewayne',
+      email: 'bruce@example.com',
+      password: 'password',
+      role: 'student',
+    });
+    await bruceUser.save();
+    console.log('Bruce Wayne user created:', bruceUser._id);
+
+    console.log('Creating Bruce Wayne student profile...');
+    const bruce = new Student({
+      name: 'Bruce Wayne',
+      userId: bruceUser._id,
+      pathway: 'standalone',
+      address: '1007 Mountain Drive, Gotham',
+      phone: '+17035551234',
+      dob: new Date(1990, 1, 19), // Feb 19, 1990
+    });
+    await bruce.save();
+    console.log('Student profile created:', bruce._id);
+
     // Create courses from data
     console.log('Creating courses...');
     const coursePromises = Object.values(coursesData).map(async (courseData) => {
@@ -421,106 +387,62 @@ async function seed() {
       console.log(`Course created: ${course.title} (${course._id})`);
       return course;
     });
-    
+
     const courses = await Promise.all(coursePromises);
-    
-    // Create enrollments for Peter in CIA and CSCP courses
+
+    // Seed quizzes for each course module
+    console.log('Seeding quizzes for each course module...');
+    const quizTemplate = [
+      { options: ['A', 'B', 'C', 'D'], correctIndex: 0 },
+      { options: ['A', 'B', 'C', 'D'], correctIndex: 1 },
+      { options: ['A', 'B', 'C', 'D'], correctIndex: 2 },
+      { options: ['A', 'B', 'C', 'D'], correctIndex: 3 },
+      { options: ['A', 'B', 'C', 'D'], correctIndex: 0 },
+    ];
+    for (const [slug, courseDataItem] of Object.entries(coursesData)) {
+      const course = courses.find(c => c.slug === slug);
+      if (!course) continue;
+      for (let idx = 0; idx < courseDataItem.modules.length; idx++) {
+        const mod = courseDataItem.modules[idx];
+        const questions = quizTemplate.map((tpl, qIdx) => ({
+          prompt: `${mod.title} - Question ${qIdx + 1}`,
+          options: tpl.options,
+          correctIndex: tpl.correctIndex
+        }));
+        const quiz = new Quiz({ courseSlug: slug, moduleIndex: idx, questions });
+        await quiz.save();
+        console.log(`Quiz created for ${slug} module ${idx}`);
+      }
+    }
+
+    // Create enrollments for Peter in CSCP and Bruce in CIA (zero progress)
     console.log('Creating enrollments...');
     const enrollmentData = [
       {
         studentId: peter._id,
-        courseSlug: 'certified-investment-associate',
-        enrollDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
-        validUntil: new Date(Date.now() + 335 * 24 * 60 * 60 * 1000), // ~11 months from now
-        completedModules: [
-          {
-            moduleIndex: 0,
-            completed: true,
-            completedAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000) // 20 days ago
-          },
-          {
-            moduleIndex: 1,
-            completed: true,
-            completedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000) // 10 days ago
-          }
-        ],
-        quizAttempts: [
-          {
-            moduleIndex: 0,
-            quizId: 'cia-module-1-quiz',
-            score: 85,
-            maxScore: 100,
-            attemptedAt: new Date(Date.now() - 22 * 24 * 60 * 60 * 1000), // 22 days ago
-            passed: true,
-          },
-          {
-            moduleIndex: 1,
-            quizId: 'cia-module-2-quiz',
-            score: 78,
-            maxScore: 100,
-            attemptedAt: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000), // 12 days ago
-            passed: true,
-          }
-        ],
-        watchTime: [
-          {
-            moduleIndex: 0,
-            minutesWatched: 95,
-            date: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000) // 25 days ago
-          },
-          {
-            moduleIndex: 1,
-            minutesWatched: 105,
-            date: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000) // 15 days ago
-          },
-          {
-            moduleIndex: 2,
-            minutesWatched: 40,
-            date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000) // 5 days ago
-          }
-        ]
-      },
-      {
-        studentId: peter._id,
         courseSlug: 'certified-supply-chain-professional',
         enrollDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000), // 15 days ago
-        validUntil: new Date(Date.now() + 350 * 24 * 60 * 60 * 1000), // ~11.5 months from now
-        completedModules: [
-          {
-            moduleIndex: 0,
-            completed: true,
-            completedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000) // 10 days ago
-          }
-        ],
-        quizAttempts: [
-          {
-            moduleIndex: 0,
-            quizId: 'cscp-module-1-quiz',
-            score: 90,
-            maxScore: 100,
-            attemptedAt: new Date(Date.now() - 11 * 24 * 60 * 60 * 1000), // 11 days ago
-            passed: true,
-          }
-        ],
-        watchTime: [
-          {
-            moduleIndex: 0,
-            minutesWatched: 95,
-            date: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000) // 12 days ago
-          },
-          {
-            moduleIndex: 1,
-            minutesWatched: 45,
-            date: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000) // 8 days ago
-          }
-        ]
+        validUntil: new Date(Date.now() + 350 * 24 * 60 * 60 * 1000),
+        completedModules: [],
+        quizAttempts: [],
+        watchTime: []
+      },
+      {
+        studentId: bruce._id,
+        courseSlug: 'certified-investment-associate',
+        enrollDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
+        validUntil: new Date(Date.now() + 350 * 24 * 60 * 60 * 1000),
+        completedModules: [],
+        quizAttempts: [],
+        watchTime: []
       }
     ];
-    
+
     for (const data of enrollmentData) {
       const enrollment = new Enrollment(data);
       await enrollment.save();
-      console.log(`Enrollment created for ${peter.name} in ${data.courseSlug} (${enrollment._id})`);
+      let studentName = data.studentId.equals(peter._id) ? peter.name : bruce.name;
+      console.log(`Enrollment created for ${studentName} in ${data.courseSlug} (${enrollment._id})`);
     }
     
     // Create live classes

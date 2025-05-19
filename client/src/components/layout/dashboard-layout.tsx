@@ -58,9 +58,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       </div>
       
       {/* Hidden on mobile */}
-      <div className="hidden md:block md:w-64">
+      {/* <div className="hidden md:block md:w-64">
         <Sidebar />
-      </div>
+      </div> */}
       
       {/* Main Content */}
       <div className="flex flex-col flex-1 overflow-hidden">

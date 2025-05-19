@@ -22,12 +22,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // STUDENT ROUTES
   app.get("/api/student/dashboard", auth, requireStudent, studentController.getDashboard);
   app.post("/api/student/watch-time", auth, requireStudent, studentController.recordWatchTime);
+  app.post(
+    "/api/student/view-document",
+    auth,
+    requireStudent,
+    studentController.recordDocumentView
+  );
   app.get("/api/student/profile", auth, requireStudent, studentController.getProfile);
   app.put("/api/student/profile", auth, requireStudent, studentController.updateProfile);
   app.put("/api/student/notify-settings", auth, requireStudent, studentController.updateNotifySettings);
   app.get("/api/student/courses", auth, requireStudent, studentController.getCourses);
 
+  // QUIZ ROUTES
+  app.get(
+    "/api/student/quiz/:slug/:moduleIndex",
+    auth,
+    requireStudent,
+    studentController.getQuiz
+  );
+
   // ADMIN ROUTES
+  // List all courses for admin dropdown
+  app.get(
+    '/api/admin/courses',
+    auth,
+    requireAdmin,
+    courseController.listCourses
+  );
   app.get("/api/admin/dashboard", auth, requireAdmin, adminController.getDashboardStats);
   app.get("/api/admin/students", auth, requireAdmin, adminController.getAllStudents);
   app.get("/api/admin/students/:id", auth, requireAdmin, adminController.getStudent);
@@ -51,7 +72,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/enrollments/:id", auth, requireAdmin, enrollmentController.updateEnrollment);
   app.delete("/api/enrollments/:id", auth, requireAdmin, enrollmentController.deleteEnrollment);
   app.post("/api/student/module-complete", auth, requireStudent, enrollmentController.completeModule);
-  app.post("/api/student/quiz-attempt", auth, requireStudent, enrollmentController.recordQuizAttempt);
+  app.get(
+    '/api/student/quiz/:slug/:moduleIndex',
+    auth,
+    requireStudent,
+    studentController.getQuiz
+  );
+  app.post(
+    "/api/student/quiz-attempt",
+    auth,
+    requireStudent,
+    studentController.submitQuizAttempt
+  );
 
   // LIVE CLASS ROUTES
   app.get("/api/live-classes", auth, requireAdmin, liveClassController.getAllLiveClasses);

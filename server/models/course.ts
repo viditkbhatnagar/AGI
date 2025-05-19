@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 interface IModule {
+  toObject(): any;
   title: string;
   videos: Array<{
     title: string;
@@ -26,6 +27,7 @@ export interface ICourse {
   slug: string;
   title: string;
   type: 'standalone' | 'with-mba';
+  description?: string;
   liveClassConfig: ILiveClassConfig;
   mbaModules: IModule[];
   modules: IModule[];
@@ -37,6 +39,7 @@ const CourseSchema = new Schema<ICourseDocument>({
   slug: { type: String, required: true, unique: true },
   title: { type: String, required: true },
   type: { type: String, enum: ['standalone', 'with-mba'], required: true },
+  description: { type: String, default: "" },
   liveClassConfig: {
     enabled: { type: Boolean, default: false },
     frequency: { type: String, enum: ['weekly', 'biweekly', 'monthly'] },
