@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Eye, EyeOff } from "lucide-react";
 
 // Form validation schema
 const profileSchema = z.object({
@@ -19,7 +20,23 @@ const profileSchema = z.object({
   address: z.string().min(5, "Address must be at least 5 characters"),
 });
 
+// Change‑password validation
+const passwordSchema = z.object({
+  oldPassword: z.string().min(8, "Old password is required"),
+  newPassword: z
+    .string()
+    .min(8, "Must be at least 8 characters")
+    .regex(/(?=.*[A-Z])/, "Require an uppercase letter")
+    .regex(/(?=.*[a-z])/, "Require a lowercase letter")
+    .regex(/(?=.*\d)/, "Require a number"),
+  confirmPassword: z.string(),
+}).refine(
+  (data) => data.newPassword === data.confirmPassword,
+  { path: ["confirmPassword"], message: "Passwords do not match" }
+);
+
 type ProfileFormValues = z.infer<typeof profileSchema>;
+type PasswordFormValues = z.infer<typeof passwordSchema>;
 
 // Profile data structure from API
 interface ProfileData {
@@ -44,6 +61,8 @@ export function Profile() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isChangingPw, setIsChangingPw] = useState(false);
+  const [showPw, setShowPw] = useState(false);
   
   // Fetch profile data from API
   const fetchProfileData = async () => {
@@ -88,6 +107,15 @@ export function Profile() {
       name: "",
       phone: "",
       address: "",
+    },
+  });
+
+  const pwForm = useForm<PasswordFormValues>({
+    resolver: zodResolver(passwordSchema),
+    defaultValues: {
+      oldPassword: "",
+      newPassword: "",
+      confirmPassword: "",
     },
   });
   
@@ -140,6 +168,39 @@ export function Profile() {
       setIsSaving(false);
     }
   };
+
+  const onPasswordChange = async (data: PasswordFormValues) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch("/api/auth/change-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          currentPassword: data.oldPassword,
+          newPassword: data.newPassword,
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || "Failed to change password");
+      }
+      toast({
+        title: "Password updated",
+        description: "Your password has been changed successfully",
+      });
+      setIsChangingPw(false);
+      pwForm.reset();
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: err instanceof Error ? err.message : "Failed to change password",
+        variant: "destructive",
+      });
+    }
+  };
   
   if (isLoading) {
     return (
@@ -169,7 +230,8 @@ export function Profile() {
     <div className="p-4 md:p-6">
       <h1 className="text-2xl font-bold text-gray-800 mb-6">My Profile</h1>
       
-      <Card className="w-full max-w-3xl">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+      <Card className="w-full">
         <CardHeader>
           <CardTitle>Personal Information</CardTitle>
           <CardDescription>
@@ -297,6 +359,67 @@ export function Profile() {
           )}
         </CardContent>
       </Card>
+
+  {/* Change Password card */}
+  <Card className="w-full">
+    <CardHeader>
+      <CardTitle>Change Password</CardTitle>
+      <CardDescription>Update your account password</CardDescription>
+    </CardHeader>
+    <CardContent>
+      {isChangingPw ? (
+        <Form {...pwForm}>
+          <form onSubmit={pwForm.handleSubmit(onPasswordChange)} className="space-y-4">
+            {["oldPassword","newPassword","confirmPassword"].map((field,i)=>(
+              <FormField
+                key={field}
+                control={pwForm.control}
+                name={field as keyof PasswordFormValues}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {field.name === "oldPassword" ? "Old Password" :
+                       field.name === "newPassword" ? "New Password" : "Confirm Password"}
+                    </FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Input
+                          {...field}
+                          type={showPw ? "text" : "password"}
+                          placeholder="********"
+                        />
+                        {i===1 && (
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="ghost"
+                            className="absolute top-0 right-0 h-full"
+                            onClick={() => setShowPw(!showPw)}
+                          >
+                            {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </Button>
+                        )}
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ))}
+            <div className="flex gap-4">
+              <Button type="submit">Update Password</Button>
+              <Button variant="outline" type="button" onClick={() => setIsChangingPw(false)}>
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </Form>
+      ) : (
+        <Button onClick={() => setIsChangingPw(true)}>Change Password</Button>
+      )}
+    </CardContent>
+  </Card>
+  </div>
     </div>
   );
 }

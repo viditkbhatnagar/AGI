@@ -1,9 +1,12 @@
+import nodemailer from 'nodemailer';
+import path from 'path';
 import { Request, Response } from 'express';
 import { User } from '../models/user';
 import { Student } from '../models/student';
 import { Course } from '../models/course';
 import { Enrollment } from '../models/enrollment';
 import { LiveClass } from '../models/liveclass';
+import { renderWelcomeHtml } from '../utils/emailTemplates';
 import mongoose from 'mongoose';
 
 // Get all students
@@ -42,72 +45,7 @@ export const getStudent = async (req: Request, res: Response) => {
   }
 };
 
-// Create a new student and user
-// export const createStudent = async (req: Request, res: Response) => {
-//   const session = await mongoose.startSession();
-//   session.startTransaction();
-  
-//   try {
-//     const { name, email, password, phone, address, dob, pathway, courseSlug } = req.body;
-    
-    
-//     // Create user first
-//     const username = email.split('@')[0]; // Simple username generation
-    
-//     const newUser = new User({
-//       username,
-//       email,
-//       password,
-//       role: 'student'
-//     });
-    
-//     await newUser.save({ session });
-    
-//     // Then create student record
-//     const newStudent = new Student({
-//       name,
-//       phone: phone || '',
-//       address: address || '',
-//       dob: dob ? new Date(dob) : null,
-//       pathway,
-//       userId: newUser._id
-//     });
-    
-//     await newStudent.save({ session });
-    
-//     // Enroll student in the chosen course
-//     const course = await Course.findOne({ slug: courseSlug }).session(session);
-//     if (!course) {
-//       await session.abortTransaction();
-//       session.endSession();
-//       return res.status(404).json({ message: `Course '${courseSlug}' not found` });
-//     }
-    
-//     const newEnrollment = new Enrollment({
-//       studentId: newStudent._id,
-//       courseSlug,
-//       enrollDate: new Date(),
-//       validUntil: new Date(Date.now() + 365*24*60*60*1000), // 1 year from now
-//       completedModules: []
-//     });
-//     await newEnrollment.save({ session });
-    
-//     await session.commitTransaction();
-//     session.endSession();
-    
-//     res.status(201).json({
-//       message: 'Student created and enrolled successfully',
-//       student: newStudent,
-//       enrollment: newEnrollment
-//     });
-//   } catch (error) {
-//     await session.abortTransaction();
-//     session.endSession();
-    
-//     console.error('Create student error:', error);
-//     res.status(500).json({ message: 'Server error' });
-//   }
-// };
+
 
 export const createStudent = async (req: Request, res: Response) => {
   try {
@@ -168,6 +106,56 @@ export const createStudent = async (req: Request, res: Response) => {
       watchTime:        []
     });
     await enrollment.save();
+
+    // send email with login credentials
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT),
+      secure: process.env.SMTP_SECURE === 'true', // true for 465, false for 587/STARTTLS
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
+
+    const text = `Hello ${name},
+
+Your student account has been created on AGI.online!
+
+Login details:
+• Email: ${email}
+• Temporary password: ${password}
+
+Please sign in at ${process.env.APP_URL}/login and change your password right away.
+
+Happy learning!
+AGI.online Team
+`;
+
+    const html = renderWelcomeHtml({
+      name,
+      email,
+      tempPassword: password,
+      appUrl: process.env.APP_URL!,
+    });
+
+    await transporter.sendMail({
+      from: process.env.SMTP_FROM,
+      to: email,
+      replyTo: process.env.SUPPORT_EMAIL,
+      subject: 'Welcome to American Global Institute – Your Student Account',
+      text,
+      html,
+      attachments: [
+        {
+          filename: 'logo.png',
+          path: path.resolve('client/src/components/layout/AGI Logo.png'),
+          cid: 'agiLogo'   // referenced in renderWelcomeHtml
+        }
+      ]
+    })
+    .then(info => console.log('Welcome email sent:', info.messageId))
+    .catch(err => console.error('Error sending welcome email:', err));
 
     // 4) Return the newly created student record
     res.status(201).json({

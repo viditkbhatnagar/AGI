@@ -1,9 +1,13 @@
 import mongoose from 'mongoose';
 import { Request, Response } from 'express';
+import nodemailer from 'nodemailer';
 import { LiveClass } from '../models/liveclass';
 import { Course } from '../models/course';
 import { Student } from '../models/student';
 import { Enrollment } from '../models/enrollment';
+import { renderLiveClassHtml } from '../utils/emailTemplates';
+import path from 'path';
+import ics from 'ics';
 
 
 
@@ -37,9 +41,120 @@ export const createLiveClass = async (req: Request, res: Response) => {
     });
     
     await newLiveClass.save();
-    
-    // TODO: Send notifications to enrolled students
-    
+
+    // Utility formats
+    const whenPretty = new Date(startTime).toLocaleString('en-US', {
+      dateStyle: 'long',
+      timeStyle: 'short',
+    });
+
+    // Google‑Calendar share link (UTC times, basic template)
+    const fmt = (d: Date) =>
+      d.toISOString().replace(/[-:]|\.000Z/g, '').slice(0, 15) + 'Z';
+    const addToCal = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
+      title
+    )}&details=${encodeURIComponent(
+      `Join link: ${meetLink}`
+    )}&location=${encodeURIComponent(
+      'Online'
+    )}&dates=${fmt(new Date(startTime))}/${fmt(new Date(endTime))}`;
+
+    // .ics file
+    const { error: icsErr, value: icsVal } = ics.createEvent({
+      title,
+      description,
+      start: [
+        new Date(startTime).getUTCFullYear(),
+        new Date(startTime).getUTCMonth() + 1,
+        new Date(startTime).getUTCDate(),
+        new Date(startTime).getUTCHours(),
+        new Date(startTime).getUTCMinutes(),
+      ],
+      end: [
+        new Date(endTime).getUTCFullYear(),
+        new Date(endTime).getUTCMonth() + 1,
+        new Date(endTime).getUTCDate(),
+        new Date(endTime).getUTCHours(),
+        new Date(endTime).getUTCMinutes(),
+      ],
+      location: 'Online (Google Meet)',
+      url: meetLink,
+    });
+    const icsAttachment = icsErr
+      ? null
+      : {
+          filename: `${title}.ics`,
+          content: icsVal,
+          method: 'REQUEST',
+          contentType: 'text/calendar',
+        };
+
+    // -- EMAIL NOTIFICATION LOGIC START --
+    try {
+      // load student records along with their user document to get e‑mail
+      const students = await Student.find({ _id: { $in: studentObjectIds } })
+        .populate({ path: 'userId', select: 'email' })  // userId.email
+        .select('name userId');
+
+      const emails = students
+        .map((s: any) => s.userId?.email)
+        .filter(Boolean); // remove undefined
+
+      if (emails.length) {
+        const transporter = nodemailer.createTransport({
+          host: process.env.SMTP_HOST,
+          port: Number(process.env.SMTP_PORT),
+          secure: process.env.SMTP_SECURE === 'true',
+          auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS,
+          },
+        });
+
+        // send one e‑mail per recipient (or you could bcc in bulk)
+        await Promise.all(
+          students.map((student: any) => {
+            const htmlBase = renderLiveClassHtml({
+              name: student.name,
+              title,
+              startTime,
+              meetLink,
+            });
+
+            const html =
+              htmlBase +
+              `<p style="text-align:center;margin-top:24px;">
+                 <a href="${addToCal}"
+                    style="display:inline-block;background:#3b82f6;color:#ffffff !important;padding:10px 20px;border-radius:6px;text-decoration:none;font-weight:600;">
+                   Add to Google Calendar
+                 </a>
+               </p>`;
+
+            return transporter.sendMail({
+              from: process.env.SMTP_FROM,
+              to: student.userId.email,
+              subject: `New Live Class Scheduled: ${title}`,
+              text: `Hi ${student.name || 'Student'},\n\nA new live class "${title}" is scheduled for ${whenPretty}.\nJoin: ${meetLink}\nAdd to calendar: ${addToCal}\n\nCheers,\nAGI.online`,
+              html,
+              attachments: [
+                {
+                  filename: 'logo.png',
+                  path: path.resolve('client/src/components/layout/AGI Logo.png'),
+                  cid: 'agiLogo',
+                },
+                ...(icsAttachment ? [icsAttachment] : []),
+              ],
+            });
+          })
+        );
+      } else {
+        console.warn('No valid emails found for selected students');
+      }
+    } catch (mailError) {
+      console.error('Error sending live class emails:', mailError);
+    }
+    // -- EMAIL NOTIFICATION LOGIC END --
+
     res.status(201).json({
       message: 'Live class created successfully',
       liveClass: newLiveClass
