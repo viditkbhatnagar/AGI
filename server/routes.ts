@@ -21,6 +21,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // STUDENT ROUTES
   app.get("/api/student/dashboard", auth, requireStudent, studentController.getDashboard);
+  // Per‐course dashboard view
+  app.get(
+    "/api/student/dashboard/:slug",
+    auth,
+    requireStudent,
+    studentController.getDashboardByCourse
+  );
   app.post("/api/student/watch-time", auth, requireStudent, studentController.recordWatchTime);
   app.post(
     "/api/student/view-document",
@@ -32,6 +39,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/student/profile", auth, requireStudent, studentController.updateProfile);
   app.put("/api/student/notify-settings", auth, requireStudent, studentController.updateNotifySettings);
   app.get("/api/student/courses", auth, requireStudent, studentController.getCourses);
+  app.get("/api/student/courses/:slug", auth, requireStudent, studentController.getCourseDetail);
 
   // QUIZ ROUTES
   app.get(
@@ -62,7 +70,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/courses", auth, requireAdmin, courseController.createCourse);
   app.put("/api/courses/:slug", auth, requireAdmin, courseController.updateCourse);
   app.delete("/api/courses/:slug", auth, requireAdmin, courseController.deleteCourse);
-  app.get("/api/student/courses/:slug", auth, requireStudent, courseController.getStudentCourse);
 
   // ENROLLMENT ROUTES
   app.get("/api/enrollments", auth, requireAdmin, enrollmentController.getAllEnrollments);

@@ -53,7 +53,7 @@ const EnrollmentSchema = new Schema<IEnrollmentDocument>({
   
   quizAttempts: [{
     quizId: { type: String, required: true },
-    //moduleIndex: { type: Number, required: true },
+    moduleIndex: { type: Number},
     score: { type: Number, required: true },
     maxScore: { type: Number, required: true },
     attemptedAt: { type: Date, default: Date.now },

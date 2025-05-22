@@ -54,11 +54,11 @@ interface CourseDetailProps {
 export function CourseDetail({ slug }: CourseDetailProps) {
   const queryClient = useQueryClient();
   const { data, isLoading, error } = useQuery({
-    queryKey: ['studentDashboard'],
+    queryKey: ['courseDetail', slug],
     queryFn: async () => {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Not authenticated");
-      const res = await fetch(`/api/student/dashboard`, {
+      const res = await fetch(`/api/student/courses/${slug}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (!res.ok) throw new Error(`Error ${res.status}: ${res.statusText}`);
@@ -66,7 +66,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
     }
   });
 
-  const course = data?.course;
+  const course = data?.course ?? data;
   const watchTime = data?.watchTime;
   // Compute dynamic summary stats from modules
   const modulesArray = course?.modules || [];
@@ -464,20 +464,28 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                               </div>
                             </div>
                           </div>
-                          {/* Quiz */}
-                          <div>
-                            <h4 className="text-md font-medium text-gray-700 mb-2">Quiz</h4>
-                            {module.isCompleted ? (
-                              <p className="text-gray-800">Module already completed</p>
-                            ) : module.isLocked ? (
-                              <p>Locked - Complete previous module to unlock</p>
+                          {/* Quiz Section */}
+                          <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-lg mt-4">
+                            <h5 className="text-lg font-semibold text-purple-800 mb-3 flex items-center">
+                              Quiz
+                              {module.lastQuizScore !== null && (
+                                <span className="ml-2 text-sm text-purple-700 bg-purple-200 px-2 py-0.5 rounded">
+                                  Last score&nbsp;–&nbsp;{module.lastQuizScore}%
+                                </span>
+                              )}
+                            </h5>
+
+                            {module.isLocked ? (
+                              <p>Locked – complete previous module to unlock</p>
                             ) : module.percentComplete < 65 ? (
                               <p className="text-gray-600">
                                 Reach at least 65 % progress in this module to unlock the quiz.
                               </p>
                             ) : (
                               <Button onClick={() => handleTakeQuiz(index)}>
-                                Take Quiz
+                                {module.lastQuizScore !== null
+                                  ? 'Retake Quiz'
+                                  : 'Take Quiz'}
                               </Button>
                             )}
                           </div>

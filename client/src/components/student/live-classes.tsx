@@ -6,6 +6,21 @@ import { CalendarClock, ExternalLink, Video } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
+const canJoinClass = (lc: {
+  status: string;
+  startTime: string | Date;
+  endTime: string | Date;
+}) => {
+  const now   = new Date();
+  const start = new Date(lc.startTime);
+  const end   = new Date(lc.endTime);
+
+  return (
+    lc.status === 'live' ||
+    (lc.status === 'scheduled' && start <= now && now <= end)
+  );
+};
+
 export function LiveClasses() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['/api/student/live-classes']
@@ -69,10 +84,25 @@ export function LiveClasses() {
                       )}
                     </div>
                     <div className="mt-4 sm:mt-0">
-                      <Button className="w-full md:w-auto" disabled={new Date(liveClass.startTime) > new Date()}>
-                        <ExternalLink className="h-4 w-4 mr-2" />
-                        {new Date(liveClass.startTime) <= new Date() ? 'Join Now' : 'Join at Scheduled Time'}
-                      </Button>
+                      {canJoinClass(liveClass) ? (
+                        <Button asChild className="w-full md:w-auto">
+                          <a
+                            href={liveClass.meetLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <ExternalLink className="h-4 w-4 mr-2" />
+                            Join&nbsp;Now
+                          </a>
+                        </Button>
+                      ) : (
+                        <Button className="w-full md:w-auto" disabled>
+                          <ExternalLink className="h-4 w-4 mr-2" />
+                          {new Date(liveClass.startTime) > new Date()
+                            ? 'Join at Scheduled Time'
+                            : 'Session Ended'}
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>

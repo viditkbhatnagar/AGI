@@ -75,6 +75,9 @@ export function StudentDashboard() {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  // List of enrolled courses for course picker
+  const [courses, setCourses] = useState<{ slug: string; title: string }[]>([]);
+  const [selectedCourse, setSelectedCourse] = useState<string | null>(null);
   // Motivational tips
   const TIPS = [
     "Consistency is key—any progress is good progress!",
@@ -99,26 +102,39 @@ export function StudentDashboard() {
     setTip(TIPS[randomIndex]);
   }, []);
   
+  // Load enrolled courses for this student
   useEffect(() => {
-    // Function to fetch dashboard data from API
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    fetch('/api/student/courses', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(res => res.json())
+      .then((data: { slug: string; title: string }[]) => {
+        setCourses(data);
+        // Auto-select the first course when enrollments are loaded
+        if (data.length > 0) {
+          setSelectedCourse(data[0].slug);
+        }
+      })
+      .catch(console.error);
+  }, []);
+
+  useEffect(() => {
     const fetchDashboardData = async () => {
       const token = localStorage.getItem('token');
-      if (!token) {
+      if (!token || !selectedCourse) {
         setIsLoading(false);
         return;
       }
       setIsLoading(true);
       try {
-        const response = await fetch('/api/student/dashboard', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+        const response = await fetch(`/api/student/dashboard/${selectedCourse}`, {
+          headers: { Authorization: `Bearer ${token}` }
         });
-        
         if (!response.ok) {
           throw new Error(`Error ${response.status}: ${response.statusText}`);
         }
-        
         const data = await response.json();
         console.log('Dashboard data:', data);
         setDashboardData(data);
@@ -130,9 +146,8 @@ export function StudentDashboard() {
         setIsLoading(false);
       }
     };
-    
     fetchDashboardData();
-  }, []);
+  }, [selectedCourse]);
   
   // Display loading skeleton
   if (isLoading) {
@@ -181,7 +196,7 @@ export function StudentDashboard() {
   } = dashboardData;
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white p-4 md:p-6">
+    <div className="min-h-screen bg-gray-100 p-4 md:p-6">
       {/* Welcome Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">
@@ -189,7 +204,7 @@ export function StudentDashboard() {
         </h1>
         <div className="mt-2 md:mt-0">
           {course?.slug && (
-            <Link href={`/student/courses/${course.slug}`}>
+            <Link href={`/student/courses/${selectedCourse || course?.slug}`}>
               <Button>
                 <PlayCircle className="mr-2 h-4 w-4" />
                 Resume Learning
@@ -198,6 +213,27 @@ export function StudentDashboard() {
           )}
         </div>
       </div>
+      {/* Course Picker for multiple enrollments */}
+      {courses.length > 1 && (
+        <div className="mb-6">
+          <label htmlFor="courseSelect" className="mr-2 font-medium">Select Course:</label>
+          <select
+            id="courseSelect"
+            className="border rounded px-3 py-1"
+            value={selectedCourse ?? ''}
+            onChange={e => setSelectedCourse(e.target.value)}
+          >
+            <option value="" disabled>
+              -- pick a course --
+            </option>
+            {courses.map(c => (
+              <option key={c.slug} value={c.slug}>
+                {c.title}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
       {/* Dashboard KPI Metrics */}
       {/* <DashboardMetrics
         courseProgress={courseProgress}
@@ -333,8 +369,8 @@ export function StudentDashboard() {
         {/* My Course */}
         {course && (
           <Card className="shadow-sm hover:shadow-lg transition-shadow duration-200 ease-in-out">
-            <div className="px-5 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-medium text-gray-800">My Course</h2>
+            <div className="px-5 py-4 bg-gradient-to-r from-indigo-400 to-indigo-300">
+              <h2 className="text-lg font-medium text-white">My Course</h2>
             </div>
             <CardContent className="p-5">
               {/* existing My Course content */}
@@ -368,7 +404,7 @@ export function StudentDashboard() {
                     <li>✅ Completed Modules: {course.completedModules}</li>
                   </ul>
                   <div className="mt-4">
-                    <Link href={`/student/courses/${course.slug}`}>
+                    <Link href={`/student/courses/${selectedCourse || course?.slug}`}>
                       <Button>
                         <PlayCircle className="mr-2 h-4 w-4" />
                         Continue Course
@@ -383,20 +419,10 @@ export function StudentDashboard() {
 
         {/* Streak and Tip stacked */}
         <div className="flex flex-col gap-4">
-          {/* Day Wise Streak */}
-          <Card className="shadow-sm hover:shadow-lg transition-shadow duration-200 ease-in-out">
-            <div className="px-5 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-medium text-gray-800">Your Day Wise Streak</h2>
-            </div>
-            <CardContent className="p-5">
-              <DailyStreak dailyWatchTime={dashboardData.dailyWatchTime} />
-            </CardContent>
-          </Card>
-
           {/* Tip of the Day */}
           <Card className="shadow-sm hover:shadow-lg transition-shadow duration-200 ease-in-out">
-            <div className="px-5 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-medium text-gray-800">Tip of the Day</h2>
+            <div className="px-5 py-4 bg-gradient-to-r from-pink-400 to-pink-300">
+              <h2 className="text-lg font-medium text-white">Tip of the Day</h2>
             </div>
             <CardContent className="p-4">
               <div className="flex items-start">
@@ -409,12 +435,22 @@ export function StudentDashboard() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Day Wise Streak */}
+          <Card className="shadow-sm hover:shadow-lg transition-shadow duration-200 ease-in-out">
+            <div className="px-5 py-4 bg-gradient-to-r from-amber-400 to-amber-300">
+              <h2 className="text-lg font-medium text-white">Your Day Wise Streak</h2>
+            </div>
+            <CardContent className="p-5">
+              <DailyStreak dailyWatchTime={dashboardData.dailyWatchTime} />
+            </CardContent>
+          </Card>
         </div>
 
         {/* Daily Watch Time Chart */}
         <Card className="shadow-sm hover:shadow-lg transition-shadow duration-200 ease-in-out">
-          <div className="px-5 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-medium text-gray-800">Daily Watch Time</h2>
+          <div className="px-5 py-4 bg-gradient-to-r from-teal-400 to-teal-300">
+            <h2 className="text-lg font-medium text-white">Daily Watch Time</h2>
           </div>
           <CardContent className="p-5">
             <ProgressChart data={dashboardData.dailyWatchTime} />
@@ -443,8 +479,8 @@ export function StudentDashboard() {
       
       {/* Upcoming Live Classes */}
       <Card className="shadow-sm hover:shadow-lg transition-shadow duration-200 ease-in-out">
-        <div className="px-5 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-medium text-gray-800">Upcoming Live Classes</h2>
+        <div className="px-5 py-4 bg-gradient-to-r from-emerald-400 to-emerald-300">
+          <h2 className="text-lg font-medium text-white">Upcoming Live Classes</h2>
         </div>
         <CardContent className="p-5">
           {upcomingLiveClasses?.length > 0 ? (

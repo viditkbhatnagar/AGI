@@ -57,7 +57,7 @@ export const createStudent = async (req: Request, res: Response) => {
       address,
       dob,
       pathway,
-      courseSlug
+      courseSlugs
     } = req.body;
 
     // Derive a simple username from email prefix
@@ -87,25 +87,32 @@ export const createStudent = async (req: Request, res: Response) => {
     });
     await student.save();
 
-    // 3) Enroll them in the selected course
-    const course = await Course.findOne({ slug: courseSlug });
-    if (!course) {
-      return res.status(404).json({ message: 'Course not found' });
+    // 3) Enroll them in the selected courses
+    if (!Array.isArray(courseSlugs) || courseSlugs.length === 0) {
+      return res.status(400).json({ message: 'At least one course must be selected' });
     }
     const enrollDate = new Date();
     const validUntil = new Date(enrollDate);
     validUntil.setFullYear(validUntil.getFullYear() + 1);
 
-    const enrollment = new Enrollment({
-      studentId:   student._id,
-      courseSlug,
-      enrollDate,
-      validUntil,
-      completedModules: [],
-      quizAttempts:     [],
-      watchTime:        []
-    });
-    await enrollment.save();
+    await Promise.all(
+      courseSlugs.map(async (slug: string) => {
+        const course = await Course.findOne({ slug });
+        if (!course) {
+          throw new Error(`Course not found: ${slug}`);
+        }
+        const enrollment = new Enrollment({
+          studentId:       student._id,
+          courseSlug:      slug,
+          enrollDate,
+          validUntil,
+          completedModules: [],
+          quizAttempts:     [],
+          watchTime:        []
+        });
+        await enrollment.save();
+      })
+    );
 
     // send email with login credentials
     const transporter = nodemailer.createTransport({
@@ -165,8 +172,7 @@ AGI.online Team
         userId:   user._id,
         name:     student.name,
         pathway:  student.pathway,
-        enrollDate: enrollment.enrollDate,
-        validUntil: enrollment.validUntil
+        courseSlugs
       }
     });
   } catch (error) {

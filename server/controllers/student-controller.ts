@@ -75,6 +75,13 @@ export const getDashboard = async (req: Request, res: Response) => {
         // Quiz attempt statistics for this module
         const moduleAttempts = quizRecords.filter(a => a.moduleIndex === idx);
         const quizAttempts = moduleAttempts.length;
+        // Last attempt score (most recent) - use attemptedAt timestamp
+        const lastQuizScore = moduleAttempts.length
+          ? moduleAttempts
+              .sort((a, b) =>
+                (b.attemptedAt as any) - (a.attemptedAt as any)
+              )[0].score
+          : null;
         const avgQuizScore = quizAttempts > 0
           ? Math.max(...moduleAttempts.map(a => a.score))
           : 0;
@@ -110,7 +117,8 @@ export const getDashboard = async (req: Request, res: Response) => {
           // Attach the quiz questions array
           questions: quiz?.questions || [],
           quizAttempts,
-          avgQuizScore
+          avgQuizScore,
+          lastQuizScore
         };
       })
     );
@@ -226,6 +234,164 @@ export const getDashboard = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Get student dashboard error:', error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+/**
+ * GET /api/student/dashboard/:slug
+ * Fetch course-specific dashboard data for the logged-in student
+ */
+export const getDashboardByCourse = async (req: Request, res: Response) => {
+  try {
+    if (!req.user) return res.status(401).json({ message: 'Not authenticated' });
+
+    const { slug } = req.params;
+    const userObjectId = new mongoose.Types.ObjectId(req.user.id);
+    const student = await Student.findOne({ userId: userObjectId });
+    if (!student) return res.status(404).json({ message: 'Student not found' });
+
+    // Find the specific enrollment
+    const enrollment = await Enrollment.findOne({ studentId: student._id, courseSlug: slug });
+    if (!enrollment) return res.status(404).json({ message: 'Enrollment not found' });
+
+    // Load course details
+    const course = await Course.findOne({ slug });
+    if (!course) return res.status(404).json({ message: 'Course not found' });
+
+    // Reuse logic from getDashboard:
+    // Gather records
+    const watchRecords = student.watchTime || [];
+    const docRecords   = student.docViews   || [];
+    const quizRecords  = enrollment.quizAttempts || [];
+
+    // Prepare completedModules set
+    const completedSet = new Set(enrollment.completedModules.map(m => m.moduleIndex));
+
+    // Build per-module data
+    const moduleData = await Promise.all(
+      course.modules.map(async (module, idx) => {
+        // same computation as getDashboard...
+        const totalVideos = module.videos.length;
+        const watchedVideos = new Set(
+          watchRecords.filter(wt => wt.moduleIndex === idx).map(wt => wt.videoIndex)
+        ).size;
+        const percentWatched = totalVideos ? (watchedVideos / totalVideos) * 100 : 0;
+
+        const totalDocs = module.documents.length;
+        const viewedDocs = docRecords.filter(dv => dv.moduleIndex === idx).length;
+        const percentViewed = totalDocs ? (viewedDocs / totalDocs) * 100 : 0;
+
+        const quizDone = quizRecords.some(qa => qa.moduleIndex === idx);
+        const quizPercent = quizDone ? 100 : 0;
+
+        const moduleAttempts = quizRecords.filter(a => a.moduleIndex === idx);
+        const quizAttempts = moduleAttempts.length;
+        const lastQuizScore = quizAttempts
+          ? moduleAttempts.sort((a, b) => (b.attemptedAt as any) - (a.attemptedAt as any))[0].score
+          : null;
+        const avgQuizScore = quizAttempts > 0 ? Math.max(...moduleAttempts.map(a => a.score)) : 0;
+
+        const percentComplete = Math.round((percentWatched + percentViewed + quizPercent) / 3);
+        let quiz: any = null;
+        if (module.quizId) {
+          if (mongoose.Types.ObjectId.isValid(module.quizId as any)) {
+            quiz = await Quiz.findById(module.quizId);
+          } else {
+            quiz = await Quiz.findOne({ courseSlug: course.slug, moduleIndex: idx });
+          }
+        } else {
+          quiz = await Quiz.findOne({ courseSlug: course.slug, moduleIndex: idx });
+        }
+
+        return {
+          title: module.title,
+          videos: module.videos,
+          documents: module.documents,
+          quizId: module.quizId,
+          percentComplete,
+          isCompleted: completedSet.has(idx),
+          completedAt: (enrollment.completedModules.find(c => c.moduleIndex === idx)?.completedAt) || null,
+          questions: quiz?.questions || [],
+          quizAttempts,
+          avgQuizScore,
+          lastQuizScore,
+          isLocked: idx > 0 && !completedSet.has(idx - 1),
+        };
+      })
+    );
+
+    // Overall stats
+    const totalModules = moduleData.length;
+    const completedModulesCount = moduleData.filter(m => m.isCompleted).length;
+    const courseProgress = totalModules ? Math.round((completedModulesCount / totalModules) * 100) : 0;
+    const rawQuizScores = quizRecords.map(a => a.score);
+    const quizPerformance = rawQuizScores.length
+      ? Math.round(rawQuizScores.reduce((sum, s) => sum + s, 0) / rawQuizScores.length)
+      : null;
+
+    // Watch time
+    const totalWatchTime = watchRecords.reduce((sum, r) => sum + r.duration, 0);
+    const startOfWeek = new Date();
+    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+    startOfWeek.setHours(0, 0, 0, 0);
+    const thisWeekWatchTime = watchRecords
+      .filter(r => new Date(r.date) >= startOfWeek)
+      .reduce((sum, r) => sum + r.duration, 0);
+    const dailyWatchTime = Object.entries(
+      watchRecords.reduce((acc, { date, duration }) => {
+        const d = new Date(date).toISOString().slice(0, 10);
+        acc[d] = (acc[d] || 0) + duration;
+        return acc;
+      }, {} as Record<string, number>)
+    ).map(([date, seconds]) => ({ date, minutes: Math.round(seconds / 60) }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+
+    // Upcoming live classes for this course
+    const upcomingLiveClasses = await LiveClass.find({
+      studentIds: student._id,
+      status: 'scheduled'
+    }).sort({ startTime: -1 }).limit(3);
+
+    const totalDocViews = docRecords.length;
+
+    return res.status(200).json({
+      student: {
+        id: student._id,
+        name: student.name,
+        pathway: student.pathway
+      },
+      course: {
+        slug: course.slug,
+        title: course.title,
+        type: course.type,
+        description: course.description || '',
+        enrollment: {
+          enrollDate: enrollment.enrollDate,
+          validUntil: enrollment.validUntil
+        },
+        progress: courseProgress,
+        totalModules,
+        completedModules: completedModulesCount,
+        modules: moduleData
+      },
+      courseProgress,
+      completedModules: `${completedModulesCount} of ${totalModules}`,
+      quizPerformance,
+      watchTime: {
+        total: formatWatchTime(totalWatchTime),
+        thisWeek: formatWatchTime(thisWeekWatchTime)
+      },
+      watchTimeInMinutes: totalWatchTime,
+      watchTimeThisWeekInMinutes: thisWeekWatchTime,
+      dailyWatchTime,
+      certificationProgress: Math.min(courseProgress, 100),
+      upcomingLiveClasses,
+      quizScores: moduleData.map(m => ({ title: m.title, score: m.avgQuizScore })),
+      documentsViewed: totalDocViews,
+    });
+  } catch (error) {
+    console.error('Get student dashboard by course error:', error);
     return res.status(500).json({ message: 'Server error' });
   }
 };
@@ -503,6 +669,152 @@ export const getCourses = async (req: Request, res: Response) => {
     return res.status(200).json(enrolledCourses);
   } catch (error) {
     console.error('Get enrolled courses error:', error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+/**
+ * GET /api/student/courses/:slug
+ * Fetch detailed view for a single course (modules, progress, quiz, docs, videos)
+ */
+export const getCourseDetail = async (req: Request, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Not authenticated' });
+    }
+
+    const { slug } = req.params;
+    const userObjectId = new mongoose.Types.ObjectId(req.user.id);
+    const student = await Student.findOne({ userId: userObjectId });
+    if (!student) return res.status(404).json({ message: 'Student not found' });
+
+    // Find enrollment for requested course slug
+    const enrollment = await Enrollment.findOne({ studentId: student._id, courseSlug: slug });
+    if (!enrollment) return res.status(404).json({ message: 'Enrollment not found' });
+
+    const course = await Course.findOne({ slug });
+    if (!course) return res.status(404).json({ message: 'Course not found' });
+
+    // Per-module logic, similar to getDashboard, but for this enrollment/course only
+    const enrollmentCompletedModules = enrollment.completedModules || [];
+    const completedSet = new Set(
+      enrollmentCompletedModules.map((m: any) => m.moduleIndex)
+    );
+
+    // Gather student’s existing records
+    const watchRecords = student.watchTime   || [];
+    const docRecords   = student.docViews    || [];
+    // Now read quiz attempts from enrollment, not student
+    const quizRecords  = enrollment.quizAttempts || [];
+
+    // Compute per-module data (including percentComplete and completion status)
+    const moduleData = await Promise.all(
+      course.modules.map(async (module: any, idx: number) => {
+        // Video progress
+        const totalVideos = module.videos.length;
+        const watchedVideos = new Set(
+          watchRecords
+            .filter((wt: any) => wt.moduleIndex === idx)
+            .map((wt: any) => wt.videoIndex)
+        ).size;
+        const percentWatched = totalVideos
+          ? (watchedVideos / totalVideos) * 100
+          : 0;
+
+        // Document progress
+        const totalDocs = module.documents.length;
+        const viewedDocs = docRecords.filter((dv: any) => dv.moduleIndex === idx).length;
+        const percentViewed = totalDocs
+          ? (viewedDocs / totalDocs) * 100
+          : 0;
+
+        // Quiz progress
+        const quizDone = quizRecords.some((qa: any) => qa.moduleIndex === idx);
+        const quizPercent = quizDone ? 100 : 0;
+
+        // Quiz attempt statistics for this module
+        const moduleAttempts = quizRecords.filter((a: any) => a.moduleIndex === idx);
+        const quizAttempts = moduleAttempts.length;
+        const lastQuizScore = moduleAttempts.length
+          ? moduleAttempts
+              .sort((a: any, b: any) =>
+                (b.attemptedAt as any) - (a.attemptedAt as any)
+              )[0].score
+          : null;
+        const avgQuizScore = quizAttempts > 0
+          ? Math.max(...moduleAttempts.map((a: any) => a.score))
+          : 0;
+
+        // Final completion percentage
+        const percentComplete = Math.round(
+          (percentWatched + percentViewed + quizPercent) / 3
+        );
+
+        // Dynamically fetch quiz for this module, if any
+        let quiz: any = null;
+        if (module.quizId) {
+          if (mongoose.Types.ObjectId.isValid(module.quizId as any)) {
+            quiz = await Quiz.findById(module.quizId);
+          } else {
+            quiz = await Quiz.findOne({ courseSlug: course.slug, moduleIndex: idx });
+          }
+        } else {
+          quiz = await Quiz.findOne({ courseSlug: course.slug, moduleIndex: idx });
+        }
+        const isCompleted = completedSet.has(idx);
+        return {
+          title: module.title,
+          videos: module.videos,
+          documents: module.documents,
+          quizId: module.quizId,
+          percentComplete,
+          isCompleted,
+          completedAt: (enrollmentCompletedModules.find((c: any) => c.moduleIndex === idx)?.completedAt) || null,
+          questions: quiz?.questions || [],
+          quizAttempts,
+          avgQuizScore,
+          lastQuizScore
+        };
+      })
+    );
+    // Add isLocked property based on previous module's completion (using completedSet)
+    const modules = moduleData.map((mod, idx, arr) => ({
+      ...mod,
+      isLocked: idx > 0 && !completedSet.has(idx - 1)
+    }));
+
+    // Overall course progress and counts
+    const totalModules         = modules.length;
+    const completedModulesCount = modules.filter((m: any) => m.isCompleted).length;
+    const courseProgress       = totalModules > 0
+     ? Math.round((completedModulesCount / totalModules) * 100)
+    : 0;
+
+    // Compute average quiz score across all *completed* modules
+    const rawQuizScores = enrollment.quizAttempts.map((a: any) => a.score);
+    const quizPerformance =
+      rawQuizScores.length > 0
+        ? Math.round(rawQuizScores.reduce((sum: number, s: number) => sum + s, 0) / rawQuizScores.length)
+        : null;
+
+    return res.status(200).json({
+      slug: course.slug,
+      title: course.title,
+      description: course.description,
+      type: course.type,
+      enrollment: {
+        enrollDate: enrollment.enrollDate,
+        validUntil: enrollment.validUntil,
+      },
+      modules,
+      progress: courseProgress,
+      quizPerformance,
+      completedModules: completedModulesCount,
+      totalModules,
+    });
+  } catch (error) {
+    console.error('Get course detail error:', error);
     return res.status(500).json({ message: 'Server error' });
   }
 };

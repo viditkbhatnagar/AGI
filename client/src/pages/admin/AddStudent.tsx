@@ -14,7 +14,16 @@ export default function AddStudent() {
   const [, setLocation] = useLocation();
   const [courses, setCourses] = useState<CourseOption[]>([]);
   const [loadingCourses, setLoadingCourses] = useState(true);
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<{
+    email: string;
+    password: string;
+    name: string;
+    phone: string;
+    address: string;
+    dob: string;
+    pathway: string;
+    courseSlugs: string[];
+  }>({
     email: '',
     password: '',
     name: '',
@@ -22,7 +31,7 @@ export default function AddStudent() {
     address: '',
     dob: '',
     pathway: 'standalone',
-    courseSlug: ''
+    courseSlugs: []
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,9 +60,20 @@ export default function AddStudent() {
     })();
   }, []);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name } = e.target;
+    if (name === 'courseSlugs') {
+      const select = e.target as HTMLSelectElement;
+      const values = Array.from(select.selectedOptions).map(
+        (o) => o.value
+      );
+      setForm((prev) => ({ ...prev, courseSlugs: values }));
+    } else {
+      const { value } = e.target;
+      setForm((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -165,19 +185,19 @@ export default function AddStudent() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium">Course</label>
+                <label className="block text-sm font-medium">Courses</label>
                 {loadingCourses ? (
                   <p>Loading courses…</p>
                 ) : (
                   <select
-                    name="courseSlug"
+                    name="courseSlugs"
                     required
-                    value={form.courseSlug}
+                    multiple
+                    value={form.courseSlugs}
                     onChange={handleChange}
-                    className="block w-full border rounded px-3 py-2"
+                    className="block w-full border rounded px-3 py-2 h-32"
                   >
-                    <option value="">Select a course</option>
-                    {courses.map(c => (
+                    {courses.map((c) => (
                       <option key={c.slug} value={c.slug}>
                         {c.title}
                       </option>

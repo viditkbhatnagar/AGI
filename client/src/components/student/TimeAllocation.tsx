@@ -10,8 +10,8 @@ const COLORS = ["#3b82f6", "#10b981", "#f59e0b"];
 export default function TimeAllocation({ data }: Props) {
   return (
     <Card className="shadow-sm hover:shadow-lg transition-shadow mb-6 p-4 sm:p-6">
-      <div className="px-5 py-4 border-b">
-        <h2 className="text-md sm:text-lg font-medium">
+      <div className="px-5 py-4 bg-gradient-to-r from-purple-400 to-purple-300">
+        <h2 className="text-md sm:text-lg font-medium text-white">
           Time Allocation to Documents and Quizzes
         </h2>
       </div>

@@ -42,7 +42,12 @@ export function Sidebar({ className, isMobile, onClose }: SidebarProps) {
   };
   
   return (
-    <div className={cn("flex flex-col h-full bg-gray-950 text-white border-r border-gray-800", className)}>
+    <div
+      className={cn(
+        "flex flex-col h-full bg-gradient-to-b from-blue-900 to-blue-500 text-white",
+        className
+      )}
+    >
       <div className="flex items-center justify-center h-16">
         <h1 className="font-inter font-bold text-3xl">AGI</h1>
         <h1 className="font-inter font-bold text-3xl"></h1>
@@ -51,7 +56,7 @@ export function Sidebar({ className, isMobile, onClose }: SidebarProps) {
       <ScrollArea className="flex-1 py-2">
         {userRole === 'admin' ? (
           <div className="px-2 space-y-1">
-            <p className="px-2 py-1.5 text-xs font-semibold text-sidebar-foreground/70 uppercase">
+            <p className="px-2 py-1.5 text-xs font-semibold text-blue-200 uppercase">
               Admin Dashboard
             </p>
             <NavItem 
@@ -92,7 +97,7 @@ export function Sidebar({ className, isMobile, onClose }: SidebarProps) {
           </div>
         ) : (
           <div className="px-2 space-y-1">
-            <p className="px-2 py-1.5 text-xs font-semibold text-sidebar-foreground/70 uppercase">
+            <p className="px-2 py-1.5 text-xs font-semibold text-blue-200 uppercase">
               Student Dashboard
             </p>
             <NavItem 
@@ -134,7 +139,7 @@ export function Sidebar({ className, isMobile, onClose }: SidebarProps) {
         )}
       </ScrollArea>
       
-      <div className="mt-auto p-4 border-t border-sidebar-border">
+      <div className="mt-auto p-4 border-t border-blue-800">
         <Button 
           variant="ghost" 
           className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
@@ -167,8 +172,8 @@ function NavItem({ href, icon, label, isActive, onClick }: NavItemProps) {
         className={cn(
           "w-full justify-start font-normal",
           isActive
-            ? "bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent"
-            : "hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
+            ? "bg-blue-700 text-white font-semibold"
+            : "hover:bg-blue-600 hover:text-white"
         )}
         onClick={onClick}
       >
