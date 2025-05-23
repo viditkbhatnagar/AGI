@@ -6,6 +6,7 @@ import { LiveClass } from '../models/liveclass';
 import mongoose from 'mongoose';
 import Quiz from '../models/quiz';
 import { Description } from '@radix-ui/react-toast';
+import { format, startOfMonth } from 'date-fns';
 
 // Get student dashboard data
 export const getDashboard = async (req: Request, res: Response) => {
@@ -177,12 +178,45 @@ export const getDashboard = async (req: Request, res: Response) => {
     // Compute daily watch time (in minutes) grouped by date
     const watchTimeByDate: Record<string, number> = {};
     (watchRecords || []).forEach(({ date, duration }) => {
-      const day = new Date(date).toISOString().slice(0, 10);
-      watchTimeByDate[day] = (watchTimeByDate[day] || 0) + duration;
+      const dayKey = format(new Date(date), 'yyyy-MM-dd');
+      watchTimeByDate[dayKey] = (watchTimeByDate[dayKey] || 0) + duration;
     });
     const dailyWatchTime = Object.entries(watchTimeByDate)
       .map(([date, seconds]) => ({ date, minutes: Math.round(seconds / 60) }))
       .sort((a, b) => a.date.localeCompare(b.date));
+
+    // Build lookup for documents viewed per date
+    const docViewsByDate: Record<string, number> = {};
+    (docRecords || []).forEach(({ date }) => {
+      const dayKey = format(new Date(date), 'yyyy-MM-dd');
+      docViewsByDate[dayKey] = (docViewsByDate[dayKey] || 0) + 1;
+    });
+
+    // Compute attendance for the past 7 days based on watchTime or docViews
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const attendance: { date: string; present: boolean }[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      const key = format(d, 'yyyy-MM-dd');
+      const present = Boolean((watchTimeByDate[key] || 0) > 0 || (docViewsByDate[key] || 0) > 0);
+      attendance.push({ date: key, present });
+    }
+    const presentCount = attendance.filter(d => d.present).length;
+    const weeklyAttendanceRate = Math.round((presentCount / 7) * 100);
+
+    // Monthly attendance: present days from 1st through today
+    const monthStart = startOfMonth(today);
+    const daysSoFar = today.getDate();
+    let presentThisMonth = 0;
+    for (let d = new Date(monthStart); d <= today; d.setDate(d.getDate() + 1)) {
+      const key = format(d, 'yyyy-MM-dd');
+      if ((watchTimeByDate[key] || 0) > 0 || (docViewsByDate[key] || 0) > 0) {
+        presentThisMonth++;
+      }
+    }
+    const monthlyAttendanceRate = Math.round((presentThisMonth / daysSoFar) * 100);
 
     // Upcoming live classes (for this course)
     const upcomingLiveClasses = await LiveClass.find({
@@ -231,6 +265,10 @@ export const getDashboard = async (req: Request, res: Response) => {
       upcomingLiveClasses,
       quizScores,    // pie chart data from modules above
       documentsViewed :totalDocViews, // total documents viewed
+      // attendance data
+      attendance,
+      weeklyAttendanceRate,
+      monthlyAttendanceRate
     });
   } catch (error) {
     console.error('Get student dashboard error:', error);
@@ -340,12 +378,50 @@ export const getDashboardByCourse = async (req: Request, res: Response) => {
       .reduce((sum, r) => sum + r.duration, 0);
     const dailyWatchTime = Object.entries(
       watchRecords.reduce((acc, { date, duration }) => {
-        const d = new Date(date).toISOString().slice(0, 10);
-        acc[d] = (acc[d] || 0) + duration;
+        const dayKey = format(new Date(date), 'yyyy-MM-dd');
+        acc[dayKey] = (acc[dayKey] || 0) + duration;
         return acc;
       }, {} as Record<string, number>)
     ).map(([date, seconds]) => ({ date, minutes: Math.round(seconds / 60) }))
       .sort((a, b) => a.date.localeCompare(b.date));
+
+    // --- attendance (past 7 days) ---
+    // Build lookup for documents viewed per date
+    const watchTimeByDate: Record<string, number> = {};
+    (watchRecords || []).forEach(({ date, duration }) => {
+      const dayKey = format(new Date(date), 'yyyy-MM-dd');
+      watchTimeByDate[dayKey] = (watchTimeByDate[dayKey] || 0) + duration;
+    });
+    const docViewsByDate: Record<string, number> = {};
+    (docRecords || []).forEach(({ date }) => {
+      const dayKey = format(new Date(date), 'yyyy-MM-dd');
+      docViewsByDate[dayKey] = (docViewsByDate[dayKey] || 0) + 1;
+    });
+    // Compute attendance for the past 7 days based on watchTime or docViews
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const attendance: { date: string; present: boolean }[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      const key = format(d, 'yyyy-MM-dd');
+      const present = Boolean((watchTimeByDate[key] || 0) > 0 || (docViewsByDate[key] || 0) > 0);
+      attendance.push({ date: key, present });
+    }
+    const presentCount = attendance.filter(d => d.present).length;
+    const weeklyAttendanceRate = Math.round((presentCount / 7) * 100);
+
+    // Monthly attendance: present days from 1st through today
+    const monthStart = startOfMonth(today);
+    const daysSoFar = today.getDate();
+    let presentThisMonth = 0;
+    for (let d = new Date(monthStart); d <= today; d.setDate(d.getDate() + 1)) {
+      const key = format(d, 'yyyy-MM-dd');
+      if ((watchTimeByDate[key] || 0) > 0 || (docViewsByDate[key] || 0) > 0) {
+        presentThisMonth++;
+      }
+    }
+    const monthlyAttendanceRate = Math.round((presentThisMonth / daysSoFar) * 100);
 
     // Upcoming live classes for this course
     const upcomingLiveClasses = await LiveClass.find({
@@ -389,6 +465,9 @@ export const getDashboardByCourse = async (req: Request, res: Response) => {
       upcomingLiveClasses,
       quizScores: moduleData.map(m => ({ title: m.title, score: m.avgQuizScore })),
       documentsViewed: totalDocViews,
+      attendance,
+      weeklyAttendanceRate,
+      monthlyAttendanceRate
     });
   } catch (error) {
     console.error('Get student dashboard by course error:', error);
