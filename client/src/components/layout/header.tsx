@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import logo from "@/components/layout/AGI Logo.png";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Bell, User, LogOut } from "lucide-react";
+import { Bell, User, LogOut, Menu } from "lucide-react";
 import { useAuth } from "@/lib/auth-provider";
 
 interface HeaderProps {
@@ -18,7 +18,9 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
   }, []);
 
   const { userRole, logout } = useAuth();
-  const [location] = useLocation();
+  const [location, navigate] = useLocation();
+  // ─── mobile menu state ───────────────────────────────
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   // ─── role‐based nav ──────────────────────────────────
   const studentLinks = [
@@ -57,9 +59,10 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
   };
 
   return (
+    <>
     <header className="bg-[#FEFDF7] shadow-sm h-24 flex flex-col relative px-6 py-2">
       {/* live clock (stays at very top) */}
-      <div className="absolute inset-x-0 top-1 text-center text-medium font-medium text-[#375BBE]">
+      <div className="hidden md:block absolute inset-x-0 top-1 text-center text-sm md:text-base font-medium text-[#375BBE]">
         {now.toLocaleString(undefined, {
           weekday: "short",
           year: "numeric",
@@ -72,16 +75,28 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
       </div>
 
       {/* bottom-anchored row: logo / nav / utilities */}
-      <div className="flex items-end justify-between flex-1 pb-2">
+      <div className="flex items-center md:items-end justify-between flex-1 pb-2">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden mr-2"
+          onClick={() => {
+            if (onMobileMenuToggle) onMobileMenuToggle();
+            setMobileOpen((prev) => !prev);
+          }}
+          title="Menu"
+        >
+          <Menu className="h-8 w-8 text-[#375BBE]" />
+        </Button>
         {/* logo – larger */}
         <img
           src={logo}
           alt="AGI Logo"
-          className="h-20 md:h-22 w-auto"
+          className="h-16 md:h-20 lg:h-22 w-auto"
         />
 
         {/* nav links – tiny bottom gap */}
-        <nav className="flex space-x-12 mb-1">
+        <nav className="hidden md:flex space-x-8 lg:space-x-12 mb-1">
           {links.map((l) => (
             <NavItem key={l.href} href={l.href} label={l.label} />
           ))}
@@ -106,6 +121,43 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
         </div>
       </div>
     </header>
+      {mobileOpen && (
+        <div className="md:hidden fixed inset-0 z-40 bg-[#FEFDF7] flex flex-col items-center pt-24 space-y-6">
+          {links.map(({ href, label }) => (
+            <button
+              key={href}
+              className="text-2xl font-semibold text-[#375BBE] focus:outline-none"
+              onClick={() => {
+                navigate(href);
+                setMobileOpen(false);
+              }}
+            >
+              {label}
+            </button>
+          ))}
+
+          <div className="flex items-center space-x-10 pt-8">
+            <Button variant="ghost" size="icon">
+              <Bell className="h-10 w-10 text-[#375BBE]" />
+            </Button>
+            <Button variant="ghost" size="icon">
+              <User className="h-10 w-10 text-[#375BBE]" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                logout();
+                setMobileOpen(false);
+              }}
+              title="Logout"
+            >
+              <LogOut className="h-10 w-10 text-[#375BBE]" />
+            </Button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
