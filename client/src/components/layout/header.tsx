@@ -104,11 +104,13 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
 
         {/* utility icons – larger */}
         <div className="flex items-center space-x-6">
-          <Button variant="ghost" size="icon">
-            <Bell className="h-10 w-10 text-[#375BBE]" />
-          </Button>
-          <Button variant="ghost" size="icon">
-            <User className="h-10 w-10 text-[#375BBE]" />
+          <Button
+            variant="ghost"
+            size="icon"
+            title="Profile"
+            onClick={() => navigate("/student/profile")}
+          >
+            <User className="h-12 w-12 text-[#375BBE]" />
           </Button>
           <Button
             variant="ghost"
@@ -116,7 +118,7 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
             onClick={logout}
             title="Logout"
           >
-            <LogOut className="h-10 w-10 text-[#375BBE]" />
+            <LogOut className="h-12 w-12 text-[#375BBE]" />
           </Button>
         </div>
       </div>

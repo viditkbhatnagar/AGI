@@ -9,6 +9,8 @@ import DailyStreak from '@/components/student/DailyStreak';
 import { DashboardMetrics } from '@/components/student/DashboardMetrics';
 import ModuleBreakdown from '@/components/student/ModuleBreakdown';
 import TimeAllocation from "@/components/student/TimeAllocation";
+import ProgressOverTime from '@/components/student/ProgressOverTime';
+import ActivityHeatmap from '@/components/student/ActivityHeatmap';
 
 import {
   CalendarClock,
@@ -100,6 +102,14 @@ export function StudentDashboard() {
     "Focus on being productive instead of busy."
   ];
   const [tip, setTip] = useState<string>("");
+  // ----------- Progress‑over‑time date range (defaults to last 3 days) -----------
+  const todayISO = new Date().toISOString().slice(0, 10);
+  const threeDaysAgoISO = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .slice(0, 10);
+
+  const [startDate, setStartDate] = useState<string>(threeDaysAgoISO);
+  const [endDate, setEndDate] = useState<string>(todayISO);
   useEffect(() => {
     const randomIndex = Math.floor(Math.random() * TIPS.length);
     setTip(TIPS[randomIndex]);
@@ -198,7 +208,46 @@ export function StudentDashboard() {
     upcomingLiveClasses,
     attendance,
     weeklyAttendanceRate,
+    watchTimeInMinutes,
   } = dashboardData;
+
+  // Build cumulative % series for the Progress‑over‑time line chart
+  const progressSeries = (() => {
+    const sorted = [...dailyWatchTime].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+    let running = 0;
+    const total = watchTimeInMinutes || sorted.reduce((s, d) => s + d.minutes, 0);
+    return sorted.map(({ date, minutes }) => {
+      running += minutes;
+      return {
+        date: date.slice(5),     // label "MM‑DD" for the chart
+        iso: date,               // full YYYY‑MM‑DD for range filtering
+        percent: total ? Math.min(100, Math.round((running / total) * 100)) : 0,
+      };
+    });
+  })();
+
+  const filteredSeries = progressSeries.filter(
+    (p) => p.iso >= startDate && p.iso <= endDate
+  );
+
+  // ---------------- Activity heat‑map matrix (last 4 weeks) ----------------
+  const heatmapMatrix = (() => {
+    // 4 rows (weeks) × 7 cols (days), most‑recent week is row 0
+    const matrix = Array.from({ length: 4 }, () => Array(7).fill(0));
+    dailyWatchTime.forEach(({ date, minutes }) => {
+      const d = new Date(date);
+      const day = d.getDay(); // 0 = Sun
+      const weeksAgo = Math.floor(
+        (Date.now() - d.getTime()) / (7 * 24 * 60 * 60 * 1000)
+      );
+      if (weeksAgo < 4) {
+        matrix[weeksAgo][day] += minutes;
+      }
+    });
+    return matrix.reverse(); // oldest on top, newest on bottom
+  })();
   
   return (
     <div className="min-h-screen bg-[#FEFDF7] p-4 md:p-6">
@@ -339,13 +388,33 @@ export function StudentDashboard() {
                         </div>
                       </div>
                       <div className="mt-4 md:mt-0">
-                        {liveClass.meetLink && (
-                          <a href={liveClass.meetLink} target="_blank" rel="noopener noreferrer">
-                            <Button className="bg-[#FF7F50] text-white rounded-lg py-2 px-4">
+                        {(() => {
+                          const now = new Date();
+                          const start = new Date(liveClass.startTime);
+                          const end = new Date(liveClass.endTime);
+                          const isActive =
+                            now >= new Date(start.getTime() - 15 * 60000) &&
+                            now <= new Date(end.getTime() + 15 * 60000);
+                          if (!liveClass.meetLink) return null;
+                          return isActive ? (
+                            <a
+                              href={liveClass.meetLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <Button className="bg-[#FF7F50] text-white rounded-lg py-2 px-4">
+                                Join Session
+                              </Button>
+                            </a>
+                          ) : (
+                            <Button
+                              disabled
+                              className="bg-gray-300 text-white rounded-lg py-2 px-4 cursor-not-allowed"
+                            >
                               Join Session
                             </Button>
-                          </a>
-                        )}
+                          );
+                        })()}
                       </div>
                     </div>
                   </div>
@@ -379,13 +448,61 @@ export function StudentDashboard() {
               <DailyStreak dailyWatchTime={dashboardData.dailyWatchTime} />
             </div>
           </Card>
-              <TimeAllocation
-                data={[
-                  { name: "Total time previews", value: dashboardData.documentsViewed },
-                  { name: "Total quiz time", value: dashboardData.quizScores.reduce((sum, q) => sum + q.score, 0) }
-                ]}
-              />
+          <Card className="shadow-sm hover:shadow-lg transition-shadow rounded-3xl overflow-hidden bg-[#FEFDF7]">
+            <div className="px-5 py-4 bg-[#375BBE] rounded-t-3xl">
+              <h2 className="text-2xl font-semibold text-white">Tip of the Day</h2>
+            </div>
+            <CardContent className="p-6 text-[#2E3A59] bg-[#FEFDF7] rounded-b-3xl">
+              <p className="text-base italic">"{tip}"</p>
+            </CardContent>
+          </Card>
+          <TimeAllocation
+            data={[
+              { name: "Total time previews", value: dashboardData.documentsViewed },
+              { name: "Total quiz time", value: dashboardData.quizScores.reduce((sum, q) => sum + q.score, 0) }
+            ]}
+          />
         </div>
+      </div>
+      {/* Bottom row: Progress‑over‑time + placeholder */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        {/* Progress Over Time */}
+        <Card className="rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow bg-[#FEFDF7]">
+          <div className="px-5 py-4 bg-[#375BBE] rounded-t-3xl flex flex-col md:flex-row md:items-center md:justify-between">
+            <h2 className="text-2xl font-semibold text-white mb-3 md:mb-0">Progress Over Time</h2>
+            {/* Date range picker */}
+            <div className="flex items-center space-x-2 text-[#FEFDF7]">
+              <input
+                type="date"
+                value={startDate}
+                max={endDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="rounded px-2 py-1 text-[#2E3A59]"
+              />
+              <span className="text-white">to</span>
+              <input
+                type="date"
+                value={endDate}
+                min={startDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="rounded px-2 py-1 text-[#2E3A59]"
+              />
+            </div>
+          </div>
+          <CardContent className="p-6 bg-[#FEFDF7]">
+            <ProgressOverTime dates={filteredSeries.map(({ date, percent }) => ({ date, percent }))} />
+          </CardContent>
+        </Card>
+
+        {/* Activity Heatmap */}
+        <Card className="rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow bg-[#FEFDF7]">
+          <div className="px-5 py-4 bg-[#375BBE] rounded-t-3xl">
+            <h2 className="text-2xl font-semibold text-white">Activity Heatmap</h2>
+          </div>
+          <CardContent className="p-6 bg-[#FEFDF7] flex justify-center">
+            <ActivityHeatmap matrix={heatmapMatrix} />
+          </CardContent>
+        </Card>
       </div>
       
     </div>
