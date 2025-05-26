@@ -25,6 +25,7 @@ import AttendanceCalendar from "@/components/student/AttendanceCalendar";
 
 // Types based on API response from server
 interface DashboardData {
+  monthlyAttendanceRate: number;
   student: {
     id: string;
     name: string;
@@ -55,6 +56,7 @@ interface DashboardData {
       enrollDate: string;
       validUntil: string;
     };
+    description: string; // Add description field
   } | null;
   upcomingLiveClasses: Array<{
     _id: string;
@@ -199,22 +201,12 @@ export function StudentDashboard() {
   } = dashboardData;
   
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-6">
+    <div className="min-h-screen bg-[#FEFDF7] p-4 md:p-6">
       {/* Welcome Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <h1 className="text-[25px] font-bold text-gray-800">
           Welcome back, {student?.name?.split(' ')[0]}!
         </h1>
-        {/* <div className="mt-2 md:mt-0">
-          {course?.slug && (
-            <Link href={`/student/courses/${selectedCourse || course?.slug}`}>
-              <Button>
-                <PlayCircle className="mr-2 h-4 w-4" />
-                Resume Learning
-              </Button>
-            </Link>
-          )}
-        </div> */}
       </div>
       {/* Course Picker for multiple enrollments */}
       {courses.length > 1 && (
@@ -247,54 +239,53 @@ export function StudentDashboard() {
 
 
       {/* Unified Course Card */}
-      <Card className="rounded-3xl overflow-hidden shadow-lg mb-6">
-        <div className="w-full bg-[#2B3A8B] text-[#FAF3E0] p-8 shadow-xl">
+      <Card className="rounded-3xl overflow-hidden shadow-lg mb-6" style={{ background: "#FEFDF7" }}>
+        <div className="w-full bg-[#375BBE] text-white p-8 shadow-xl">
           <div className="flex flex-col lg:flex-row">
             {/* Left Column: Course info */}
             <div className="lg:w-1/2 pr-6">
-              <h2 className="text-5xl font-semibold mb-2 text-[#FAF3E0]">{course?.title}</h2>
-              <div className="space-y-2 text-sm text-[#FAF3E0]/80 mb-4">
+              <h2 className="text-5xl font-semibold mb-2">{course?.title}</h2>
+              <div className="space-y-2 text-sm mb-4">
                 <div className="flex items-center">
-                  <CalendarClock className="mr-2 h-5 w-5 stroke-2" />
-                  <span>Enrolled: {formatDateTime(course.enrollment.enrollDate)}</span>
+                  <CalendarClock className="mr-2 h-5 w-5 stroke-2 text-[#FF7F50]" />
+                  <span><strong>Enrolled:</strong> {course && course.enrollment && formatDateTime(course.enrollment.enrollDate)}</span>
                 </div>
                 <div className="flex items-center">
-                  <Clock className="mr-2 h-5 w-5 stroke-2" />
-                  <span>Valid until: {formatDateTime(course.enrollment.validUntil)}</span>
+                  <Clock className="mr-2 h-5 w-5 stroke-2 text-[#FF7F50]" />
+                  <span><strong>Valid until:</strong> {course && course.enrollment ? formatDateTime(course.enrollment.validUntil) : 'N/A'}</span>
                 </div>
               </div>
-              <p className="text-sm text-[#FAF3E0]/90 mb-6">{course?.description}</p>
-              <div className="flex space-x-12 text-base font-semibold text-[#FAF3E0]/90 mb-8">
+              <p className="text-sm mb-6">{course?.description}</p>
+              <div className="flex space-x-12 text-base font-semibold mb-8">
                 <div>Quiz Performance: {quizPerformance !== null ? quizPerformance + '%' : 'N/A'}</div>
-                <div>Live Scheduled: {upcomingLiveClasses.length}</div>
-                <div>Docs Viewed: {dashboardData.documentsViewed}</div>
+                <div>Live Classes Scheduled: {upcomingLiveClasses.length}</div>
+                <div>Documents Viewed: {dashboardData.documentsViewed}</div>
               </div>
               <a
-  href={`/student/courses/${selectedCourse || course?.slug}`}
-  className="mt-6 block"
->
-  <Button>
-    <PlayCircle className="mr-2 h-5 w-5 text-[#1d2b50]" />
-    Continue Learning
-  </Button>
-</a>
+                href={`/student/courses/${selectedCourse || course?.slug}`}
+                className="mt-6 block"
+              >
+                <Button className="bg-[#FF7F50] text-white rounded-lg py-3 px-6 text-xl">
+                  Continue Learning
+                </Button>
+              </a>
             </div>
 
             {/* Right Column: 3-metric grid */}
             <div className="lg:w-1/2 mt-6 lg:mt-0">
-              <div className="grid grid-cols-3 bg-[#FAF3E0] text-[#1d2b50] divide-x divide-[#1d2b50]/30 gap-0 p-4 rounded-xl">
+              <div className="grid grid-cols-3 bg-[#FAF3E0] text-[#2E3A59] divide-x divide-[#2E3A59]/30 gap-0 p-4 rounded-xl">
                 <div className="text-center px-4 py-6">
-                  <PieChart className="mx-auto h-8 w-8 mb-2" />
+                  <PieChart className="mx-auto h-8 w-8 mb-2 text-[#2E3A59]" />
                   <div className="text-3xl font-bold">{courseProgress || 0}%</div>
                   <div className="text-xl mt-1">Course Progress</div>
                 </div>
                 <div className="text-center px-4 py-6">
-                  <Clock className="mx-auto h-8 w-8 mb-2" />
+                  <Clock className="mx-auto h-8 w-8 mb-2 text-[#2E3A59]" />
                   <div className="text-3xl font-bold">{watchTime.total}</div>
                   <div className="text-xl mt-1">Watch Time</div>
                 </div>
                 <div className="text-center px-4 py-6">
-                  <BookOpen className="mx-auto h-8 w-8 mb-2" />
+                  <BookOpen className="mx-auto h-8 w-8 mb-2 text-[#2E3A59]" />
                   <div className="text-3xl font-bold">{course?.completedModules}/{course?.totalModules}</div>
                   <div className="text-xl mt-1">Modules Completed</div>
                 </div>
@@ -304,122 +295,99 @@ export function StudentDashboard() {
         </div>
       </Card>
 
-        {/* Streak and Tip stacked */}
-        <div className="flex flex-col gap-4">
-          {/* Tip of the Day */}
-          <Card className="shadow-sm hover:shadow-lg transition-shadow duration-200 ease-in-out">
-            <div className="px-5 py-4 bg-gradient-to-r from-pink-400 to-pink-300">
-              <h2 className="text-lg font-medium text-white">Tip of the Day</h2>
-            </div>
-            <CardContent className="p-4">
-              <div className="flex items-start">
-                <div className="p-3 rounded-full bg-pink-200 text-pink-600">
-                  <PieChart className="h-5 w-5" />
-                </div>
-                <div className="ml-4">
-                  <p className="text-base text-gray-800">{tip}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Day Wise Streak */}
-          <Card className="shadow-sm hover:shadow-lg transition-shadow duration-200 ease-in-out">
-            <div className="px-5 py-4 bg-gradient-to-r from-amber-400 to-amber-300">
-              <h2 className="text-lg font-medium text-white">Your Day Wise Streak</h2>
+        {/* Three‑column dashboard section */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          {/* Column 1: Daily Watch Time Chart */}
+          <Card className="rounded-3xl shadow-sm hover:shadow-lg transition-shadow duration-200 ease-in-out bg-[#FEFDF7] text-[#6D0016]">
+            <div className="px-5 py-4 bg-[#375BBE] rounded-t-3xl">
+              <h2 className="text-2xl font-semibold text-white">Daily Watch Time Analysis</h2>
             </div>
             <CardContent className="p-5">
-              <DailyStreak dailyWatchTime={dashboardData.dailyWatchTime} />
+              <ProgressChart
+                data={dashboardData.dailyWatchTime}
+                watchTime={dashboardData.watchTime}
+              />
+              {/* Removed inline header as per instructions */}
+              <p className="mt-2 text-xl font-large text-[#FF7F50]">
+                Your Weekly Watch time is <strong>{dashboardData.watchTime.thisWeek}</strong> and your total watch time till date is <strong>{dashboardData.watchTime.total}</strong>
+              </p>
             </CardContent>
           </Card>
-        </div>
 
-        {/* Daily Attendance & Watch Time Chart Side by Side */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          {/* Daily Attendance */}
-          <div>
+          {/* Column 2: Upcoming Live Classes */}
+          <Card className="rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow bg-[#FEFDF7]">
+            <div className="px-6 py-3 bg-[#375BBE] text-white rounded-t-3xl">
+              <h2 className="text-[22px] font-bold text-white">Upcoming Live Classes</h2>
+            </div>
+            <CardContent className="p-6 text-[#2E3A59] bg-[#FEFDF7] rounded-b-3xl">
+              {upcomingLiveClasses?.length > 0 ? (
+                upcomingLiveClasses.map((liveClass) => (
+                  <div key={liveClass._id} className="border border-gray-200 rounded-lg p-4 mb-4">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between">
+                      <div>
+                        <div className="flex items-center">
+                          <CalendarClock className="text-[#2E3A59] mr-2 h-5 w-5" />
+                          <h3 className="font-medium text-[#2E3A59]">{liveClass.title}</h3>
+                        </div>
+                        <p className="text-sm mt-1 text-[#2E3A59]">Course: {liveClass.courseSlug}</p>
+                        <div className="flex items-center mt-2">
+                          <span className="text-sm text-[#2E3A59]">{formatDateTime(liveClass.startTime)}</span>
+                          <span className="mx-2 text-gray-300">|</span>
+                          <span className="text-sm text-[#2E3A59]">
+                            {Math.round((new Date(liveClass.endTime).getTime() - new Date(liveClass.startTime).getTime()) / (1000 * 60))} minutes
+                          </span>
+                        </div>
+                      </div>
+                      <div className="mt-4 md:mt-0">
+                        {liveClass.meetLink && (
+                          <a href={liveClass.meetLink} target="_blank" rel="noopener noreferrer">
+                            <Button className="bg-[#FF7F50] text-white rounded-lg py-2 px-4">
+                              Join Session
+                            </Button>
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8">
+                  <CalendarClock className="h-12 w-12 text-gray-300 mx-auto mb-2" />
+                  <p className="mt-2 text-gray-500">No upcoming live classes</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Column 3: Daily Attendance */}
             <AttendanceCalendar
               attendance={dashboardData.attendance}
               weeklyAttendanceRate={dashboardData.weeklyAttendanceRate}
               monthlyAttendanceRate={dashboardData.monthlyAttendanceRate}
             />
-          </div>
-          {/* Daily Watch Time Chart */}
-          <Card className="shadow-sm hover:shadow-lg transition-shadow duration-200 ease-in-out">
-            <div className="px-5 py-4 bg-gradient-to-r from-teal-400 to-teal-300">
-              <h2 className="text-lg font-medium text-white">Daily Watch Time</h2>
+        </div>
+
+      {/* Module Breakdown, Day Wise Streak, and Time Allocation */}
+      <div className="grid grid-cols-1 md:grid-cols-[65%_35%] gap-4 mb-6">
+        <ModuleBreakdown modules={dashboardData.course?.modules || []} />
+        <div className="flex flex-col gap-4">
+          <Card className="shadow-sm hover:shadow-lg transition-shadow rounded-3xl overflow-hidden">
+            <div className="px-5 py-4" style={{ backgroundColor: "#375BBE" }}>
+              <h2 className="text-2xl font-medium text-white">Streak Counter</h2>
             </div>
-            <CardContent className="p-5">
-              <ProgressChart data={dashboardData.dailyWatchTime} />
-              <div className="ml-4">
-                <p className="text-xs font-medium text-gray-500 mt-1">Your Weekly Watch time is <strong>{watchTime?.thisWeek || "0h 0m"}</strong> and your total watch time till date is <strong>{watchTime?.total || "0h 0m"} </strong></p>
-              </div>
-            </CardContent>
+            <div className="rounded-b-3xl">
+              <DailyStreak dailyWatchTime={dashboardData.dailyWatchTime} />
+            </div>
           </Card>
-        </div>
-    
-
-
-
-      {/* Module Progress Breakdown & Time Allocation (side by side) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div className="md:col-span-1">
-          <ModuleBreakdown modules={dashboardData.course?.modules || []} />
-        </div>
-        <div className="md:col-span-1">
-          <TimeAllocation
-            data={[
-              { name: "Total time in minutes you previewed the documents till date :", value: dashboardData.documentsViewed * 2 },
-              { name: "Total time you took to solve the quizzes till date :", value: dashboardData.quizPerformance !== null ? 5 : 0 },
-            ]}
-          />
+              <TimeAllocation
+                data={[
+                  { name: "Total time previews", value: dashboardData.documentsViewed },
+                  { name: "Total quiz time", value: dashboardData.quizScores.reduce((sum, q) => sum + q.score, 0) }
+                ]}
+              />
         </div>
       </div>
       
-      {/* Upcoming Live Classes */}
-      <Card className="shadow-sm hover:shadow-lg transition-shadow duration-200 ease-in-out">
-        <div className="px-5 py-4 bg-gradient-to-r from-emerald-400 to-emerald-300">
-          <h2 className="text-lg font-medium text-white">Upcoming Live Classes</h2>
-        </div>
-        <CardContent className="p-5">
-          {upcomingLiveClasses?.length > 0 ? (
-            upcomingLiveClasses.map((liveClass) => (
-              <div key={liveClass._id} className="border border-gray-200 rounded-lg p-4 mb-4">
-                <div className="flex flex-col md:flex-row md:items-center justify-between">
-                  <div>
-                    <div className="flex items-center">
-                      <CalendarClock className="text-primary mr-2 h-5 w-5" />
-                      <h3 className="font-medium text-gray-800">{liveClass.title}</h3>
-                    </div>
-                    <p className="text-gray-500 text-sm mt-1">Course: {liveClass.courseSlug}</p>
-                    <div className="flex items-center mt-2">
-                      <span className="text-sm text-gray-600">{formatDateTime(liveClass.startTime)}</span>
-                      <span className="mx-2 text-gray-300">|</span>
-                      <span className="text-sm text-gray-600">
-                        {Math.round((new Date(liveClass.endTime).getTime() - new Date(liveClass.startTime).getTime()) / (1000 * 60))} minutes
-                      </span>
-                    </div>
-                  </div>
-                  <div className="mt-4 md:mt-0">
-                    {liveClass.meetLink && (
-                      <a href={liveClass.meetLink} target="_blank" rel="noopener noreferrer">
-                        <Button variant="outline">
-                          Join Session
-                        </Button>
-                      </a>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="text-center py-8">
-              <CalendarClock className="h-12 w-12 text-gray-300 mx-auto mb-2" />
-              <p className="mt-2 text-gray-500">No upcoming live classes</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
     </div>
   );
 }

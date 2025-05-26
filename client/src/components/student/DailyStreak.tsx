@@ -1,4 +1,3 @@
-// client/src/components/student/DailyStreak.tsx
 import React from 'react';
 
 type Props = { dailyWatchTime: { date: string; minutes: number }[] };
@@ -19,16 +18,12 @@ export default function DailyStreak({ dailyWatchTime }: Props) {
   }
 
   return (
-    <div className="p-4 sm:p-6 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-lg">
-      <div className="flex items-center text-yellow-800">
-        <span className="text-2xl sm:text-3xl mr-2">🔥</span>
-        <div>
-          <div className="text-base sm:text-lg md:text-xl font-semibold">
-            {streak}-Day Streak
-          </div>
-          <div className="text-xs sm:text-sm">Keep it going!</div>
-        </div>
+    <div className="rounded-lg overflow-hidden">
+      <div className="p-6 bg-[#FEFDF7] text-center">
+        <div className="text-4xl font-bold text-[#375BBE]">{streak} days 🔥 </div>
       </div>
     </div>
   );
 }
+
+//[#FEFDF7] text-[#2E3A59]

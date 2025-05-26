@@ -1,79 +1,77 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { useMemo } from "react";
-
-const COLORS = [ "#A8D5E2", "#E2A8C6", "#F2D388", "#B8E986", "#D4A5A5", "#D8C1A5", "#C5D8A4", "#B1A8E2", "#E2C1A8", "#A8E2B8" ];
+// Soft‑mint text color (formerly imported from "@/lib/colors")
+const SOFT_LILAC = "#B2E0D6";
 
 type Props = { modules: { title: string; percentComplete: number }[] };
 
-// Custom Y-axis tick: truncate long names and show full text on hover
-const AdaptiveTick = (props: any) => {
-  const { x, y, payload } = props;
-  const text: string = payload.value;
-
-  // Truncate if longer than 35 characters
-  const MAX = 35;
-  const display = text.length > MAX ? text.slice(0, MAX) + "…" : text;
-
-  // Slightly reduce font size for anything > 25 chars
-  const fontSize = text.length > 25 ? 12 : 14;
-
-  return (
-    <text
-      x={x}
-      y={y}
-      dy={3}
-      textAnchor="end"
-      fill="#374151"
-      fontSize={fontSize}
-    >
-      <title>{text}</title> {/* tooltip with full title */}
-      {display}
-    </text>
-  );
-};
-
 export default function ModuleBreakdown({ modules }: Props) {
+  // 👉 Guard for empty data
+  if (modules.length === 0) {
+    return (
+      <Card className="shadow-sm mb-6 rounded-2xl bg-[#FEFDF7] text-[#2E3A59]">
+        <div className="sticky top-0 z-10 px-5 py-4 rounded-t-2xl bg-[#375BBE]">
+          <h2 className="text-2xl font-semibold text-white">Module Wise Progress</h2>
+        </div>
+        <CardContent className="py-12 flex items-center justify-center">
+          <span className="text-sm">No module progress data yet</span>
+        </CardContent>
+      </Card>
+    );
+  }
+
   const data = useMemo(() =>
-    modules.map((m, i) => ({
+    modules.map((m) => ({
       name: m.title,
       value: m.percentComplete,
-      fill: COLORS[i % COLORS.length]
     })),
     [modules]
   );
-  // Dynamic height: ~34 px per bar, with a sensible minimum
-  const chartHeight = Math.max(modules.length * 34, 200);
+  // Give each bar a little more vertical space so the chart
+  // visually fills the card. 56 px per bar keeps the labels
+  // readable and eliminates the large empty area at the bottom.
+  const chartHeight = Math.max(modules.length * 56, 300);
 
   return (
-    <Card className="shadow-sm hover:shadow-lg transition-shadow mb-6">
+    <Card className="shadow-sm mb-6 rounded-2xl bg-[#FEFDF7] text-[#2E3A59]">
       {/* Gradient header for Module Progress */}
-      <div className="px-5 py-4 bg-gradient-to-r from-blue-400 to-blue-200">
-        <h2 className="text-lg font-medium text-white">Module Progress</h2>
+      <div className="sticky top-0 z-10 px-5 py-4 rounded-t-2xl bg-[#375BBE]">
+        <h2 className="text-2xl font-semibold text-white">Module Wise Progress</h2>
       </div>
-      <CardContent>
-        <div className="overflow-x-auto pb-2">
-          <ResponsiveContainer width="100%" height={chartHeight}>
-            <BarChart
-              data={data}
-              layout="vertical"
-              margin={{ top: 20, right: 40, left: 0, bottom: 20 }}
-            >
-              <XAxis type="number" domain={[0, 'dataMax']} hide />
-              <YAxis
-                type="category"
-                dataKey="name"
-                width={250}
-                tick={<AdaptiveTick />}
-              />
-              <Tooltip formatter={(v: number) => `${v}%`} />
-              <Bar dataKey="value" radius={[0, 5, 5, 0]} barSize={24} isAnimationActive={false}>
-                {data.map((entry, idx) => (
-                  <Cell key={`cell-${idx}`} fill={entry.fill} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+      <CardContent className="p-0 flex justify-center items-center">
+        <div className="w-full py-6">
+          <div className="overflow-x-auto">
+            <ResponsiveContainer width="100%" height={chartHeight}>
+              <BarChart
+                data={data}
+                layout="vertical"
+                margin={{ top: 0, right: 40, left: 0, bottom: 0 }}
+              >
+                <XAxis type="number" domain={[0, 'dataMax']} hide />
+                <YAxis
+                  type="category"
+                  dataKey="name"
+                  width={280}
+                  tickLine={false}
+                  tickMargin={8}
+                  tick={{ fill: "#2E3A59", fontSize: 14 }}
+                  tickFormatter={(value: string) =>
+                    value.length > 35 ? value.slice(0, 35) + "…" : value
+                  }
+                />
+                <Tooltip formatter={(v: number) => `${v}%`} contentStyle={{ backgroundColor: '#36454F', color: '#B2E0D6', borderRadius: 8 }} />
+                <Bar radius={[0,4,4,0]} barSize={24} dataKey="value" isAnimationActive={false}>
+                  {data.map((entry, idx) => {
+                    let color = "#E63946"; // alert <50
+                    if (entry.value >= 75) color = "#5BC0EB"; // cool
+                    else if (entry.value >= 50) color = "#FF7F50"; // warm
+                    return <Cell key={idx} fill={color} />;
+                  })}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </CardContent>
     </Card>

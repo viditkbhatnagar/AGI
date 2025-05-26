@@ -1,91 +1,108 @@
+import React, { useEffect, useState } from "react";
+import logo from "@/components/layout/AGI Logo.png";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Menu, Bell, User } from "lucide-react";
-import React, { useState, useEffect } from "react";
+import { Bell, User, LogOut } from "lucide-react";
 import { useAuth } from "@/lib/auth-provider";
-import { getInitials } from "@/lib/utils";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import logoImg from "./AGI Logo.png";
 
 interface HeaderProps {
-  onMobileMenuToggle: () => void;
+  onMobileMenuToggle?: () => void;
 }
 
 export function Header({ onMobileMenuToggle }: HeaderProps) {
-  const { user, student, logout } = useAuth();
-  const [currentTime, setCurrentTime] = useState(new Date());
-
+  // ─── live date‐time ─────────────────────────────────
+  const [now, setNow] = useState(new Date());
   useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
   }, []);
 
+  const { userRole, logout } = useAuth();
+  const [location] = useLocation();
+
+  // ─── role‐based nav ──────────────────────────────────
+  const studentLinks = [
+    { label: "Overview",     href: "/student" },
+    { label: "My Courses",   href: "/student/courses" },
+    { label: "Live Classes", href: "/student/live-classes" },
+    { label: "Profile",      href: "/student/profile" },
+    { label: "Support",      href: "/student/support" },
+  ];
+  const adminLinks = [
+    { label: "Overview",    href: "/admin" },
+    { label: "Students",    href: "/admin/students" },
+    { label: "Courses",     href: "/admin/courses" },
+    { label: "Progress",    href: "/admin/enrollments" },
+    { label: "Live Classes",href: "/admin/live-classes" },
+  ];
+  const links = userRole === "admin" ? adminLinks : studentLinks;
+
+  // ─── single nav item ───────────────────────────────
+  const NavItem = ({ href, label }: { href: string; label: string }) => {
+    const isActive =
+      href === location || (href !== "/" && location.startsWith(href));
+    return (
+      <Link
+        href={href}
+        className={
+          "text-2xl font-semibold transition-colors " +
+          (isActive
+            ? "text-[#375BBE] font-semibold"
+            : "text-[#375BBE]/80 hover:text-[#375BBE]")
+        }
+      >
+        {label}
+      </Link>
+    );
+  };
+
   return (
-    <header className="bg-white shadow-sm z-10 sticky top-0">
-      <div className="flex items-center h-16 px-4 md:px-6">
-        <div className="flex items-center">
-          {/* Mobile menu button */}
-          <Button variant="ghost" size="icon" className="md:hidden" onClick={onMobileMenuToggle}>
-            <Menu className="h-6 w-6" />
+    <header className="bg-[#FEFDF7] shadow-sm h-24 flex flex-col relative px-6 py-2">
+      {/* live clock (stays at very top) */}
+      <div className="absolute inset-x-0 top-1 text-center text-medium font-medium text-[#375BBE]">
+        {now.toLocaleString(undefined, {
+          weekday: "short",
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        })}
+      </div>
+
+      {/* bottom-anchored row: logo / nav / utilities */}
+      <div className="flex items-end justify-between flex-1 pb-2">
+        {/* logo – larger */}
+        <img
+          src={logo}
+          alt="AGI Logo"
+          className="h-20 md:h-22 w-auto"
+        />
+
+        {/* nav links – tiny bottom gap */}
+        <nav className="flex space-x-12 mb-1">
+          {links.map((l) => (
+            <NavItem key={l.href} href={l.href} label={l.label} />
+          ))}
+        </nav>
+
+        {/* utility icons – larger */}
+        <div className="flex items-center space-x-6">
+          <Button variant="ghost" size="icon">
+            <Bell className="h-10 w-10 text-[#375BBE]" />
           </Button>
-          <img src={logoImg} alt="AGI.online" className="h-8 w-auto max-w-[120px]" />
-        </div>
-
-        <div className="flex-1 text-center hidden sm:block">
-          <div className="text-sm font-bold text-gray-900">
-            <span className="mr-4">
-              {currentTime.toLocaleDateString('en-US', {
-                month: '2-digit',
-                day: '2-digit',
-                year: 'numeric'
-              })}
-            </span>
-            <span>
-              {currentTime.toLocaleTimeString('en-US', {
-                hour12: false,
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-              })}
-            </span>
-          </div>
-        </div>
-
-        {/* User menu */}
-        <div className="flex items-center space-x-4">
-          <Button variant="ghost" size="icon" className="text-gray-600 hover:text-gray-900">
-            <Bell className="h-5 w-5" />
+          <Button variant="ghost" size="icon">
+            <User className="h-10 w-10 text-[#375BBE]" />
           </Button>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="ml-4 relative flex items-center gap-2 hover:bg-gray-100">
-                <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-medium">
-                  {user?.username ? getInitials(user.username) : "U"}
-                </div>
-                <span className="hidden md:block text-sm font-medium">{student?.name || user?.username}</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <User className="mr-2 h-4 w-4" />
-                <span>Profile</span>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={logout}>
-                Logout
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={logout}
+            title="Logout"
+          >
+            <LogOut className="h-10 w-10 text-[#375BBE]" />
+          </Button>
         </div>
       </div>
     </header>

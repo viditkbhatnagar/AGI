@@ -1,42 +1,72 @@
-// client/src/components/student/TimeAllocation.tsx
-import { Card, CardContent } from "@/components/ui/card";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+// src/components/student/TimeAllocation.tsx
+import React from "react";
+import {
+  Card,
+  CardContent
+} from "@/components/ui/card";
+import {
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell
+} from "recharts";
 
-type Slice = { name: string; value: number };
-type Props = { data: Slice[] };
+interface TimeAllocationProps {
+  data: { name: string; value: number }[];
+}
 
-const COLORS = ["#3b82f6", "#10b981", "#f59e0b"];
-
-export default function TimeAllocation({ data }: Props) {
+export default function TimeAllocation({ data }: TimeAllocationProps) {
   return (
-    <Card className="shadow-sm hover:shadow-lg transition-shadow mb-6 p-4 sm:p-6">
-      <div className="px-5 py-4 bg-gradient-to-r from-purple-400 to-purple-300">
-        <h2 className="text-md sm:text-lg font-medium text-white">
-          Time Allocation to Documents and Quizzes
-        </h2>
+    <Card className="rounded-lg shadow overflow-hidden">
+      {/* Header */}
+      <div
+        className="bg-[#375BBE] text-white font-bold text-[18px] font-inter px-4 py-3"
+      >
+        Time Allocation to Documents and Quizzes
       </div>
-      <CardContent>
-        <div className="flex flex-col sm:flex-row items-center justify-around gap-4">
+
+      {/* Content Area */}
+      <CardContent className="bg-[#FEFDF7] p-6">
+        <ResponsiveContainer width="100%" height={200}>
+          <PieChart>
+            <Pie
+              data={data}
+              dataKey="value"
+              nameKey="name"
+              innerRadius={60}
+              outerRadius={80}
+              label={({ percent }) =>
+                `${(percent * 100).toFixed(0)}%`
+              }
+              labelLine={false}
+            >
+              {data.map((entry, idx) => (
+                <Cell
+                  key={entry.name}
+                  fill={
+                    idx === 0
+                      ? "#FF7F50" // warm accent for docs
+                      : "#5BC0EB" // cool accent for quizzes
+                  }
+                />
+              ))}
+            </Pie>
+          </PieChart>
+        </ResponsiveContainer>
+
+        {/* Summary Labels */}
+        <div className="mt-6 flex justify-between text-[#2E3A59]">
           <div className="text-center">
-            <div className="font-semibold">{data[0]?.name}</div>
-            <div className="mb-2">{data[0]?.value}m</div>
-          </div>
-          <div className="w-40 h-40 sm:w-56 sm:h-56">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={60} label={({ percent }) => `${Math.round(percent * 100)}%`} labelLine={false}>
-                  {data.map((_, idx) => <Cell key={idx} fill={COLORS[idx % COLORS.length]} />)}
-                </Pie>
-                <Tooltip formatter={(value: number, name: string, props) => {
-                  const percent = props.payload.value / data.reduce((sum, d) => sum + d.value, 0) * 100;
-                  return [`${value}m (${Math.round(percent)}%)`, name];
-                }} />
-              </PieChart>
-            </ResponsiveContainer>
+            <p className="font-medium">Total time previews</p>
+            <p className="text-[20px] font-bold text-[#FF7F50]">
+              {data[0].value}m
+            </p>
           </div>
           <div className="text-center">
-            <div className="font-semibold">{data[1]?.name}</div>
-            <div className="mb-2">{data[1]?.value}m</div>
+            <p className="font-medium">Total quiz time</p>
+            <p className="text-[20px] font-bold text-[#5BC0EB]">
+              {data[1].value}m
+            </p>
           </div>
         </div>
       </CardContent>

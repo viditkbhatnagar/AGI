@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Header } from "./header";
-import { Sidebar } from "./sidebar";
+//import { Sidebar } from "./sidebar";
 import { useAuth } from "@/lib/auth-provider";
 import { Loader2 } from "lucide-react";
 import { useLocation, useSearch, Redirect } from "wouter";
@@ -54,13 +54,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <Sidebar isMobile={true} onClose={toggleMobileMenu} />
+        {/* <Sidebar isMobile={true} onClose={toggleMobileMenu} /> */}
       </div>
 
       {/* Sidebar for desktop screens */}
-      <div className="hidden md:block md:w-64">
+      {/* <div className="hidden md:block md:w-64">
         <Sidebar />
-      </div>
+      </div> */}
       
       {/* Main Content */}
       <div className="flex flex-col flex-1 overflow-hidden">
