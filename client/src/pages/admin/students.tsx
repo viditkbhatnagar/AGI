@@ -6,7 +6,7 @@ export default function StudentsPage() {
   return (
     <DashboardLayout>
       <Helmet>
-        <title>Students | AGI.online</title>
+        <title>Students | AGI</title>
         <meta name="description" content="Manage student accounts, view their progress, and update their information." />
       </Helmet>
       <Students />

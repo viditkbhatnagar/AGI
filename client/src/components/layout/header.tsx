@@ -4,161 +4,222 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Bell, User, LogOut, Menu } from "lucide-react";
 import { useAuth } from "@/lib/auth-provider";
+import { cn } from "@/lib/utils";
 
 interface HeaderProps {
   onMobileMenuToggle?: () => void;
 }
 
+// Navigation link types and constants
+interface NavLink {
+  label: string;
+  href: string;
+}
+
+const STUDENT_LINKS: NavLink[] = [
+  { label: "Overview",     href: "/student" },
+  { label: "My Courses",   href: "/student/courses" },
+  { label: "Live Classes", href: "/student/live-classes" },
+  { label: "Profile",      href: "/student/profile" },
+  { label: "Support",      href: "/student/support" },
+];
+
+const ADMIN_LINKS: NavLink[] = [
+  { label: "Overview",    href: "/admin" },
+  { label: "Students",    href: "/admin/students" },
+  { label: "Courses",     href: "/admin/courses" },
+  { label: "Progress",    href: "/admin/enrollments" },
+  { label: "Live Classes",href: "/admin/live-classes" },
+];
+
+// Utility button component
+interface UtilityButtonProps {
+  icon: React.ReactNode;
+  onClick?: () => void;
+  title: string;
+  className?: string;
+}
+
+const UtilityButton = ({ icon, onClick, title, className }: UtilityButtonProps) => (
+  <Button
+    variant="ghost"
+    size="icon"
+    onClick={onClick}
+    title={title}
+    className={className}
+  >
+    {icon}
+  </Button>
+);
+
+// Navigation item component
+const NavItem = ({ href, label }: NavLink) => {
+  const [location] = useLocation();
+  const isActive = href === location || (href !== "/" && location.startsWith(href));
+  
+  return (
+    <Link
+      href={href}
+      className={cn(
+        "text-2xl font-semibold transition-colors",
+        isActive
+          ? "text-[#375BBE] font-semibold"
+          : "text-[#375BBE]/80 hover:text-[#375BBE]"
+      )}
+    >
+      {label}
+    </Link>
+  );
+};
+
 export function Header({ onMobileMenuToggle }: HeaderProps) {
-  // ─── live date‐time ─────────────────────────────────
   const [now, setNow] = useState(new Date());
+  const { userRole, logout } = useAuth();
+  const [location, navigate] = useLocation();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0); // Add notification state
+
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(id);
   }, []);
 
-  const { userRole, logout } = useAuth();
-  const [location, navigate] = useLocation();
-  // ─── mobile menu state ───────────────────────────────
-  const [mobileOpen, setMobileOpen] = useState(false);
+  // close mobile menu whenever route changes
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location]);
 
-  // ─── role‐based nav ──────────────────────────────────
-  const studentLinks = [
-    { label: "Overview",     href: "/student" },
-    { label: "My Courses",   href: "/student/courses" },
-    { label: "Live Classes", href: "/student/live-classes" },
-    { label: "Profile",      href: "/student/profile" },
-    { label: "Support",      href: "/student/support" },
-  ];
-  const adminLinks = [
-    { label: "Overview",    href: "/admin" },
-    { label: "Students",    href: "/admin/students" },
-    { label: "Courses",     href: "/admin/courses" },
-    { label: "Progress",    href: "/admin/enrollments" },
-    { label: "Live Classes",href: "/admin/live-classes" },
-  ];
-  const links = userRole === "admin" ? adminLinks : studentLinks;
+  const links = userRole === "admin" ? ADMIN_LINKS : STUDENT_LINKS;
 
-  // ─── single nav item ───────────────────────────────
-  const NavItem = ({ href, label }: { href: string; label: string }) => {
-    const isActive =
-      href === location || (href !== "/" && location.startsWith(href));
-    return (
-      <Link
-        href={href}
-        className={
-          "text-2xl font-semibold transition-colors " +
-          (isActive
-            ? "text-[#375BBE] font-semibold"
-            : "text-[#375BBE]/80 hover:text-[#375BBE]")
-        }
-      >
-        {label}
-      </Link>
-    );
+  const handleLogout = () => {
+    logout();
+    setMobileOpen(false);
+  };
+
+  const handleProfileClick = () => {
+    navigate(userRole === "admin" ? "/admin/profile" : "/student/profile");
+    setMobileOpen(false);
   };
 
   return (
     <>
-    <header className="bg-[#FEFDF7] shadow-sm h-24 flex flex-col relative px-6 py-2">
-      {/* live clock (stays at very top) */}
-      <div className="hidden md:block absolute inset-x-0 top-1 text-center text-sm md:text-base font-medium text-[#375BBE]">
-        {now.toLocaleString(undefined, {
-          weekday: "short",
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        })}
-      </div>
-
-      {/* bottom-anchored row: logo / nav / utilities */}
-      <div className="flex items-center md:items-end justify-between flex-1 pb-2">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="md:hidden mr-2"
-          onClick={() => {
-            if (onMobileMenuToggle) onMobileMenuToggle();
-            setMobileOpen((prev) => !prev);
-          }}
-          title="Menu"
-        >
-          <Menu className="h-8 w-8 text-[#375BBE]" />
-        </Button>
-        {/* logo – larger */}
-        <img
-          src={logo}
-          alt="AGI Logo"
-          className="h-16 md:h-20 lg:h-22 w-auto"
-        />
-
-        {/* nav links – tiny bottom gap */}
-        <nav className="hidden md:flex space-x-8 lg:space-x-12 mb-1">
-          {links.map((l) => (
-            <NavItem key={l.href} href={l.href} label={l.label} />
-          ))}
-        </nav>
-
-        {/* utility icons – larger */}
-        <div className="flex items-center space-x-6">
-          <Button
-            variant="ghost"
-            size="icon"
-            title="Profile"
-            onClick={() => navigate("/student/profile")}
-          >
-            <User className="h-12 w-12 text-[#375BBE]" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={logout}
-            title="Logout"
-          >
-            <LogOut className="h-12 w-12 text-[#375BBE]" />
-          </Button>
+      <header className="bg-[#FEFDF7] shadow-sm h-24 flex flex-col relative px-6 py-2">
+        <div className="hidden md:block absolute inset-x-0 top-1 text-center text-sm md:text-base font-medium text-[#375BBE]">
+          {now.toLocaleString(undefined, {
+            weekday: "short",
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          })}
         </div>
-      </div>
-    </header>
-      {mobileOpen && (
-        <div className="md:hidden fixed inset-0 z-40 bg-[#FEFDF7] flex flex-col items-center pt-24 space-y-6">
-          {links.map(({ href, label }) => (
-            <button
-              key={href}
-              className="text-2xl font-semibold text-[#375BBE] focus:outline-none"
-              onClick={() => {
-                navigate(href);
-                setMobileOpen(false);
-              }}
-            >
-              {label}
-            </button>
-          ))}
 
-          <div className="flex items-center space-x-10 pt-8">
-            <Button variant="ghost" size="icon">
-              <Bell className="h-10 w-10 text-[#375BBE]" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <User className="h-10 w-10 text-[#375BBE]" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                logout();
-                setMobileOpen(false);
-              }}
+        <div className="flex items-center md:items-end justify-between flex-1 pb-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden mr-2"
+            onClick={() => {
+              if (onMobileMenuToggle) onMobileMenuToggle();
+              setMobileOpen((prev) => !prev);
+            }}
+            title="Menu"
+          >
+            <Menu className="h-8 w-8 text-[#375BBE]" />
+          </Button>
+
+          <img
+            src={logo}
+            alt="AGI Logo"
+            className="h-16 md:h-20 lg:h-22 w-auto"
+          />
+
+          <nav className="hidden md:flex space-x-8 lg:space-x-12 mb-1">
+            {links.map((link) => (
+              <NavItem key={link.href} {...link} />
+            ))}
+          </nav>
+
+          <div className="flex items-center space-x-6">
+            <UtilityButton
+              icon={<Bell className="h-12 w-12 text-[#375BBE]" />}
+              title="Notifications"
+              onClick={() => setNotificationCount(0)}
+            />
+            <UtilityButton
+              icon={<User className="h-12 w-12 text-[#375BBE]" />}
+              title="Profile"
+              onClick={handleProfileClick}
+            />
+            <UtilityButton
+              icon={<LogOut className="h-12 w-12 text-[#375BBE]" />}
               title="Logout"
-            >
-              <LogOut className="h-10 w-10 text-[#375BBE]" />
-            </Button>
+              onClick={handleLogout}
+            />
           </div>
         </div>
+      </header>
+
+      {/* Mobile Sidebar */}
+      {/* Backdrop */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/30 md:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
       )}
+      {/* Drawer */}
+      <div
+        className={cn(
+          "fixed top-0 left-0 h-full w-64 bg-[#FEFDF7] shadow-lg z-50 transform transition-transform duration-300 ease-in-out md:hidden",
+          mobileOpen ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
+        <div className="pt-24 px-6 flex flex-col space-y-6">
+          {links.map(({ href, label }) => {
+            const isActive =
+              href === location || (href !== "/" && location.startsWith(href));
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={cn(
+                  "text-xl font-semibold",
+                  isActive
+                    ? "text-[#375BBE]"
+                    : "text-[#375BBE]/80 hover:text-[#375BBE]"
+                )}
+                onClick={() => setMobileOpen(false)}
+              >
+                {label}
+              </Link>
+            );
+          })}
+
+          <div className="flex items-center space-x-6 pt-6">
+            <UtilityButton
+              icon={<Bell className="h-10 w-10 text-[#375BBE]" />}
+              title="Notifications"
+              onClick={() => {
+                setNotificationCount(0);
+                setMobileOpen(false);
+              }}
+            />
+            <UtilityButton
+              icon={<User className="h-10 w-10 text-[#375BBE]" />}
+              title="Profile"
+              onClick={handleProfileClick}
+            />
+            <UtilityButton
+              icon={<LogOut className="h-10 w-10 text-[#375BBE]" />}
+              title="Logout"
+              onClick={handleLogout}
+            />
+          </div>
+        </div>
+      </div>
     </>
   );
 }

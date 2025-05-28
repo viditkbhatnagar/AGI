@@ -6,7 +6,7 @@ export default function LiveClassesPage() {
   return (
     <DashboardLayout>
       <Helmet>
-        <title>Live Classes | AGI.online</title>
+        <title>Live Classes | AGI</title>
         <meta name="description" content="View and join scheduled live classes for your enrolled courses." />
       </Helmet>
       <LiveClasses />

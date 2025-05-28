@@ -293,7 +293,9 @@ export function StudentDashboard() {
           <div className="flex flex-col lg:flex-row">
             {/* Left Column: Course info */}
             <div className="lg:w-1/2 pr-6">
-              <h2 className="text-5xl font-semibold mb-2">{course?.title}</h2>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold mb-2 break-words">
+                {course?.title}
+              </h2>
               <div className="space-y-2 text-sm mb-4">
                 <div className="flex items-center">
                   <CalendarClock className="mr-2 h-5 w-5 stroke-2 text-[#FF7F50]" />
@@ -305,7 +307,7 @@ export function StudentDashboard() {
                 </div>
               </div>
               <p className="text-sm mb-6">{course?.description}</p>
-              <div className="flex space-x-12 text-base font-semibold mb-8">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-base font-semibold mb-8">
                 <div>Quiz Performance: {quizPerformance !== null ? quizPerformance + '%' : 'N/A'}</div>
                 <div>Live Classes Scheduled: {upcomingLiveClasses.length}</div>
                 <div>Documents Viewed: {dashboardData.documentsViewed}</div>
@@ -322,7 +324,7 @@ export function StudentDashboard() {
 
             {/* Right Column: 3-metric grid */}
             <div className="lg:w-1/2 mt-6 lg:mt-0">
-              <div className="grid grid-cols-3 bg-[#FAF3E0] text-[#2E3A59] divide-x divide-[#2E3A59]/30 gap-0 p-4 rounded-xl">
+            <div className="grid grid-cols-1 sm:grid-cols-3 bg-[#FAF3E0] text-[#2E3A59] divide-y sm:divide-y-0 sm:divide-x divide-[#2E3A59]/30 gap-0 p-4 rounded-xl">
                 <div className="text-center px-4 py-6">
                   <PieChart className="mx-auto h-8 w-8 mb-2 text-[#2E3A59]" />
                   <div className="text-3xl font-bold">{courseProgress || 0}%</div>
