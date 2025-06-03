@@ -92,7 +92,7 @@ export default function ScheduleLiveClass() {
     setError(null);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5002/api/live-classes', {
+      const res = await fetch('/api/live-classes', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

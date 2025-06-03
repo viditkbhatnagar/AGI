@@ -1,24 +1,50 @@
 import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
 import cors from "cors";
+import os from "os";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { connectDB } from "./db";
+
+// ─── CORS ──────────────────────────────────────────────────────────────
+/**
+ * Accept a comma‑separated list in the env var ALLOWED_ORIGINS
+ * e.g. "https://elearning.globalagi.org,https://www.elearning.globalagi.org"
+ * If not provided, fall back to the hard‑coded defaults below.
+ */
+const envOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
+  : [];
+
+const defaultOrigins = [
+  "https://elearning.globalagi.org",
+  "https://www.elearning.globalagi.org",
+  "https://globalagi.org",
+  "https://www.globalagi.org",
+];
+
+// during local dev, also allow localhost variants automatically
+if (process.env.NODE_ENV === "development") {
+  defaultOrigins.push(
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://[::1]:5173"
+  );
+}
+
+const allowedOrigins = [...new Set([...defaultOrigins, ...envOrigins])];
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// ─── CORS ──────────────────────────────────────────────────────────────
-const allowedOrigins = [
-  "http://localhost:5173",                 // Vite dev server
-  "https://elearning.globalagi.org",       // production site
-  "https://www.elearning.globalagi.org",
-];
-
 app.use(
   cors({
     origin: (origin, cb) => {
+      // In development, allow any origin so local testing never fails
+      if (process.env.NODE_ENV === "development") {
+        return cb(null, true);
+      }
       if (!origin || allowedOrigins.includes(origin)) {
         cb(null, true);
       } else {
