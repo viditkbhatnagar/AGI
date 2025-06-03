@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
+import cors from "cors";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { connectDB } from "./db";
@@ -7,6 +8,36 @@ import { connectDB } from "./db";
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// ─── CORS ──────────────────────────────────────────────────────────────
+const allowedOrigins = [
+  "http://localhost:5173",                 // Vite dev server
+  "https://elearning.globalagi.org",       // production site
+  "https://www.elearning.globalagi.org",
+];
+
+app.use(
+  cors({
+    origin: (origin, cb) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        cb(null, true);
+      } else {
+        cb(new Error("CORS: origin not allowed"));
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type",
+  "Authorization",
+  "Accept",
+  "Origin",
+  "X-Requested-With",
+  "X-CSRF-Token"],
+  })
+);
+
+// respond to pre‑flight quickly
+app.options("*", cors());
 
 app.use((req, res, next) => {
   const start = Date.now();

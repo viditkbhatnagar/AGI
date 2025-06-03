@@ -6,6 +6,19 @@
 
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
+
+/**
+ * ────────────────────────────────────────────────────────────────────────────────
+ * Selective‑seeding support
+ *   • Pass a course slug as the first CLI arg, e.g.
+ *       ts-node server/seeds/index.ts Certified-Logistics-Manager
+ *     to seed just that course (and its quizzes / live classes) *without*
+ *     wiping existing data.
+ *   • With no arg, the script keeps the original “nuke & pave” behaviour.
+ * ────────────────────────────────────────────────────────────────────────────────
+ */
+
+const courseToSeed = process.argv[2] ?? null; // slug or null
 import { connectDB } from '../db';
 import { User } from '../models/user';
 import { Student } from '../models/student';
@@ -340,6 +353,339 @@ const coursesData = {
           {
             title: "Explaining the Concepts of Risk Management and the Relationship Between Risk and Return in Financial Decisions",
             url: "https://drive.google.com/file/d/1Nm3lURdohZOZszMLP2kroCLu1y2LXfZv/preview"
+          }
+        ],
+      }
+    ],
+    liveClassConfig: {
+      enabled: true,
+      frequency: "weekly",
+      dayOfWeek: "Wednesday",
+      durationMin: 60,
+    }
+  },
+  "Certified-Logistics-Manager": {
+    title: "Certified Logistics Manager",
+    slug: "Certified-Logistics-Manager",
+    type: "standalone",
+    description: "The Certified Logistics Manager (CLM) program equips you with the essential skills needed to manage logistics operations efficiently across industries. This program is designed to enhance your expertise in supply chain coordination, inventory management, transportation planning, and warehouse optimization. Gain the tools and knowledge to streamline logistics processes and achieve your career goals in logistics and supply chain management.",
+    modules: [
+      {
+        title: "Strategic Logistics and Transport Management (CLM-101)",
+        videos: [
+          {
+            title: "Logistics Management in 12 minutes",
+            duration: 12,
+            url: "https://www.youtube.com/watch?v=y9tyXL87l1A&t=371s",
+          },
+          {
+            title: "What is Transport Management Daily Logistics",
+            duration: 11,
+            url: "https://www.youtube.com/watch?v=M2J74aEhhtI",
+          },
+          {
+            title: "What is Logistics & Logistics Management | What are Modes of Transport | How to select TransMode ",
+            duration: 8,
+            url: "https://www.youtube.com/watch?v=ROUJSvhsjUg",
+          }
+        ],
+        documents: [
+          {
+            title: "Handbook of Logistics and Distribution Management",
+            url: "https://drive.google.com/file/d/1LHzXKtx2ykspw_KC9qIa3nXBGyiz6-kD/preview"
+          },
+          {
+            title: "Strategic Logistics and Transport Management (CLM-101)",
+            url: "https://drive.google.com/file/d/1SM54QuPT6yKkzNG2WMwD8DCR5ypPGXez/preview"
+          }
+        ],
+      },
+      {
+        title: "Senior Strategic Business Research (CLM-102)",
+        videos: [
+          {
+            title: "Fleet Management Transportation & Logistics MS Excel Dashboard",
+            duration: 35,
+            url: "https://www.youtube.com/watch?v=vJX2W3I1_8o",
+          }
+        ],
+        documents: [
+          {
+            title: "Quantitative vs. Qualitative",
+            url: "https://drive.google.com/file/d/16swk5anmdm2sH0h35Dks5qOVCj4K_4ll/preview"
+          },
+          {
+            title: "Senior Strategic Business Research (CLM-102)",
+            url: "https://drive.google.com/file/d/1t0-oe3vdB9MS6o2ht75Mt9hNZWOcS93U/preview"
+          }
+        ],
+      },
+      {
+        title: "Senior Strategic Change Management (CLM-103)",
+        videos: [
+          {
+            title: "10 Change Management Models Explained in 10 Minutes",
+            duration: 10,
+            url: "https://www.youtube.com/watch?v=t1JiPdor_rU&t=96s",
+          }
+        ],
+        documents: [
+          {
+            title: "Change Management",
+            url: "https://drive.google.com/file/d/1uxSTvGXc4o0MOrPrYyfx85yQr_CgP0hi/preview"
+          },
+          {
+            title: "Senior Strategic Change Management (CLM-103)",
+            url: "https://drive.google.com/file/d/1pOy2xZFLomoxITa0olZlJFvP01tnRht_/preview"
+          }
+        ],
+      },
+      {
+        title: "Business Innovation and Entrepreneurship",
+        videos: [
+          {
+            title: "Venture Capital EXPLAINED",
+            duration: 10,
+            url: "https://www.youtube.com/watch?v=ZEcg1X_ErN0",
+          }
+        ],
+        documents: [
+          {
+            title: "Innovation and Entrepreneurship Theory, Policy and Practice",
+            url: "https://drive.google.com/file/d/136eoa0r06hD6BDkyVA9X7xylDwmm6EYb/preview"
+          },
+          {
+            title: "Business Innovation and Entrepreneurship (CLM-104)",
+            url: "https://drive.google.com/file/d/1w6f_GpFQMelImAyiJREgoGurCtlowCYN/preview"
+          }
+        ],
+      },
+      {
+        title: "Senior Strategic Manufacturing & Production Principles",
+        videos: [
+          {
+            title: "What is Industry 4.0? | What are the key Industry 4.0 technologies| All explained in 10 minutes",
+            duration: 11,
+            url: "https://www.youtube.com/watch?v=bNfZWqDLW0Q",
+          },
+          {
+            title: "DMAIC Case Study Warehouse Example - Lean Six Sigma case study Example",
+            duration: 5,
+            url: "https://www.youtube.com/watch?v=r8IBN75RX0M",
+          },
+          {
+            title: "How to do logistics Resource Planning",
+            duration: 8,
+            url: "https://www.youtube.com/watch?v=uroZOwEYX-Q",
+          }
+        ],
+        documents: [
+          {
+            title: "Six Sigma A Complete Step by Step Guide",
+            url: "https://drive.google.com/file/d/1Cc-Y6r3KdcJYIAUkzqk_OeRuHIoyIo5Q/preview"
+          },
+          {
+            title: "Senior Strategic Manufacturing & Production Principles (CLM-105)",
+            url: "https://drive.google.com/file/d/1Wh5pJOMb_8_XY8pC_Cy5EYiOOBYEF87q/preview"
+          }
+        ],
+      },
+      {
+        title: "Senior Strategic Business Planning guides",
+        videos: [
+          {
+            title: "Balanced Scorecard (With A Step-by-Step Example)",
+            duration: 11,
+            url: "https://www.youtube.com/watch?v=W1i59QkU-Ss",
+          },
+          {
+            title: "Utilizing SWOT, PESTEL, and Five Forces Analyses in Your Strategic Planning",
+            duration: 8,
+            url: "https://www.youtube.com/watch?v=G0dR4nI9dsQ",
+          },
+          {
+            title: "How To develop great KPIs (Key Performance Indicators) for your business, department or project",
+            duration: 12,
+            url: "https://www.youtube.com/watch?v=JN_EZU_Iyrg",
+          }
+        ],
+        documents: [
+          {
+            title: "BSC",
+            url: "https://drive.google.com/file/d/160Sb4OZ7OG3e7UPyz5UcrcIHY-4uvH-F/preview"
+          },
+          {
+            title: "PESTLE",
+            url: "https://drive.google.com/file/d/19Ohcq_X0MCxoBBFWwINOrcOMKwXXQ0y_/preview"
+          },
+          {
+            title: "Senior Strategic Business Planning (CLM-106)",
+            url: "https://drive.google.com/file/d/1o6WqahoO0OCv7UKKJ0A4jjXxe1JTR4Y9/preview"
+          }
+        ],
+      },
+      {
+        title: "Senior Strategic Global Procurement",
+        videos: [
+          {
+            title: "Reshoring Trend: Why Companies are Bringing Manufacturing Back Home",
+            duration: 6,
+            url: "https://www.youtube.com/watch?v=fSwKofBUfGY&t=61s",
+          },
+          {
+            title: "Sustainable Procurement What You Should Know in 2025",
+            duration: 5,
+            url: "https://www.youtube.com/watch?v=KZA2UIjEDVE",
+          },
+          {
+            title: "Sustainable Procurement Explained: Key Frameworks and Benefits",
+            duration: 22,
+            url: "https://www.youtube.com/watch?v=U1E6rtnreoA",
+          }
+        ],
+        documents: [
+          {
+            title: "Global Purchasing and Supply Management",
+            url: "https://drive.google.com/file/d/1mz3ZRiKwxCLuFnyVx3K7mK8iZiKUsBMe/preview"
+          },
+          {
+            title: "Senior Strategic Global Procurement (CLM-107)",
+            url: "https://drive.google.com/file/d/10B-MhWP6eaS7JYl6ks97G_ju6IYVLoe_/preview"
+          }
+        ],
+      },
+      {
+        title: "Senior Strategic Leadership",
+        videos: [
+          {
+            title: "10 Most Common Types of Leadership Styles (With Real-World Examples)",
+            duration: 8,
+            url: "https://www.youtube.com/watch?v=NY82yptNp5E",
+          },
+          {
+            title: "5 Common Ethical Frameworks ",
+            duration: 10,
+            url: "https://www.youtube.com/watch?v=5UNdnkBRack",
+          }
+        ],
+        documents: [
+          {
+            title: "Leadership",
+            url: "https://drive.google.com/file/d/16UGmlrRiYli4rr9tHM5H0n1guD5K1ppt/preview"
+          },
+          {
+            title: "Senior Strategic Leadership (CLM-108)",
+            url: "https://drive.google.com/file/d/1ZlDY96nzmd2Iz5-gxK2D57MRxVL4etz9/preview"
+          }
+        ],
+      },
+      {
+        title: "Senior Strategic Management Principles",
+        videos: [
+          {
+            title: "Blue Ocean Strategy (With Real World Examples)",
+            duration: 10,
+            url: "https://www.youtube.com/watch?v=j-b7MHabLPg&t=31s",
+          },
+          {
+            title: "Internal Analysis: The VRIO Framework | Strategic Management",
+            duration: 9,
+            url: "https://www.youtube.com/watch?v=afrPC91zCkQ",
+          },
+          {
+            title: "McKinsey 7S Framework",
+            duration: 11,
+            url: "https://www.youtube.com/watch?v=DFNJypMOIMI",
+          },
+          {
+            title: "HOSHIN KANRI (X MATRIX) WITH TEMPLATE ",
+            duration: 8,
+            url: "https://www.youtube.com/watch?v=clYFo2j1m7A",
+          }
+        ],
+        documents: [
+          {
+            title: "Strategic Management",
+            url: "https://drive.google.com/file/d/1EQr5Jf-OFUbxKqu9M3wnMZF4TPe-DKqI/preview"
+          },
+          {
+            title: "Senior Strategic Management Principles (CLM-109)",
+            url: "https://drive.google.com/file/d/14hPglNIwmWUhgSG3x-wAWykzD3arOSjZ/preview"
+          }
+        ],
+      },
+      {
+        title: "Senior Strategic Maritime Management",
+        videos: [
+          {
+            title: "Incoterms 2020 Explained [Complete Guide]",
+            duration: 12,
+            url: "https://www.youtube.com/watch?v=GTUTLRXcVuA",
+          },
+          {
+            title: "Explained Sea Shipment/Marine Transportation flow for Beginners",
+            duration: 9,
+            url: "https://www.youtube.com/watch?v=fK6aeyEQMGk",
+          }
+        ],
+        documents: [
+          {
+            title: "ICC INCOTERMS 2020",
+            url: "https://drive.google.com/file/d/1YdXRMjZYHFF7_hZ9vMZKjOSGt48plKN-/preview"
+          },
+          {
+            title: "Senior Strategic Maritime Management (CLM-110)",
+            url: "https://drive.google.com/file/d/1qv9h1ZcNuo3kSwRb7Dazkj9kZ89yFKtc/preview"
+          }
+        ],
+      },
+      {
+        title: "Senior Strategic Quality Management",
+        videos: [
+          {
+            title: "Explanation of the EFQM Model",
+            duration: 8,
+            url: "https://www.youtube.com/watch?v=evuEcypUnDQ",
+          },
+          {
+            title: "Lean vs TQM | Lean vs Total Quality Management",
+            duration: 3,
+            url: "https://www.youtube.com/watch?v=fSLXnG6TgNc",
+          }
+        ],
+        documents: [
+          {
+            title: "QM",
+            url: "https://drive.google.com/file/d/1wTJPA_7QqDG3tOigSyLudKNa6cX-sZVW/preview"
+          },
+          {
+            title: "Senior Strategic Quality Management (CLM-111)",
+            url: "https://drive.google.com/file/d/1KLgx7Sn8xGrCGGh3flsWBInMybsN-ywu/preview"
+          }
+        ],
+      },
+      {
+        title: "Senior Strategic Warehousing & Inventory Management",
+        videos: [
+          {
+            title: "Inventory Management",
+            duration: 11,
+            url: "https://www.youtube.com/watch?v=0NOER-Lle-0",
+          },
+          {
+            title: "Inside Amazon's Smart Warehouse",
+            duration: 11,
+            url: "https://www.youtube.com/watch?v=IMPbKVb8y8s",
+          }
+        ],
+        documents: [
+          {
+            title: "Essentials of Inventory Management",
+            url: "https://drive.google.com/file/d/1DaLbloB4PXrRLX9-DrTH56je8GZwzQVz/preview"
+          },
+          {
+            title: "Senior Strategic Warehousing & Inventory Management (CLM-112)",
+            url: "https://drive.google.com/file/d/1I0s9M3rxYWMLYOJBKsq3Eu_CIxdAMVW9/preview"
           }
         ],
       }
@@ -1216,7 +1562,29 @@ const quizQuestionsMapping: {
         correctIndex: 1   // b) Good return per unit of risk
       }
     ]
-  }
+  },
+  "Certified-Logistics-Manager": (() => {
+    // helper to build one‑question arrays for 12 modules
+    const build = () => ({
+      prompt: "Click any option to go to the next module",
+      options: ["Click me", "Click me", "Click me", "Click me"],
+      correctIndex: -1, // -1 means “all choices correct”
+    });
+    return {
+      0: [build()],
+      1: [build()],
+      2: [build()],
+      3: [build()],
+      4: [build()],
+      5: [build()],
+      6: [build()],
+      7: [build()],
+      8: [build()],
+      9: [build()],
+      10: [build()],
+      11: [build()],
+    };
+  })(),
 };
 
 // Generate upcoming live classes for a course
@@ -1261,88 +1629,134 @@ async function seed() {
     await connectDB();
     console.log('Connected to MongoDB');
     
-    // Delete all existing data
-    console.log('Clearing existing data...');
-    await User.deleteMany({});
-    await Student.deleteMany({});
-    await Course.deleteMany({});
-    await Enrollment.deleteMany({});
-    await LiveClass.deleteMany({});
-    await Quiz.deleteMany({});
-    console.log('Quizzes cleared');
+    // ------------------------------------------------------------------
+    // Wipe or keep data depending on CLI arg
+    // ------------------------------------------------------------------
+    if (!courseToSeed) {
+      console.log('Clearing existing data...');
+      await User.deleteMany({});
+      await Student.deleteMany({});
+      await Course.deleteMany({});
+      await Enrollment.deleteMany({});
+      await LiveClass.deleteMany({});
+      await Quiz.deleteMany({});
+      console.log('All collections cleared');
+    } else {
+      console.log(
+        `Selective seeding – keeping existing data; will upsert course “${courseToSeed}”`
+      );
+    }
     
-    // Create admin user
-    console.log('Creating admin user...');
-    const admin = new User({
-      username: 'admin',
-      email: 'admin@example.com',
-      password: 'password', // will be hashed by the model pre-save hook
-      role: 'admin',
-    });
-    await admin.save();
-    console.log('Admin created:', admin._id);
-    
-    // Create Peter Parker student user
-    console.log('Creating Peter Parker student user...');
-    const peterUser = new User({
-      username: 'peterparker',
-      email: 'peter@example.com',
-      password: 'password', // will be hashed by the model pre-save hook
-      role: 'student',
-    });
-    await peterUser.save();
-    console.log('Peter Parker user created:', peterUser._id);
-    
-    // Create Peter Parker student profile
-    console.log('Creating Peter Parker student profile...');
-    const peter = new Student({
-      name: 'Peter Parker',
-      userId: peterUser._id,
-      pathway: 'standalone',
-      address: '20 Ingram St, Forest Hills, NY',
-      phone: '+17185551212',
-      dob: new Date(2000, 5, 12), // June 12, 2000
-    });
-    await peter.save();
-    console.log('Student profile created:', peter._id);
-    
-    // Create Bruce Wayne student user
-    console.log('Creating Bruce Wayne student user...');
-    const bruceUser = new User({
-      username: 'brucewayne',
-      email: 'bruce@example.com',
-      password: 'password',
-      role: 'student',
-    });
-    await bruceUser.save();
-    console.log('Bruce Wayne user created:', bruceUser._id);
+    if (!courseToSeed) {
+      // Create admin user
+      console.log('Creating admin user...');
+      const admin = new User({
+        username: 'admin',
+        email: 'admin@example.com',
+        password: 'password', // will be hashed by the model pre-save hook
+        role: 'admin',
+      });
+      await admin.save();
+      console.log('Admin created:', admin._id);
+      
+      // Create Peter Parker student user
+      console.log('Creating Peter Parker student user...');
+      const peterUser = new User({
+        username: 'peterparker',
+        email: 'peter@example.com',
+        password: 'password', // will be hashed by the model pre-save hook
+        role: 'student',
+      });
+      await peterUser.save();
+      console.log('Peter Parker user created:', peterUser._id);
+      
+      // Create Peter Parker student profile
+      console.log('Creating Peter Parker student profile...');
+      const peter = new Student({
+        name: 'Peter Parker',
+        userId: peterUser._id,
+        pathway: 'standalone',
+        address: '20 Ingram St, Forest Hills, NY',
+        phone: '+17185551212',
+        dob: new Date(2000, 5, 12), // June 12, 2000
+      });
+      await peter.save();
+      console.log('Student profile created:', peter._id);
+      
+      // Create Bruce Wayne student user
+      console.log('Creating Bruce Wayne student user...');
+      const bruceUser = new User({
+        username: 'brucewayne',
+        email: 'bruce@example.com',
+        password: 'password',
+        role: 'student',
+      });
+      await bruceUser.save();
+      console.log('Bruce Wayne user created:', bruceUser._id);
 
-    console.log('Creating Bruce Wayne student profile...');
-    const bruce = new Student({
-      name: 'Bruce Wayne',
-      userId: bruceUser._id,
-      pathway: 'standalone',
-      address: '1007 Mountain Drive, Gotham',
-      phone: '+17035551234',
-      dob: new Date(1990, 1, 19), // Feb 19, 1990
-    });
-    await bruce.save();
-    console.log('Student profile created:', bruce._id);
+      console.log('Creating Bruce Wayne student profile...');
+      const bruce = new Student({
+        name: 'Bruce Wayne',
+        userId: bruceUser._id,
+        pathway: 'standalone',
+        address: '1007 Mountain Drive, Gotham',
+        phone: '+17035551234',
+        dob: new Date(1990, 1, 19), // Feb 19, 1990
+      });
+      await bruce.save();
+      console.log('Student profile created:', bruce._id);
 
-    // Create courses from data
-    console.log('Creating courses...');
-    const coursePromises = Object.values(coursesData).map(async (courseData) => {
-      const course = new Course(courseData);
-      await course.save();
-      console.log(`Course created: ${course.title} (${course._id})`);
-      return course;
-    });
+      // Create enrollments for Peter in CSCP and Bruce in CIA (zero progress)
+      console.log('Creating enrollments...');
+      const enrollmentData = [
+        {
+          studentId: peter._id,
+          courseSlug: 'Accounting-and-Finance',
+          enrollDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000), // 15 days ago
+          validUntil: new Date(Date.now() + 350 * 24 * 60 * 60 * 1000),
+          completedModules: [],
+          quizAttempts: [],
+          watchTime: []
+        },
+        {
+          studentId: bruce._id,
+          courseSlug: 'certified-supply-chain-professional',
+          enrollDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
+          validUntil: new Date(Date.now() + 350 * 24 * 60 * 60 * 1000),
+          completedModules: [],
+          quizAttempts: [],
+          watchTime: []
+        }
+      ];
 
-    const courses = await Promise.all(coursePromises);
+      for (const data of enrollmentData) {
+        const enrollment = new Enrollment(data);
+        await enrollment.save();
+        let studentName = data.studentId.equals(peter._id) ? peter.name : bruce.name;
+        console.log(`Enrollment created for ${studentName} in ${data.courseSlug} (${enrollment._id})`);
+      }
+    } // end if !courseToSeed
+
+    // Create or update courses (all, or only the specified one)
+    console.log('Upserting courses...');
+    for (const courseData of Object.values(coursesData)) {
+      if (courseToSeed && courseData.slug !== courseToSeed) continue;
+
+      const existing = await Course.findOne({ slug: courseData.slug });
+      if (existing) {
+        await Course.updateOne({ slug: courseData.slug }, courseData);
+        console.log(`Course updated: ${courseData.title}`);
+      } else {
+        const course = new Course(courseData);
+        await course.save();
+        console.log(`Course created: ${course.title}`);
+      }
+    }
 
     // Seed quizzes for each course module
     console.log('Seeding quizzes for each course module...');
     for (const [courseSlug, courseObj] of Object.entries(coursesData)) {
+      if (courseToSeed && courseSlug !== courseToSeed) continue;
       for (let moduleIndex = 0; moduleIndex < courseObj.modules.length; moduleIndex++) {
         // Use quizQuestionsMapping if available
         const mapping = quizQuestionsMapping[courseSlug]?.[moduleIndex];
@@ -1369,42 +1783,13 @@ async function seed() {
       }
     }
 
-    // Create enrollments for Peter in CSCP and Bruce in CIA (zero progress)
-    console.log('Creating enrollments...');
-    const enrollmentData = [
-      {
-        studentId: peter._id,
-        courseSlug: 'Accounting-and-Finance',
-        enrollDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000), // 15 days ago
-        validUntil: new Date(Date.now() + 350 * 24 * 60 * 60 * 1000),
-        completedModules: [],
-        quizAttempts: [],
-        watchTime: []
-      },
-      {
-        studentId: bruce._id,
-        courseSlug: 'certified-supply-chain-professional',
-        enrollDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
-        validUntil: new Date(Date.now() + 350 * 24 * 60 * 60 * 1000),
-        completedModules: [],
-        quizAttempts: [],
-        watchTime: []
-      }
-    ];
-
-    for (const data of enrollmentData) {
-      const enrollment = new Enrollment(data);
-      await enrollment.save();
-      let studentName = data.studentId.equals(peter._id) ? peter.name : bruce.name;
-      console.log(`Enrollment created for ${studentName} in ${data.courseSlug} (${enrollment._id})`);
-    }
-    
     // Create live classes
     console.log('Creating live classes...');
     let allLiveClasses = [];
     
     // Generate live classes for each course
     for (const courseSlug of Object.keys(coursesData)) {
+      if (courseToSeed && courseSlug !== courseToSeed) continue;
       const liveClasses = generateLiveClasses(courseSlug, 3);
       allLiveClasses = [...allLiveClasses, ...liveClasses];
     }
