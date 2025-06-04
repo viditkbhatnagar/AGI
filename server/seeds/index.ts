@@ -696,6 +696,300 @@ const coursesData = {
       dayOfWeek: "Wednesday",
       durationMin: 60,
     }
+  },
+  "Certified-Human-Resource-Professional": {
+    title: "Certified Human Resource Professional",
+    slug: "Certified-Human-Resource-Professional",
+    type: "standalone",
+    description: "AGI's Certified Human Resource Professional (CHRP) program equips you with advanced skills in HR strategy, talent management, and organizational development, empowering you to lead impactful HR initiatives and drive workforce success across diverse industries.",
+    modules: [
+      {
+        title: "Fundamentals of Human Resource Management",
+        videos: [
+          {
+            title: "Human Resource Management (HRM) Explained – Everything you Need to Know",
+            duration: 15,
+            url: "https://www.youtube.com/watch?v=aPEUKLxxh_k&t=4s",
+          }
+        ],
+        documents: [
+          {
+            title: "MBA SSM HRM Pearson",
+            url: "https://drive.google.com/file/d/1oYtjzHRURZmT1EtpH19lu8n0FyuZ04Cm/preview"
+          },
+          {
+            title: "MBA SSM HRM Gary Dessler",
+            url: "https://drive.google.com/file/d/1VtpKz9nt1SSCiP620y1xICtBGHdpu6BI/preview"
+          },
+          {
+            title: "Unit 1",
+            url: "https://drive.google.com/file/d/14y8QHqFZaOuSdlY-bn1S8iUn62ZFV-Xn/preview"
+          }
+        ],
+      },
+      {
+        title: "Talent Acquisition and Onboarding",
+        videos: [
+          {
+            title: "Talent Acquisition Explained",
+            duration: 11,
+            url: "https://www.youtube.com/watch?v=bDhN_euuMlo",
+          }
+        ],
+        documents: [
+          {
+            title: "MBA SSM HRM Pearson",
+            url: "https://drive.google.com/file/d/1jcTgvvLeI4Mx1OMeEUHJuXms5zVpornw/preview"
+          },
+          {
+            title: "MBA SSM HRM Gary Dessler",
+            url: "https://drive.google.com/file/d/1xS89QzaMWHLhscKKHU9mr4CU8e-C2iV7/preview"
+          },
+          {
+            title: "Unit 2",
+            url: "https://drive.google.com/file/d/1SbV9XgU8z9MRP3IsjE5lfjv5a8L4PkEd/preview"
+          }
+        ],
+      },
+      {
+        title: "Employee Development and Training",
+        videos: [
+          {
+            title: "Training & Development: 6 Best Practices For L&D",
+            duration: 9,
+            url: "https://www.youtube.com/watch?v=GkPi4ETzn2A",
+          }
+        ],
+        documents: [
+          {
+            title: "MBA SSM HRM Pearson",
+            url: "https://drive.google.com/file/d/1jcTgvvLeI4Mx1OMeEUHJuXms5zVpornw/preview"
+          },
+          {
+            title: "MBA SSM HRM Gary Dessler",
+            url: "https://drive.google.com/file/d/1xS89QzaMWHLhscKKHU9mr4CU8e-C2iV7/preview"
+          },
+          {
+            title: "Unit 3",
+            url: "https://drive.google.com/file/d/1xwZ7UP1yFLjd9PSfOVmanJQmfby8CtIm/preview"
+          }
+        ],
+      },
+      {
+        title: "Performance Management",
+        videos: [
+          {
+            title: "Performance Management",
+            duration: 23,
+            url: "https://www.youtube.com/watch?v=hR9NDLr_XLs",
+          }
+        ],
+        documents: [
+          {
+            title: "MBA SSM HRM Pearson",
+            url: "https://drive.google.com/file/d/1jcTgvvLeI4Mx1OMeEUHJuXms5zVpornw/preview"
+          },
+          {
+            title: "MBA SSM HRM Gary Dessler",
+            url: "https://drive.google.com/file/d/1xS89QzaMWHLhscKKHU9mr4CU8e-C2iV7/preview"
+          },
+          {
+            title: "Unit 4",
+            url: "https://drive.google.com/file/d/1Evp4RwVBJWn1D2mJY8hhl5NVLxBG6VkN/preview"
+          }
+        ],
+      },
+      {
+        title: "Compensation and Benefits",
+        videos: [
+          {
+            title: "Compensation and Benefits in Human Resource Management",
+            duration: 28,
+            url: "https://www.youtube.com/watch?v=wFHtfheFFPY",
+          }
+        ],
+        documents: [
+          {
+            title: "MBA SSM HRM Pearson",
+            url: "https://drive.google.com/file/d/1jcTgvvLeI4Mx1OMeEUHJuXms5zVpornw/preview"
+          },
+          {
+            title: "MBA SSM HRM Gary Dessler",
+            url: "https://drive.google.com/file/d/1xS89QzaMWHLhscKKHU9mr4CU8e-C2iV7/preview"
+          },
+          {
+            title: "Unit 5",
+            url: "https://drive.google.com/file/d/1IAM3caAPeiPI5ymBrvgRvPLzI2EWyl6v/preview"
+          }
+        ],
+      },
+      {
+        title: "Employment Law and Labour Relations",
+        videos: [
+          {
+            title: "New UAE Labour Law Explained",
+            duration: 7,
+            url: "https://www.youtube.com/watch?v=NKu7QhCmtsY",
+          }
+        ],
+        documents: [
+          {
+            title: "MBA SSM HRM Pearson",
+            url: "https://drive.google.com/file/d/1jcTgvvLeI4Mx1OMeEUHJuXms5zVpornw/preview"
+          },
+          {
+            title: "MBA SSM HRM Gary Dessler",
+            url: "https://drive.google.com/file/d/1xS89QzaMWHLhscKKHU9mr4CU8e-C2iV7/preview"
+          },
+          {
+            title: "Unit 6",
+            url: "https://drive.google.com/file/d/1RL2QRRkO3QaQQoRl4iSPXOShhJTIjshB/preview"
+          }
+        ],
+      },
+      {
+        title: "Organizational Culture and Change Basics",
+        videos: [
+          {
+            title: "Organizational Culture Explained [2025]",
+            duration: 13,
+            url: "https://www.youtube.com/watch?v=6uLN9dVfOBI",
+          }
+        ],
+        documents: [
+          {
+            title: "MBA SSM HRM Pearson",
+            url: "https://drive.google.com/file/d/1jcTgvvLeI4Mx1OMeEUHJuXms5zVpornw/preview"
+          },
+          {
+            title: "MBA SSM HRM Gary Dessler",
+            url: "https://drive.google.com/file/d/1xS89QzaMWHLhscKKHU9mr4CU8e-C2iV7/preview"
+          },
+          {
+            title: "Unit 7",
+            url: "https://drive.google.com/file/d/1GSzO6ZUXbDG9V8ZbCw2Z88cp5RUuPFQc/preview"
+          }
+        ],
+      },
+      {
+        title: "Introduction to HR Analytics",
+        videos: [
+          {
+            title: "HR Analytics for Beginners - A Roadmap",
+            duration: 16,
+            url: "https://www.youtube.com/watch?v=XHUhBdu09eo",
+          }
+        ],
+        documents: [
+          {
+            title: "MBA SSM HRM Pearson",
+            url: "https://drive.google.com/file/d/1jcTgvvLeI4Mx1OMeEUHJuXms5zVpornw/preview"
+          },
+          {
+            title: "MBA SSM HRM Gary Dessler",
+            url: "https://drive.google.com/file/d/1xS89QzaMWHLhscKKHU9mr4CU8e-C2iV7/preview"
+          },
+          {
+            title: "Reading Materials",
+            url: "https://docs.google.com/document/d/1UP6WfrbF2Zt0lv7ETHQqFMiS9n2XwtXG/preview"
+          },
+          {
+            title: "Case Study - HR Analytics",
+            url: "https://docs.google.com/document/d/1p2vciV6oI5IaTl28sN2uJvx-MGR1qEUe/preview"
+          },
+          {
+            title: "Unit 8",
+            url: "https://drive.google.com/file/d/1Czf1ZIP-blMEG6ZlHKsvA9M-L3sbhCI4/preview"
+          }
+        ],
+      },
+      {
+        title: "Ethics and CSR in HR",
+        videos: [
+          {
+            title: "HR Basics: Human Resource Ethics",
+            duration: 4,
+            url: "https://www.youtube.com/watch?v=QdQuzoHQt90",
+          }
+        ],
+        documents: [
+          {
+            title: "MBA SSM HRM Pearson",
+            url: "https://drive.google.com/file/d/1jcTgvvLeI4Mx1OMeEUHJuXms5zVpornw/preview"
+          },
+          {
+            title: "MBA SSM HRM Gary Dessler",
+            url: "https://drive.google.com/file/d/1xS89QzaMWHLhscKKHU9mr4CU8e-C2iV7/preview"
+          },
+          {
+            title: "Unit 9",
+            url: "https://drive.google.com/file/d/1MXnQfESHrGZzQVJZEwu6pg51kxMM4p8o/preview"
+          }
+        ],
+      },
+      {
+        title: "Diversity Management",
+        videos: [
+          {
+            title: "Managing Diversity in the Workplace",
+            duration: 16,
+            url: "https://www.youtube.com/watch?v=Sa2eUON-noo",
+          }
+        ],
+        documents: [
+          {
+            title: "MBA SSM HRM Pearson",
+            url: "https://drive.google.com/file/d/1jcTgvvLeI4Mx1OMeEUHJuXms5zVpornw/preview"
+          },
+          {
+            title: "MBA SSM HRM Gary Dessler",
+            url: "https://drive.google.com/file/d/1xS89QzaMWHLhscKKHU9mr4CU8e-C2iV7/preview"
+          },
+          {
+            title: "Unit 10",
+            url: "https://drive.google.com/file/d/1q5qhE9BDYb_Lh7IUa85T_K6xh6VB3xV6/preview"
+          }
+        ],
+      },
+      {
+        title: "AI in HR",
+        videos: [
+          {
+            title: "How Generative AI impacts Human Resources with ex-Amazon leader Trent Gillespie",
+            duration: 4,
+            url: "https://www.youtube.com/watch?v=8iIHH9QvBMg",
+          }
+        ],
+        documents: [
+          {
+            title: "Reading Materials",
+            url: "https://docs.google.com/document/d/1HmaDtl5bzuM22Xhd806Va3H4WBu8aQjM/preview"
+          },
+          {
+            title: "Paper 1",
+            url: "https://drive.google.com/file/d/1o3WyUqd8-kKU5r__miA45nJsnUjN6TGC/preview"
+          },
+          {
+            title: "Paper 2",
+            url: "https://drive.google.com/file/d/13n8JEkZIwRLxYpSopavvpA-RXH0q8ns_/preview"
+          },
+          {
+            title: "Case Study - AI in HR",
+            url: "https://docs.google.com/document/d/1UhQDgXfG16QbOXe13zNJpHmLXguUnsgn/preview"
+          },
+          {
+            title: "Unit 11",
+            url: "https://drive.google.com/file/d/1x8e-3PHzt_WCAXD3L7wdp6aoroKENsRv/preview"
+          }
+        ],
+      },
+    ],
+    liveClassConfig: {
+      enabled: true,
+      frequency: "weekly",
+      dayOfWeek: "Wednesday",
+      durationMin: 60,
+    }
   }
 };
 
@@ -1585,6 +1879,580 @@ const quizQuestionsMapping: {
       11: [build()],
     };
   })(),
+  "Certified-Human-Resource-Professional": {
+    0: [
+      {
+        prompt: "What is the strategic role of Human Resource Management (HRM) in modern businesses?",
+        options: [
+          "Managing office supplies and payroll only",
+          "Hiring employees quickly to reduce costs",
+          "Aligning people-related decisions with organizational goals",
+          "Ensuring all departments operate independently"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which of the following is an example of a key HRM function?",
+        options: [
+          "Increasing product shelf life",
+          "Managing software licenses",
+          "Recruitment and Selection",
+          "Improving product design"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "What major external factor has influenced the evolution of HRM practices?",
+        options: [
+          "National language policies",
+          "Weather patterns",
+          "Globalization",
+          "Product recalls"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "What is an example of an HR compliance responsibility?",
+        options: [
+          "Conducting product safety inspections",
+          "Aligning company policies with national labor laws",
+          "Designing marketing campaigns",
+          "Maintaining the office cafeteria"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "Which of the following is an emerging trend in Human Resource Management?",
+        options: [
+          "Replacing employees with AI fully",
+          "Centralizing all HR decisions in one office",
+          "Implementing hybrid work environments",
+          "Eliminating onboarding programs"
+        ],
+        correctIndex: 2
+      }
+    ],
+    1: [
+      {
+        prompt: "What is the main difference between talent acquisition and traditional recruitment?",
+        options: [
+          "Talent acquisition is faster and cheaper",
+          "Traditional recruitment focuses on employee retention",
+          "Talent acquisition is proactive and long-term",
+          "Traditional recruitment uses more AI tools"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which of the following is a modern recruitment method mentioned in the content?",
+        options: [
+          "Door-to-door job advertising",
+          "Faxed job applications",
+          "Social media recruitment",
+          "Bulletin board posting"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "What is the purpose of a competency framework in job analysis?",
+        options: [
+          "To replace interviews and resume screening",
+          "To outline salary bands and job perks",
+          "To define the skills and behaviors required for a role",
+          "To list daily tasks of administrative staff"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which onboarding element focuses on making new employees feel aligned with company culture?",
+        options: [
+          "Role-specific training",
+          "Orientation",
+          "Pre-boarding",
+          "Cultural integration"
+        ],
+        correctIndex: 3
+      },
+      {
+        prompt: "Which of the following is a benefit of effective onboarding?",
+        options: [
+          "Reduces vacation requests",
+          "Improves employee retention and engagement",
+          "Increases administrative workload",
+          "Limits internal promotions"
+        ],
+        correctIndex: 1
+      }
+    ],
+    2: [
+      {
+        prompt: "What is the primary difference between training and development?",
+        options: [
+          "Training is mandatory; development is optional",
+          "Training is short-term and job-specific; development is long-term and future-focused",
+          "Training is only for managers; development is for new hires",
+          "Training focuses on leadership skills; development focuses on technical skills"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "Which of the following is an example of a blended learning approach?",
+        options: [
+          "Assigning reading material only",
+          "Live lectures without interaction",
+          "Combining online modules with in-person workshops",
+          "Using only mobile apps for training"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "What is the purpose of using AI and data analytics in employee training?",
+        options: [
+          "To replace human trainers",
+          "To create one-size-fits-all courses",
+          "To personalize learning experiences based on roles and performance",
+          "To gamify all training content"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which of the following best describes microlearning?",
+        options: [
+          "Intensive day-long workshops",
+          "Long lectures followed by exams",
+          "Short, focused learning sessions for quick retention",
+          "Monthly seminars in a classroom setting"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "What is succession planning primarily focused on?",
+        options: [
+          "Reducing employee training costs",
+          "Hiring from outside the organization",
+          "Preparing internal talent to fill future leadership roles",
+          "Cross-training employees in different departments"
+        ],
+        correctIndex: 2
+      }
+    ],
+    3: [
+      {
+        prompt: "Which of the following best describes performance management?",
+        options: [
+          "A once-a-year evaluation of employee work",
+          "A hiring process focused on recruiting top talent",
+          "A continuous cycle of planning, monitoring, and improving employee performance",
+          "A method to calculate salary increments"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "What is a key benefit of using 360-degree feedback in performance appraisal?",
+        options: [
+          "It reduces the time spent on annual reviews",
+          "It gives feedback only from the employee’s manager",
+          "It provides a balanced view from multiple perspectives",
+          "It focuses only on technical skills"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which tool is used in modern performance systems to align goals and track employee progress?",
+        options: [
+          "SWOT analysis",
+          "OKR platforms and real-time dashboards",
+          "Brainstorming sessions",
+          "Focus groups"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "What is the main purpose of a Performance Improvement Plan (PIP)?",
+        options: [
+          "To document employee achievements for promotions",
+          "To encourage early retirement",
+          "To give structured support to underperforming employees",
+          "To eliminate the need for regular feedback"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "What approach did Adobe take to replace traditional annual reviews?",
+        options: [
+          "Launched AI-driven assessments",
+          "Outsourced performance evaluation",
+          "Introduced frequent \"Check-Ins\" between employees and managers",
+          "Removed all formal evaluation systems"
+        ],
+        correctIndex: 2
+      }
+    ],
+    4: [
+      {
+        prompt: "Which of the following is included in direct compensation?",
+        options: [
+          "Paid vacation",
+          "Retirement plans",
+          "Base pay and performance bonuses",
+          "Flexible work hours"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "What is the purpose of aligning total rewards with organizational strategy?",
+        options: [
+          "To reduce administrative costs",
+          "To ensure all employees receive the same salary",
+          "To motivate employees and support business goals",
+          "To eliminate employee feedback systems"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which of the following is an example of indirect compensation?",
+        options: [
+          "Commission-based bonus",
+          "Base salary",
+          "Education assistance and wellness programs",
+          "Stock options"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which legal requirement ensures fair pay for men and women performing similar work?",
+        options: [
+          "Tax regulations",
+          "Employment Standards Act",
+          "Pay Equity Act",
+          "Retirement Savings Plan Act"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Why are flexible benefits programs becoming more popular in modern organizations?",
+        options: [
+          "They eliminate the need for health insurance",
+          "They reduce the number of employees needed",
+          "They increase employee engagement and cater to diverse needs",
+          "They simplify payroll systems"
+        ],
+        correctIndex: 2
+      }
+    ],
+    5: [
+      {
+        prompt: "Which of the following is covered under Employment Standards Legislation in Ontario?",
+        options: [
+          "Branding guidelines",
+          "Minimum wages and vacation entitlements",
+          "Immigration laws",
+          "Foreign investment approvals"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "What is the main purpose of Human Rights Legislation in the workplace?",
+        options: [
+          "To monitor business expenses",
+          "To prevent workplace discrimination and harassment",
+          "To promote external hiring only",
+          "To manage international clients"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "According to UAE Labour Law, how is gratuity (end-of-service benefit) calculated?",
+        options: [
+          "Based on total salary package",
+          "Based on basic salary and number of children",
+          "Based on basic salary and years of service",
+          "Based on gross revenue of the employer"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which of the following leave types is recognized under UAE labour law?",
+        options: [
+          "Vacation and meal leave",
+          "Paid sick leave only for senior staff",
+          "Maternity, paternity, and study leave",
+          "Sabbatical leave for all employees"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "What does the Emiratization policy in the UAE aim to achieve?",
+        options: [
+          "Reduce employee turnover",
+          "Improve labor court efficiency",
+          "Increase the number of UAE nationals in the private sector",
+          "Allow labor unions in free zones"
+        ],
+        correctIndex: 2
+      }
+    ],
+    6: [
+      {
+        prompt: "What is the primary role of organizational culture in a company?",
+        options: [
+          "To determine compensation levels",
+          "To guide employee behavior and influence performance",
+          "To reduce hiring time",
+          "To replace legal compliance practices"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "Which type of organizational culture encourages innovation and risk-taking?",
+        options: [
+          "Hierarchy culture",
+          "Clan culture",
+          "Adhocracy culture",
+          "Bureaucratic culture"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "According to Lewin’s Change Model, what is the purpose of the “Unfreeze” stage?",
+        options: [
+          "To finalize policy documentation",
+          "To stabilize current operations",
+          "To create awareness and readiness for change",
+          "To reward employee performance"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which HR practice helps embed organizational values from the very beginning?",
+        options: [
+          "Payroll administration",
+          "Recruitment and selection",
+          "Legal compliance tracking",
+          "Time-off scheduling"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "What is a key strategy for HR to support successful change adoption?",
+        options: [
+          "Avoiding feedback to reduce conflict",
+          "Increasing administrative tasks during transitions",
+          "Providing change management training to leaders",
+          "Eliminating all team meetings during change"
+        ],
+        correctIndex: 2
+      }
+    ],
+    7: [
+      {
+        prompt: "What is the main purpose of HR Analytics?",
+        options: [
+          "To automate payroll functions",
+          "To monitor office attendance",
+          "To collect and analyze HR data to improve decision-making and support strategy",
+          "To eliminate the need for HR departments"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which of the following is a key metric used in recruitment analytics?",
+        options: [
+          "Engagement rate",
+          "Time-to-fill",
+          "Diversity score",
+          "Training budget"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "What does predictive analytics in HR help with?",
+        options: [
+          "Sending automatic email replies",
+          "Tracking employee lateness",
+          "Forecasting future outcomes like attrition risk or promotion readiness",
+          "Creating training manuals"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "How can data visualization benefit HR decision-making?",
+        options: [
+          "It eliminates the need for reports",
+          "It hides performance issues",
+          "It makes complex data easier to understand and act upon",
+          "It replaces employee feedback"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "What is the use of employee sentiment analysis in HR analytics?",
+        options: [
+          "To increase salaries automatically",
+          "To block negative emails",
+          "To assess employee emotions and morale through surveys and feedback tools",
+          "To count work hours for payroll"
+        ],
+        correctIndex: 2
+      }
+    ],
+    8: [
+      {
+        prompt: "Why is ethics important in Human Resource Management?",
+        options: [
+          "To automate HR processes",
+          "To boost company profits through shortcuts",
+          "To promote fairness, transparency, and trust in the workplace",
+          "To reduce employee salaries legally"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which of the following is a core principle of Corporate Social Responsibility (CSR)?",
+        options: [
+          "Aggressive marketing tactics",
+          "Stock price manipulation",
+          "Environmental sustainability",
+          "Budget minimization"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "What is one way HR can support ethical and CSR initiatives?",
+        options: [
+          "Focus solely on profit margins",
+          "Outsource all employee training",
+          "Embed ethics into hiring and leadership development",
+          "Remove codes of conduct"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which of the following is a tool used to measure the impact of ethical and CSR programs?",
+        options: [
+          "Sales growth charts",
+          "Balanced scorecards with CSR KPIs",
+          "Annual leave tracker",
+          "Payroll system"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "What is a typical example of a CSR initiative?",
+        options: [
+          "Reducing employee breaks",
+          "Offering volunteer programs for staff",
+          "Cutting health benefits",
+          "Replacing employees with automation"
+        ],
+        correctIndex: 1
+      }
+    ],
+    9: [
+      {
+        prompt: "What is the primary goal of Diversity Management?",
+        options: [
+          "To reduce company costs",
+          "To standardize employee behavior",
+          "To create an inclusive and equitable workplace",
+          "To promote cultural uniformity"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which of the following is an example of inclusive recruitment?",
+        options: [
+          "Conducting technical interviews only",
+          "Hiring based solely on referrals",
+          "Using blind resume screening to reduce bias",
+          "Prioritizing internal promotions over new hires"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "What does ‘Equity’ refer to in the context of DEI?",
+        options: [
+          "Equal number of employees from each demographic",
+          "Treating everyone exactly the same",
+          "Fair treatment, access, and opportunity for all",
+          "Hiring based on quotas"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Why is cultural agility important in cross-border employment?",
+        options: [
+          "It reduces hiring costs",
+          "It enforces global uniformity",
+          "It helps build trust and avoid misunderstandings",
+          "It replaces the need for local labor law knowledge"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which practice supports ongoing development of an inclusive workplace culture?",
+        options: [
+          "Annual performance reviews",
+          "Diversity training and awareness workshops",
+          "Standardizing employee dress codes",
+          "Outsourcing all hiring decisions"
+        ],
+        correctIndex: 1
+      }
+    ],
+    10: [
+      {
+        prompt: "What is a key benefit of using AI in HR recruitment and candidate screening?",
+        options: [
+          "Increasing employee turnover",
+          "Conducting in-person interviews only",
+          "Screening large volumes of resumes efficiently",
+          "Eliminating the need for job descriptions"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which is an application of generative AI in onboarding?",
+        options: [
+          "Conducting exit interviews",
+          "Writing payroll reports",
+          "Generating welcome kits and onboarding checklists",
+          "Approving annual leave requests"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "How can AI support training and development in HR?",
+        options: [
+          "By scheduling employee shifts",
+          "By creating personalized learning paths and microlearning content",
+          "By writing employee contracts",
+          "By terminating underperforming employees"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "What ethical guideline must HR follow when using generative AI?",
+        options: [
+          "Use AI tools to make final hiring decisions",
+          "Keep AI usage hidden from employees",
+          "Ensure transparency and maintain accountability",
+          "Share sensitive data with public AI platforms"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "What is a risk of relying solely on AI-generated content in HR?",
+        options: [
+          "Faster hiring processes",
+          "Replicating biases present in training data",
+          "Improved employee morale",
+          "Better vacation tracking"
+        ],
+        correctIndex: 1
+      }
+    ]
+  }
 };
 
 // Generate upcoming live classes for a course
