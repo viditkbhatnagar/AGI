@@ -1239,6 +1239,212 @@ const coursesData = {
       dayOfWeek: "Wednesday",
       durationMin: 60,
     }
+  },
+  "Certified-Project-Manager": {
+    title: "Certified Project Manager",
+    slug: "Certified-Project-Manager",
+    type: "standalone",
+    description: "AGI’s Certified Project Manager program equips you with the advanced skills needed to manage projects effectively acros.",
+    modules: [
+      {
+        title: "Fundamentals of Project Management",
+        videos: [
+          {
+            title: "Fundamentals of Project Management",
+            duration: 50,
+            url: "https://www.youtube.com/watch?v=aoCrIr0GbEM",
+          }
+        ],
+        documents: [
+          {
+            title: "PM-101 Fundamentals of Project Management",
+            url: "https://docs.google.com/presentation/d/1hnajzEV48hHi2iV-pxztv4PT7T2Hc70U/preview"
+          }
+        ],
+      },
+      {
+        title: "Project Integration Management",
+        videos: [
+          {
+            title: "Project Integration Management",
+            duration: 10,
+            url: "https://www.youtube.com/watch?v=l1B5t2EJC4c",
+          }
+        ],
+        documents: [
+          {
+            title: "PM-102 Project Integration and Initiation",
+            url: "https://docs.google.com/presentation/d/1-BvMtXndER-CvwKycFx1bBgpeyLt_Ilc/preview"
+          }
+        ],
+      },
+      {
+        title: "Saving your company and saving your planet",
+        videos: [
+          {
+            title: "Project Scope Management",
+            duration: 7,
+            url: "https://www.youtube.com/watch?v=KPIT1RglSHs",
+          }
+        ],
+        documents: [
+          {
+            title: "PM-103 Project Scope Management",
+            url: "https://docs.google.com/presentation/d/16xObXzXu0aEABfs1i5bb_UtJNdU_VOqx/preview"
+          }
+        ],
+      },
+      {
+        title: "Project Schedule Management",
+        videos: [
+          {
+            title: "Project Schedule Management Overview",
+            duration: 11,
+            url: "https://www.youtube.com/watch?v=CEBO4k6Tnqg",
+          }
+        ],
+        documents: [
+          {
+            title: "PM-104 Project Schedule Management",
+            url: "https://docs.google.com/presentation/d/1hvmQddUYDQODwlg3iuFJAEH_WE90OXmw/preview"
+          }
+        ],
+      },
+      {
+        title: "The Basics of Project Cost Management",
+        videos: [
+          {
+            title: "The Basics of Project Cost Management - Project Management Training",
+            duration: 6,
+            url: "https://www.youtube.com/watch?v=EyPFi0YO32M",
+          }
+        ],
+        documents: [
+          {
+            title: "PM-105 Project Cost Management",
+            url: "https://docs.google.com/presentation/d/1UtpJUk8mQz2dbTrhxe7NLya0_t_iTkse/preview"
+          }
+        ],
+      },
+      {
+        title: "Project Quality Management",
+        videos: [
+          {
+            title: "Project Quality Management Overview",
+            duration: 11,
+            url: "https://www.youtube.com/watch?v=Q7YJ-_OJIZQ",
+          }
+        ],
+        documents: [
+          {
+            title: "PM-106 Project Quality Management",
+            url: "https://docs.google.com/presentation/d/1eT2sEdSsDwgV6WlM1aLEmB1qM0R825KR/preview"
+          }
+        ],
+      },
+      {
+        title: "Project Resource Management",
+        videos: [
+          {
+            title: "Mastering Project Resource Management: Tips for Success",
+            duration: 8,
+            url: "https://www.youtube.com/watch?v=-_2Y-qU1O1I",
+          }
+        ],
+        documents: [
+          {
+            title: "PM-107 Project Resource Management",
+            url: "https://docs.google.com/presentation/d/1-pEHGw-UppZHYpqtAvZYBJzmXEtXKz4q/preview"
+          }
+        ],
+      },
+      {
+        title: "Project Communications Management",
+        videos: [
+          {
+            title: "Project Communications Management Overview",
+            duration: 12,
+            url: "https://www.youtube.com/watch?v=S2lLKYV4e6M",
+          }
+        ],
+        documents: [
+          {
+            title: "PM-108 Project Communication Management",
+            url: "https://docs.google.com/presentation/d/1MwAZLszYSgcf3juN0RsJS3AvuaHTt3Yp/preview"
+          }
+        ],
+      },
+      {
+        title: "Project Risk Management",
+        videos: [
+          {
+            title: "RISK MANAGEMENT 101: An Introduction to Project Risk Management",
+            duration: 12,
+            url: "https://www.youtube.com/watch?v=Nwl7PquhU5U",
+          }
+        ],
+        documents: [
+          {
+            title: "PM-109 Project Risk Management",
+            url: "https://docs.google.com/presentation/d/1dRLDTgISO7lv_zoGBbt18NgMfyn7CzcL/preview"
+          }
+        ],
+      },
+      {
+        title: "Project Procurement Management",
+        videos: [
+          {
+            title: "Project Procurement Management Overview",
+            duration: 10,
+            url: "https://www.youtube.com/watch?v=Ig0uVNXhR9Q",
+          }
+        ],
+        documents: [
+          {
+            title: "PM-110 Project Procurement Management",
+            url: "https://docs.google.com/presentation/d/1Uq1EJLsMQJX0OkmCUm7TehizEmT7skvQ/preview"
+          }
+        ],
+      },
+      {
+        title: "Agile Frameworks and Methodologies",
+        videos: [
+          {
+            title: "What Is Agile Methodology? | Introduction to Agile Methodology in Six Minutes",
+            duration: 6,
+            url: "https://www.youtube.com/watch?v=8eVXTyIZ1Hs",
+          }
+        ],
+        documents: [
+          {
+            title: "PM-111 Agile Frameworks and Methodologies",
+            url: "https://docs.google.com/presentation/d/1eFNHsTe-CTbfLBlmEu098722-yl4gPhk/preview"
+          }
+        ],
+      },
+      {
+        title: "Business Analysis for Project Management",
+        videos: [
+          {
+            title: "Business Analysis for Project Managers",
+            duration: 30,
+            url: "https://www.youtube.com/watch?v=UitWvBThl_4",
+          }
+        ],
+        documents: [
+          {
+            title: "PM-112 Business Analysis for Project Management",
+            url: "https://docs.google.com/presentation/d/1mXdAbdulk4N6vS8cLWA7e7WQVd0TrPOS/preview"
+          }
+        ],
+      }
+    ],
+    liveClassConfig: {
+      enabled: true,
+      frequency: "weekly",
+      dayOfWeek: "Wednesday",
+      durationMin: 60,
+    }
   }
 };
 
@@ -2720,6 +2926,28 @@ const quizQuestionsMapping: {
       7: [build()],
       8: [build()],
       9: [build()]
+    };
+  })(),
+  "Certified-Project-Manager": (() => {
+    // helper to build one‑question arrays for 12 modules
+    const build = () => ({
+      prompt: "Click any option to go to the next module",
+      options: ["Click me", "Click me", "Click me", "Click me"],
+      correctIndex: -1, // -1 means “all choices correct”
+    });
+    return {
+      0: [build()],
+      1: [build()],
+      2: [build()],
+      3: [build()],
+      4: [build()],
+      5: [build()],
+      6: [build()],
+      7: [build()],
+      8: [build()],
+      9: [build()],
+      10: [build()],
+      11: [build()]
     };
   })()
 };
