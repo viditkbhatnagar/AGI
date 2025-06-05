@@ -1445,6 +1445,265 @@ const coursesData = {
       dayOfWeek: "Wednesday",
       durationMin: 60,
     }
+  },
+  "Certified-Project-Management-Professional": {
+    title: "Certified Project Management Professional",
+    slug: "Certified-Project-Management-Professional",
+    type: "standalone",
+    description: "Lead projects with confidence through CPMP certification, mastering project planning, risk management, and leadership skills to excel in project management roles across industries.",
+    modules: [
+      {
+        title: "Strategic Delivery Capability",
+        videos: [
+          {
+            title: "Build Your Organization’s Strategic Project Management Capability",
+            duration: 57,
+            url: "https://www.youtube.com/watch?v=cKJRN51UYMM",
+          }
+        ],
+        documents: [
+          {
+            title: "Strategic Project Management Made Simple",
+            url: "https://drive.google.com/file/d/1ac5flwP-KNYTcLtWkWxeLpiFCLN0Td0_/preview"
+          },
+          {
+            title: "Strategic Delivery Capability",
+            url: "https://drive.google.com/file/d/1ajO9DK63yHezbLDGivnrINmmlF0JgK0H/preview"
+          }
+        ],
+      },
+      {
+        title: "Project Management Empowers Humanitarian and Social Missions",
+        videos: [
+          {
+            title: "Introduction to Managing Humanitarian Aid Projects",
+            duration: 15,
+            url: "https://www.youtube.com/watch?v=rWfyLvUojns",
+          },
+          {
+            title: "Project Management",
+            duration: 3,
+            url: "https://www.youtube.com/watch?v=alOczlnWl1Q",
+          },
+          {
+            title: "Driving Change: Project Management for Social Impact",
+            duration: 6,
+            url: "https://www.youtube.com/watch?v=bPTfk0juGBA",
+          },
+          {
+            title: "Theory of Change: Framework for Social Impact",
+            duration: 7,
+            url: "https://www.youtube.com/watch?v=cg4J1g0IVHg",
+          }
+        ],
+        documents: [
+          {
+            title: "Project Management In Non Govermental Organizations NGOs",
+            url: "https://drive.google.com/file/d/1V7ikfYp5WghtLkIIAO6sNKbbrMa1OrHL/preview"
+          },
+          {
+            title: "Project Management Empowers Humanitarian and Social Missions",
+            url: "https://drive.google.com/file/d/1NDOSu7o5L2BxoLym2g2zk9td3fTC6al2/preview"
+          }
+        ],
+      },
+      {
+        title: "Project Management is Creating Innovative Culture",
+        videos: [
+          {
+            title: "How to create a culture of innovation",
+            duration: 3,
+            url: "https://www.youtube.com/watch?v=-eM0sNLPY_8",
+          },
+          {
+            title: "How to Create a Culture of Innovation",
+            duration: 31,
+            url: "https://www.youtube.com/watch?v=saBl3waK70Q",
+          }
+        ],
+        documents: [
+          {
+            title: "Creating Innovation Culture",
+            url: "https://drive.google.com/file/d/1bcsHxYUdWN5g2BOzAbLCxeqM9K8Amt6a/preview"
+          },
+          {
+            title: "Project Management is Creating Innovative Culture",
+            url: "https://drive.google.com/file/d/11jEwM3eXRn25o-JzhC4kuL1WBHtydpsp/preview"
+          }
+        ],
+      },
+      {
+        title: "Digitization is Central to Delivering Projects",
+        videos: [
+          {
+            title: "Transforming Project Delivery",
+            duration: 2,
+            url: "https://www.youtube.com/watch?v=d-7DCrvRgsY",
+          },
+          {
+            title: "Digital Transformation Basics for Project Managers",
+            duration: 5,
+            url: "https://www.youtube.com/watch?v=jcDG7kat2BA",
+          }
+        ],
+        documents: [
+          {
+            title: "Digitization is Central to Delivering Projects's Promises",
+            url: "https://drive.google.com/file/d/1HtQVq9mZl-dP8zuxEDuWEZMnh9y0Jn8M/preview"
+          }
+        ],
+      },
+      {
+        title: "Evolving Project Manager's Skills",
+        videos: [
+          {
+            title: "Project Manager Roadmap: Skills You MUST Learn TODAY",
+            duration: 10,
+            url: "https://www.youtube.com/watch?v=Qfgs-b0bQ6Q",
+          }
+        ],
+        documents: [
+          {
+            title: "Project Management Skills",
+            url: "https://drive.google.com/file/d/1yFutvx8MH8DTFm04BqKuTYKP-K1Ix0UM/preview"
+          },
+          {
+            title: "Evolving Project Manager's Skills",
+            url: "https://drive.google.com/file/d/1A4hDKoBznQQASwfmOCBjtStKrKjKAJCq/preview"
+          }
+        ],
+      },
+      {
+        title: "New Forms Of Project Leadership",
+        videos: [
+          {
+            title: "Top 5 Leadership Theories - Project Management Training",
+            duration: 8,
+            url: "https://www.youtube.com/watch?v=I49T7eteX28",
+          }
+        ],
+        documents: [
+          {
+            title: "The Art Of Project Leadership",
+            url: "https://drive.google.com/file/d/1vUuoWH7_56w1Rlcud3pHSGaGRNg6ApTz/preview"
+          },
+          {
+            title: "New Forms Of Project Leadership",
+            url: "https://drive.google.com/file/d/12spQKLs3XvBTmqdjrdqeVrH6dopsTbrY/preview"
+          }
+        ],
+      },
+      {
+        title: "Organizational Cultural Shift To The Project Way Of Working",
+        videos: [
+          {
+            title: "Project Management",
+            duration: 8,
+            url: "https://www.youtube.com/watch?v=Oh1CuAWnvnA",
+          }
+        ],
+        documents: [
+          {
+            title: "Project Culture",
+            url: "https://drive.google.com/file/d/1pkfnrVtia8FK1aAaITi-B6jyqn5sdREh/preview"
+          },
+          {
+            title: "Organizational Cultural Shift To The Project Way Of Working",
+            url: "https://drive.google.com/file/d/1r4NN3f7MlFGb5PfuL2D9jyUOgBgWH_LJ/preview"
+          }
+        ],
+      },
+      {
+        title: "Adaptive Frameworks And Life Cycles",
+        videos: [
+          {
+            title: "Adaptive Projects Framework (APF)",
+            duration: 5,
+            url: "https://www.youtube.com/watch?v=AYqEE9uUO_Y",
+          },
+          {
+            title: "Types of Project Management Life Cycle - Adaptive, Predictive, Iterative, Incremental and Hybrid",
+            duration: 16,
+            url: "https://www.youtube.com/watch?v=I4fAFcPCw6k",
+          },
+          {
+            title: "What Does Agile PPM Mean To The Modern PMO?",
+            duration: 38,
+            url: "https://www.youtube.com/watch?v=sEOq681jBR0",
+          },
+          {
+            title: "Project Management: Waterfall, Agile, & Hybrid Approaches",
+            duration: 15,
+            url: "https://www.youtube.com/watch?v=bLZ9MNwV2vE",
+          }
+        ],
+        documents: [
+          {
+            title: "Project Lifecycle",
+            url: "https://drive.google.com/file/d/1HmgXncxq99tUQhAaBjPCDuKKQ_-qLS3E/preview"
+          },
+          {
+            title: "Adaptive Frameworks And Life Cycles",
+            url: "https://drive.google.com/file/d/1eN7Aqji7r7C9p5CENFiP39lzmfboARg6/preview"
+          }
+        ],
+      },
+      {
+        title: "Evolving Nature of PMOs And Governance",
+        videos: [
+          {
+            title: "The Evolving Role of the PMO - from PMO Learning",
+            duration: 60,
+            url: "https://www.youtube.com/watch?v=7HapUBjPnG8",
+          }
+        ],
+        documents: [
+          {
+            title: "Beyond Governance PMO Interviews",
+            url: "https://drive.google.com/file/d/1nGPZxm2eY11Bw3GzSvQhANaa4eOql0lI/preview"
+          },
+          {
+            title: "PMOS Play Vital Role",
+            url: "https://drive.google.com/file/d/1rvta0oAVOLMoPqw6lH4ze5Y_KttehS2p/preview"
+          },
+          {
+            title: "Evolving Nature of PMOs And Governance",
+            url: "https://drive.google.com/file/d/1Fd9wMi6ruQvnEjCBviWpAN5r-kn1mVFD/preview"
+          }
+        ],
+      },
+      {
+        title: "Significant Growth In Value-Driven And Business-Related Metrics",
+        videos: [
+          {
+            title: "Top 3 KPIs for Project Managers",
+            duration: 4,
+            url: "https://www.youtube.com/watch?v=f_szFzBjfFg",
+          },
+          {
+            title: "Top 5 KPIs for Project Managers",
+            duration: 8,
+            url: "https://www.youtube.com/watch?v=SwGt4nbTxgM",
+          }
+        ],
+        documents: [
+          {
+            title: "Project Management Metrics KPIs",
+            url: "https://drive.google.com/file/d/1u6ili6L0D7EjTNoQlmmTAKwGR9oYYVI9/preview"
+          },
+          {
+            title: "Significant Growth In Value-Driven And Business Related Metrics",
+            url: "https://drive.google.com/file/d/1aMAyDwuFYVP_vUmzOQbvWNKtAYL59b9p/preview"
+          }
+        ],
+      }
+    ],
+    liveClassConfig: {
+      enabled: true,
+      frequency: "weekly",
+      dayOfWeek: "Wednesday",
+      durationMin: 60,
+    }
   }
 };
 
@@ -2948,6 +3207,26 @@ const quizQuestionsMapping: {
       9: [build()],
       10: [build()],
       11: [build()]
+    };
+  })(),
+  "Certified-Project-Management-Professional": (() => {
+    // helper to build one‑question arrays for 12 modules
+    const build = () => ({
+      prompt: "Click any option to go to the next module",
+      options: ["Click me", "Click me", "Click me", "Click me"],
+      correctIndex: -1, // -1 means “all choices correct”
+    });
+    return {
+      0: [build()],
+      1: [build()],
+      2: [build()],
+      3: [build()],
+      4: [build()],
+      5: [build()],
+      6: [build()],
+      7: [build()],
+      8: [build()],
+      9: [build()]
     };
   })()
 };
