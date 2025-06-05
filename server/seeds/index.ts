@@ -990,6 +990,255 @@ const coursesData = {
       dayOfWeek: "Wednesday",
       durationMin: 60,
     }
+  },
+  "Certified-Sustainability-And-Leadership": {
+    title: "Certified Sustainability Leadership And Management",
+    slug: "Certified-Sustainability-And-Leadership",
+    type: "standalone",
+    description: "AGI’s Certified Sustainability Management program provides in-depth knowledge of sustainable practices, environmental policy, and corporate responsibility, preparing you to lead initiatives for a sustainable future.",
+    modules: [
+      {
+        title: "Introduction to ESG",
+        videos: [
+          {
+            title: "What is ESG? Introduction to Environmental, Social and Governance",
+            duration: 8,
+            url: "https://www.youtube.com/watch?v=D3NkqJ6DEP8",
+          },
+          {
+            title: "Introduction to ESG | Environmental, Social and Governance",
+            duration: 140,
+            url: "https://www.youtube.com/watch?v=s01TCVhyU1A",
+          },
+          {
+            title: "ESG fundamentals: Sustainable finance & investing part 1",
+            duration: 8,
+            url: "https://www.youtube.com/watch?v=IA3ZXMRAXNY",
+          }
+        ],
+        documents: [
+          {
+            title: "SG-101- Introduction to ESG",
+            url: "https://docs.google.com/presentation/d/1tNP4NYGzwa2cK-HEX-0ts5jLz257N5Lm/preview"
+          }
+        ],
+      },
+      {
+        title: "ESG Data and Sustainability Assurance",
+        videos: [
+          {
+            title: "Understanding ESG Reporting",
+            duration: 24,
+            url: "https://www.youtube.com/watch?v=3Dq_ZXv18cI",
+          },
+          {
+            title: "ESG Rating Methodology; Everything You Need To Know",
+            duration: 18,
+            url: "https://www.youtube.com/watch?v=eZq-xIo3dFg",
+          },
+          {
+            title: "What is Sustainability Assurance?",
+            duration: 6,
+            url: "https://www.youtube.com/watch?v=PmLsCv3Nkr4",
+          }
+        ],
+        documents: [
+          {
+            title: "SG-102- ESG Data & Sustainability Assurance",
+            url: "https://docs.google.com/presentation/d/1my5BBGCbhNkf-jJVKDYO54_SWLot2vQr/preview"
+          }
+        ],
+      },
+      {
+        title: "Saving your company and saving your planet",
+        videos: [
+          {
+            title: "ESG & Sustainability Explained: Why Companies Must Adapt or Fall Behind",
+            duration: 12,
+            url: "https://www.youtube.com/watch?v=yz8lRz_SuuY",
+          },
+          {
+            title: "Transforming ESG Challenges into Opportunities",
+            duration: 45,
+            url: "https://www.youtube.com/watch?v=m7hCffRUKU0",
+          },
+          {
+            title: "ESG in Practice: A Real World Case Study",
+            duration: 61,
+            url: "https://www.youtube.com/watch?v=0T8i8v2wbZc",
+          }
+        ],
+        documents: [
+          {
+            title: "SG-103- Saving your company and saving your planet",
+            url: "https://docs.google.com/presentation/d/1HUF03FGMt7QC8e5ckjhhDZRNIxfsg5Ga/preview"
+          }
+        ],
+      },
+      {
+        title: "The Social Effect-Tipping points and Stakeholders",
+        videos: [
+          {
+            title: "Addressing Human Rights and Labor Rights in Companies Using ESG Strategies and Disclosures",
+            duration: 96,
+            url: "https://www.youtube.com/watch?v=htNAcdxhmqU",
+          },
+          {
+            title: "Navigating the Growing Stakeholder Expectations in ESG and CSR",
+            duration: 20,
+            url: "https://www.youtube.com/watch?v=OwgGaxoqt00",
+          },
+          {
+            title: "From Protest to Purpose: How HR Can Drive ESG for Social Impact",
+            duration: 48,
+            url: "https://www.youtube.com/watch?v=8hMV_Fm3MpU",
+          }
+        ],
+        documents: [
+          {
+            title: "SG - 104 The Social Effect - Tipping Points and Stakeholders",
+            url: "https://docs.google.com/presentation/d/1pSeSxrg0806mlRODibA4tFd1_H5rrQkn/preview"
+          }
+        ],
+      },
+      {
+        title: "ESG or Sustainability Agenda and Its Influence on the Role of Corporate Governance",
+        videos: [
+          {
+            title: "Integrating ESG into Corporate Strategy",
+            duration: 23,
+            url: "https://www.youtube.com/watch?v=AGTW4F0Jy8A",
+          },
+          {
+            title: "Stakeholder Theory",
+            duration: 7,
+            url: "https://www.youtube.com/watch?v=aoTNtj3kL3o",
+          },
+          {
+            title: "Integrating ESG: Best Practices and Innovations",
+            duration: 51,
+            url: "https://www.youtube.com/watch?v=UQ--oqftaZA",
+          }
+        ],
+        documents: [
+          {
+            title: "SG - 105 ESG or Sustainability Agenda and Its Influence on the Role of Corporate Governance",
+            url: "https://docs.google.com/presentation/d/1aghVcnedgOV9B18zxw7E-28nbVhqNFvt/preview"
+          }
+        ],
+      },
+      {
+        title: "The Dual Intersection Between Technology and ESG",
+        videos: [
+          {
+            title: "Blockchain and ESG: Enhancing Transparency and Accountability",
+            duration: 7,
+            url: "https://www.youtube.com/watch?v=xg5QFkqnq_Y",
+          }
+        ],
+        documents: [
+          {
+            title: "SG -106 The Dual Intersection Between Technology and ESG",
+            url: "https://docs.google.com/presentation/d/16RAawhAkfz2ytzXP6YlDOtnIoHf1kF9i/preview"
+          }
+        ],
+      },
+      {
+        title: "Mainstreaming ESG to Improve and Innovate",
+        videos: [
+          {
+            title: "Integrating ESG into Business Strategy",
+            duration: 23,
+            url: "https://www.youtube.com/watch?v=AGTW4F0Jy8A",
+          },
+          {
+            title: "ESG in practice: a real world case study",
+            duration: 60,
+            url: "https://www.youtube.com/watch?v=0T8i8v2wbZc",
+          }
+        ],
+        documents: [
+          {
+            title: "SG -107 Mainstreaming ESG to Improve and Innovate",
+            url: "https://docs.google.com/presentation/d/1fgS9IjuJqJ94gSv-CADJGuiI6woiADbw/preview"
+          }
+        ],
+      },
+      {
+        title: "Financial Services - Impact and ESG",
+        videos: [
+          {
+            title: "How Banks & Financial Companies Use ESG",
+            duration: 10,
+            url: "https://www.youtube.com/watch?v=z7Dltq0FMGI",
+          },
+          {
+            title: "ESG: Trends, Regulations and Strategies",
+            duration: 8,
+            url: "https://www.youtube.com/watch?v=of53SiJa5vc",
+          },
+          {
+            title: "ESG and Corporate Finance: The Financial Impact of Sustainability",
+            duration: 26,
+            url: "https://www.youtube.com/watch?v=2gqDfld_lj4",
+          }
+        ],
+        documents: [
+          {
+            title: "SG - 108 Financial Services - Impact and ESG",
+            url: "https://docs.google.com/presentation/d/1YlBaGDN68lpnqFYh2C7kzSjz10jLtEBo/preview"
+          }
+        ],
+      },
+      {
+        title: "Criticism and Controversies Around ESG",
+        videos: [
+          {
+            title: "ESG Ratings Are Not What They Seem",
+            duration: 13,
+            url: "https://www.youtube.com/watch?v=f_rrS-_giP8",
+          },
+          {
+            title: "Should Environmental, Social and Governance Influence Investment?",
+            duration: 93,
+            url: "https://www.youtube.com/watch?v=NkB1s4EBQaU",
+          },
+          {
+            title: "Using Robust Governance Practices in ESG to Stamp Out Greenwashing",
+            duration: 61,
+            url: "https://www.youtube.com/watch?v=eyyjrJMqz9g",
+          }
+        ],
+        documents: [
+          {
+            title: "SG - 109 Criticism and Controversies Around ESG",
+            url: "https://docs.google.com/presentation/d/1UfZxo6w64lgGVXZ2wRBLqLy41lfhTyVl/preview"
+          }
+        ],
+      },
+      {
+        title: "Contemporary Issues in Business Sustainability",
+        videos: [
+          {
+            title: "Sustainability Trends in 2025: What Businesses Need to Know",
+            duration: 5,
+            url: "https://www.youtube.com/watch?v=4yQM0xvBm4Q",
+          }
+        ],
+        documents: [
+          {
+            title: "SG – 110 Contemporary Issues in Business Sustainability",
+            url: "https://docs.google.com/presentation/d/1WvNq8nPMq_hSGRHMK6bDeffc3Lw8R23L/preview"
+          }
+        ],
+      },
+    ],
+    liveClassConfig: {
+      enabled: true,
+      frequency: "weekly",
+      dayOfWeek: "Wednesday",
+      durationMin: 60,
+    }
   }
 };
 
@@ -2452,7 +2701,27 @@ const quizQuestionsMapping: {
         correctIndex: 1
       }
     ]
-  }
+  },
+  "Certified-Sustainability-And-Leadership": (() => {
+    // helper to build one‑question arrays for 12 modules
+    const build = () => ({
+      prompt: "Click any option to go to the next module",
+      options: ["Click me", "Click me", "Click me", "Click me"],
+      correctIndex: -1, // -1 means “all choices correct”
+    });
+    return {
+      0: [build()],
+      1: [build()],
+      2: [build()],
+      3: [build()],
+      4: [build()],
+      5: [build()],
+      6: [build()],
+      7: [build()],
+      8: [build()],
+      9: [build()]
+    };
+  })()
 };
 
 // Generate upcoming live classes for a course
