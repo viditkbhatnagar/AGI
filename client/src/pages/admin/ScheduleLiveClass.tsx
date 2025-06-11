@@ -1,5 +1,4 @@
-// client/src/pages/admin/ScheduleLiveClass.tsx
-import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
+import React, { useState, useEffect, useMemo, ChangeEvent, FormEvent } from 'react';
 import { useLocation } from 'wouter';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -18,21 +17,29 @@ interface StudentOption {
 export default function ScheduleLiveClass() {
   const [, setLocation] = useLocation();
   const [courses, setCourses] = useState<CourseOption[]>([]);
-  const [students, setStudents] = useState<StudentOption[]>([]);
+  const [allStudents, setAllStudents] = useState<StudentOption[]>([]);
+  const [availableStudents, setAvailableStudents] = useState<StudentOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isBulk, setIsBulk] = useState(false);
 
   // Form state
   const [form, setForm] = useState({
     courseSlug: '',
     studentIds: [] as string[],
-    title: '',
-    description: '',
-    meetLink: '',
-    startTime: '',
-    endTime: ''
+    meetLink: ''
   });
+  const [sessions, setSessions] = useState([
+    {
+      title: '',
+      description: '',
+      startTime: '',
+      endTime: ''
+    }
+  ]);
+
+  const [studentSearch, setStudentSearch] = useState<string>('');
 
   // Fetch courses & students for the dropdowns
   useEffect(() => {
@@ -59,7 +66,8 @@ export default function ScheduleLiveClass() {
         }));
 
         setCourses(coursesData);
-        setStudents(studentOpts);
+        setAllStudents(studentOpts);
+        setAvailableStudents(studentOpts);
       } catch (err) {
         console.error(err);
         setError((err as Error).message);
@@ -68,6 +76,32 @@ export default function ScheduleLiveClass() {
       }
     })();
   }, []);
+
+  useEffect(() => {
+    if (!form.courseSlug) {
+      setAvailableStudents(allStudents);
+      return;
+    }
+    (async () => {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`/api/enrollments/course/${form.courseSlug}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        credentials: 'include',
+      });
+      if (!res.ok) {
+        setAvailableStudents([]);
+        return;
+      }
+      const enrolls: any[] = await res.json();
+      const opts: StudentOption[] = enrolls
+        .map(e => {
+          const s = e.studentId;
+          return s ? { id: s._id, name: s.name } : null;
+        })
+        .filter((x): x is StudentOption => !!x);
+      setAvailableStudents(opts);
+    })();
+  }, [form.courseSlug, allStudents]);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -86,25 +120,43 @@ export default function ScheduleLiveClass() {
     }
   };
 
+  const handleSessionChange = (index: number, field: string, value: string) => {
+    setSessions(prev => {
+      const copy = [...prev];
+      (copy[index] as any)[field] = value;
+      return copy;
+    });
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setSaving(true);
     setError(null);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('/api/live-classes', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` })
-        },
-        body: JSON.stringify(form)
-      });
-      if (!res.ok) {
-        const body = await res.json();
-        throw new Error(body.message || `Error ${res.status}`);
+      for (const sess of sessions) {
+        const payload = {
+          ...form,
+          title: sess.title,
+          description: sess.description,
+          meetLink: form.meetLink,
+          startTime: sess.startTime,
+          endTime: sess.endTime,
+          studentIds: form.studentIds
+        };
+        const res = await fetch('/api/live-classes', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token && { Authorization: `Bearer ${token}` })
+          },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) {
+          const body = await res.json();
+          throw new Error(body.message || `Error ${res.status}`);
+        }
       }
-      // On success, redirect back to admin live classes list
       setLocation('/admin/live-classes');
     } catch (err) {
       console.error(err);
@@ -147,79 +199,127 @@ export default function ScheduleLiveClass() {
                 </select>
               </div>
 
-              {/* Student multi-select */}
+              {/* Student selection with search and checkboxes */}
               <div>
                 <label className="block text-sm font-medium">Students</label>
-                <select
-                  name="studentIds"
-                  multiple
-                  required
-                  className="mt-1 block w-full h-32 px-3 py-2 border rounded-md bg-white"
-                  value={form.studentIds}
-                  onChange={handleChange}
-                >
-                  {students.map(s => (
-                    <option key={s.id} value={s.id}>
-                      {s.name}
-                    </option>
-                  ))}
-                </select>
+                <div className="mt-1 flex items-center space-x-2">
+                  <Input
+                    placeholder="Search students..."
+                    value={studentSearch}
+                    onChange={e => setStudentSearch(e.target.value)}
+                    className="flex-1"
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const filteredIds = availableStudents
+                        .filter(s =>
+                          s.name.toLowerCase().includes(studentSearch.toLowerCase())
+                        )
+                        .map(s => s.id);
+                      setForm(prev => ({ ...prev, studentIds: filteredIds }));
+                    }}
+                  >
+                    Select All
+                  </Button>
+                </div>
+                <div className="mt-2 max-h-40 overflow-y-auto border rounded p-2">
+                  {availableStudents
+                    .filter(s =>
+                      s.name.toLowerCase().includes(studentSearch.toLowerCase())
+                    )
+                    .map(s => (
+                      <label key={s.id} className="flex items-center mb-1">
+                        <input
+                          type="checkbox"
+                          value={s.id}
+                          checked={form.studentIds.includes(s.id)}
+                          onChange={e => {
+                            const { value, checked } = e.target;
+                            setForm(prev => {
+                              const studentIds = checked
+                                ? [...prev.studentIds, value]
+                                : prev.studentIds.filter(id => id !== value);
+                              return { ...prev, studentIds };
+                            });
+                          }}
+                          className="mr-2"
+                        />
+                        {s.name}
+                      </label>
+                    ))}
+                </div>
               </div>
 
-              {/* Title */}
-              <div>
-                <label className="block text-sm font-medium">Title</label>
-                <Input
-                  name="title"
-                  required
-                  value={form.title}
-                  onChange={handleChange}
-                />
+              <div className="md:col-span-2">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    checked={isBulk}
+                    onChange={e => setIsBulk(e.target.checked)}
+                    id="bulkToggle"
+                    className="h-4 w-4"
+                  />
+                  <label htmlFor="bulkToggle" className="text-sm font-medium">Bulk Scheduling</label>
+                </div>
+                <div className="space-y-6 mt-4">
+                  {sessions.map((sess, idx) => (
+                    <div key={idx} className="space-y-4 border p-4 rounded">
+                      <h3 className="font-bold">Session {idx + 1}</h3>
+                      <Input
+                        label="Title"
+                        name="title"
+                        required
+                        placeholder="Session Title"
+                        value={sess.title}
+                        onChange={(e) => handleSessionChange(idx, 'title', e.target.value)}
+                      />
+                      <textarea
+                        name="description"
+                        rows={2}
+                        className="block w-full px-3 py-2 border rounded-md"
+                        placeholder="Session Description"
+                        value={sess.description}
+                        onChange={(e) => handleSessionChange(idx, 'description', e.target.value)}
+                      />
+                      <Input
+                        label="Start Time"
+                        name="startTime"
+                        type="datetime-local"
+                        required
+                        value={sess.startTime}
+                        onChange={(e) => handleSessionChange(idx, 'startTime', e.target.value)}
+                      />
+                      <Input
+                        label="End Time"
+                        name="endTime"
+                        type="datetime-local"
+                        required
+                        value={sess.endTime}
+                        onChange={(e) => handleSessionChange(idx, 'endTime', e.target.value)}
+                      />
+                    </div>
+                  ))}
+                  {isBulk && (
+                    <Button
+                      variant="outline"
+                      type="button"
+                      onClick={() => setSessions(prev => [...prev, { title:'', description:'', startTime:'', endTime:'' }])}
+                    >
+                      + Add Session
+                    </Button>
+                  )}
+                </div>
               </div>
 
               {/* Meeting Link */}
-              <div>
+              <div className="md:col-span-2">
                 <label className="block text-sm font-medium">Meeting Link</label>
                 <Input
                   name="meetLink"
                   required
                   value={form.meetLink}
-                  onChange={handleChange}
-                />
-              </div>
-
-              {/* Description */}
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium">Description</label>
-                <textarea
-                  name="description"
-                  rows={3}
-                  className="mt-1 block w-full px-3 py-2 border rounded-md bg-white"
-                  value={form.description}
-                  onChange={handleChange as any}
-                />
-              </div>
-
-              {/* Start Time */}
-              <div>
-                <label className="block text-sm font-medium">Start Time</label>
-                <Input
-                  name="startTime"
-                  type="datetime-local"
-                  required
-                  value={form.startTime}
-                  onChange={handleChange}
-                />
-              </div>
-
-              {/* End Time */}
-              <div>
-                <label className="block text-sm font-medium">End Time</label>
-                <Input
-                  name="endTime"
-                  type="datetime-local"
-                  required
-                  value={form.endTime}
                   onChange={handleChange}
                 />
               </div>

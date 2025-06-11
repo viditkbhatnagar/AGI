@@ -9,8 +9,6 @@ import { renderLiveClassHtml } from '../utils/emailTemplates';
 import path from 'path';
 import ics from 'ics';
 
-
-
 // Create a new live class
 export const createLiveClass = async (req: Request, res: Response) => {
   try {
@@ -260,7 +258,7 @@ export const getStudentLiveClasses = async (req: Request, res: Response) => {
 export const updateLiveClass = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { title, description, meetLink, startTime, endTime, status } = req.body;
+    const { title, description, meetLink, startTime, endTime, status, studentIds } = req.body;
     
     const liveClass = await LiveClass.findById(id);
     
@@ -275,6 +273,12 @@ export const updateLiveClass = async (req: Request, res: Response) => {
     if (startTime) liveClass.startTime = new Date(startTime);
     if (endTime) liveClass.endTime = new Date(endTime);
     if (status) liveClass.status = status;
+
+    // Update student assignments if provided
+    if (Array.isArray(studentIds)) {
+      const studentObjectIds = studentIds.map((sid: string) => new mongoose.Types.ObjectId(sid));
+      liveClass.studentIds = studentObjectIds;
+    }
     
     await liveClass.save();
     
@@ -285,6 +289,23 @@ export const updateLiveClass = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Update live class error:', error);
     res.status(500).json({ message: 'Server error' });
+  }
+};
+
+/**
+ * GET a single live class by ID
+ */
+export const getLiveClassById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const liveClass = await LiveClass.findById(id);
+    if (!liveClass) {
+      return res.status(404).json({ message: "Live class not found" });
+    }
+    res.json(liveClass);
+  } catch (err) {
+    console.error("Error in getLiveClassById:", err);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 

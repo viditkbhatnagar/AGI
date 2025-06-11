@@ -433,14 +433,14 @@ export function Students() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>No.</TableHead>
-                <TableHead>Student ID</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Phone</TableHead>
-                <TableHead>Date of Enrollment</TableHead>
-                <TableHead>Course</TableHead>
-                <TableHead>Pathway</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="font-bold">S.No</TableHead>
+                <TableHead className="font-bold">Student ID</TableHead>
+                <TableHead className="font-bold">Student Name</TableHead>
+                <TableHead className="font-bold">Phone Number</TableHead>
+                <TableHead className="font-bold">Date of Enrollment</TableHead>
+                <TableHead className="font-bold">Courses Enrolled</TableHead>
+                <TableHead className="font-bold">Pathway</TableHead>
+                <TableHead className="text-right">More Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

@@ -3,6 +3,23 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "wouter";
+import { useState, useMemo } from 'react';
+import { subMonths, format } from 'date-fns';
+import { TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Legend
+} from 'recharts';
+import { Badge } from "@/components/ui/badge";
 import {
   BarChart as BarChartIcon,
   CalendarClock,
@@ -11,19 +28,167 @@ import {
   UserPlus,
   Users
 } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
-import { formatDateTime } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
+
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
+
+// Helper to format ISO date-time strings
+function formatDateTime(isoString: string): string {
+  const d = new Date(isoString);
+  const date = d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  const time = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+  return `${date} ${time}`;
+}
 
 export function AdminDashboard() {
   const { data, isLoading, error } = useQuery<{ coursesBreakdown: { standalone: number; withMba: number }, totalEnrollments: number, totalStudents: number, newStudentsThisMonth: number, totalCourses: number, upcomingLiveClasses: number, nextLiveClass: { startTime: string } }>({
     queryKey: ['/api/admin/dashboard']
   });
+
+  // Client-side derive upcoming scheduled classes for admin
   
+
+  const { data: allLiveClasses = [] } = useQuery({
+    queryKey: ['/api/live-classes'],
+    queryFn: async () => {
+      const token = localStorage.getItem("token");
+      const res = await fetch('/api/live-classes', {
+        credentials: 'include',
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
+      if (!res.ok) throw new Error("Failed to fetch live classes");
+      return res.json();
+    },
+  });
+
+  const upcomingLiveClasses = useMemo(() => {
+    const now = Date.now();
+    return allLiveClasses
+      .filter((lc: any) =>
+        new Date(lc.startTime).getTime() >= now && lc.status === 'scheduled'
+      )
+      .sort((a: any, b: any) =>
+        new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+      );
+  }, [allLiveClasses]);
+  
+  // Fetch data for charts
+  const { data: enrollments = [] } = useQuery({
+    queryKey: ['/api/enrollments'],
+    queryFn: async () => {
+      const token = localStorage.getItem("token");
+      const res = await fetch('/api/enrollments', {
+        credentials: 'include',
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
+      if (!res.ok) throw new Error("Failed to fetch enrollments");
+      return res.json();
+    },
+  });
+  const { data: coursesList = [] } = useQuery({
+    queryKey: ['/api/admin/courses'],
+    queryFn: async () => {
+      const token = localStorage.getItem("token");
+      const res = await fetch('/api/admin/courses', {
+        credentials: 'include',
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
+      if (!res.ok) throw new Error("Failed to fetch courses");
+      return res.json();
+    },
+  });
+
+  const enrollmentTrendData = useMemo(() => {
+    const points: { name: string; enrollments: number }[] = [];
+    for (let i = 5; i >= 0; i--) {
+      const dt = subMonths(new Date(), i);
+      const label = format(dt, 'MMM');
+      const count = enrollments.filter((e: any) => {
+        const d = new Date(e.enrolledAt || e.enrollDate);
+        return d.getFullYear() === dt.getFullYear() && d.getMonth() === dt.getMonth();
+      }).length;
+      points.push({ name: label, enrollments: count });
+    }
+    return points;
+  }, [enrollments]);
+
+  const progressBuckets = useMemo(() => {
+    let low = 0, mid = 0, high = 0;
+    enrollments.forEach((e: any) => {
+      const p = e.progress ?? e.percentComplete ?? 0;
+      if (p < 25) low++;
+      else if (p < 75) mid++;
+      else high++;
+    });
+    const total = enrollments.length || 1;
+    return {
+      lowPct: Math.round((low / total) * 100),
+      midPct: Math.round((mid / total) * 100),
+      highPct: Math.round((high / total) * 100),
+      total,
+    };
+  }, [enrollments]);
+
+  // Course popularity: top 5 by enrollment count
+  const courseMap = useMemo(
+    () => new Map(coursesList.map((c: any) => [c.slug, c.title])),
+    [coursesList]
+  );
+
+  const [filterCourse, setFilterCourse] = useState<string>('');
+const [filterStudent, setFilterStudent] = useState<string>('');
+
+  const coursePopularityData = useMemo(() => {
+    const countMap = new Map<string, number>();
+    enrollments.forEach((e: any) => {
+      countMap.set(e.courseSlug, (countMap.get(e.courseSlug) || 0) + 1);
+    });
+    return Array.from(countMap.entries())
+      .map(([slug, count]) => ({
+        name: courseMap.get(slug) || slug,
+        count,
+      }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+  }, [enrollments, courseMap]);
+
+  // Active Students by Course – counts of not-started / in-progress / completed
+const heatmapData = useMemo(() => {
+  const map = new Map<
+    string,
+    { name: string; notStarted: number; inProgress: number; completed: number }
+  >();
+
+  enrollments.forEach((e: any) => {
+    const slug = e.courseSlug;
+    if (!map.has(slug)) {
+      map.set(slug, {
+        name: courseMap.get(slug) || slug,
+        notStarted: 0,
+        inProgress: 0,
+        completed: 0,
+      });
+    }
+    const entry = map.get(slug)!;
+    const pct = e.percentComplete ?? 0;
+    if (pct === 0) entry.notStarted++;
+    else if (pct >= 100) entry.completed++;
+    else entry.inProgress++;
+  });
+
+  // Optional: sort by total students descending
+  return Array.from(map.values()).sort(
+    (a, b) =>
+      b.notStarted + b.inProgress + b.completed -
+      (a.notStarted + a.inProgress + a.completed)
+  );
+}, [enrollments, courseMap]);
+
+
   if (isLoading) {
     return <DashboardSkeleton />;
   }
-  
+
   if (error) {
     return (
       <div className="p-6">
@@ -36,25 +201,15 @@ export function AdminDashboard() {
       </div>
     );
   }
-  
+
   // Transform course breakdown data for chart
   const courseChartData = [
     { name: "Standalone", value: data?.coursesBreakdown?.standalone ?? 0 },
     { name: "With MBA", value: data?.coursesBreakdown?.withMba ?? 0 },
   ];
-  
+
   const COLORS = ['#3f51b5', '#ff5722', '#4caf50', '#9c27b0'];
-  
-  // Create enrollment trend data
-  // const enrollmentTrendData = [
-  //   { name: 'Jan', enrollments: 4 },
-  //   { name: 'Feb', enrollments: 7 },
-  //   { name: 'Mar', enrollments: 5 },
-  //   { name: 'Apr', enrollments: 8 },
-  //   { name: 'May', enrollments: data.totalEnrollments > 10 ? data.totalEnrollments - 10 : 10 },
-  //   { name: 'Jun', enrollments: data.totalEnrollments },
-  // ];
-  
+
   return (
     <div className="p-4 md:p-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
@@ -129,6 +284,8 @@ export function AdminDashboard() {
             </div>
           </CardContent>
         </Card>
+
+        
         
         {/* Upcoming Live Classes */}
         <Card className="dashboard-card">
@@ -152,15 +309,101 @@ export function AdminDashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Calendar, Pathway Breakdown & Active Students Heat‑map */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        {/* Calendar Card */}
+        <Card>
+          <CardContent>
+            <h3 className="text-lg font-medium mb-2">Upcoming Classes Calendar</h3>
+            <Calendar
+              tileContent={({ date, view }) => {
+                if (view !== 'month') return null;
+                const dayClasses = upcomingLiveClasses.filter(
+                  (lc) => new Date(lc.startTime).toDateString() === date.toDateString()
+                );
+                if (!dayClasses.length) return null;
+                const tooltip = dayClasses
+                  .map((lc) => {
+                    const time = format(new Date(lc.startTime), 'h:mm a');
+                    return `${time} – ${lc.title}`;
+                  })
+                  .join('\n');
+                return (
+                  <div
+                    title={tooltip}
+                    className="flex flex-col items-center justify-center h-full w-full mt-1 cursor-pointer"
+                  >
+                    <div className="bg-blue-500 rounded-full w-2 h-2" />
+                    <span className="text-xs text-blue-500">{dayClasses.length}</span>
+                  </div>
+                );
+              }}
+            />
+          </CardContent>
+        </Card>
+
+        {/* Pathway Breakdown */}
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-medium text-gray-800">Pathway Breakdown</h3>
+              <Badge variant="outline">By type</Badge>
+            </div>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={courseChartData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={70}
+                    outerRadius={100}
+                    paddingAngle={5}
+                    dataKey="value"
+                    label={({ name, percent }) =>
+                      `${name}: ${(percent * 100).toFixed(0)}%`
+                    }
+                  >
+                    {courseChartData.map((_, index) => (
+                      <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(v) => [`${v} courses`, 'Courses']} />
+                  <Legend verticalAlign="bottom" height={36} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Active Students by Course Heat‑map */}
+        <Card>
+          <CardContent className="pt-6">
+            <h3 className="text-lg font-medium mb-4">Active Students by Course</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={heatmapData} layout="vertical" margin={{ left: 60 }}>
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                <XAxis type="number" />
+                <YAxis dataKey="name" type="category" width={150} />
+                <Tooltip />
+                <Bar dataKey="notStarted" stackId="a" fill="#d1d5db" name="Not Started" />
+                <Bar dataKey="inProgress" stackId="a" fill="#fbbf24" name="In Progress" />
+                <Bar dataKey="completed" stackId="a" fill="#4ade80" name="Completed" />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </div>
       
-      {/* Charts Row */}
-      
+      {/* Enrollment Trend & Progress Snapshot */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Enrollment Trend */}
-        {/* <Card>
+        <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-medium text-gray-800">Enrollment Trend</h3>
-              <Badge variant="outline">Last 6 months</Badge>
+              <Badge variant="outline">Last 6 months</Badge>
             </div>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
@@ -170,56 +413,74 @@ export function AdminDashboard() {
                   <YAxis />
                   <Tooltip
                     contentStyle={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '0.5rem' }}
-                    formatter={(value) => [`${value} enrollments`, 'Enrollments']}
+                    formatter={(value: any) => [`${value} enrollments`, 'Enrollments']}
                   />
                   <Bar dataKey="enrollments" fill="#3f51b5" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           </CardContent>
-        </Card> */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        {/* Course Distribution */}
+        </Card>
+
+        {/* Student Progress Snapshot */}
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium text-gray-800">Course Distribution</h3>
-              <Badge variant="outline">By type</Badge>
+            <h3 className="text-lg font-medium text-gray-800 mb-4">Student Progress Snapshot</h3>
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm text-gray-500 mb-1">0–25% Complete</p>
+                <div className="w-full h-4 bg-gray-200 rounded-full">
+                  <div className="h-full bg-red-500 rounded-full" style={{ width: `${progressBuckets.lowPct}%` }} />
+                </div>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500 mb-1">25–75% Complete</p>
+                <div className="w-full h-4 bg-gray-200 rounded-full">
+                  <div className="h-full bg-yellow-500 rounded-full" style={{ width: `${progressBuckets.midPct}%` }} />
+                </div>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500 mb-1">75–100% Complete</p>
+                <div className="w-full h-4 bg-gray-200 rounded-full">
+                  <div className="h-full bg-green-500 rounded-full" style={{ width: `${progressBuckets.highPct}%` }} />
+                </div>
+              </div>
             </div>
-            <div className="h-80 flex items-center justify-center">
+            <p className="text-xs text-gray-500 mt-2">Based on {progressBuckets.total} total enrollments</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Pathway Breakdown, Course Popularity & Quick Actions */}
+      <div className="grid grid-cols-1 lg:grid-cols-10 gap-6 mb-6">
+        {/* Course Popularity */}
+        <Card className="lg:col-span-7">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-medium text-gray-800">Course Popularity</h3>
+              <Badge variant="outline">Top 5</Badge>
+            </div>
+            <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={courseChartData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={70}
-                    outerRadius={100}
-                    fill="#8884d8"
-                    paddingAngle={5}
-                    dataKey="value"
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                  >
-                    {courseChartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    formatter={(value) => [`${value} courses`, 'Courses']}
-                    contentStyle={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '0.5rem' }}
-                  />
-                  <Legend />
-                </PieChart>
+                <BarChart data={coursePopularityData} layout="vertical" margin={{ left: 40 }}>
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                  <XAxis type="number" />
+                  <YAxis dataKey="name" type="category" width={150} />
+                  <Tooltip formatter={(v) => [`${v}`, 'Enrollments']} />
+                  <Bar dataKey="count" fill="#3f51b5" radius={[0, 4, 4, 0]} />
+                </BarChart>
               </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        {/* Quick Actions */}
+        <Card className="lg:col-span-3">
           <div className="px-5 py-4 border-b border-gray-200">
             <h2 className="font-inter text-lg font-medium text-gray-800">Quick Actions</h2>
           </div>
           <CardContent className="p-5">
+            {/* existing Quick Actions buttons */}
             <div className="space-y-3">
               <Link href="/admin/live-classes/new">
                 <Button variant="outline" className="w-full justify-start mb-2">
@@ -227,40 +488,24 @@ export function AdminDashboard() {
                   Schedule Live Class
                 </Button>
               </Link>
-              
               <Link href="/admin/students/new">
                 <Button variant="outline" className="w-full justify-start mb-2">
                   <UserPlus className="mr-2 h-4 w-4" />
                   Add New Student
                 </Button>
               </Link>
-              
               <Link href="/admin/courses/new">
                 <Button variant="outline" className="w-full justify-start mb-2">
                   <School className="mr-2 h-4 w-4" />
                   Add New Course
                 </Button>
               </Link>
-              
               <Link href="/admin/enrollments/new">
                 <Button variant="outline" className="w-full justify-start">
                   <GraduationCap className="mr-2 h-4 w-4" />
                   Create Enrollment
                 </Button>
               </Link>
-            </div>
-            
-            <div className="mt-6 bg-gray-50 p-4 rounded-lg">
-              <div className="flex items-center mb-2">
-                <BarChartIcon className="h-5 w-5 text-primary mr-2" />
-                <h4 className="font-medium">Generate Reports</h4>
-              </div>
-              <p className="text-sm text-gray-600 mb-3">
-                Export data on students, courses, enrollments, and more.
-              </p>
-              <Button variant="secondary" className="w-full">
-                View Reports
-              </Button>
             </div>
           </CardContent>
         </Card>

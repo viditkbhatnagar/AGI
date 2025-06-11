@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link, useLocation } from "wouter";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Eye, GraduationCap, Plus, Search, SlidersHorizontal, Trash2 } from "lucide-react";
+import { Edit, Eye, GraduationCap, Plus, Search, SlidersHorizontal, Trash2, SortAsc, SortDesc, Download } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,17 +18,95 @@ import {
 import { formatDate, formatTimeRemaining, getInitials } from "@/lib/utils";
 
 export function Enrollments() {
+  
   const [searchQuery, setSearchQuery] = useState("");
+  const [studentNameFilter, setStudentNameFilter] = useState<string>('');
+  const [courseNameFilter, setCourseNameFilter] = useState<string>('');
+  const [enrollAfter, setEnrollAfter] = useState<string>('');
+  const [validBefore, setValidBefore] = useState<string>('');
+  const [progressOp, setProgressOp] = useState<'more'|'less'>('more');
+  const [progressValue, setProgressValue] = useState<number>(0);
+  const [dateSort, setDateSort] = useState<'asc'|'desc'>('asc');
+  const [currentPage, setCurrentPage] = useState(1);
+const itemsPerPage = 10;
   const [, setLocation] = useLocation();
+  const handleDownload = (ext: 'csv' | 'xlsx') => {
+    const header = ['Student Name','Course','Enrollment Date','Valid Until','Progress'];
+    const rows = grouped.flatMap(({ student, records }) =>
+      records.map((r: any) => [
+        student?.name || '',
+        r.courseSlug,
+        r.enrollDate.split('T')[0],
+        r.validUntil.split('T')[0],
+        `${r.percentComplete ?? 0}%`,
+      ])
+    );
+    const csvContent = [header, ...rows]
+      .map(r => r.map(cell => `"${cell.replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `enrollments.${ext}`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
   
   const { data, isLoading, error } = useQuery({
     queryKey: ['/api/enrollments'],
   });
   
-  const filteredEnrollments = data?.filter(enrollment => 
-    enrollment.studentId?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    enrollment.courseSlug.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const q = searchQuery.toLowerCase();
+  const filteredEnrollments = data?.filter(e => {
+    const searchMatch = !searchQuery || 
+      e.studentId?.name.toLowerCase().includes(q) ||
+      e.courseSlug.toLowerCase().includes(q);
+    const nameMatch = studentNameFilter
+      ? e.studentId?.name?.toLowerCase().includes(studentNameFilter.toLowerCase())
+      : true;
+    const courseMatch = courseNameFilter
+      ? e.courseSlug.toLowerCase().includes(courseNameFilter.toLowerCase())
+      : true;
+    const enrollMatch = enrollAfter
+      ? new Date(e.enrollDate) >= new Date(enrollAfter)
+      : true;
+    const validMatch = validBefore
+      ? new Date(e.validUntil) <= new Date(validBefore)
+      : true;
+    const prog = e.percentComplete ?? 0;
+    const progressMatch = progressOp === 'more'
+      ? prog >= progressValue
+      : prog <= progressValue;
+    return searchMatch && nameMatch && courseMatch && enrollMatch && validMatch && progressMatch;
+  });
+
+  const grouped = useMemo(() => {
+    const m = new Map<string, { student: any; records: any[] }>();
+    (filteredEnrollments || []).forEach(e => {
+      const sid = e.studentId?._id;
+      if (!sid) return;
+      if (!m.has(sid)) {
+        m.set(sid, { student: e.studentId, records: [] });
+      }
+      m.get(sid)!.records.push(e);
+    });
+    return Array.from(m.values());
+  }, [filteredEnrollments]);
+
+  const sortedGrouped = useMemo(() => {
+    return grouped.slice().sort((a, b) => {
+      const da = new Date(a.records[0].enrollDate).getTime();
+      const db = new Date(b.records[0].enrollDate).getTime();
+      return dateSort === 'asc' ? da - db : db - da;
+    });
+  }, [grouped, dateSort]);
+  const totalPages = Math.ceil(sortedGrouped.length / itemsPerPage);
+const paginated = sortedGrouped.slice(
+  (currentPage - 1) * itemsPerPage,
+  currentPage * itemsPerPage
+);
   
   if (isLoading) {
     return <EnrollmentsSkeleton />;
@@ -52,37 +130,119 @@ export function Enrollments() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Enrollments</h1>
         <div className="mt-2 md:mt-0">
-          <Button onClick={() => setLocation("/admin/enrollments/new")}>
-            <GraduationCap className="mr-2 h-4 w-4" />
-            Create Enrollment
-          </Button>
         </div>
       </div>
       
       <Card className="mb-6">
         <CardContent className="p-4">
           <div className="flex flex-col md:flex-row justify-between gap-4">
-            <div className="relative w-full md:w-72">
+            <div className="relative w-full md:w-96">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
               <Input
-                placeholder="Search enrollments..."
+                placeholder="Search by student name or course name..."
                 className="pl-8"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
+
+            <div className="flex items-center text-lg font-bold space-x-6">
+              <div>Total Students: {sortedGrouped.length}</div>
+              <div>Total Enrollments: {filteredEnrollments?.length ?? 0}</div>
+            </div>
+
             <div className="flex gap-2">
-              <Button variant="outline" size="sm">
-                <SlidersHorizontal className="mr-2 h-4 w-4" />
-                Filter
+              <Button variant="outline" size="sm" onClick={() => {
+                setStudentNameFilter('');
+                setCourseNameFilter('');
+                setEnrollAfter('');
+                setValidBefore('');
+                setProgressOp('more');
+                setProgressValue(0);
+              }}>
+                No Filter
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => handleDownload('csv')}>
+                <Download className="mr-2 h-4 w-4" />
+                Export CSV
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => setDateSort('asc')}>
+                <SortAsc className="mr-2 h-4 w-4" />
+                Oldest First
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => setDateSort('desc')}>
+                <SortDesc className="mr-2 h-4 w-4" />
+                Newest First
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Actions
+                    <SlidersHorizontal className="mr-2 h-4 w-4" />
+                    Filter
                   </Button>
                 </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" side="bottom" className="w-full max-w-sm p-4 space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium">Student Name</label>
+                    <Input
+                      value={studentNameFilter}
+                      onChange={e => setStudentNameFilter(e.target.value)}
+                      placeholder="Type name..."
+                      className="mt-1 w-full"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Course Name</label>
+                    <Input
+                      value={courseNameFilter}
+                      onChange={e => setCourseNameFilter(e.target.value)}
+                      placeholder="Type course..."
+                      className="mt-1 w-full"
+                    />
+                  </div>
+                  <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
+                    <div className="flex-1 w-full">
+                      <label className="block text-sm font-medium">Enrolled After</label>
+                      <Input
+                        type="date"
+                        value={enrollAfter}
+                        onChange={e => setEnrollAfter(e.target.value)}
+                        className="mt-1 w-full"
+                      />
+                    </div>
+                    <div className="flex-1 w-full">
+                      <label className="block text-sm font-medium">Valid Before</label>
+                      <Input
+                        type="date"
+                        value={validBefore}
+                        onChange={e => setValidBefore(e.target.value)}
+                        className="mt-1 w-full"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Progress</label>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <select
+                        value={progressOp}
+                        onChange={e => setProgressOp(e.target.value as 'more'|'less')}
+                        className="border rounded px-2 py-1"
+                      >
+                        <option value="more">≥</option>
+                        <option value="less">≤</option>
+                      </select>
+                      <Input
+                        type="number"
+                        value={progressValue}
+                        onChange={e => setProgressValue(Number(e.target.value))}
+                        className="w-16"
+                      />
+                      <span>%</span>
+                    </div>
+                  </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <DropdownMenu>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem>
                     <GraduationCap className="mr-2 h-4 w-4" />
@@ -103,85 +263,66 @@ export function Enrollments() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Student</TableHead>
-                <TableHead>Course</TableHead>
+                <TableHead className="font-bold">S.No</TableHead>
+                <TableHead>Student Name</TableHead>
+                <TableHead>Course Name</TableHead>
                 <TableHead>Enrollment Date</TableHead>
                 <TableHead>Valid Until</TableHead>
-                <TableHead>Progress</TableHead>
+                <TableHead>Course Vise Progress</TableHead>
                 {/* <TableHead className="text-right">Actions</TableHead> */}
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredEnrollments?.length > 0 ? (
-                filteredEnrollments.map((enrollment) => (
-                  <TableRow key={enrollment._id}>
+              {sortedGrouped.length > 0 ? (
+                sortedGrouped.map(({ student, records }, index) => (
+                  <TableRow key={student._id}>
+                    <TableCell className="text-sm text-gray-700">{index + 1}</TableCell>
                     <TableCell>
                       <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10 bg-primary-100 rounded-full flex items-center justify-center">
-                          <span className="font-medium text-primary-700">
-                            {getInitials(enrollment.studentId?.name || "Student")}
-                          </span>
-                        </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">{enrollment.studentId?.name || "Unknown Student"}</div>
+                          <div className="text-sm font-medium text-gray-900">{student?.name || "Unknown Student"}</div>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="text-sm font-medium text-gray-900">{enrollment.courseSlug}</div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="text-sm text-gray-500">{formatDate(enrollment.enrollDate)}</div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="text-sm text-gray-500">{formatDate(enrollment.validUntil)}</div>
-                      <div className="text-xs text-gray-400">
-                        {new Date(enrollment.validUntil) > new Date() 
-                          ? formatTimeRemaining(enrollment.validUntil) + " remaining"
-                          : "Expired"}
+                      <div className="text-sm space-y-1">
+                        {records.map(r => (
+                          <div key={r._id}>{r.courseSlug}</div>
+                        ))}
                       </div>
                     </TableCell>
                     <TableCell>
-                      {(() => {
-                        // calculate against totalModules provided by server
-                        const totalModules   = enrollment.totalModules || 0;
-                        const completedCount = enrollment.completedModules
-                          ? enrollment.completedModules.filter(m => m.completed).length
-                          : 0;
-                        const percentComplete = totalModules
-                          ? Math.round((completedCount / totalModules) * 100)
-                          : 0;
-
-                        return (
-                          <div>
-                            <div className="text-sm text-gray-900 mb-1">
-                              {percentComplete > 0
-                                ? `${percentComplete}% Complete`
-                                : 'Not started'}
+                      {formatDate(
+                        records
+                          .map(r => r.enrollDate)
+                          .sort((a, b) => new Date(a).getTime() - new Date(b).getTime())[0]
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {formatDate(
+                        records
+                          .map(r => r.validUntil)
+                          .sort((a, b) => new Date(b).getTime() - new Date(a).getTime())[0]
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="space-y-4">
+                        {records.map((r: any) => (
+                          <div key={r._id} className="space-y-1">
+                            <div className="text-sm font-medium text-gray-900">
+                              {r.courseSlug} — {r.percentComplete ?? 0}% Complete
                             </div>
                             <div className="w-full h-1.5 bg-gray-200 rounded-full">
                               <div
                                 className="h-full bg-primary rounded-full"
-                                style={{ width: `${percentComplete}%` }}
+                                style={{ width: `${r.percentComplete ?? 0}%` }}
                               />
                             </div>
                           </div>
-                        );
-                      })()}
-                    </TableCell>
-                    {/* <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button variant="ghost" size="icon" onClick={() => setLocation(`/admin/enrollments/${enrollment._id}`)}>
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" onClick={() => setLocation(`/admin/enrollments/${enrollment._id}/edit`)}>
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        ))}
                       </div>
-                    </TableCell> */}
+                    </TableCell>
+              {/* Commented out actions */}
                   </TableRow>
                 ))
               ) : (

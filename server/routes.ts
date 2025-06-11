@@ -94,6 +94,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // LIVE CLASS ROUTES
   app.get("/api/live-classes", auth, requireAdmin, liveClassController.getAllLiveClasses);
+  app.get("/api/live-classes/:id", auth, requireAdmin, liveClassController.getLiveClassById);
   app.get("/api/live-classes/upcoming", auth, requireAdmin, liveClassController.getUpcomingLiveClasses);
   app.get("/api/live-classes/course/:courseSlug", auth, requireAdmin, liveClassController.getLiveClassesByCourse);
   app.get("/api/student/live-classes", auth, requireStudent, liveClassController.getStudentLiveClasses);
