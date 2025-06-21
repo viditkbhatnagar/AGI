@@ -473,11 +473,12 @@ const deleteMutation = useMutation({
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center">
-                        <CalendarClock className="h-4 w-4 text-primary mr-2" />
-                        <div className="text-sm font-medium text-gray-900 whitespace-normal">{liveClass.title}</div>
+                        <div className="text-sm font-medium text-gray-900 whitespace-normal break-words">
+                          {liveClass.title}
+                        </div>
                       </div>
                     </TableCell>
-                    <TableCell className="text-sm text-gray-700 whitespace-normal">
+                    <TableCell className="text-sm text-gray-700 whitespace-normal break-words">
                       {liveClass.description}
                     </TableCell>
                     <TableCell>

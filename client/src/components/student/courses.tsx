@@ -134,13 +134,6 @@ export function StudentCourses() {
                       </Badge>
                     </div>
                     
-                    {/* <div className="hidden md:block">
-                      <ProgressRing
-                        value={course?.progress ?? 0}
-                        size={80}
-                        strokeWidth={8}
-                      />
-                    </div> */}
                   </div>
                   
                   <div className="mt-4">

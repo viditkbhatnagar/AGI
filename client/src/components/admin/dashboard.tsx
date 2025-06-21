@@ -5,14 +5,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "wouter";
 import { useState, useMemo } from 'react';
 import { subMonths, format } from 'date-fns';
-import { TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 import {
   BarChart,
   Bar,
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
+  Tooltip as RechartsTooltip,
   ResponsiveContainer,
   PieChart,
   Pie,
@@ -128,6 +128,9 @@ export function AdminDashboard() {
       total,
     };
   }, [enrollments]);
+  const lowCount = Math.round((progressBuckets.lowPct / 100) * progressBuckets.total);
+  const midCount = Math.round((progressBuckets.midPct / 100) * progressBuckets.total);
+  const highCount = Math.round((progressBuckets.highPct / 100) * progressBuckets.total);
 
   // Course popularity: top 5 by enrollment count
   const courseMap = useMemo(
@@ -211,7 +214,8 @@ const heatmapData = useMemo(() => {
   const COLORS = ['#3f51b5', '#ff5722', '#4caf50', '#9c27b0'];
 
   return (
-    <div className="p-4 md:p-6">
+    <TooltipProvider>
+      <div className="p-4 md:p-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
         <div className="mt-2 md:mt-0 space-x-2">
@@ -221,133 +225,120 @@ const heatmapData = useMemo(() => {
               Add Student
             </Button>
           </Link>
-          <Link href="/admin/courses/new">
-            <Button>
-              <School className="mr-2 h-4 w-4" />
-              Add Course
-            </Button>
-          </Link>
         </div>
       </div>
       
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        {/* Total Students */}
-        <Card className="dashboard-card">
-          <CardContent className="p-4">
-            <div className="flex items-center">
-              <div className="p-3 rounded-full bg-primary-100 text-primary">
-                <Users className="h-5 w-5" />
+      {/* Greeting Header + 4 Summary Cards */}
+      <Card className="mb-6 bg-[#0C5FB3] rounded-lg p-6">
+        <CardContent className="p-0">
+          <div className="text-white">
+            <h1 className="text-3xl font-semibold">Hello Admin!</h1>
+            <p className="mt-1">Welcome back to your dashboard</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mt-6">
+            <Card className="flex items-center p-4 bg-[#DFDAC8] text-[#0C5FB3] shadow-none rounded-lg">
+              <div className="p-3 bg-white rounded-full">
+                <Users className="h-6 w-6 text-[#0C5FB3]" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Total Students</p>
-                <p className="text-xl font-semibold text-gray-800">{data?.totalStudents}</p>
-                <p className="text-xs text-green-600 mt-1">
-                  <span className="inline-block align-middle border-t-0 border-l-[4px] border-r-[4px] border-b-[4px] border-solid border-transparent border-b-green-600 mt-[-2px] mr-[2px]"></span>
+                <p className="text-sm text-[#0C5FB3]">Total Students</p>
+                <p className="text-xl font-semibold text-[#0C5FB3]">{data?.totalStudents}</p>
+                <p className="text-xs text-[#0C5FB3] mt-1">
                   {data?.newStudentsThisMonth} new this month
                 </p>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        {/* Active Courses */}
-        <Card className="dashboard-card">
-          <CardContent className="p-4">
-            <div className="flex items-center">
-              <div className="p-3 rounded-full bg-amber-100 text-amber-500">
-                <School className="h-5 w-5" />
+            </Card>
+            <Card className="flex items-center p-4 bg-[#DFDAC8] text-[#0C5FB3] shadow-none rounded-lg">
+              <div className="p-3 bg-white rounded-full">
+                <School className="h-6 w-6 text-[#0C5FB3]" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Active Courses</p>
-                <p className="text-xl font-semibold text-gray-800">{data?.totalCourses}</p>
-                <p className="text-xs text-gray-500 mt-1">
-                  {data?.coursesBreakdown?.standalone} standalone, {data?.coursesBreakdown?.withMba} with MBA
+                <p className="text-sm text-[#0C5FB3]">Total Courses</p>
+                <p className="text-xl font-semibold text-[#0C5FB3]">{data?.totalCourses}</p>
+                <p className="text-xs text-[#0C5FB3] mt-1">
+                  {data?.coursesBreakdown.standalone} standalone, {data?.coursesBreakdown.withMba} with MBA
                 </p>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        {/* Active Enrollments */}
-        <Card className="dashboard-card">
-          <CardContent className="p-4">
-            <div className="flex items-center">
-              <div className="p-3 rounded-full bg-green-100 text-green-500">
-                <GraduationCap className="h-5 w-5" />
+            </Card>
+            <Card className="flex items-center p-4 bg-[#DFDAC8] text-[#0C5FB3] shadow-none rounded-lg">
+              <div className="p-3 bg-white rounded-full">
+                <GraduationCap className="h-6 w-6 text-[#0C5FB3]" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Active Enrollments</p>
-                <p className="text-xl font-semibold text-gray-800">{data?.totalEnrollments}</p>
-                <p className="text-xs text-gray-500 mt-1">95% completion rate</p>
+                <p className="text-sm text-[#0C5FB3]">Active Enrollments</p>
+                <p className="text-xl font-semibold text-[#0C5FB3]">{data?.totalEnrollments}</p>
+                <p className="text-xs text-[#0C5FB3] mt-1">
+                  {progressBuckets.highPct}% high progress
+                </p>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        
-        
-        {/* Upcoming Live Classes */}
-        <Card className="dashboard-card">
-          <CardContent className="p-4">
-            <div className="flex items-center">
-              <div className="p-3 rounded-full bg-purple-100 text-purple-500">
-                <CalendarClock className="h-5 w-5" />
+            </Card>
+            <Card className="flex items-center p-4 bg-[#DFDAC8] text-[#0C5FB3] shadow-none rounded-lg">
+              <div className="p-3 bg-white rounded-full">
+                <CalendarClock className="h-6 w-6 text-[#0C5FB3]" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Upcoming Live Classes</p>
-                <p className="text-xl font-semibold text-gray-800">{data?.upcomingLiveClasses ?? 0}</p>
+                <p className="text-sm text-[#0C5FB3]">Upcoming Classes</p>
+                <p className="text-xl font-semibold text-[#0C5FB3]">{data?.upcomingLiveClasses ?? 0}</p>
                 {data?.nextLiveClass ? (
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-[#0C5FB3] mt-1">
                     Next: {formatDateTime(data.nextLiveClass.startTime)}
                   </p>
                 ) : (
-                  <p className="text-xs text-gray-500 mt-1">No upcoming classes</p>
+                  <p className="text-xs text-[#0C5FB3] mt-1">No upcoming</p>
                 )}
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            </Card>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Calendar, Pathway Breakdown & Active Students Heat‑map */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         {/* Calendar Card */}
-        <Card>
-          <CardContent>
-            <h3 className="text-lg font-medium mb-2">Upcoming Classes Calendar</h3>
-            <Calendar
-              tileContent={({ date, view }) => {
-                if (view !== 'month') return null;
-                const dayClasses = upcomingLiveClasses.filter(
-                  (lc) => new Date(lc.startTime).toDateString() === date.toDateString()
-                );
-                if (!dayClasses.length) return null;
-                const tooltip = dayClasses
-                  .map((lc) => {
-                    const time = format(new Date(lc.startTime), 'h:mm a');
-                    return `${time} – ${lc.title}`;
-                  })
-                  .join('\n');
-                return (
-                  <div
-                    title={tooltip}
-                    className="flex flex-col items-center justify-center h-full w-full mt-1 cursor-pointer"
-                  >
-                    <div className="bg-blue-500 rounded-full w-2 h-2" />
-                    <span className="text-xs text-blue-500">{dayClasses.length}</span>
-                  </div>
-                );
-              }}
-            />
+        <Card className="overflow-hidden">
+          <div className="bg-[#8FA0D8] p-3 rounded-t-lg">
+            <h3 className="text-[#0B0829] text-lg font-medium">Upcoming Classes Calendar</h3>
+          </div>
+          <CardContent className="p-0">
+            <div className="p-4">
+              <Calendar
+                className="w-full"
+                tileContent={({ date, view }) => {
+                  if (view !== 'month') return null;
+                  const dayClasses = upcomingLiveClasses.filter(
+                    (lc) => new Date(lc.startTime).toDateString() === date.toDateString()
+                  );
+                  if (!dayClasses.length) return null;
+                  return (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="flex flex-col items-center justify-center h-full w-full mt-1 cursor-pointer">
+                          <div className="bg-blue-500 rounded-full w-2 h-2" />
+                          <span className="text-xs text-blue-500">{dayClasses.length}</span>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="whitespace-pre-line">
+                        {dayClasses.map((lc) => {
+                          const time = format(new Date(lc.startTime), 'h:mm a');
+                          return `${time} – ${lc.title}`;
+                        }).join('\n')}
+                      </TooltipContent>
+                    </Tooltip>
+                  );
+                }}
+              />
+            </div>
           </CardContent>
         </Card>
 
         {/* Pathway Breakdown */}
         <Card>
-          <CardContent className="pt-6">
+          <div className="bg-[#8FA0D8] p-3 rounded-t-lg">
+            <h3 className="text-[#0B0829] text-lg font-medium">Pathway Breakdown</h3>
+          </div>
+          <CardContent className="pt-6 border-t border-gray-200">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium text-gray-800">Pathway Breakdown</h3>
+              <span />
               <Badge variant="outline">By type</Badge>
             </div>
             <div className="h-80">
@@ -369,7 +360,7 @@ const heatmapData = useMemo(() => {
                       <Cell key={index} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(v) => [`${v} courses`, 'Courses']} />
+                  <RechartsTooltip formatter={(v) => [`${v} courses`, 'Courses']} />
                   <Legend verticalAlign="bottom" height={36} />
                 </PieChart>
               </ResponsiveContainer>
@@ -379,14 +370,16 @@ const heatmapData = useMemo(() => {
 
         {/* Active Students by Course Heat‑map */}
         <Card>
-          <CardContent className="pt-6">
-            <h3 className="text-lg font-medium mb-4">Active Students by Course</h3>
+          <div className="bg-[#8FA0D8] p-3 rounded-t-lg">
+            <h3 className="text-[#0B0829] text-lg font-medium">Active Students by Course</h3>
+          </div>
+          <CardContent className="pt-6 border-t border-gray-200">
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={heatmapData} layout="vertical" margin={{ left: 60 }}>
                 <CartesianGrid strokeDasharray="3 3" horizontal={false} />
                 <XAxis type="number" />
                 <YAxis dataKey="name" type="category" width={150} />
-                <Tooltip />
+                <RechartsTooltip />
                 <Bar dataKey="notStarted" stackId="a" fill="#d1d5db" name="Not Started" />
                 <Bar dataKey="inProgress" stackId="a" fill="#fbbf24" name="In Progress" />
                 <Bar dataKey="completed" stackId="a" fill="#4ade80" name="Completed" />
@@ -400,9 +393,12 @@ const heatmapData = useMemo(() => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Enrollment Trend */}
         <Card>
-          <CardContent className="pt-6">
+          <div className="bg-[#8FA0D8] p-3 rounded-t-lg">
+            <h3 className="text-[#0B0829] text-lg font-medium">Enrollment Trend</h3>
+          </div>
+          <CardContent className="pt-6 border-t border-gray-200">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium text-gray-800">Enrollment Trend</h3>
+              <span />
               <Badge variant="outline">Last 6 months</Badge>
             </div>
             <div className="h-80">
@@ -411,7 +407,7 @@ const heatmapData = useMemo(() => {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="name" />
                   <YAxis />
-                  <Tooltip
+                  <RechartsTooltip
                     contentStyle={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '0.5rem' }}
                     formatter={(value: any) => [`${value} enrollments`, 'Enrollments']}
                   />
@@ -424,27 +420,56 @@ const heatmapData = useMemo(() => {
 
         {/* Student Progress Snapshot */}
         <Card>
-          <CardContent className="pt-6">
-            <h3 className="text-lg font-medium text-gray-800 mb-4">Student Progress Snapshot</h3>
-            <div className="space-y-4">
-              <div>
-                <p className="text-sm text-gray-500 mb-1">0–25% Complete</p>
-                <div className="w-full h-4 bg-gray-200 rounded-full">
-                  <div className="h-full bg-red-500 rounded-full" style={{ width: `${progressBuckets.lowPct}%` }} />
-                </div>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500 mb-1">25–75% Complete</p>
-                <div className="w-full h-4 bg-gray-200 rounded-full">
-                  <div className="h-full bg-yellow-500 rounded-full" style={{ width: `${progressBuckets.midPct}%` }} />
-                </div>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500 mb-1">75–100% Complete</p>
-                <div className="w-full h-4 bg-gray-200 rounded-full">
-                  <div className="h-full bg-green-500 rounded-full" style={{ width: `${progressBuckets.highPct}%` }} />
-                </div>
-              </div>
+          <div className="bg-[#8FA0D8] p-3 rounded-t-lg">
+            <h3 className="text-[#0B0829] text-lg font-medium">Student Progress Snapshot</h3>
+          </div>
+          <CardContent className="p-6 flex flex-col justify-center space-y-6">
+            <div className="flex-1 flex flex-col justify-center space-y-6">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div>
+                    <div className="block w-full cursor-pointer">
+                      <p className="text-sm text-gray-500 mb-1">0–25% Complete</p>
+                    </div>
+                    <div className="w-full h-4 bg-gray-200 rounded-full">
+                      <div className="h-full bg-red-500 rounded-full" style={{ width: `${progressBuckets.lowPct}%` }} />
+                    </div>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  {`0–25% Complete: ${lowCount} enrollments (${progressBuckets.lowPct}%)`}
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div>
+                    <div className="block w-full cursor-pointer">
+                      <p className="text-sm text-gray-500 mb-1">25–75% Complete</p>
+                    </div>
+                    <div className="w-full h-4 bg-gray-200 rounded-full">
+                      <div className="h-full bg-yellow-500 rounded-full" style={{ width: `${progressBuckets.midPct}%` }} />
+                    </div>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  {`25–75% Complete: ${midCount} enrollments (${progressBuckets.midPct}%)`}
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div>
+                    <div className="block w-full cursor-pointer">
+                      <p className="text-sm text-gray-500 mb-1">75–100% Complete</p>
+                    </div>
+                    <div className="w-full h-4 bg-gray-200 rounded-full">
+                      <div className="h-full bg-green-500 rounded-full" style={{ width: `${progressBuckets.highPct}%` }} />
+                    </div>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  {`75–100% Complete: ${highCount} enrollments (${progressBuckets.highPct}%)`}
+                </TooltipContent>
+              </Tooltip>
             </div>
             <p className="text-xs text-gray-500 mt-2">Based on {progressBuckets.total} total enrollments</p>
           </CardContent>
@@ -455,9 +480,12 @@ const heatmapData = useMemo(() => {
       <div className="grid grid-cols-1 lg:grid-cols-10 gap-6 mb-6">
         {/* Course Popularity */}
         <Card className="lg:col-span-7">
-          <CardContent className="pt-6">
+          <div className="bg-[#8FA0D8] p-3 rounded-t-lg">
+            <h3 className="text-[#0B0829] text-lg font-medium">Course Popularity</h3>
+          </div>
+          <CardContent className="pt-6 border-t border-gray-200">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium text-gray-800">Course Popularity</h3>
+              <span />
               <Badge variant="outline">Top 5</Badge>
             </div>
             <div className="h-80">
@@ -466,7 +494,7 @@ const heatmapData = useMemo(() => {
                   <CartesianGrid strokeDasharray="3 3" horizontal={false} />
                   <XAxis type="number" />
                   <YAxis dataKey="name" type="category" width={150} />
-                  <Tooltip formatter={(v) => [`${v}`, 'Enrollments']} />
+                  <RechartsTooltip formatter={(v) => [`${v}`, 'Enrollments']} />
                   <Bar dataKey="count" fill="#3f51b5" radius={[0, 4, 4, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -476,10 +504,10 @@ const heatmapData = useMemo(() => {
 
         {/* Quick Actions */}
         <Card className="lg:col-span-3">
-          <div className="px-5 py-4 border-b border-gray-200">
-            <h2 className="font-inter text-lg font-medium text-gray-800">Quick Actions</h2>
+          <div className="bg-[#8FA0D8] p-3 rounded-t-lg">
+            <h2 className="text-[#0B0829] text-lg font-medium">Quick Actions</h2>
           </div>
-          <CardContent className="p-5">
+          <CardContent className="p-5 border-t border-gray-200">
             {/* existing Quick Actions buttons */}
             <div className="space-y-3">
               <Link href="/admin/live-classes/new">
@@ -549,7 +577,8 @@ const heatmapData = useMemo(() => {
         
         
       </div>
-    </div>
+      </div>
+    </TooltipProvider>
   );
 }
 

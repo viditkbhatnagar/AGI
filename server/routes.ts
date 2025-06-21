@@ -92,6 +92,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     studentController.submitQuizAttempt
   );
 
+  // Returns array of { createdAt, score }
+  app.get(
+    '/api/student/quiz-attempts/:slug/:moduleIndex',
+    auth,
+    requireStudent,
+    studentController.getQuizAttempts
+  );
+
   // LIVE CLASS ROUTES
   app.get("/api/live-classes", auth, requireAdmin, liveClassController.getAllLiveClasses);
   app.get("/api/live-classes/:id", auth, requireAdmin, liveClassController.getLiveClassById);

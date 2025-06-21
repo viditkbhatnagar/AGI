@@ -988,3 +988,32 @@ export const submitQuizAttempt = async (req: Request, res: Response) => {
     return res.status(500).json({ message: 'Server error' });
   }
 };
+
+// GET /api/student/quiz-attempts/:slug/:moduleIndex
+export const getQuizAttempts = async (req: Request, res: Response) => {
+  try {
+    if (!req.user) return res.status(401).json({ message: 'Not authenticated' });
+
+    const { slug, moduleIndex } = req.params;
+    const modIdx = parseInt(moduleIndex, 10);
+    if (isNaN(modIdx)) return res.status(400).json({ message: 'Invalid moduleIndex' });
+
+    const student = await Student.findOne({ userId: new mongoose.Types.ObjectId(req.user.id) });
+    if (!student) return res.status(404).json({ message: 'Student not found' });
+
+    const enrollment = await Enrollment.findOne({ studentId: student._id, courseSlug: slug });
+    if (!enrollment) return res.status(404).json({ message: 'Enrollment not found' });
+
+    // filter, sort, slice last 5 attempts
+    const attempts = (enrollment.quizAttempts || [])
+      .filter(a => a.moduleIndex === modIdx)
+      .sort((a, b) => b.attemptedAt.getTime() - a.attemptedAt.getTime())
+      .slice(0, 5)
+      .map(a => ({ attemptedAt: a.attemptedAt, score: a.score }));
+
+    return res.status(200).json({ attempts });
+  } catch (err) {
+    console.error('Get quiz attempts error:', err);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};

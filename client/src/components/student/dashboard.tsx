@@ -22,7 +22,7 @@ import {
 // Unified bar color for progress bars in course card
 const UNIFIED_BAR_COLOR = "bg-gradient-to-r from-yellow-500 to-yellow-400";
 import { formatDateTime, formatTimeRemaining } from "@/lib/utils";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import AttendanceCalendar from "@/components/student/AttendanceCalendar";
 
 // Types based on API response from server
@@ -84,6 +84,28 @@ export function StudentDashboard() {
   const [courses, setCourses] = useState<{ slug: string; title: string }[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<string | null>(null);
   // Motivational tips
+  // derive quizScores array safely before any returns
+  const quizScoresArray = dashboardData?.quizScores ?? [];
+
+  // compute quiz performance as average of best scores per module
+  const computedQuizPerformance = useMemo(() => {
+    if (quizScoresArray.length === 0) return null;
+    // Group scores by quiz title and take the best (highest) per module
+    const bestScoresMap: Record<string, number> = {};
+    quizScoresArray.forEach(({ title, score }) => {
+      if (
+        !(title in bestScoresMap) ||
+        score > bestScoresMap[title]
+      ) {
+        bestScoresMap[title] = score;
+      }
+    });
+    const bestScores = Object.values(bestScoresMap);
+    const totalBest = bestScores.reduce((sum, s) => sum + s, 0);
+    const avgBest = totalBest / bestScores.length;
+    return Number(avgBest.toFixed(2));
+  }, [quizScoresArray]);
+
   const TIPS = [
     "Consistency is key—any progress is good progress!",
     "You’re one step closer to mastery every time you log in.",
@@ -201,9 +223,8 @@ export function StudentDashboard() {
     completedModules,
     watchTime,
     certificationProgress,
-    quizPerformance,
     dailyWatchTime,
-    quizScores,
+    // quizScores, // No longer destructured, use quizScoresArray if needed
     course,
     upcomingLiveClasses,
     attendance,
@@ -238,11 +259,12 @@ export function StudentDashboard() {
     const matrix = Array.from({ length: 4 }, () => Array(7).fill(0));
     dailyWatchTime.forEach(({ date, minutes }) => {
       const d = new Date(date);
+      if (isNaN(d.getTime())) return;
       const day = d.getDay(); // 0 = Sun
       const weeksAgo = Math.floor(
         (Date.now() - d.getTime()) / (7 * 24 * 60 * 60 * 1000)
       );
-      if (weeksAgo < 4) {
+      if (weeksAgo >= 0 && weeksAgo < 4) {
         matrix[weeksAgo][day] += minutes;
       }
     });
@@ -308,9 +330,8 @@ export function StudentDashboard() {
               </div>
               <p className="text-sm mb-6">{course?.description}</p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-base font-semibold mb-8">
-                <div>Quiz Performance: {quizPerformance !== null ? quizPerformance + '%' : 'N/A'}</div>
-                <div>Live Classes Scheduled: {upcomingLiveClasses.length}</div>
-                <div>Documents Viewed: {dashboardData.documentsViewed}</div>
+                <div>Live Classes Scheduled : {upcomingLiveClasses.length}</div>
+                <div>Documents Viewed : {dashboardData.documentsViewed}</div>
               </div>
               <a
                 href={`/student/courses/${selectedCourse || course?.slug}`}

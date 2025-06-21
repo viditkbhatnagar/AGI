@@ -14,7 +14,7 @@ import bcrypt from 'bcrypt';
  *       ts-node server/seeds/index.ts Certified-Logistics-Manager
  *     to seed just that course (and its quizzes / live classes) *without*
  *     wiping existing data.
- *   • With no arg, the script keeps the original “nuke & pave” behaviour.
+ *   • With no arg, the script keeps the original "nuke & pave" behaviour.
  * ────────────────────────────────────────────────────────────────────────────────
  */
 
@@ -404,19 +404,24 @@ const coursesData = {
         title: "Senior Strategic Business Research (CLM-102)",
         videos: [
           {
-            title: "Fleet Management Transportation & Logistics MS Excel Dashboard",
-            duration: 35,
-            url: "https://www.youtube.com/watch?v=vJX2W3I1_8o",
+            title: "Top 5 Logistics Management Key Performance Indicators (KPIs)",
+            duration: 5,
+            url: "https://www.youtube.com/watch?v=b3NRUCPjQ9g",
+          },
+          {
+            title: "KPI - The Best KPI (Key Performance Indicator) for Supply Chain & Logistics",
+            duration: 9,
+            url: "https://www.youtube.com/watch?v=witWunLCEdI",
           }
         ],
         documents: [
           {
-            title: "Quantitative vs. Qualitative",
-            url: "https://drive.google.com/file/d/16swk5anmdm2sH0h35Dks5qOVCj4K_4ll/preview"
+            title: "LSA",
+            url: "https://drive.google.com/file/d/1jX4kmimDhO6on_GI0q_Ef9AoR9zwG6q-/preview"
           },
           {
-            title: "Senior Strategic Business Research (CLM-102)",
-            url: "https://drive.google.com/file/d/1t0-oe3vdB9MS6o2ht75Mt9hNZWOcS93U/preview"
+            title: "Logistics Analytics and Performance Measurement (CLM-102)",
+            url: "https://drive.google.com/file/d/1Ghp5rwKkNsjgPonpRtFlHSyyDApH-ZnY/preview"
           }
         ],
       },
@@ -424,19 +429,33 @@ const coursesData = {
         title: "Senior Strategic Change Management (CLM-103)",
         videos: [
           {
-            title: "10 Change Management Models Explained in 10 Minutes",
-            duration: 10,
-            url: "https://www.youtube.com/watch?v=t1JiPdor_rU&t=96s",
+            title: "What is Logistics & Logistics Management | What are Modes of Transport | How to select TransMode",
+            duration: 7,
+            url: "https://www.youtube.com/watch?v=ROUJSvhsjUg",
+          },
+          {
+            title: "Incoterms for beginners | Global Trade Explained",
+            duration: 7,
+            url: "https://www.youtube.com/watch?v=4LuSSdzK6aM",
+          },
+          {
+            title: "Multimodal Transportation: (The Future of Travel)",
+            duration: 7,
+            url: "https://www.youtube.com/watch?v=I_01SGaacRI",
           }
         ],
         documents: [
           {
-            title: "Change Management",
-            url: "https://drive.google.com/file/d/1uxSTvGXc4o0MOrPrYyfx85yQr_CgP0hi/preview"
+            title: "GTS Chapter 5 Part I WS",
+            url: "https://drive.google.com/file/d/1Z0p0dZn1xld7N8lmI1QjkKpDigJVkQp1/preview"
           },
           {
-            title: "Senior Strategic Change Management (CLM-103)",
-            url: "https://drive.google.com/file/d/1pOy2xZFLomoxITa0olZlJFvP01tnRht_/preview"
+            title: "ICC INCOTERMS-2020 Module",
+            url: "https://drive.google.com/file/d/1hQm1R5625sV_niBXdEqKpotMIMPGbkE0/preview"
+          },
+          {
+            title: "Global Logistics and Transportation Modes (CLM-103)",
+            url: "https://drive.google.com/file/d/19FETH94xEqkdY3cMUqGOkXQELgRyF2wm/preview"
           }
         ],
       },
@@ -444,19 +463,19 @@ const coursesData = {
         title: "Business Innovation and Entrepreneurship",
         videos: [
           {
-            title: "Venture Capital EXPLAINED",
-            duration: 10,
-            url: "https://www.youtube.com/watch?v=ZEcg1X_ErN0",
+            title: "What is Supply Chain Integration?",
+            duration: 5,
+            url: "https://www.youtube.com/watch?v=3iWHU66woNo&t=14s",
           }
         ],
         documents: [
           {
-            title: "Innovation and Entrepreneurship Theory, Policy and Practice",
-            url: "https://drive.google.com/file/d/136eoa0r06hD6BDkyVA9X7xylDwmm6EYb/preview"
+            title: "Christopher Logistics and Supply Chain Management",
+            url: "https://drive.google.com/file/d/1Z_E7H9CSzo8Ea17GiyT2dSDTkdqTWit9/preview"
           },
           {
-            title: "Business Innovation and Entrepreneurship (CLM-104)",
-            url: "https://drive.google.com/file/d/1w6f_GpFQMelImAyiJREgoGurCtlowCYN/preview"
+            title: "Supply Chain Planning and Coordination (CLM-104)",
+            url: "https://drive.google.com/file/d/1cHZOl_DKg1wjqm58MLzaHxnFnHSHT9l3/preview"
           }
         ],
       },
@@ -464,82 +483,18 @@ const coursesData = {
         title: "Senior Strategic Manufacturing & Production Principles",
         videos: [
           {
-            title: "What is Industry 4.0? | What are the key Industry 4.0 technologies| All explained in 10 minutes",
-            duration: 11,
-            url: "https://www.youtube.com/watch?v=bNfZWqDLW0Q",
-          },
-          {
-            title: "DMAIC Case Study Warehouse Example - Lean Six Sigma case study Example",
-            duration: 5,
-            url: "https://www.youtube.com/watch?v=r8IBN75RX0M",
-          },
-          {
-            title: "How to do logistics Resource Planning",
-            duration: 8,
-            url: "https://www.youtube.com/watch?v=uroZOwEYX-Q",
-          }
-        ],
-        documents: [
-          {
-            title: "Six Sigma A Complete Step by Step Guide",
-            url: "https://drive.google.com/file/d/1Cc-Y6r3KdcJYIAUkzqk_OeRuHIoyIo5Q/preview"
-          },
-          {
-            title: "Senior Strategic Manufacturing & Production Principles (CLM-105)",
-            url: "https://drive.google.com/file/d/1Wh5pJOMb_8_XY8pC_Cy5EYiOOBYEF87q/preview"
-          }
-        ],
-      },
-      {
-        title: "Senior Strategic Business Planning guides",
-        videos: [
-          {
-            title: "Balanced Scorecard (With A Step-by-Step Example)",
-            duration: 11,
-            url: "https://www.youtube.com/watch?v=W1i59QkU-Ss",
-          },
-          {
-            title: "Utilizing SWOT, PESTEL, and Five Forces Analyses in Your Strategic Planning",
-            duration: 8,
-            url: "https://www.youtube.com/watch?v=G0dR4nI9dsQ",
-          },
-          {
-            title: "How To develop great KPIs (Key Performance Indicators) for your business, department or project",
-            duration: 12,
-            url: "https://www.youtube.com/watch?v=JN_EZU_Iyrg",
-          }
-        ],
-        documents: [
-          {
-            title: "BSC",
-            url: "https://drive.google.com/file/d/160Sb4OZ7OG3e7UPyz5UcrcIHY-4uvH-F/preview"
-          },
-          {
-            title: "PESTLE",
-            url: "https://drive.google.com/file/d/19Ohcq_X0MCxoBBFWwINOrcOMKwXXQ0y_/preview"
-          },
-          {
-            title: "Senior Strategic Business Planning (CLM-106)",
-            url: "https://drive.google.com/file/d/1o6WqahoO0OCv7UKKJ0A4jjXxe1JTR4Y9/preview"
-          }
-        ],
-      },
-      {
-        title: "Senior Strategic Global Procurement",
-        videos: [
-          {
             title: "Reshoring Trend: Why Companies are Bringing Manufacturing Back Home",
             duration: 6,
             url: "https://www.youtube.com/watch?v=fSwKofBUfGY&t=61s",
           },
           {
-            title: "Sustainable Procurement What You Should Know in 2025",
+            title: "Sustainable Procurement – What You Should Know in 2025",
             duration: 5,
             url: "https://www.youtube.com/watch?v=KZA2UIjEDVE",
           },
           {
             title: "Sustainable Procurement Explained: Key Frameworks and Benefits",
-            duration: 22,
+            duration: 21,
             url: "https://www.youtube.com/watch?v=U1E6rtnreoA",
           }
         ],
@@ -549,16 +504,16 @@ const coursesData = {
             url: "https://drive.google.com/file/d/1mz3ZRiKwxCLuFnyVx3K7mK8iZiKUsBMe/preview"
           },
           {
-            title: "Senior Strategic Global Procurement (CLM-107)",
-            url: "https://drive.google.com/file/d/10B-MhWP6eaS7JYl6ks97G_ju6IYVLoe_/preview"
+            title: "Senior Strategic Global Procurement (CLM-105)",
+            url: "https://drive.google.com/file/d/1VR7CKJrnEGj6qK76IqPEiDNG6USdLHmW/preview"
           }
         ],
       },
       {
-        title: "Senior Strategic Leadership",
+        title: "Senior Strategic Business Planning guides",
         videos: [
           {
-            title: "10 Most Common Types of Leadership Styles (With Real-World Examples)",
+            title: "10 Most Common Types of Leadership Styles (With Real-World Examples) | From A Business Professor",
             duration: 8,
             url: "https://www.youtube.com/watch?v=NY82yptNp5E",
           },
@@ -574,73 +529,42 @@ const coursesData = {
             url: "https://drive.google.com/file/d/16UGmlrRiYli4rr9tHM5H0n1guD5K1ppt/preview"
           },
           {
-            title: "Senior Strategic Leadership (CLM-108)",
-            url: "https://drive.google.com/file/d/1ZlDY96nzmd2Iz5-gxK2D57MRxVL4etz9/preview"
+            title: "Senior Strategic Leadership (CLM-106)",
+            url: "https://drive.google.com/file/d/1PEefRA3VPPmFdWRCJovz6svfCLiwq-3M/preview"
           }
         ],
       },
       {
-        title: "Senior Strategic Management Principles",
+        title: "Senior Strategic Global Procurement",
         videos: [
           {
-            title: "Blue Ocean Strategy (With Real World Examples)",
-            duration: 10,
-            url: "https://www.youtube.com/watch?v=j-b7MHabLPg&t=31s",
-          },
-          {
-            title: "Internal Analysis: The VRIO Framework | Strategic Management",
+            title: "Saving Logistics Costs Part 1 - Inventory",
             duration: 9,
-            url: "https://www.youtube.com/watch?v=afrPC91zCkQ",
+            url: "https://www.youtube.com/watch?v=pc6-iW0YyBc",
           },
           {
-            title: "McKinsey 7S Framework",
-            duration: 11,
-            url: "https://www.youtube.com/watch?v=DFNJypMOIMI",
-          },
-          {
-            title: "HOSHIN KANRI (X MATRIX) WITH TEMPLATE ",
-            duration: 8,
-            url: "https://www.youtube.com/watch?v=clYFo2j1m7A",
+            title: "3 Simple Ways to Save Logistics Costs",
+            duration: 6,
+            url: "https://www.youtube.com/watch?v=mm2N-cMhRD8",
           }
         ],
         documents: [
           {
-            title: "Strategic Management",
-            url: "https://drive.google.com/file/d/1EQr5Jf-OFUbxKqu9M3wnMZF4TPe-DKqI/preview"
+            title: "Costing Logistics",
+            url: "https://drive.google.com/file/d/1gE1__nhc0_kZtW96Jbwti0HbjqhJEIKv/preview"
           },
           {
-            title: "Senior Strategic Management Principles (CLM-109)",
-            url: "https://drive.google.com/file/d/14hPglNIwmWUhgSG3x-wAWykzD3arOSjZ/preview"
+            title: "Types of Logistics Costs You Should Keep Track Of",
+            url: "https://drive.google.com/file/d/1vMN9jR55N59EHKK1Rh4i0KzCtparUFc9/preview"
+          },
+          {
+            title: "Logistics Cost Management and Financials(CLM-107)",
+            url: "https://drive.google.com/file/d/1v57tTiUAFxcA6LYjxslHz9PZ8TVJ4YFq/preview"
           }
         ],
       },
       {
-        title: "Senior Strategic Maritime Management",
-        videos: [
-          {
-            title: "Incoterms 2020 Explained [Complete Guide]",
-            duration: 12,
-            url: "https://www.youtube.com/watch?v=GTUTLRXcVuA",
-          },
-          {
-            title: "Explained Sea Shipment/Marine Transportation flow for Beginners",
-            duration: 9,
-            url: "https://www.youtube.com/watch?v=fK6aeyEQMGk",
-          }
-        ],
-        documents: [
-          {
-            title: "ICC INCOTERMS 2020",
-            url: "https://drive.google.com/file/d/1YdXRMjZYHFF7_hZ9vMZKjOSGt48plKN-/preview"
-          },
-          {
-            title: "Senior Strategic Maritime Management (CLM-110)",
-            url: "https://drive.google.com/file/d/1qv9h1ZcNuo3kSwRb7Dazkj9kZ89yFKtc/preview"
-          }
-        ],
-      },
-      {
-        title: "Senior Strategic Quality Management",
+        title: "Senior Strategic Leadership",
         videos: [
           {
             title: "Explanation of the EFQM Model",
@@ -649,7 +573,7 @@ const coursesData = {
           },
           {
             title: "Lean vs TQM | Lean vs Total Quality Management",
-            duration: 3,
+            duration: 2,
             url: "https://www.youtube.com/watch?v=fSLXnG6TgNc",
           }
         ],
@@ -659,36 +583,66 @@ const coursesData = {
             url: "https://drive.google.com/file/d/1wTJPA_7QqDG3tOigSyLudKNa6cX-sZVW/preview"
           },
           {
-            title: "Senior Strategic Quality Management (CLM-111)",
-            url: "https://drive.google.com/file/d/1KLgx7Sn8xGrCGGh3flsWBInMybsN-ywu/preview"
+            title: "Senior Strategic Quality Management (CLM-108)",
+            url: "https://drive.google.com/file/d/1wxHviFUL6zNWRNWsOBYp-JvkppTeZm5o/preview"
           }
         ],
       },
       {
-        title: "Senior Strategic Warehousing & Inventory Management",
+        title: "Senior Strategic Management Principles",
         videos: [
           {
+            title: "What is Warehouse Management? [Intro to Inventory Management, Pick Pack Ship, WMS Software, etc] ",
+            duration: 10,
+            url: "https://www.youtube.com/watch?v=IaRS5_hSA3g",
+          },
+          {
             title: "Inventory Management",
-            duration: 11,
+            duration: 9,
             url: "https://www.youtube.com/watch?v=0NOER-Lle-0",
           },
           {
-            title: "Inside Amazon's Smart Warehouse",
+            title: "McKinsey 7S Framework",
             duration: 11,
-            url: "https://www.youtube.com/watch?v=IMPbKVb8y8s",
+            url: "https://www.youtube.com/watch?v=DFNJypMOIMI",
           }
         ],
         documents: [
           {
-            title: "Essentials of Inventory Management",
+            title: "Essentials Of Inventory Management",
             url: "https://drive.google.com/file/d/1DaLbloB4PXrRLX9-DrTH56je8GZwzQVz/preview"
           },
           {
-            title: "Senior Strategic Warehousing & Inventory Management (CLM-112)",
-            url: "https://drive.google.com/file/d/1I0s9M3rxYWMLYOJBKsq3Eu_CIxdAMVW9/preview"
+            title: "Senior Strategic Warehousing & Inventory Management (CLM-109)",
+            url: "https://drive.google.com/file/d/18sz4WKjjrBqWpW5vQOmDEcyIa3rTDE_S/preview"
           }
         ],
-      }
+      },
+      {
+        title: "Senior Strategic Maritime Management",
+        videos: [
+          {
+            title: "Artificial Intelligence & Machine Learning in Logistics, Supply Chain & Transportation",
+            duration: 6,
+            url: "https://www.youtube.com/watch?v=J31_Ma4dwKg",
+          },
+          {
+            title: "AI in supply chain and logistics | Artificial Intelligence in supply chain management",
+            duration: 7,
+            url: "https://www.youtube.com/watch?v=JfjpFJxIjeQ",
+          }
+        ],
+        documents: [
+          {
+            title: "Generative AI in Supply Chain Report",
+            url: "https://drive.google.com/file/d/1KB6UCOiPpWF0J6ScZzORceC8Gtt4ksq9/preview"
+          },
+          {
+            title: "Generative AI in Logistics (CLM-110)",
+            url: "https://drive.google.com/file/d/1zqHqCeI-HpCm8dZG8K3Ydx5eATCOBpXm/preview"
+          }
+        ],
+      },
     ],
     liveClassConfig: {
       enabled: true,
@@ -995,7 +949,7 @@ const coursesData = {
     title: "Certified Sustainability Leadership And Management",
     slug: "Certified-Sustainability-And-Leadership",
     type: "standalone",
-    description: "AGI’s Certified Sustainability Management program provides in-depth knowledge of sustainable practices, environmental policy, and corporate responsibility, preparing you to lead initiatives for a sustainable future.",
+    description: "AGI's Certified Sustainability Management program provides in-depth knowledge of sustainable practices, environmental policy, and corporate responsibility, preparing you to lead initiatives for a sustainable future.",
     modules: [
       {
         title: "Introduction to ESG",
@@ -1244,37 +1198,50 @@ const coursesData = {
     title: "Certified Project Manager",
     slug: "Certified-Project-Manager",
     type: "standalone",
-    description: "AGI’s Certified Project Manager program equips you with the advanced skills needed to manage projects effectively acros.",
+    description: "AGI's Certified Project Manager program equips you with the advanced skills needed to manage projects effectively acros.",
     modules: [
       {
-        title: "Fundamentals of Project Management",
+        title: "Project Management Overview and Frameworks",
         videos: [
           {
-            title: "Fundamentals of Project Management",
-            duration: 50,
-            url: "https://www.youtube.com/watch?v=aoCrIr0GbEM",
+            title: "Project Management Organizational Structures",
+            duration: 4,
+            url: "https://www.youtube.com/watch?v=Ocm4kvLx6d4",
           }
         ],
         documents: [
           {
-            title: "PM-101 Fundamentals of Project Management",
-            url: "https://docs.google.com/presentation/d/1hnajzEV48hHi2iV-pxztv4PT7T2Hc70U/preview"
+            title: "Project Management Page 20-34",
+            url: "https://drive.google.com/file/d/1WT1GEFNXJ3_y1yeU1L-mqaTtSqeH-RrX/preview"
+          },
+          {
+            title: "Project Management Overview and Frameworks",
+            url: "https://drive.google.com/file/d/1IIWkclbsyVpCIsHjt1K36SBgjqeBGWix/preview"
           }
         ],
       },
       {
-        title: "Project Integration Management",
+        title: "Project Initiation and Business Case Development",
         videos: [
           {
-            title: "Project Integration Management",
+            title: "What Is A Business Case?",
+            duration: 5,
+            url: "https://www.youtube.com/watch?v=v7m_g1WLYg4",
+          },
+          {
+            title: "Project Charter Guide [HOW TO WRITE A PROJECT MANAGEMENT CHARTER]",
             duration: 10,
-            url: "https://www.youtube.com/watch?v=l1B5t2EJC4c",
+            url: "https://www.youtube.com/watch?v=FIPeKqrvNCs",
           }
         ],
         documents: [
           {
-            title: "PM-102 Project Integration and Initiation",
-            url: "https://docs.google.com/presentation/d/1-BvMtXndER-CvwKycFx1bBgpeyLt_Ilc/preview"
+            title: "Guide to Developing the Project-Business case",
+            url: "https://drive.google.com/file/d/10OoShiXra57FrFmKWNxmY_RpF0q0mLE3/preview"
+          },
+          {
+            title: "Project Initiation and Business Case Development",
+            url: "https://drive.google.com/file/d/13OzOJhgyK1zlXziVjr2Kt0fadVdmrvw7/preview"
           }
         ],
       },
@@ -1282,15 +1249,19 @@ const coursesData = {
         title: "Saving your company and saving your planet",
         videos: [
           {
-            title: "Project Scope Management",
-            duration: 7,
-            url: "https://www.youtube.com/watch?v=KPIT1RglSHs",
+            title: "What is Stakeholder Management? Project Management in Under 5 min",
+            duration: 5,
+            url: "https://www.youtube.com/watch?v=-tNHplQ_-hw",
           }
         ],
         documents: [
           {
-            title: "PM-103 Project Scope Management",
-            url: "https://docs.google.com/presentation/d/16xObXzXu0aEABfs1i5bb_UtJNdU_VOqx/preview"
+            title: "PMBOK 7th Edition (iBIMOne.com) page8-15",
+            url: "https://drive.google.com/file/d/147LI_rM-xyK_-thlclMO7fPJPXm0Iixk/preview"
+          },
+          {
+            title: "Project Stakeholder Management",
+            url: "https://drive.google.com/file/d/19ezSxoCSB1nl3cfYUnWDfTR00T_B6uES/preview"
           }
         ],
       },
@@ -1298,15 +1269,24 @@ const coursesData = {
         title: "Project Schedule Management",
         videos: [
           {
-            title: "Project Schedule Management Overview",
-            duration: 11,
-            url: "https://www.youtube.com/watch?v=CEBO4k6Tnqg",
+            title: "What is Cost Management? | Project Management",
+            duration: 40,
+            url: "https://www.youtube.com/watch?v=FID1uV3Xcxo",
+          },
+          {
+            title: "What is Earned Value Management? | EVM | CV, SV, CPI, SPI, EAC, ETC, TCPI, VAC",
+            duration: 31,
+            url: "https://www.youtube.com/watch?v=7qGUyTfjWCw",
           }
         ],
         documents: [
           {
-            title: "PM-104 Project Schedule Management",
-            url: "https://docs.google.com/presentation/d/1hvmQddUYDQODwlg3iuFJAEH_WE90OXmw/preview"
+            title: "Project Management Page 166-183",
+            url: "https://drive.google.com/file/d/1B-Z1QtK6bl0YhBzqdR0iXiVXA2jGitO7/preview"
+          },
+          {
+            title: "Project Cost Management",
+            url: "https://drive.google.com/file/d/1nmw5taTqU0HEEntvs9mCCSW1F3LH25rP/preview"
           }
         ],
       },
@@ -1315,30 +1295,38 @@ const coursesData = {
         videos: [
           {
             title: "The Basics of Project Cost Management - Project Management Training",
+            duration: 38,
+            url: "https://www.youtube.com/watch?v=ckKHYKJQ-Cw",
+          },
+          {
+            title: "Lean Six Sigma Project Example with DMAIC",
+            duration: 20,
+            url: "https://www.youtube.com/watch?v=lg_pm9Ziquw",
+          },
+          {
+            title: "ISO Standard Explained | What is ISO | Benefits of getting ISO certified | How to get ISO Certified?",
+            duration: 12,
+            url: "https://www.youtube.com/watch?v=MIssDGB7pJc&t=114s",
+          },
+          {
+            title: "CertMike Explains Capability Maturity Model Integration (CMMI)",
+            duration: 5,
+            url: "https://www.youtube.com/watch?v=w5wwwEUf_iA",
+          },
+          {
+            title: "What Is Lean Project Management?",
             duration: 6,
-            url: "https://www.youtube.com/watch?v=EyPFi0YO32M",
+            url: "https://www.youtube.com/watch?v=Pp8-ahZQlLA",
           }
         ],
         documents: [
           {
-            title: "PM-105 Project Cost Management",
-            url: "https://docs.google.com/presentation/d/1UtpJUk8mQz2dbTrhxe7NLya0_t_iTkse/preview"
-          }
-        ],
-      },
-      {
-        title: "Project Quality Management",
-        videos: [
+            title: "Project Management page 197-210",
+            url: "https://drive.google.com/file/d/19OMUyxU6ryt1Qoo7jB9RW9jE_WPwnbf2/preview"
+          },
           {
-            title: "Project Quality Management Overview",
-            duration: 11,
-            url: "https://www.youtube.com/watch?v=Q7YJ-_OJIZQ",
-          }
-        ],
-        documents: [
-          {
-            title: "PM-106 Project Quality Management",
-            url: "https://docs.google.com/presentation/d/1eT2sEdSsDwgV6WlM1aLEmB1qM0R825KR/preview"
+            title: "Project Quality Management",
+            url: "https://drive.google.com/file/d/1tssTo7r1iCfdViRP-UgsmganbNRH2PUF/preview"
           }
         ],
       },
@@ -1346,31 +1334,24 @@ const coursesData = {
         title: "Project Resource Management",
         videos: [
           {
-            title: "Mastering Project Resource Management: Tips for Success",
-            duration: 8,
-            url: "https://www.youtube.com/watch?v=-_2Y-qU1O1I",
+            title: "Project Resource Management 101: A Broad Survey of Project Resources",
+            duration: 15,
+            url: "https://www.youtube.com/watch?v=JfyiMsBV0Z4",
+          },
+          {
+            title: "Daniel Pink and Motivation 3.0 - Content Models of Motivation",
+            duration: 10,
+            url: "https://www.youtube.com/watch?v=5A5vxXwv92Q",
           }
         ],
         documents: [
           {
-            title: "PM-107 Project Resource Management",
-            url: "https://docs.google.com/presentation/d/1-pEHGw-UppZHYpqtAvZYBJzmXEtXKz4q/preview"
-          }
-        ],
-      },
-      {
-        title: "Project Communications Management",
-        videos: [
+            title: "Project Management page 130-165",
+            url: "https://drive.google.com/file/d/16xFoHszn9fW7YeWDyKHwUqzMlUqJmSze/preview"
+          },
           {
-            title: "Project Communications Management Overview",
-            duration: 12,
-            url: "https://www.youtube.com/watch?v=S2lLKYV4e6M",
-          }
-        ],
-        documents: [
-          {
-            title: "PM-108 Project Communication Management",
-            url: "https://docs.google.com/presentation/d/1MwAZLszYSgcf3juN0RsJS3AvuaHTt3Yp/preview"
+            title: "Project Resource Management",
+            url: "https://drive.google.com/file/d/1D_W1cEwDwdnbxNBbCF6s_2el8JCO_F4R/preview"
           }
         ],
       },
@@ -1378,31 +1359,44 @@ const coursesData = {
         title: "Project Risk Management",
         videos: [
           {
-            title: "RISK MANAGEMENT 101: An Introduction to Project Risk Management",
-            duration: 12,
-            url: "https://www.youtube.com/watch?v=Nwl7PquhU5U",
+            title: "Project Risk Management - How to Manage Project Risk",
+            duration: 11,
+            url: "https://www.youtube.com/watch?v=xXV_gjtXMSk",
+          },
+          {
+            title: "Contingency Plans and Fallback Plans: What's the Difference?",
+            duration: 5,
+            url: "https://www.youtube.com/watch?v=ZTdawTTTTr8",
           }
         ],
         documents: [
           {
-            title: "PM-109 Project Risk Management",
-            url: "https://docs.google.com/presentation/d/1dRLDTgISO7lv_zoGBbt18NgMfyn7CzcL/preview"
+            title: "Project Management page 218-230",
+            url: "https://drive.google.com/file/d/1sWW6PYN7VUMQDn87RDVUetGiifV8uBBT/preview"
+          },
+          {
+            title: "Project Risk Management",
+            url: "https://drive.google.com/file/d/1236RIdHxENRxVUqU4rEmHsXTuUSQ6uDE/preview"
           }
         ],
       },
       {
-        title: "Project Procurement Management",
+        title: "Project Communications Management",
         videos: [
           {
-            title: "Project Procurement Management Overview",
-            duration: 10,
-            url: "https://www.youtube.com/watch?v=Ig0uVNXhR9Q",
+            title: "Project Procurement Management",
+            duration: 48,
+            url: "https://www.youtube.com/watch?v=gOYNM3lvR9c",
           }
         ],
         documents: [
           {
-            title: "PM-110 Project Procurement Management",
-            url: "https://docs.google.com/presentation/d/1Uq1EJLsMQJX0OkmCUm7TehizEmT7skvQ/preview"
+            title: "Project Management page 184-196",
+            url: "https://drive.google.com/file/d/18T209zOyjgCLU0IZlNfyeywy4pX4WbuC/preview"
+          },
+          {
+            title: "Project Procurement Management",
+            url: "https://drive.google.com/file/d/1rJxrL-I7EVri8FfXdUjIS5Vzskn4zK6a/preview"
           }
         ],
       },
@@ -1410,31 +1404,69 @@ const coursesData = {
         title: "Agile Frameworks and Methodologies",
         videos: [
           {
-            title: "What Is Agile Methodology? | Introduction to Agile Methodology in Six Minutes",
-            duration: 6,
-            url: "https://www.youtube.com/watch?v=8eVXTyIZ1Hs",
+            title: "Agile Frameworks | Scrum | Kanban | Lean | XP",
+            duration: 20,
+            url: "https://www.youtube.com/watch?v=fnlXe9cbols",
+          },
+          {
+            title: "What is Agile? - An Overview",
+            duration: 9,
+            url: "https://www.youtube.com/watch?v=vYI7-UD9tEQ",
           }
         ],
         documents: [
           {
-            title: "PM-111 Agile Frameworks and Methodologies",
-            url: "https://docs.google.com/presentation/d/1eFNHsTe-CTbfLBlmEu098722-yl4gPhk/preview"
+            title: "Introducing Project Management Frameworks",
+            url: "https://drive.google.com/file/d/10M5Fgn6zpXrvomo2ANWCJ7BeJt_t4Gjq/preview"
+          },
+          {
+            title: "Agile Frameworks and Methodologies",
+            url: "https://drive.google.com/file/d/1OwoR8RpfmUPRdEarewoL4RLeT7CdRlyE/preview"
           }
         ],
       },
       {
-        title: "Business Analysis for Project Management",
+        title: "Project Leadership and Professional Responsibility",
         videos: [
           {
-            title: "Business Analysis for Project Managers",
-            duration: 30,
-            url: "https://www.youtube.com/watch?v=UitWvBThl_4",
+            title: "Five Project Leadership Tips: Be a Better Project Leader",
+            duration: 10,
+            url: "https://www.youtube.com/watch?v=8ck0yFdcns4",
+          },
+          {
+            title: "Leadership Models Project Managers Need to Know",
+            duration: 11,
+            url: "https://www.youtube.com/watch?v=3j-OqiC29BU",
           }
         ],
         documents: [
           {
-            title: "PM-112 Business Analysis for Project Management",
-            url: "https://docs.google.com/presentation/d/1mXdAbdulk4N6vS8cLWA7e7WQVd0TrPOS/preview"
+            title: "PMBOK 7th Edition 16-31 page",
+            url: "https://drive.google.com/file/d/1ZM0Bf0Efiq_PCL1Bt4qLrqGjTqDjiyql/preview"
+          },
+          {
+            title: "Project Leadership and Professional Responsibility",
+            url: "https://drive.google.com/file/d/1_baXTaM8Axai5D7TKE5iS6bbW96u96Yh/preview"
+          }
+        ],
+      },
+      {
+        title: "AI in Project Management",
+        videos: [
+          {
+            title: "Generative AI for Project Managers - Learn the applications in project management",
+            duration: 37,
+            url: "https://www.youtube.com/watch?v=1jtJYo4m6EQ",
+          }
+        ],
+        documents: [
+          {
+            title: "Community-Led AI and Project Management Report",
+            url: "https://drive.google.com/file/d/19iZTOWApE_9OSoUF-O8E5P9SwQu3wxaZ/preview"
+          },
+          {
+            title: "AI in Project Management",
+            url: "https://drive.google.com/file/d/1b95398FJAyo30yaqT73X0SLVL48k4gjA/preview"
           }
         ],
       }
@@ -1456,19 +1488,19 @@ const coursesData = {
         title: "Strategic Delivery Capability",
         videos: [
           {
-            title: "Build Your Organization’s Strategic Project Management Capability",
+            title: "Build Your Organization's Strategic Project Management Capability",
             duration: 57,
             url: "https://www.youtube.com/watch?v=cKJRN51UYMM",
           }
         ],
         documents: [
           {
-            title: "Strategic Project Management Made Simple",
-            url: "https://drive.google.com/file/d/1ac5flwP-KNYTcLtWkWxeLpiFCLN0Td0_/preview"
+            title: "Project Management",
+            url: "https://drive.google.com/file/d/17Qr3AGqeb4IeIauyhSELAI2O6S7yDEBZ/preview"
           },
           {
-            title: "Strategic Delivery Capability",
-            url: "https://drive.google.com/file/d/1ajO9DK63yHezbLDGivnrINmmlF0JgK0H/preview"
+            title: "Project Management Fundamentals and Lifecycle",
+            url: "https://drive.google.com/file/d/1L8hUxqPqL2z4tdPnm6s_TU8QpyXzsw24/preview"
           }
         ],
       },
@@ -1476,34 +1508,24 @@ const coursesData = {
         title: "Project Management Empowers Humanitarian and Social Missions",
         videos: [
           {
-            title: "Introduction to Managing Humanitarian Aid Projects",
-            duration: 15,
-            url: "https://www.youtube.com/watch?v=rWfyLvUojns",
+            title: "Project Initiation | Project Management Life Cycle | Invensis Learning",
+            duration: 21,
+            url: "https://www.youtube.com/watch?v=hIhTtzo0eBg",
           },
           {
-            title: "Project Management",
-            duration: 3,
-            url: "https://www.youtube.com/watch?v=alOczlnWl1Q",
-          },
-          {
-            title: "Driving Change: Project Management for Social Impact",
-            duration: 6,
-            url: "https://www.youtube.com/watch?v=bPTfk0juGBA",
-          },
-          {
-            title: "Theory of Change: Framework for Social Impact",
-            duration: 7,
-            url: "https://www.youtube.com/watch?v=cg4J1g0IVHg",
+            title: "Stakeholder Engagement Tips: 5 Tips For Project Managers",
+            duration: 9,
+            url: "https://www.youtube.com/watch?v=APc9S_8v7YY",
           }
         ],
         documents: [
           {
-            title: "Project Management In Non Govermental Organizations NGOs",
-            url: "https://drive.google.com/file/d/1V7ikfYp5WghtLkIIAO6sNKbbrMa1OrHL/preview"
+            title: "Project Management page 58-93",
+            url: "https://drive.google.com/file/d/17Kawz9YpvHhb0L7PJH2RgM_SFjLvbr9M/preview"
           },
           {
-            title: "Project Management Empowers Humanitarian and Social Missions",
-            url: "https://drive.google.com/file/d/1NDOSu7o5L2BxoLym2g2zk9td3fTC6al2/preview"
+            title: "Project Initiation and Stakeholder Engagement",
+            url: "https://drive.google.com/file/d/1FcMX1hldPtuh9VHcgru-m0dlcoLFvGjP/preview"
           }
         ],
       },
@@ -1511,24 +1533,24 @@ const coursesData = {
         title: "Project Management is Creating Innovative Culture",
         videos: [
           {
-            title: "How to create a culture of innovation",
+            title: "What is Project Scope? Project Management in Under 5",
             duration: 3,
-            url: "https://www.youtube.com/watch?v=-eM0sNLPY_8",
+            url: "https://www.youtube.com/watch?v=NXw0bvvYWYo",
           },
           {
-            title: "How to Create a Culture of Innovation",
-            duration: 31,
-            url: "https://www.youtube.com/watch?v=saBl3waK70Q",
+            title: "How to Create a Work Breakdown Structure: A WBS Masterclass",
+            duration: 14,
+            url: "https://www.youtube.com/watch?v=PyR2VLP3xnA",
           }
         ],
         documents: [
           {
-            title: "Creating Innovation Culture",
-            url: "https://drive.google.com/file/d/1bcsHxYUdWN5g2BOzAbLCxeqM9K8Amt6a/preview"
+            title: "Project_Management_page 94-112",
+            url: "https://drive.google.com/file/d/1uGDt842M2cEVq2BwX11e8kPX_qDrAprr/preview"
           },
           {
-            title: "Project Management is Creating Innovative Culture",
-            url: "https://drive.google.com/file/d/11jEwM3eXRn25o-JzhC4kuL1WBHtydpsp/preview"
+            title: "Project Planning Scope Definition and Management",
+            url: "https://drive.google.com/file/d/1f8NBm3-xCdjwwo79bP1zTTBZTgTa3T3q/preview"
           }
         ],
       },
@@ -1536,20 +1558,24 @@ const coursesData = {
         title: "Digitization is Central to Delivering Projects",
         videos: [
           {
-            title: "Transforming Project Delivery",
-            duration: 2,
-            url: "https://www.youtube.com/watch?v=d-7DCrvRgsY",
+            title: "How to Create a Project Schedule - 21 Steps in 5 Stages",
+            duration: 8,
+            url: "https://www.youtube.com/watch?v=e8SMojtawLs",
           },
           {
-            title: "Digital Transformation Basics for Project Managers",
-            duration: 5,
-            url: "https://www.youtube.com/watch?v=jcDG7kat2BA",
+            title: "Project Scheduling - PERT/CPM | Finding Critical Path",
+            duration: 7,
+            url: "https://www.youtube.com/watch?v=-TDh-5n90vk",
           }
         ],
         documents: [
           {
-            title: "Digitization is Central to Delivering Projects's Promises",
-            url: "https://drive.google.com/file/d/1HtQVq9mZl-dP8zuxEDuWEZMnh9y0Jn8M/preview"
+            title: "Project_Management_page 113-129",
+            url: "https://drive.google.com/file/d/14pgzVv76EINbtRRIUviLyxLvruzHDSCq/preview"
+          },
+          {
+            title: "Project Planning Schedule Development and Control",
+            url: "https://drive.google.com/file/d/1rq-98k8bWgXTcIRMzEwzC-CAXjmEAEPL/preview"
           }
         ],
       },
@@ -1557,19 +1583,19 @@ const coursesData = {
         title: "Evolving Project Manager's Skills",
         videos: [
           {
-            title: "Project Manager Roadmap: Skills You MUST Learn TODAY",
-            duration: 10,
-            url: "https://www.youtube.com/watch?v=Qfgs-b0bQ6Q",
+            title: "Project Cost Management Briefing (Video Compilation)",
+            duration: 50,
+            url: "https://www.youtube.com/watch?v=d3mXvVnj3qc",
           }
         ],
         documents: [
           {
-            title: "Project Management Skills",
-            url: "https://drive.google.com/file/d/1yFutvx8MH8DTFm04BqKuTYKP-K1Ix0UM/preview"
+            title: "Project Management page 166-183",
+            url: "https://drive.google.com/file/d/1YYhIpfpQLNDE4tnt85o1VKafTv7r06fn/preview"
           },
           {
-            title: "Evolving Project Manager's Skills",
-            url: "https://drive.google.com/file/d/1A4hDKoBznQQASwfmOCBjtStKrKjKAJCq/preview"
+            title: "Project Planning Cost Estimation and Budgeting",
+            url: "https://drive.google.com/file/d/1hExJJMXKagWzaglA67BfF6K_CI51knGR/preview"
           }
         ],
       },
@@ -1577,19 +1603,19 @@ const coursesData = {
         title: "New Forms Of Project Leadership",
         videos: [
           {
-            title: "Top 5 Leadership Theories - Project Management Training",
+            title: "Project Quality Management 101 - Your Ultimate Introduction",
             duration: 8,
-            url: "https://www.youtube.com/watch?v=I49T7eteX28",
+            url: "https://www.youtube.com/watch?v=1rQT1R3S2BQ",
           }
         ],
         documents: [
           {
-            title: "The Art Of Project Leadership",
-            url: "https://drive.google.com/file/d/1vUuoWH7_56w1Rlcud3pHSGaGRNg6ApTz/preview"
+            title: "Project Management Page 197-210",
+            url: "https://drive.google.com/file/d/1I9wrHX05Hy_LbU5SqHTdw2UP9aUwQpv5/preview"
           },
           {
-            title: "New Forms Of Project Leadership",
-            url: "https://drive.google.com/file/d/12spQKLs3XvBTmqdjrdqeVrH6dopsTbrY/preview"
+            title: "Project Quality and Process Improvement",
+            url: "https://drive.google.com/file/d/1qx5BJ7rwSQ4TTfiTYuQngpdyQ64U7zOF/preview"
           }
         ],
       },
@@ -1597,54 +1623,44 @@ const coursesData = {
         title: "Organizational Cultural Shift To The Project Way Of Working",
         videos: [
           {
-            title: "Project Management",
-            duration: 8,
-            url: "https://www.youtube.com/watch?v=Oh1CuAWnvnA",
+            title: "Project Resource Management 101: A Broad Survey of Project Resources",
+            duration: 15,
+            url: "https://www.youtube.com/watch?v=JfyiMsBV0Z4",
+          },
+          {
+            title: "Must-Know Tips for Resource Allocation in Project Management",
+            duration: 10,
+            url: "https://www.youtube.com/watch?v=N_UbPsGrOUI",
           }
         ],
         documents: [
           {
-            title: "Project Culture",
-            url: "https://drive.google.com/file/d/1pkfnrVtia8FK1aAaITi-B6jyqn5sdREh/preview"
+            title: "Project Management Page 130-165",
+            url: "https://drive.google.com/file/d/1QvExNKPquD7vYNuzXavz5ybj4u2G-ZWi/preview"
           },
           {
-            title: "Organizational Cultural Shift To The Project Way Of Working",
-            url: "https://drive.google.com/file/d/1r4NN3f7MlFGb5PfuL2D9jyUOgBgWH_LJ/preview"
+            title: "Project Resource Management and Team Leadership",
+            url: "https://drive.google.com/file/d/159HAAQvzhqaA556WdsmOTaSeQR7Tketk/preview"
           }
         ],
       },
       {
-        title: "Adaptive Frameworks And Life Cycles",
+        title: "Project Communication and Information Management",
         videos: [
           {
-            title: "Adaptive Projects Framework (APF)",
-            duration: 5,
-            url: "https://www.youtube.com/watch?v=AYqEE9uUO_Y",
-          },
-          {
-            title: "Types of Project Management Life Cycle - Adaptive, Predictive, Iterative, Incremental and Hybrid",
-            duration: 16,
-            url: "https://www.youtube.com/watch?v=I4fAFcPCw6k",
-          },
-          {
-            title: "What Does Agile PPM Mean To The Modern PMO?",
-            duration: 38,
-            url: "https://www.youtube.com/watch?v=sEOq681jBR0",
-          },
-          {
-            title: "Project Management: Waterfall, Agile, & Hybrid Approaches",
-            duration: 15,
-            url: "https://www.youtube.com/watch?v=bLZ9MNwV2vE",
+            title: "Project Communications 101 - the Basics of Project Communication Management",
+            duration: 17,
+            url: "https://www.youtube.com/watch?v=HOAA8O6zY6Y",
           }
         ],
         documents: [
           {
-            title: "Project Lifecycle",
-            url: "https://drive.google.com/file/d/1HmgXncxq99tUQhAaBjPCDuKKQ_-qLS3E/preview"
+            title: "Project Management Page 211-217",
+            url: "https://drive.google.com/file/d/18pP1kyG87pEsaih1YNWqKgOKrNt00UD0/preview"
           },
           {
-            title: "Adaptive Frameworks And Life Cycles",
-            url: "https://drive.google.com/file/d/1eN7Aqji7r7C9p5CENFiP39lzmfboARg6/preview"
+            title: "Project Communication and Information Management",
+            url: "https://drive.google.com/file/d/19UUtkJNWlD8_n48YPHqKxjKx1QPsuLly/preview"
           }
         ],
       },
@@ -1652,48 +1668,60 @@ const coursesData = {
         title: "Evolving Nature of PMOs And Governance",
         videos: [
           {
-            title: "The Evolving Role of the PMO - from PMO Learning",
-            duration: 60,
-            url: "https://www.youtube.com/watch?v=7HapUBjPnG8",
+            title: "Project Risk Management - How to Manage Project Risk ",
+            duration: 11,
+            url: "https://www.youtube.com/watch?v=xXV_gjtXMSk",
           }
         ],
         documents: [
           {
-            title: "Beyond Governance PMO Interviews",
-            url: "https://drive.google.com/file/d/1nGPZxm2eY11Bw3GzSvQhANaa4eOql0lI/preview"
+            title: "Project Management Page 218-230",
+            url: "https://drive.google.com/file/d/1-8sdMcStdEsUuboeu5B19B8z5ZoLTW8r/preview"
           },
           {
-            title: "PMOS Play Vital Role",
-            url: "https://drive.google.com/file/d/1rvta0oAVOLMoPqw6lH4ze5Y_KttehS2p/preview"
-          },
-          {
-            title: "Evolving Nature of PMOs And Governance",
-            url: "https://drive.google.com/file/d/1Fd9wMi6ruQvnEjCBviWpAN5r-kn1mVFD/preview"
+            title: "Project Risk and Issue Management",
+            url: "https://drive.google.com/file/d/1_UeG9cgoL7SBw80Welkdp45JAzkzzNnt/preview"
           }
         ],
       },
       {
-        title: "Significant Growth In Value-Driven And Business-Related Metrics",
+        title: "Project Procurement and Contract Administration",
         videos: [
           {
-            title: "Top 3 KPIs for Project Managers",
-            duration: 4,
-            url: "https://www.youtube.com/watch?v=f_szFzBjfFg",
+            title: "Contract Management in Project Management A Comprehensive Guide",
+            duration: 7,
+            url: "https://www.youtube.com/watch?v=LM-bFKlOoIs",
           },
           {
-            title: "Top 5 KPIs for Project Managers",
-            duration: 8,
-            url: "https://www.youtube.com/watch?v=SwGt4nbTxgM",
+            title: "Procurement Management 101",
+            duration: 16,
+            url: "https://www.youtube.com/watch?v=bPgheptnmWs",
           }
         ],
         documents: [
           {
-            title: "Project Management Metrics KPIs",
-            url: "https://drive.google.com/file/d/1u6ili6L0D7EjTNoQlmmTAKwGR9oYYVI9/preview"
+            title: "Project Management Page 184-196",
+            url: "https://drive.google.com/file/d/1x3lHhptu8NQJMapPG1OKahV19rfHygVR/preview"
+          }
+        ],
+      },
+      {
+        title: "AI in Project Management",
+        videos: [
+          {
+            title: "Generative AI for Project Managers - Learn the applications in project management",
+            duration: 36,
+            url: "https://www.youtube.com/watch?v=1jtJYo4m6EQ",
+          }
+        ],
+        documents: [
+          {
+            title: "Community-Led AI and Project Management Report",
+            url: "https://drive.google.com/file/d/19Jeuv27SwjZ-JZQF8E9rhtFJM-enUUrA/preview"
           },
           {
-            title: "Significant Growth In Value-Driven And Business Related Metrics",
-            url: "https://drive.google.com/file/d/1aMAyDwuFYVP_vUmzOQbvWNKtAYL59b9p/preview"
+            title: "AI in Project Management",
+            url: "https://drive.google.com/file/d/1jykbo07uRYBknDrfniovxhVkCGh7z70Z/preview"
           }
         ],
       }
@@ -2571,28 +2599,668 @@ const quizQuestionsMapping: {
       }
     ]
   },
-  "Certified-Logistics-Manager": (() => {
-    // helper to build one‑question arrays for 12 modules
-    const build = () => ({
-      prompt: "Click any option to go to the next module",
-      options: ["Click me", "Click me", "Click me", "Click me"],
-      correctIndex: -1, // -1 means “all choices correct”
-    });
-    return {
-      0: [build()],
-      1: [build()],
-      2: [build()],
-      3: [build()],
-      4: [build()],
-      5: [build()],
-      6: [build()],
-      7: [build()],
-      8: [build()],
-      9: [build()],
-      10: [build()],
-      11: [build()],
-    };
-  })(),
+  "Certified-Logistics-Manager": {
+    0: [
+      {
+        prompt: "Which transportation mode is characterized by the highest cargo capacity and the lowest cost per ton for long-distance international shipments?",
+        options: [
+          "Air Transport",
+          "Road Transport",
+          "Rail Transport",
+          "Ocean/Sea Transport"
+        ],
+        correctIndex: 3
+      },
+      {
+        prompt: "Under which Incoterm does the seller have the maximum responsibility, including handling import clearance and paying duties in the buyer's country?",
+        options: [
+          "EXW (Ex Works)",
+          "FOB (Free On Board)",
+          "DDP (Delivered Duty Paid)",
+          "CIF (Cost, Insurance & Freight)"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "The SOLAS (Safety of Life at Sea) convention requires shippers to provide what specific information for containers before they can be loaded onto a vessel?",
+        options: [
+          "Certificate of Origin (COO)",
+          "Verified Gross Mass (VGM)",
+          "Commercial Invoice value",
+          "The correct Harmonized System (HS) Code"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "What is the key difference between multimodal and intermodal transport?",
+        options: [
+          "Intermodal transport uses only one mode, while multimodal uses several",
+          "Multimodal transport is managed under a single contract, while intermodal involves multiple contracts with different carriers",
+          "Intermodal transport is only for domestic shipments, while multimodal is for international",
+          "In multimodal transport, the container is never changed, but it can be in intermodal"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "Which document serves as both a contract of carriage and a document of title for goods shipped via sea freight?",
+        options: [
+          "Air Waybill (AWB)",
+          "Commercial Invoice",
+          "Packing List",
+          "Bill of Lading (B/L)"
+        ],
+        correctIndex: 3
+      },
+      {
+        prompt: "A company that acts as a supply chain integrator, strategically overseeing the entire supply chain and managing multiple 3PLs, is known as a:",
+        options: [
+          "Freight Forwarder",
+          "Customs Broker",
+          "3PL (Third-Party Logistics Provider)",
+          "4PL (Fourth-Party Logistics Provider)"
+        ],
+        correctIndex: 3
+      },
+      {
+        prompt: "In sea freight, charges for container delays at the port or off-terminal are known as:",
+        options: [
+          "Fuel Surcharges (BAF/CAF)",
+          "Accessorial Charges",
+          "Demurrage & Detention",
+          "General Rate Increases (GRIs)"
+        ],
+        correctIndex: 2
+      }
+    ],
+    1: [
+      {
+        prompt: "What does the \"Order Cycle Time\" KPI measure?",
+        options: [
+          "The time it takes to process a sales order before fulfillment",
+          "The total time from when a customer places an order until it is delivered",
+          "The average time a supplier takes to have goods ready for delivery",
+          "The frequency at which inventory is sold and replaced"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "A logistics manager uses a diagram to visually map out all potential causes of delivery delays, organizing them into categories like \"Man,\" \"Machine,\" and \"Method.\" Which analytical tool are they using?",
+        options: [
+          "Pareto Analysis",
+          "Process Flowchart",
+          "Fishbone Diagram (Ishikawa)",
+          "ABC Inventory Analysis"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "The \"Inventory Turnover Ratio\" is a key supply KPI. What does a high turnover rate generally indicate?",
+        options: [
+          "The company is overstocking on inventory",
+          "The products are slow-moving or obsolete",
+          "The company has poor inventory planning",
+          "The company is managing its inventory efficiently"
+        ],
+        correctIndex: 3
+      },
+      {
+        prompt: "Which type of benchmarking involves comparing your company's logistics KPIs against those of top-performing companies, regardless of their industry?",
+        options: [
+          "Internal Benchmarking",
+          "Competitive Benchmarking",
+          "Functional Benchmarking",
+          "Best-in-Class Benchmarking"
+        ],
+        correctIndex: 3
+      },
+      {
+        prompt: "What is the primary purpose of a logistics dashboard?",
+        options: [
+          "To create a legally binding contract with a carrier",
+          "To provide a real-time, visual interface for tracking operational KPIs at a glance",
+          "To plan long-term logistics KPIs with strategic company goals",
+          "To replace traditional inventory management systems"
+        ],
+        correctIndex: 1
+      }
+    ],
+    2: [
+      {
+        prompt: "In Supplier Relationship Management (SRM), what is the process of classifying suppliers based on their value, criticality, and risk called?",
+        options: [
+          "Performance Management",
+          "Collaboration",
+          "Segmentation",
+          "Development"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which risk assessment tool is specifically used to categorize suppliers into four quadrants: Strategic, Leverage, Bottleneck, and Routine?",
+        options: [
+          "FMEA (Failure Mode & Effects Analysis)",
+          "Kraljic Matrix",
+          "SWIFT Analysis",
+          "TIER Mapping"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "In the context of Procurement 4.0, what is Robotic Process Automation (RPA) primarily used for?",
+        options: [
+          "Predicting future demand for materials",
+          "Automating routine, repetitive tasks like PO creation and invoice matching",
+          "Tracking the real-time location of shipments using sensors",
+          "Providing high-level dashboards for spend visibility"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "The negotiation framework that involves knowing your \"walk-away point\" by identifying your next best option if the current negotiation fails is known as:",
+        options: [
+          "TCO (Total Cost of Ownership)",
+          "SLA (Service Level Agreement)",
+          "BATNA (Best Alternative To a Negotiated Agreement)",
+          "KPI (Key Performance Indicator)"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Compared to Global Sourcing, what is a primary advantage of Localized Sourcing?",
+        options: [
+          "Lower unit costs due to labor arbitrage",
+          "Longer and more complex supply chains",
+          "Shorter, more predictable lead times and higher responsiveness",
+          "Greater exposure to geopolitical and currency risks"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "In ESG-based procurement, the \"Social\" pillar primarily focuses on evaluating a supplier's performance in which area?",
+        options: [
+          "Carbon emissions and waste management",
+          "Ethics, compliance, and anti-corruption policies",
+          "Financial stability and profitability",
+          "Labor rights, community impact, and diversity"
+        ],
+        correctIndex: 3
+      },
+      {
+        prompt: "Which clause in an international procurement contract defines the responsibilities for transport, insurance, customs, and the point at which risk transfers from the seller to the buyer?",
+        options: [
+          "Governing Law",
+          "Force Majeure",
+          "Jurisdiction",
+          "Incoterms"
+        ],
+        correctIndex: 3
+      }
+    ],
+    3: [
+      {
+        prompt: "Which leadership style involves adapting your approach by directing, coaching, supporting, or delegating based on the competence and commitment of your team?",
+        options: [
+          "Trait Leadership",
+          "Transformational Leadership",
+          "Situational Leadership",
+          "Visionary Leadership"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "According to Daniel Goleman's Emotional Intelligence model, the ability to recognize and understand your own moods, emotions, and their impact on others is known as:",
+        options: [
+          "Self-Management",
+          "Relationship Management",
+          "Social Awareness",
+          "Self-Awareness"
+        ],
+        correctIndex: 3
+      },
+      {
+        prompt: "When leading multicultural teams, a direct, fact-based communication style is most effective for which type of culture?",
+        options: [
+          "High-context cultures (e.g., Asia, Latin America)",
+          "Low-context cultures (e.g., US, Germany)",
+          "Hierarchical cultures (e.g., India, Japan)",
+          "Egalitarian cultures (e.g., Netherlands, Australia)"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "A logistics manager chooses a slightly more expensive but greener shipping route to reduce long-term CO₂ emissions for the greater good. Which ethical framework is being applied?",
+        options: [
+          "Deontological Ethics (Duty-Based)",
+          "Utilitarianism",
+          "Virtue Ethics",
+          "Justice & Fairness"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "A manager tries to gain support for a new technology by stating, \"If we help the IT department with their WMS integration now, they will prioritize our TMS upgrade later.\" Which strategic influence tactic is being used?",
+        options: [
+          "Social Proof",
+          "Scarcity/Urgency",
+          "Reciprocity",
+          "Framing"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "A leader who inspires teams to achieve more than expected by creating a shared vision, encouraging innovation, and serving as a role model is demonstrating which leadership style?",
+        options: [
+          "Situational Leadership",
+          "Transformational Leadership",
+          "Trait Leadership",
+          "Directive Leadership"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "In the Boeing 737 Max crisis case study, the company's failure to fully disclose the new MCAS system to pilots and airlines was cited as a key ethical failure in what area?",
+        options: [
+          "Lack of Transparency",
+          "Regulatory Capture",
+          "Internal Culture of Silence",
+          "Post-Crisis Handling"
+        ],
+        correctIndex: 0
+      }
+    ],
+    4: [
+      {
+        prompt: "Which of the following typically represents the largest component, often 50-60%, of total logistics costs?",
+        options: [
+          "Warehousing Costs",
+          "Inventory Carrying Costs",
+          "Transportation Costs",
+          "Administrative & Overhead Costs"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "In logistics, warehouse rent and the salaries of permanent staff are examples of what type of cost?",
+        options: [
+          "Variable Costs",
+          "Fixed Costs",
+          "Inventory Carrying Costs",
+          "Last-Mile Delivery Costs"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "The strategy of transferring goods directly from an inbound truck to an outbound truck with little to no long-term storage is known as:",
+        options: [
+          "Backhauling",
+          "Cross-docking",
+          "Load consolidation",
+          "Inventory pooling"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "Which costing method assigns expenses to specific logistics activities (e.g., order picking, loading) to more accurately determine the true cost of serving a particular customer or product?",
+        options: [
+          "Total Cost of Ownership (TCO)",
+          "Activity-Based Costing (ABC)",
+          "Fixed Cost Allocation",
+          "Variable Cost Analysis"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "When evaluating a major logistics investment, such as a new warehouse management system (WMS), which financial principle considers all costs over the asset's entire lifecycle, including acquisition, operation, and disposal?",
+        options: [
+          "Cost-Benefit Analysis (CBA)",
+          "Return on Investment (ROI)",
+          "Total Cost of Ownership (TCO)",
+          "Payback Period"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "What is a primary advantage of outsourcing logistics to a third-party provider (3PL)?",
+        options: [
+          "It gives the company full, direct control over all logistics processes",
+          "It converts fixed costs (like owning a warehouse) into variable, pay-as-you-go costs",
+          "It requires a large upfront capital investment from the company",
+          "It is best when logistics is a core strategic competency of the company"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "The practice of using a vehicle's return journey to carry a new load of freight to avoid traveling empty is called:",
+        options: [
+          "Cross-docking",
+          "Backhauling",
+          "Mode shifting",
+          "Batch picking"
+        ],
+        correctIndex: 1
+      }
+    ],
+    5: [
+      {
+        prompt: "Which quality management philosophy is described as a holistic approach involving all members of an organization to achieve long-term success through customer satisfaction?",
+        options: [
+          "Six Sigma",
+          "ISO 9001",
+          "Total Quality Management (TQM)",
+          "PDCA (Plan-Do-Check-Act)"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "In the Six Sigma DMAIC cycle, which phase is focused on identifying the root cause of a problem after data has been collected?",
+        options: [
+          "Define",
+          "Measure",
+          "Analyze",
+          "Improve"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "According to the Cost of Quality (CoQ) model, the costs associated with warranty charges and customer returns fall under which category?",
+        options: [
+          "Prevention Costs",
+          "Appraisal Costs",
+          "Internal Failure Costs",
+          "External Failure Costs"
+        ],
+        correctIndex: 3
+      },
+      {
+        prompt: "A logistics manager wants to prioritize which issues are causing the most customer complaints. Which quality tool would be most effective for identifying the \"vital few\" causes that lead to the majority of problems (the 80/20 rule)?",
+        options: [
+          "Flowchart",
+          "Check Sheet",
+          "Pareto Chart",
+          "Fishbone Diagram"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "According to Kotter's 8-Step Change Model for leading a quality culture transformation, what is the critical first step?",
+        options: [
+          "Form a guiding coalition",
+          "Communicate the vision",
+          "Create a sense of urgency",
+          "Generate quick wins"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Within the ISO 9001 framework, which clause specifically addresses the need for management commitment to quality and customer satisfaction?",
+        options: [
+          "Clause 4: Context of the Organization",
+          "Clause 5: Leadership",
+          "Clause 8: Operation",
+          "Clause 10: Improvement"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "What is the primary purpose of the EFQM (European Foundation for Quality Management) model in a logistics context?",
+        options: [
+          "To provide a mandatory set of rules for shipping within the EU",
+          "To calculate the precise financial return on investment for quality programs",
+          "To serve as a framework for organizational excellence and to benchmark performance",
+          "To design the physical layout of a warehouse for maximum efficiency"
+        ],
+        correctIndex: 2
+      }
+    ],
+    6: [
+      {
+        prompt: "What is the primary goal of the Economic Order Quantity (EOQ) inventory model?",
+        options: [
+          "To classify inventory based on its operational criticality",
+          "To minimize total inventory cost by balancing ordering costs and holding costs",
+          "To receive goods only when they are needed for production",
+          "To prioritize inventory management efforts based on value contribution"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "Which inventory classification method is most suitable for managing critical spare parts, where items are categorized based on their importance to operations (Vital, Essential, Desirable)?",
+        options: [
+          "ABC Analysis",
+          "VED Analysis",
+          "Just-In-Time (JIT)",
+          "Reorder Point (ROP)"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "A warehouse implements a computer-controlled system with cranes and shuttles that automatically place and retrieve pallets from high-density vertical racking. What is this technology called?",
+        options: [
+          "Automated Guided Vehicle (AGV)",
+          "Internet of Things (IoT)",
+          "Pick-to-Light System",
+          "Automated Storage and Retrieval System (AS/RS)"
+        ],
+        correctIndex: 3
+      },
+      {
+        prompt: "In inventory management, what is the main purpose of safety stock?",
+        options: [
+          "To meet regular, predictable demand between orders",
+          "To act as a buffer against uncertainty in demand or lead time",
+          "To take advantage of bulk purchase discounts",
+          "To represent the inventory needed for a specific customer order"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "What is a \"Digital Twin\" in the context of warehousing?",
+        options: [
+          "A backup server for the Warehouse Management System (WMS)",
+          "A physical, smaller-scale model of the warehouse used for training",
+          "A virtual replica of the physical warehouse that updates in real time using data from sensors and systems",
+          "A type of collaborative robot (co-bot) used for picking orders"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "The Just-In-Time (JIT) inventory strategy is highly effective but is most vulnerable to which of the following risks?",
+        options: [
+          "High inventory holding costs",
+          "Slow-moving or obsolete stock",
+          "Supply chain disruptions and unreliable lead times",
+          "The need for large warehouse spaces"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "In an ABC analysis of inventory, how are \"Class A\" items typically characterized?",
+        options: [
+          "High volume of items, low impact on revenue",
+          "Low volume of items, high impact on revenue",
+          "Medium volume of items, medium impact on revenue",
+          "High volume of items, high impact on revenue"
+        ],
+        correctIndex: 1
+      }
+    ],
+    7: [
+      {
+        prompt: "What is the key difference in function between Generative AI and Traditional AI in a logistics context?",
+        options: [
+          "Traditional AI creates new route plans, while Generative AI only analyzes past data",
+          "Generative AI creates new, human-like content and plans, while Traditional AI analyzes data to make predictions or classifications",
+          "Traditional AI is more flexible and can be adapted to more tasks than Generative AI",
+          "Generative AI requires structured and labeled data, while Traditional AI does not"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "According to the presentation, which company uses an AI-powered route optimization system called ORION to save millions of miles driven annually?",
+        options: [
+          "Amazon",
+          "DHL",
+          "FedEx",
+          "UPS"
+        ],
+        correctIndex: 3
+      },
+      {
+        prompt: "Which of the following is listed as a major challenge in implementing AI in logistics?",
+        options: [
+          "The lack of available AI tools for the logistics sector",
+          "The high cost of electricity required to run AI models",
+          "The difficulty of integrating AI with existing legacy systems like TMS and WMS",
+          "The inability of AI to perform complex tasks like demand forecasting"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "The ethical principle that requires a clear understanding of how an AI model arrives at its decisions is known as:",
+        options: [
+          "Fairness",
+          "Privacy",
+          "Transparency (or \"explainable AI\")",
+          "Security"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "To ensure that an AI model does not make discriminatory decisions in areas like supplier selection or workforce scheduling, what mitigation strategy is recommended?",
+        options: [
+          "Using less data to train the model",
+          "Keeping humans out of the decision loop entirely",
+          "Conducting regular bias audits and using diverse training data",
+          "Collecting only the minimum amount of data necessary"
+        ],
+        correctIndex: 2
+      }
+    ],
+    8: [
+      {
+        prompt: "What is the primary goal of the Sales and Operations Planning (S&OP) process?",
+        options: [
+          "To only create a sales forecast for the next quarter",
+          "To exclusively manage logistics and transportation capacity",
+          "To balance supply and demand by aligning sales, operations, and finance",
+          "To reduce inventory costs without considering customer service levels"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Distribution Requirements Planning (DRP) is a systematic approach used to determine:",
+        options: [
+          "The manufacturing cost of each product",
+          "The marketing strategy for new product launches",
+          "What products are needed, where they are needed, and when they are needed",
+          "The final delivery address of every customer order"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "In the context of logistics coordination, what is the primary focus of inbound logistics?",
+        options: [
+          "Delivering finished products to the end customer",
+          "Managing the return of products from customers",
+          "Sourcing and receiving raw materials and goods from suppliers",
+          "Managing customer service and order fulfillment"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which of the following is a key feature of a Transportation Management System (TMS)?",
+        options: [
+          "Optimizing warehouse picking and packing processes",
+          "Forecasting customer demand using historical data",
+          "Planning routes, selecting carriers, and consolidating loads",
+          "Managing inventory levels using the Economic Order Quantity (EOQ) model"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "The collaboration between Walmart and Procter & Gamble, where real-time sales and inventory data were shared to improve replenishment, is a classic example of which strategy?",
+        options: [
+          "Just-In-Time (JIT)",
+          "Collaborative Planning, Forecasting, and Replenishment (CPFR)",
+          "Economic Order Quantity (EOQ)",
+          "Lean Logistics"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "The technique of classifying inventory into categories (e.g., A, B, C) based on value and frequency to focus management efforts on the most critical items is known as:",
+        options: [
+          "Just-In-Time (JIT)",
+          "ABC Analysis",
+          "Value Stream Mapping",
+          "Economic Order Quantity (EOQ)"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "To reduce the \"bullwhip effect\" and improve inventory accuracy across the supply chain, what is a key benefit of integrated planning?",
+        options: [
+          "It allows each partner to operate independently",
+          "It focuses solely on reducing transportation costs",
+          "It ensures all partners have access to the same, real-time data for decision-making",
+          "It increases the need for safety stock at every level"
+        ],
+        correctIndex: 2
+      }
+    ],
+    9: [
+      {
+        prompt: "Which classical route optimization algorithm is designed to find the shortest possible path that visits a set of locations exactly once and returns to the starting point?",
+        options: [
+          "Dijkstra's Algorithm",
+          "Vehicle Routing Problem (VRP)",
+          "Travelling Salesman Problem (TSP)",
+          "Activity-Based Costing (ABC)"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "What emerging technology uses wireless electromagnetic fields to automatically identify and track tags attached to objects, significantly improving inventory visibility and reducing manual scanning errors?",
+        options: [
+          "Internet of Things (IoT)",
+          "Blockchain",
+          "Radio Frequency Identification (RFID)",
+          "Artificial Intelligence (AI)"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "The Total Cost of Ownership (TCO) model in logistics helps businesses to:",
+        options: [
+          "Calculate only the initial freight charges for a shipment",
+          "Find the shortest delivery route based on distance",
+          "Trace operational costs to specific activities like loading and unloading",
+          "Understand the true end-to-end cost of a product or service, including all direct and indirect costs over its lifecycle"
+        ],
+        correctIndex: 3
+      },
+      {
+        prompt: "A company shifts a significant portion of its long-haul freight from road to rail to lower its carbon footprint. This is an example of which green transport strategy?",
+        options: [
+          "Modal Shift",
+          "Route Optimization",
+          "Reverse Logistics",
+          "Fleet Modernization"
+        ],
+        correctIndex: 0
+      },
+      {
+        prompt: "What is the primary function of a Transportation Management System (TMS)?",
+        options: [
+          "To automatically track the temperature and humidity of perishable goods",
+          "To provide a secure, immutable ledger for trade documentation",
+          "To help businesses plan, execute, and optimize the physical movement of goods",
+          "To manage warehouse inventory levels and trigger reorders"
+        ],
+        correctIndex: 2
+      }
+    ]
+  },
   "Certified-Human-Resource-Professional": {
     0: [
       {
@@ -2765,7 +3433,7 @@ const quizQuestionsMapping: {
         prompt: "What is a key benefit of using 360-degree feedback in performance appraisal?",
         options: [
           "It reduces the time spent on annual reviews",
-          "It gives feedback only from the employee’s manager",
+          "It gives feedback only from the employee's manager",
           "It provides a balanced view from multiple perspectives",
           "It focuses only on technical skills"
         ],
@@ -2928,7 +3596,7 @@ const quizQuestionsMapping: {
         correctIndex: 2
       },
       {
-        prompt: "According to Lewin’s Change Model, what is the purpose of the “Unfreeze” stage?",
+        prompt: "According to Lewin's Change Model, what is the purpose of the Unfreeze stage?",
         options: [
           "To finalize policy documentation",
           "To stabilize current operations",
@@ -3084,7 +3752,7 @@ const quizQuestionsMapping: {
         correctIndex: 2
       },
       {
-        prompt: "What does ‘Equity’ refer to in the context of DEI?",
+        prompt: "What does 'Equity' refer to in the context of DEI?",
         options: [
           "Equal number of employees from each demographic",
           "Treating everyone exactly the same",
@@ -3172,7 +3840,7 @@ const quizQuestionsMapping: {
     const build = () => ({
       prompt: "Click any option to go to the next module",
       options: ["Click me", "Click me", "Click me", "Click me"],
-      correctIndex: -1, // -1 means “all choices correct”
+      correctIndex: -1, // -1 means "all choices correct"
     });
     return {
       0: [build()],
@@ -3187,48 +3855,1402 @@ const quizQuestionsMapping: {
       9: [build()]
     };
   })(),
-  "Certified-Project-Manager": (() => {
-    // helper to build one‑question arrays for 12 modules
-    const build = () => ({
-      prompt: "Click any option to go to the next module",
-      options: ["Click me", "Click me", "Click me", "Click me"],
-      correctIndex: -1, // -1 means “all choices correct”
-    });
-    return {
-      0: [build()],
-      1: [build()],
-      2: [build()],
-      3: [build()],
-      4: [build()],
-      5: [build()],
-      6: [build()],
-      7: [build()],
-      8: [build()],
-      9: [build()],
-      10: [build()],
-      11: [build()]
-    };
-  })(),
-  "Certified-Project-Management-Professional": (() => {
-    // helper to build one‑question arrays for 12 modules
-    const build = () => ({
-      prompt: "Click any option to go to the next module",
-      options: ["Click me", "Click me", "Click me", "Click me"],
-      correctIndex: -1, // -1 means “all choices correct”
-    });
-    return {
-      0: [build()],
-      1: [build()],
-      2: [build()],
-      3: [build()],
-      4: [build()],
-      5: [build()],
-      6: [build()],
-      7: [build()],
-      8: [build()],
-      9: [build()]
-    };
-  })()
+  "Certified-Project-Manager": {
+    0: [
+      {
+        prompt: "What is the primary purpose of a Project Charter?",
+        options: [
+          "To provide a detailed, task-by-task project schedule",
+          "To formally authorize the existence of a project and grant authority to the project manager",
+          "To act as a legal contract between the company and an external vendor",
+          "To justify the financial return on investment for the project to executives"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "Assessing if a project can be successfully implemented with current technology and technical expertise is known as what type of feasibility?",
+        options: [
+          "Financial Feasibility",
+          "Operational Feasibility",
+          "Technical Feasibility",
+          "Schedule Feasibility"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "According to the Power/Interest Grid, what is the best strategy for managing stakeholders who have high power but low interest?",
+        options: [
+          "Manage Closely",
+          "Keep Informed",
+          "Keep Satisfied",
+          "Monitor with Minimum Effort"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which document is typically created before the Project Charter to justify the need for a project by analyzing its costs, benefits, and alignment with business goals?",
+        options: [
+          "Business Case",
+          "Project Brief",
+          "Stakeholder Register",
+          "Work Breakdown Structure"
+        ],
+        correctIndex: 0
+      },
+      {
+        prompt: "In the stakeholder engagement assessment matrix, if a key stakeholder's current engagement level is \"Resistant,\" what is a recommended first action?",
+        options: [
+          "Empower them with a leading role in the project",
+          "Raise their awareness through general email newsletters",
+          "Address their concerns directly, often through one-on-one communication",
+          "Encourage them to become an advocate for the project"
+        ],
+        correctIndex: 2
+      }
+    ],
+    1: [
+      {
+        prompt: "Which process in project scope management involves breaking down the total scope of work into smaller, more manageable components?",
+        options: [
+          "Define Scope",
+          "Collect Requirements",
+          "Create WBS (Work Breakdown Structure)",
+          "Validate Scope"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "The uncontrolled expansion or continuous growth in a project's scope, without corresponding adjustments to time, cost, and resources, is known as:",
+        options: [
+          "Scope Validation",
+          "Scope Creep",
+          "Scope Baseline",
+          "Scope Statement"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "What is the primary purpose of the \"Validate Scope\" process?",
+        options: [
+          "To monitor and manage changes to the scope baseline",
+          "To create a detailed description of the project and product",
+          "To formalize the acceptance of completed project deliverables",
+          "To gather and document stakeholder needs and expectations"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "A project manager is creating a WBS for a new website. The top level is \"Develop a Website,\" and the next level is broken down into \"Market Research,\" \"Development,\" and \"Testing.\" This is an example of what type of WBS?",
+        options: [
+          "Process-Oriented WBS",
+          "Deliverable-Based WBS",
+          "Phase-Based WBS",
+          "Resource-Based WBS"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "What is the primary function of a Change Control Board (CCB)?",
+        options: [
+          "To conduct user acceptance testing for all project deliverables",
+          "To review, evaluate, and make formal decisions on proposed changes to the project",
+          "To assign daily tasks to the project team members",
+          "To create the initial project scope statement"
+        ],
+        correctIndex: 1
+      }
+    ],
+    2: [
+      {
+        prompt: "In the Critical Path Method (CPM), what does the \"critical path\" represent?",
+        options: [
+          "The sequence of tasks with the lowest risk",
+          "The shortest possible path through the project network",
+          "The path with the most available float or slack",
+          "The longest sequence of dependent tasks, which determines the shortest project duration"
+        ],
+        correctIndex: 3
+      },
+      {
+        prompt: "A project manager estimates that a task will take 20 days because a similar task on a previous project took 20 days. Which estimation technique is being used?",
+        options: [
+          "Parametric Estimating",
+          "Analogous Estimating",
+          "Three-Point Estimating",
+          "Bottom-Up Estimating"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "If a project activity, \"Test Software,\" cannot begin until the \"Write Code\" activity is complete, what type of dependency is this?",
+        options: [
+          "Start-to-Start (SS)",
+          "Finish-to-Start (FS)",
+          "Finish-to-Finish (FF)",
+          "Start-to-Finish (SF)"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "Which schedule compression technique involves performing activities or phases in parallel that would normally be done in sequence?",
+        options: [
+          "Crashing",
+          "Resource Leveling",
+          "Fast Tracking",
+          "Lead Time Application"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "A project has a Schedule Performance Index (SPI) of 1.2. What does this indicate?",
+        options: [
+          "The project is over budget",
+          "The project is behind schedule",
+          "The project is ahead of schedule",
+          "The project is exactly on schedule"
+        ],
+        correctIndex: 2
+      }
+    ],
+    3: [
+      {
+        prompt: "A project manager creating an early, high-level cost estimate for a new software project by comparing it to a similar project completed last year is using which technique?",
+        options: [
+          "Parametric Estimating",
+          "Bottom-Up Estimating",
+          "Analogous Estimating",
+          "Three-Point Estimating"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which cost estimation technique is considered the most accurate because it involves summing the estimates of individual work packages?",
+        options: [
+          "Analogous Estimating",
+          "Parametric Estimating",
+          "Bottom-Up Estimating",
+          "Top-Down Estimating"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "In Earned Value Management (EVM), what does a Cost Performance Index (CPI) of less than 1 indicate?",
+        options: [
+          "The project is under budget",
+          "The project is over budget",
+          "The project is ahead of schedule",
+          "The project is on budget"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "The authorized, time-phased budget used to measure and monitor a project's cost performance is known as the:",
+        options: [
+          "Activity Cost Estimate",
+          "Management Reserve",
+          "Cost Baseline",
+          "Basis of Estimates"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "What does the \"Earned Value\" (EV) metric represent?",
+        options: [
+          "The actual cost incurred for the work performed",
+          "The total budget for the entire project",
+          "The value of the work that was scheduled to be completed by a specific date",
+          "The value of the work that has actually been completed by a specific date"
+        ],
+        correctIndex: 3
+      }
+    ],
+    4: [
+      {
+        prompt: "In the Six Sigma DMAIC methodology, which phase is primarily focused on identifying the root causes of a problem or defect?",
+        options: [
+          "Define",
+          "Measure",
+          "Analyze",
+          "Improve"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which quality tool helps prioritize the \"vital few\" causes that are responsible for most of the problems, based on the 80/20 principle?",
+        options: [
+          "Control Chart",
+          "Pareto Chart",
+          "Scatter Diagram",
+          "Check Sheet"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "According to the Capability Maturity Model Integration (CMMI), a process that is unpredictable, poorly controlled, and reactive is at which maturity level?",
+        options: [
+          "Level 1 - Initial",
+          "Level 2 - Managed",
+          "Level 3 - Defined",
+          "Level 4 - Quantitatively Managed"
+        ],
+        correctIndex: 0
+      },
+      {
+        prompt: "The emphasis on preventing defects rather than detecting them through inspection is a core principle of:",
+        options: [
+          "Quality Control",
+          "Quality Assurance",
+          "Defect Repair Review",
+          "Statistical Sampling"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "Which of the following is an international standard for Quality Management Systems (QMS) that helps organizations consistently meet customer and regulatory requirements?",
+        options: [
+          "CMMI",
+          "Six Sigma",
+          "IEEE 829",
+          "ISO 9001"
+        ],
+        correctIndex: 3
+      }
+    ],
+    5: [
+      {
+        prompt: "In a RACI matrix, what is the primary role of the person who is designated as \"Accountable\"?",
+        options: [
+          "The person who physically executes the work on the task.",
+          "The person who has ultimate ownership and is answerable for the task's completion.",
+          "The person who needs to provide their input or expertise on the task.",
+          "The person who needs to be kept up-to-date on the task's progress."
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "According to Tuckman's model of team development, the \"Norming\" stage is when:",
+        options: [
+          "Team members first come together and are introduced.",
+          "Team members experience conflict and friction as they discover challenges.",
+          "The team moves beyond conflict and begins to function cohesively.",
+          "The team breaks up after the project is complete."
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which of the following is considered a \"Motivating Factor\" according to Herzberg's Two-Factor Theory?",
+        options: [
+          "Salary",
+          "Company policies",
+          "Working conditions",
+          "Achievement"
+        ],
+        correctIndex: 3
+      },
+      {
+        prompt: "In the conflict resolution matrix, which style reflects a \"WIN:LOSE\" outcome and is characterized by high assertiveness and low cooperativeness?",
+        options: [
+          "Collaborating",
+          "Accommodating",
+          "Competing",
+          "Avoiding"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "A project manager wants to visually display the amount of work allocated to each team member over the project's timeline to identify potential over-allocations. Which tool is best suited for this purpose?",
+        options: [
+          "RACI Matrix",
+          "Resource Histogram",
+          "Work Breakdown Structure",
+          "Fishbone Diagram"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "Daniel Pink's motivational theory, described as \"The Third Drive,\" is based on three intrinsic motivators: Autonomy, Mastery, and what other element?",
+        options: [
+          "Purpose",
+          "Power",
+          "Promotion",
+          "Pay"
+        ],
+        correctIndex: 0
+      },
+      {
+        prompt: "Which metric is commonly used in Agile project management to track the remaining work against time and show the progress of a team within a sprint?",
+        options: [
+          "Task Completion Rate",
+          "Planned vs. Actual Hours",
+          "Burndown/Burnup Charts",
+          "Team Velocity"
+        ],
+        correctIndex: 2
+      }
+    ],
+    6: [
+      {
+        prompt: "A project manager identifies that a potential schedule delay of three weeks could occur due to supply chain issues. How would this risk be classified?",
+        options: [
+          "Qualitative Risk",
+          "Quantitative Risk",
+          "Stakeholder Risk",
+          "Force Majeure Risk"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "To deal with the threat of a key supplier failing to deliver on time, a project manager decides to hire a second, backup supplier. Which risk response strategy does this represent?",
+        options: [
+          "Transfer",
+          "Avoid",
+          "Accept",
+          "Mitigate"
+        ],
+        correctIndex: 3
+      },
+      {
+        prompt: "A project team learns that a new technology could potentially speed up their delivery time. To ensure this happens, they assign their most skilled team members to integrate it. Which strategy for a positive risk (opportunity) is being used?",
+        options: [
+          "Exploit",
+          "Enhance",
+          "Share",
+          "Accept"
+        ],
+        correctIndex: 0
+      },
+      {
+        prompt: "Which quantitative risk analysis technique uses a model with probability distributions to simulate thousands of potential project outcomes and is useful for understanding the likelihood of meeting cost and schedule objectives?",
+        options: [
+          "Sensitivity Analysis",
+          "Decision Tree Analysis",
+          "Monte Carlo Simulation",
+          "Expected Monetary Value (EMV) Analysis"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "What is a fallback plan designed to be used for?",
+        options: [
+          "To prevent a risk from occurring in the first place.",
+          "As the primary response when a known risk event occurs.",
+          "As an alternative action if the contingency plan fails or is ineffective.",
+          "To document all identified risks in a project."
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "In qualitative risk analysis, what is the primary purpose of a Probability and Impact Matrix?",
+        options: [
+          "To calculate the exact financial cost of a risk.",
+          "To determine the quality of the data used for risk analysis.",
+          "To rank and prioritize risks by mapping their likelihood against their potential effect.",
+          "To identify which risks have the most impact using a tornado diagram."
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "A risk has a 20% chance of occurring, and if it does, it will cost the project $50,000. What is the Expected Monetary Value (EMV) of this risk?",
+        options: [
+          "$10,000",
+          "$50,000",
+          "$250,000",
+          "$40,000"
+        ],
+        correctIndex: 0
+      }
+    ],
+    7: [
+      {
+        prompt: "Which contract type is most appropriate for a project where the scope is well-defined, requirements are clear, and changes are not expected?",
+        options: [
+          "Cost-Plus Fixed Fee (CPFF)",
+          "Time & Material (T&M)",
+          "Firm Fixed-Price (FFP)",
+          "Cost-Plus Percentage of Cost (CPPC)"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "A project manager needs to gather pricing information for a standard, off-the-shelf piece of hardware where the specifications are perfectly clear. Which document should they issue?",
+        options: [
+          "Request for Information (RFI)",
+          "Request for Proposal (RFP)",
+          "Request for Quotation (RFQ)",
+          "Make-or-Buy Decision"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "In which contract type does the buyer (client) assume the most cost risk, as they agree to pay for all actual costs plus a fee?",
+        options: [
+          "Firm Fixed-Price (FFP)",
+          "Cost-Reimbursable (Cost-Plus)",
+          "Time & Material (T&M)",
+          "Purchase Order (PO)"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "What is a key activity performed during the \"Closure & Evaluation\" phase of the contract and vendor management lifecycle?",
+        options: [
+          "Evaluating vendors via an RFP/RFQ process.",
+          "Holding a kickoff meeting to align on deliverables.",
+          "Conducting a final vendor performance review and documenting lessons learned.",
+          "Monitoring vendor delivery against contractual milestones and timelines."
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "During the bid evaluation process, what is the primary purpose of assigning different weightings to the scoring criteria?",
+        options: [
+          "To ensure the vendor with the lowest price is always selected.",
+          "To make the scoring process faster and less detailed.",
+          "To reflect the relative importance of each criterion (e.g., technical fit, cost, experience) to the project's success.",
+          "To allow vendors to choose which criteria they want to be scored on."
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "A Time & Material (T&M) contract, which is often used for short-term consultancy or when the scope is undefined, is considered a hybrid of which two major contract types?",
+        options: [
+          "Fixed-Price and Cost-Reimbursable",
+          "Fixed-Price and Award Fee",
+          "Cost-Reimbursable and Incentive Fee",
+          "Purchase Order and Fixed-Price"
+        ],
+        correctIndex: 0
+      },
+      {
+        prompt: "Which document is signed by both the client and vendor to formally confirm that all deliverables have been received, reviewed, and accepted according to the contract terms?",
+        options: [
+          "Final Invoice",
+          "Lessons Learned Report",
+          "Vendor Performance Evaluation",
+          "Final Acceptance Certificate"
+        ],
+        correctIndex: 3
+      }
+    ],
+    8: [
+      {
+        prompt: "According to the four core values of the Agile Manifesto, which of the following is valued more highly than \"Processes and tools\"?",
+        options: [
+          "Comprehensive documentation",
+          "Following a plan",
+          "Contract negotiation",
+          "Individuals and interactions"
+        ],
+        correctIndex: 3
+      },
+      {
+        prompt: "In the Scrum framework, which role is responsible for owning the \"what\" and \"why\" of the product and for managing the Product Backlog?",
+        options: [
+          "Scrum Master",
+          "Product Owner",
+          "Development Team",
+          "Project Manager"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "The Kanban principle of limiting the number of tasks that can be in any one stage of the workflow at a given time is known as:",
+        options: [
+          "Visualizing the work",
+          "Managing the flow",
+          "Limiting the work in progress (WIP)",
+          "Continuous Improvement"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which Agile metric is used to measure the amount of work a team completes in a sprint, helping to forecast future capacity?",
+        options: [
+          "Cycle Time",
+          "Velocity",
+          "Lead Time",
+          "Defect Density"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "Which framework is specifically designed to help large organizations adopt and scale Agile principles and practices across multiple teams and levels?",
+        options: [
+          "Kanban",
+          "Scrum",
+          "Lean",
+          "Scaled Agile Framework (SAFe)"
+        ],
+        correctIndex: 3
+      },
+      {
+        prompt: "At the end of a sprint, the Scrum team holds a meeting to demonstrate the completed work to stakeholders and gather feedback. What is this ceremony called?",
+        options: [
+          "Sprint Retrospective",
+          "Sprint Review",
+          "Sprint Planning",
+          "Daily Scrum"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "A project that uses a traditional Waterfall model for its initial planning and requirements phase but then uses Agile sprints for development and execution is known as:",
+        options: [
+          "Agile Stage-Gate Model",
+          "Scrum@Scale Model",
+          "Agile-Waterfall Hybrid",
+          "Scrumban Model"
+        ],
+        correctIndex: 2
+      }
+    ],
+    9: [
+      {
+        prompt: "According to the PMI Code of Ethics, which core value involves taking ownership of your decisions and their consequences, and reporting unethical conduct?",
+        options: [
+          "Respect",
+          "Fairness",
+          "Honesty",
+          "Responsibility"
+        ],
+        correctIndex: 3
+      },
+      {
+        prompt: "A project manager who prioritizes the team's needs, focuses on their growth, removes obstacles, and shares power to drive engagement is demonstrating which leadership style?",
+        options: [
+          "Directive Leadership",
+          "Pacesetting Leadership",
+          "Servant Leadership",
+          "Visionary Leadership"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "In Daniel Goleman's Emotional Intelligence framework, the ability to control disruptive impulses and think before acting is known as:",
+        options: [
+          "Self-Awareness",
+          "Self-Management (Self-Regulation)",
+          "Social Awareness",
+          "Relationship Management"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "A project manager who excels at staying calm, managing stress, and showing empathy to the team during a high-pressure crisis is demonstrating which key crisis leadership competency?",
+        options: [
+          "Decisiveness Under Uncertainty",
+          "Strategic Thinking",
+          "Emotional Intelligence",
+          "Collaborative Influence"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "In the Diversity & Inclusion Matrix, which persona represents someone who is well-intentioned and supports D&I but is uninformed and may unknowingly contribute to problems?",
+        options: [
+          "The Champion",
+          "The Bystander",
+          "The Bigot",
+          "The Newbie"
+        ],
+        correctIndex: 3
+      },
+      {
+        prompt: "Which leadership style is most effective for achieving short-term goals with a highly skilled team, but can lead to stressed and unmotivated employees if used improperly?",
+        options: [
+          "Affiliative Leadership",
+          "Coaching Leadership",
+          "Pacesetting Leadership",
+          "Participative Leadership"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which tool is particularly effective for promoting ethical accountability by clarifying who is responsible, accountable, consulted, and informed for specific tasks?",
+        options: [
+          "Issue Log",
+          "RACI Matrix",
+          "Decision Log",
+          "Ethical Checklist"
+        ],
+        correctIndex: 1
+      }
+    ]
+  },
+  "Certified-Project-Management-Professional": {
+    0: [
+      {
+        prompt: "A company launches a \"Digital Transformation\" initiative that includes separate but related projects for cloud migration, CRM implementation, and employee training. This entire initiative is best described as a:",
+        options: [
+          "Project",
+          "Program",
+          "Portfolio",
+          "Work Package"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "In which of the five process groups is the project charter formally developed and authorized?",
+        options: [
+          "Planning",
+          "Executing",
+          "Initiating",
+          "Closing"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which project lifecycle model is best suited for projects with stable, well-defined requirements, such as in construction or manufacturing, where each phase is completed sequentially?",
+        options: [
+          "Agile/Adaptive Life Cycle",
+          "Iterative Life Cycle",
+          "Predictive Life Cycle (Waterfall Model)",
+          "Hybrid Life Cycle"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "What is a Work Breakdown Structure (WBS) used for in project management?",
+        options: [
+          "To show the project schedule and task durations on a bar chart",
+          "To create a hierarchical decomposition of the total scope of work",
+          "To identify the longest sequence of dependent tasks",
+          "To formally authorize the existence of a project"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "Which of the ten knowledge areas is responsible for unifying and coordinating all the various project elements to ensure they work together effectively?",
+        options: [
+          "Project Scope Management",
+          "Project Stakeholder Management",
+          "Project Integration Management",
+          "Project Communication Management"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "The \"Triple Constraint\" of project management requires balancing which three critical factors?",
+        options: [
+          "Risk, Quality, and Resources",
+          "Scope, Time, and Cost",
+          "Stakeholders, Communication, and Procurement",
+          "Planning, Execution, and Monitoring"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "The systematic execution of projects, programs, and portfolios in direct alignment with an organization's long-term goals is known as:",
+        options: [
+          "Project Closing",
+          "Strategic Delivery",
+          "Risk Management",
+          "Scope Control"
+        ],
+        correctIndex: 1
+      }
+    ],
+    1: [
+      {
+        prompt: "What is the primary purpose of a Project Charter?",
+        options: [
+          "To provide a detailed, task-by-task project schedule",
+          "To formally authorize the existence of a project and grant authority to the project manager",
+          "To act as a legal contract between the company and an external vendor",
+          "To justify the financial return on investment for the project to executives"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "Assessing if a project can be successfully implemented with current technology and technical expertise is known as what type of feasibility?",
+        options: [
+          "Financial Feasibility",
+          "Operational Feasibility",
+          "Technical Feasibility",
+          "Schedule Feasibility"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "According to the Power/Interest Grid, what is the best strategy for managing stakeholders who have high power but low interest?",
+        options: [
+          "Manage Closely",
+          "Keep Informed",
+          "Keep Satisfied",
+          "Monitor with Minimum Effort"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which document is typically created before the Project Charter to justify the need for a project by analyzing its costs, benefits, and alignment with business goals?",
+        options: [
+          "Business Case",
+          "Project Brief",
+          "Stakeholder Register",
+          "Work Breakdown Structure"
+        ],
+        correctIndex: 0
+      },
+      {
+        prompt: "In the stakeholder engagement assessment matrix, if a key stakeholder's current engagement level is \"Resistant,\" what is a recommended first action?",
+        options: [
+          "Empower them with a leading role in the project",
+          "Raise their awareness through general email newsletters",
+          "Address their concerns directly, often through one-on-one communication",
+          "Encourage them to become an advocate for the project"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "A project manager sends out a weekly email newsletter with project updates to a large group of stakeholders. What type of communication is this?",
+        options: [
+          "Interactive Communication",
+          "Pull Communication",
+          "Push Communication",
+          "Informal Communication"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which initiation document is the most detailed and comprehensive, defining the project's objectives, scope, governance, and approach for the project team and key stakeholders?",
+        options: [
+          "Project Brief",
+          "Project Charter",
+          "Project Initiation Document (PID)",
+          "Business Case"
+        ],
+        correctIndex: 2
+      }
+    ],
+    2: [
+      {
+        prompt: "Which process in project scope management involves breaking down the total scope of work into smaller, more manageable components?",
+        options: [
+          "Define Scope",
+          "Collect Requirements",
+          "Create WBS (Work Breakdown Structure)",
+          "Validate Scope"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "The uncontrolled expansion or continuous growth in a project's scope, without corresponding adjustments to time, cost, and resources, is known as:",
+        options: [
+          "Scope Validation",
+          "Scope Creep",
+          "Scope Baseline",
+          "Scope Statement"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "What is the primary purpose of the \"Validate Scope\" process?",
+        options: [
+          "To monitor and manage changes to the scope baseline",
+          "To create a detailed description of the project and product",
+          "To formalize the acceptance of completed project deliverables",
+          "To gather and document stakeholder needs and expectations"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "A project manager is creating a WBS for a new website. The top level is \"Develop a Website,\" and the next level is broken down into \"Market Research,\" \"Development,\" and \"Testing.\" This is an example of what type of WBS?",
+        options: [
+          "Process-Oriented WBS",
+          "Deliverable-Based WBS",
+          "Phase-Based WBS",
+          "Resource-Based WBS"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "What is the primary function of a Change Control Board (CCB)?",
+        options: [
+          "To conduct user acceptance testing for all project deliverables",
+          "To review, evaluate, and make formal decisions on proposed changes to the project",
+          "To assign daily tasks to the project team members",
+          "To create the initial project scope statement"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "Watching users perform their tasks to identify pain points and process gaps is an example of which requirements collection technique?",
+        options: [
+          "Interviews",
+          "Surveys",
+          "Observation",
+          "Prototyping"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "In a Work Breakdown Structure, what is the lowest level of the hierarchy that can be scheduled, costed, and assigned to a team member or group?",
+        options: [
+          "Major Deliverable",
+          "Project Title",
+          "Sub-deliverable",
+          "Work Package"
+        ],
+        correctIndex: 3
+      }
+    ],
+    3: [
+      {
+        prompt: "In the Critical Path Method (CPM), what does the \"critical path\" represent?",
+        options: [
+          "The sequence of tasks with the lowest risk",
+          "The shortest possible path through the project network",
+          "The path with the most available float or slack",
+          "The longest sequence of dependent tasks, which determines the shortest project duration"
+        ],
+        correctIndex: 3
+      },
+      {
+        prompt: "A project manager estimates that a task will take 20 days because a similar task on a previous project took 20 days. Which estimation technique is being used?",
+        options: [
+          "Parametric Estimating",
+          "Analogous Estimating",
+          "Three-Point Estimating",
+          "Bottom-Up Estimating"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "If a project activity, \"Test Software,\" cannot begin until the \"Write Code\" activity is complete, what type of dependency is this?",
+        options: [
+          "Start-to-Start (SS)",
+          "Finish-to-Start (FS)",
+          "Finish-to-Finish (FF)",
+          "Start-to-Finish (SF)"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "Which schedule compression technique involves performing activities or phases in parallel that would normally be done in sequence?",
+        options: [
+          "Crashing",
+          "Resource Leveling",
+          "Fast Tracking",
+          "Lead Time Application"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "A project has a Schedule Performance Index (SPI) of 1.2. What does this indicate?",
+        options: [
+          "The project is over budget",
+          "The project is behind schedule",
+          "The project is ahead of schedule",
+          "The project is exactly on schedule"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "A project manager adjusts the schedule to allow the \"Write User Manual\" activity to begin 5 days before the \"Finalize Software\" activity is complete. This 5-day overlap is an example of a:",
+        options: [
+          "Lag",
+          "Float",
+          "Lead",
+          "Buffer"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "On a Milestone Trend Analysis (MTA) chart, what does a consistently upward-sloping line for a milestone indicate?",
+        options: [
+          "The milestone is stable and on track",
+          "The milestone is being completed earlier than planned",
+          "The milestone is being repeatedly delayed over time",
+          "The schedule is unstable due to poor planning"
+        ],
+        correctIndex: 2
+      }
+    ],
+    4: [
+      {
+        prompt: "A project manager creating an early, high-level cost estimate for a new software project by comparing it to a similar project completed last year is using which technique?",
+        options: [
+          "Parametric Estimating",
+          "Bottom-Up Estimating",
+          "Analogous Estimating",
+          "Three-Point Estimating"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which cost estimation technique is considered the most accurate because it involves summing the estimates of individual work packages?",
+        options: [
+          "Analogous Estimating",
+          "Parametric Estimating",
+          "Bottom-Up Estimating",
+          "Top-Down Estimating"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "In Earned Value Management (EVM), what does a Cost Performance Index (CPI) of less than 1 indicate?",
+        options: [
+          "The project is under budget",
+          "The project is over budget",
+          "The project is ahead of schedule",
+          "The project is on budget"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "The authorized, time-phased budget used to measure and monitor a project's cost performance is known as the:",
+        options: [
+          "Activity Cost Estimate",
+          "Management Reserve",
+          "Cost Baseline",
+          "Basis of Estimates"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "What does the \"Earned Value\" (EV) metric represent?",
+        options: [
+          "The actual cost incurred for the work performed",
+          "The total budget for the entire project",
+          "The value of the work that was scheduled to be completed by a specific date",
+          "The value of the work that has actually been completed by a specific date"
+        ],
+        correctIndex: 3
+      },
+      {
+        prompt: "If a project's current cost performance is expected to continue, the most common formula to forecast the final project cost is the Estimate at Completion (EAC), calculated as:",
+        options: [
+          "EAC = AC + ETC",
+          "EAC = BAC / CPI",
+          "EAC = EV - PV",
+          "EAC = BAC - AC"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "A key lesson from the NASA Mars Climate Orbiter case study is that project cost losses can result from:",
+        options: [
+          "Centralized cost governance and transparency",
+          "The use of performance-linked payments with contractors",
+          "Poor coordination and communication between teams (e.g., using different units of measure)",
+          "Adopting lean budgeting and value-driven estimates"
+        ],
+        correctIndex: 2
+      }
+    ],
+    5: [
+      {
+        prompt: "In the Six Sigma DMAIC methodology, which phase is primarily focused on identifying the root causes of a problem or defect?",
+        options: [
+          "Define",
+          "Measure",
+          "Analyze",
+          "Improve"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which quality tool helps prioritize the \"vital few\" causes that are responsible for most of the problems, based on the 80/20 principle?",
+        options: [
+          "Control Chart",
+          "Pareto Chart",
+          "Scatter Diagram",
+          "Check Sheet"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "According to the Capability Maturity Model Integration (CMMI), a process that is unpredictable, poorly controlled, and reactive is at which maturity level?",
+        options: [
+          "Level 1 - Initial",
+          "Level 2 - Managed",
+          "Level 3 - Defined",
+          "Level 4 - Quantitatively Managed"
+        ],
+        correctIndex: 0
+      },
+      {
+        prompt: "The emphasis on preventing defects rather than detecting them through inspection is a core principle of:",
+        options: [
+          "Quality Control",
+          "Quality Assurance",
+          "Defect Repair Review",
+          "Statistical Sampling"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "Which of the following is an international standard for Quality Management Systems (QMS) that helps organizations consistently meet customer and regulatory requirements?",
+        options: [
+          "CMMI",
+          "Six Sigma",
+          "IEEE 829",
+          "ISO 9001"
+        ],
+        correctIndex: 3
+      }
+    ],
+    6: [
+      {
+        prompt: "In a RACI matrix, what is the primary role of the person who is designated as \"Accountable\"?",
+        options: [
+          "The person who physically executes the work on the task.",
+          "The person who has ultimate ownership and is answerable for the task's completion.",
+          "The person who needs to provide their input or expertise on the task.",
+          "The person who needs to be kept up-to-date on the task's progress."
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "According to Tuckman's model of team development, the \"Norming\" stage is when:",
+        options: [
+          "Team members first come together and are introduced.",
+          "Team members experience conflict and friction as they discover challenges.",
+          "The team moves beyond conflict and begins to function cohesively.",
+          "The team breaks up after the project is complete."
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which of the following is considered a \"Motivating Factor\" according to Herzberg's Two-Factor Theory?",
+        options: [
+          "Salary",
+          "Company policies",
+          "Working conditions",
+          "Achievement"
+        ],
+        correctIndex: 3
+      },
+      {
+        prompt: "In the conflict resolution matrix, which style reflects a \"WIN:LOSE\" outcome and is characterized by high assertiveness and low cooperativeness?",
+        options: [
+          "Collaborating",
+          "Accommodating",
+          "Competing",
+          "Avoiding"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "A project manager wants to visually display the amount of work allocated to each team member over the project's timeline to identify potential over-allocations. Which tool is best suited for this purpose?",
+        options: [
+          "RACI Matrix",
+          "Resource Histogram",
+          "Work Breakdown Structure",
+          "Fishbone Diagram"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "Daniel Pink's motivational theory, described as \"The Third Drive,\" is based on three intrinsic motivators: Autonomy, Mastery, and what other element?",
+        options: [
+          "Purpose",
+          "Power",
+          "Promotion",
+          "Pay"
+        ],
+        correctIndex: 0
+      },
+      {
+        prompt: "Which metric is commonly used in Agile project management to track the remaining work against time and show the progress of a team within a sprint?",
+        options: [
+          "Task Completion Rate",
+          "Planned vs. Actual Hours",
+          "Burndown/Burnup Charts",
+          "Team Velocity"
+        ],
+        correctIndex: 2
+      }
+    ],
+    7: [
+      {
+        prompt: "A project manager identifies that a potential schedule delay of three weeks could occur due to supply chain issues. How would this risk be classified?",
+        options: [
+          "Qualitative Risk",
+          "Quantitative Risk",
+          "Stakeholder Risk",
+          "Force Majeure Risk"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "To deal with the threat of a key supplier failing to deliver on time, a project manager decides to hire a second, backup supplier. Which risk response strategy does this represent?",
+        options: [
+          "Transfer",
+          "Avoid",
+          "Accept",
+          "Mitigate"
+        ],
+        correctIndex: 3
+      },
+      {
+        prompt: "A project team learns that a new technology could potentially speed up their delivery time. To ensure this happens, they assign their most skilled team members to integrate it. Which strategy for a positive risk (opportunity) is being used?",
+        options: [
+          "Exploit",
+          "Enhance",
+          "Share",
+          "Accept"
+        ],
+        correctIndex: 0
+      },
+      {
+        prompt: "Which quantitative risk analysis technique uses a model with probability distributions to simulate thousands of potential project outcomes and is useful for understanding the likelihood of meeting cost and schedule objectives?",
+        options: [
+          "Sensitivity Analysis",
+          "Decision Tree Analysis",
+          "Monte Carlo Simulation",
+          "Expected Monetary Value (EMV) Analysis"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "What is a fallback plan designed to be used for?",
+        options: [
+          "To prevent a risk from occurring in the first place.",
+          "As the primary response when a known risk event occurs.",
+          "As an alternative action if the contingency plan fails or is ineffective.",
+          "To document all identified risks in a project."
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "In qualitative risk analysis, what is the primary purpose of a Probability and Impact Matrix?",
+        options: [
+          "To calculate the exact financial cost of a risk.",
+          "To determine the quality of the data used for risk analysis.",
+          "To rank and prioritize risks by mapping their likelihood against their potential effect.",
+          "To identify which risks have the most impact using a tornado diagram."
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "A risk has a 20% chance of occurring, and if it does, it will cost the project $50,000. What is the Expected Monetary Value (EMV) of this risk?",
+        options: [
+          "$10,000",
+          "$50,000",
+          "$250,000",
+          "$40,000"
+        ],
+        correctIndex: 0
+      }
+    ],
+    8: [
+      {
+        prompt: "Which contract type is most appropriate for a project where the scope is well-defined, requirements are clear, and changes are not expected?",
+        options: [
+          "Cost-Plus Fixed Fee (CPFF)",
+          "Time & Material (T&M)",
+          "Firm Fixed-Price (FFP)",
+          "Cost-Plus Percentage of Cost (CPPC)"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "A project manager needs to gather pricing information for a standard, off-the-shelf piece of hardware where the specifications are perfectly clear. Which document should they issue?",
+        options: [
+          "Request for Information (RFI)",
+          "Request for Proposal (RFP)",
+          "Request for Quotation (RFQ)",
+          "Make-or-Buy Decision"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "In which contract type does the buyer (client) assume the most cost risk, as they agree to pay for all actual costs plus a fee?",
+        options: [
+          "Firm Fixed-Price (FFP)",
+          "Cost-Reimbursable (Cost-Plus)",
+          "Time & Material (T&M)",
+          "Purchase Order (PO)"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "What is a key activity performed during the \"Closure & Evaluation\" phase of the contract and vendor management lifecycle?",
+        options: [
+          "Evaluating vendors via an RFP/RFQ process.",
+          "Holding a kickoff meeting to align on deliverables.",
+          "Conducting a final vendor performance review and documenting lessons learned.",
+          "Monitoring vendor delivery against contractual milestones and timelines."
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "During the bid evaluation process, what is the primary purpose of assigning different weightings to the scoring criteria?",
+        options: [
+          "To ensure the vendor with the lowest price is always selected.",
+          "To make the scoring process faster and less detailed.",
+          "To reflect the relative importance of each criterion (e.g., technical fit, cost, experience) to the project's success.",
+          "To allow vendors to choose which criteria they want to be scored on."
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "A Time & Material (T&M) contract, which is often used for short-term consultancy or when the scope is undefined, is considered a hybrid of which two major contract types?",
+        options: [
+          "Fixed-Price and Cost-Reimbursable",
+          "Fixed-Price and Award Fee",
+          "Cost-Reimbursable and Incentive Fee",
+          "Purchase Order and Fixed-Price"
+        ],
+        correctIndex: 0
+      },
+      {
+        prompt: "Which document is signed by both the client and vendor to formally confirm that all deliverables have been received, reviewed, and accepted according to the contract terms?",
+        options: [
+          "Final Invoice",
+          "Lessons Learned Report",
+          "Vendor Performance Evaluation",
+          "Final Acceptance Certificate"
+        ],
+        correctIndex: 3
+      }
+    ],
+    9: [
+      {
+        prompt: "According to the four core values of the Agile Manifesto, which of the following is valued more highly than \"Processes and tools\"?",
+        options: [
+          "Comprehensive documentation",
+          "Following a plan",
+          "Contract negotiation",
+          "Individuals and interactions"
+        ],
+        correctIndex: 3
+      },
+      {
+        prompt: "In the Scrum framework, which role is responsible for owning the \"what\" and \"why\" of the product and for managing the Product Backlog?",
+        options: [
+          "Scrum Master",
+          "Product Owner",
+          "Development Team",
+          "Project Manager"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "The Kanban principle of limiting the number of tasks that can be in any one stage of the workflow at a given time is known as:",
+        options: [
+          "Visualizing the work",
+          "Managing the flow",
+          "Limiting the work in progress (WIP)",
+          "Continuous Improvement"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "Which Agile metric is used to measure the amount of work a team completes in a sprint, helping to forecast future capacity?",
+        options: [
+          "Cycle Time",
+          "Velocity",
+          "Lead Time",
+          "Defect Density"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "Which framework is specifically designed to help large organizations adopt and scale Agile principles and practices across multiple teams and levels?",
+        options: [
+          "Kanban",
+          "Scrum",
+          "Lean",
+          "Scaled Agile Framework (SAFe)"
+        ],
+        correctIndex: 3
+      },
+      {
+        prompt: "At the end of a sprint, the Scrum team holds a meeting to demonstrate the completed work to stakeholders and gather feedback. What is this ceremony called?",
+        options: [
+          "Sprint Retrospective",
+          "Sprint Review",
+          "Sprint Planning",
+          "Daily Scrum"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "A project that uses a traditional Waterfall model for its initial planning and requirements phase but then uses Agile sprints for development and execution is known as:",
+        options: [
+          "Agile Stage-Gate Model",
+          "Scrum@Scale Model",
+          "Agile-Waterfall Hybrid",
+          "Scrumban Model"
+        ],
+        correctIndex: 2
+      }
+    ],
+    10: [
+      {
+        prompt: "What is natural language processing (NLP) and how can it benefit project managers?",
+        options: [
+          "A programming language used to create project management software",
+          "A technology that helps computers understand and process human language",
+          "A method for scheduling project tasks and dependencies",
+          "A framework for managing cross-cultural communication in global projects"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "Which machine learning technique is most commonly used for predictive analytics in project management?",
+        options: [
+          "Unsupervised learning algorithms",
+          "Reinforcement learning models",
+          "Supervised learning algorithms",
+          "Deep learning neural networks"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "What is algorithmic bias and why should project managers be concerned about it?",
+        options: [
+          "A technical error that occurs when algorithms process too much data",
+          "The tendency for AI systems to perpetuate unfair or discriminatory outcomes based on biased training data",
+          "A programming mistake that causes software applications to crash",
+          "The preference of algorithms to favor certain file formats over others"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "Which of the following is a key principle of effective data governance in project management?",
+        options: [
+          "Collecting as much data as possible regardless of relevance",
+          "Storing all project data in a single, centralized database",
+          "Ensuring data quality, security, and compliance throughout the project lifecycle",
+          "Using only proprietary data formats to maintain competitive advantage"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "How can AI-powered tools assist project managers in risk assessment?",
+        options: [
+          "By eliminating all project risks through automated prevention",
+          "By replacing human judgment entirely in risk evaluation",
+          "By analyzing historical data patterns to identify potential risks and their likelihood",
+          "By guaranteeing project success through predictive modeling"
+        ],
+        correctIndex: 2
+      },
+      {
+        prompt: "What ethical consideration should project managers keep in mind when implementing AI solutions?",
+        options: [
+          "AI tools should always be used without human oversight to maximize efficiency",
+          "Transparency and accountability in AI decision-making processes",
+          "Cost reduction should be the primary factor in AI implementation",
+          "AI systems should be kept secret from stakeholders to maintain competitive advantage"
+        ],
+        correctIndex: 1
+      },
+      {
+        prompt: "Which AI application is most beneficial for resource allocation in project management?",
+        options: [
+          "Chatbots for customer service interactions",
+          "Image recognition for document scanning",
+          "Optimization algorithms for efficient resource distribution",
+          "Voice assistants for meeting scheduling"
+        ],
+        correctIndex: 2
+      }
+    ]
+  }
 };
 
 // Generate upcoming live classes for a course
@@ -3287,8 +5309,12 @@ async function seed() {
       console.log('All collections cleared');
     } else {
       console.log(
-        `Selective seeding – keeping existing data; will upsert course “${courseToSeed}”`
+        `Selective seeding – keeping existing data; will upsert course "${courseToSeed}"`
       );
+      // Delete existing quizzes for this specific course
+      console.log(`Deleting existing quizzes for course: ${courseToSeed}`);
+      await Quiz.deleteMany({ courseSlug: courseToSeed });
+      console.log(`Existing quizzes deleted for ${courseToSeed}`);
     }
     
     if (!courseToSeed) {
