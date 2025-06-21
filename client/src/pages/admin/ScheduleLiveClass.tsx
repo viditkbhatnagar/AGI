@@ -135,13 +135,17 @@ export default function ScheduleLiveClass() {
     try {
       const token = localStorage.getItem('token');
       for (const sess of sessions) {
+        // Convert datetime-local strings to ISO strings (UTC)
+        const startTime = sess.startTime ? new Date(sess.startTime).toISOString() : '';
+        const endTime = sess.endTime ? new Date(sess.endTime).toISOString() : '';
+        
         const payload = {
           ...form,
           title: sess.title,
           description: sess.description,
           meetLink: form.meetLink,
-          startTime: sess.startTime,
-          endTime: sess.endTime,
+          startTime,
+          endTime,
           studentIds: form.studentIds
         };
         const res = await fetch('/api/live-classes', {

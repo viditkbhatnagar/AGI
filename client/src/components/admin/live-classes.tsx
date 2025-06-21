@@ -119,7 +119,26 @@ export function LiveClasses() {
 
   // Populate form when data arrives
   useEffect(() => {
-    if (editData) setEditForm(editData);
+    if (editData) {
+      // Convert UTC timestamps to local datetime-local format for the input fields
+      const formatForDatetimeLocal = (utcString: string) => {
+        const date = new Date(utcString);
+        // Get local date/time and format as YYYY-MM-DDTHH:MM
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+      };
+      
+      const convertedData = {
+        ...editData,
+        startTime: editData.startTime ? formatForDatetimeLocal(editData.startTime) : '',
+        endTime: editData.endTime ? formatForDatetimeLocal(editData.endTime) : '',
+      };
+      setEditForm(convertedData);
+    }
   }, [editData]);
 
   // Mutation to update live class
@@ -614,7 +633,13 @@ const deleteMutation = useMutation({
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                updateMutation.mutate(editForm);
+                // Convert datetime-local strings to ISO strings (UTC) before updating
+                const updatedForm = {
+                  ...editForm,
+                  startTime: editForm.startTime ? new Date(editForm.startTime).toISOString() : editForm.startTime,
+                  endTime: editForm.endTime ? new Date(editForm.endTime).toISOString() : editForm.endTime,
+                };
+                updateMutation.mutate(updatedForm);
               }}
               className="space-y-4"
             >
