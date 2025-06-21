@@ -40,10 +40,11 @@ export const createLiveClass = async (req: Request, res: Response) => {
     
     await newLiveClass.save();
 
-    // Utility formats
+    // Utility formats - format for Gulf Standard Time (GMT+4)
     const whenPretty = new Date(startTime).toLocaleString('en-US', {
       dateStyle: 'long',
       timeStyle: 'short',
+      timeZone: 'Asia/Dubai', // Gulf Standard Time
     });
 
     // Google‑Calendar share link (UTC times, basic template)
@@ -115,7 +116,7 @@ export const createLiveClass = async (req: Request, res: Response) => {
             const htmlBase = renderLiveClassHtml({
               name: student.name,
               title,
-              startTime,
+              startTime: new Date(startTime),
               meetLink,
             });
 

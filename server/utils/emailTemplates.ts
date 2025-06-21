@@ -136,6 +136,7 @@ export function renderLiveClassHtml({
   const when = new Date(startTime).toLocaleString('en-US', {
     dateStyle: 'long',
     timeStyle: 'short',
+    timeZone: 'Asia/Dubai', // Gulf Standard Time (GMT+4)
   });
 
   return dedent/*html*/ `
