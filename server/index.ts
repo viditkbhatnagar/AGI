@@ -5,6 +5,7 @@ import os from "os";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { connectDB } from "./db";
+import { startReminderService } from "./services/reminderService";
 
 // ─── CORS ──────────────────────────────────────────────────────────────
 /**
@@ -99,6 +100,9 @@ app.use((req, res, next) => {
   // Connect to MongoDB first
   await connectDB();
   console.log('Database connection established');
+  
+  // Start the email reminder service
+  startReminderService();
   
   const server = await registerRoutes(app);
 

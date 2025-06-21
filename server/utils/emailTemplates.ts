@@ -207,6 +207,309 @@ export function renderLiveClassHtml({
   `;
 }
 
+export function renderLiveClassUpdateHtml({
+  name,
+  title,
+  oldStartTime,
+  newStartTime,
+  meetLink,
+}: {
+  name: string;
+  title: string;
+  oldStartTime: Date;
+  newStartTime: Date;
+  meetLink: string;
+}) {
+  const oldWhen = new Date(oldStartTime).toLocaleString('en-US', {
+    dateStyle: 'long',
+    timeStyle: 'short',
+    timeZone: 'Asia/Dubai', // Gulf Standard Time (GMT+4)
+  });
+
+  const newWhen = new Date(newStartTime).toLocaleString('en-US', {
+    dateStyle: 'long',
+    timeStyle: 'short',
+    timeZone: 'Asia/Dubai', // Gulf Standard Time (GMT+4)
+  });
+
+  return dedent/*html*/ `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width,initial-scale=1"/>
+      <title>Live Class Updated</title>
+      <link href="https://fonts.googleapis.com/css?family=Inter:400,700|Noto+Serif:700" rel="stylesheet">
+      <style>
+        body{margin:0;background:#f7f7f7;font-family:Inter,Arial,sans-serif}
+        .row{width:100%;max-width:700px;margin:0 auto;background:#fff}
+        .pad{padding:25px}
+        h1,h2{font-family:'Noto Serif',Georgia,serif;margin:0 0 15px}
+        h1{color:${headerColor};font-size:30px}
+        p{line-height:1.6;margin:0 0 15px;font-size:16px;color:#201f42}
+        .btn{display:inline-block;background:#10b981;color:#fff !important;padding:12px 30px;border-radius:4px;text-decoration:none;font-family:'Noto Serif',Georgia,serif;font-size:16px}
+        .cal{background:${accentRed}}
+        .muted{font-size:13px;color:#6b7280}
+        .hdr{background:${headerBlue}}
+        .time-change{background:#fef3c7;border-left:4px solid #f59e0b;padding:15px;margin:15px 0;border-radius:4px}
+        .old-time{text-decoration:line-through;color:#ef4444;font-weight:bold}
+        .new-time{color:#10b981;font-weight:bold}
+        @media(prefers-color-scheme:dark){
+          body{background:#1f2937}
+          .row{background:#111827}
+          p,.muted{color:#d1d5db}
+          h1{color:#f3f4f6}
+          .btn{background:#34d399}
+          .hdr{background:${headerBlueDark}}
+          .cal{background:${accentRed}}
+        }
+      </style>
+    </head>
+    <body>
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f7f7f7">
+        <tr><td style="height:20px"></td></tr>
+        <tr>
+          <td>
+            <table class="row" role="presentation" cellspacing="0" cellpadding="0">
+              <!-- Logo row -->
+              <tr>
+                <td style="background:#f7f7f7;text-align:center;padding:25px 0">
+                  <img src="cid:agiLogo" alt="American Global Institute" style="height:80px">
+                </td>
+              </tr>
+              <tr>
+                <td class="pad hdr" style="background:${headerBlue} url('https://d1oco4z2z1fhwp.cloudfront.net/templates/default/7841/Header-bg.png') no-repeat center/cover;color:#fff">
+                </td>
+              </tr>
+              <tr><td class="pad" style="background:#efeef4;text-align:center">
+                <h1>⏰ Live Class Time Updated</h1>
+              </td></tr>
+              <tr><td class="pad">
+                <p>Hi ${name || 'Student'},</p>
+                <p>The timing for your live class <strong>"${title}"</strong> has been updated.</p>
+                
+                <div class="time-change">
+                  <p style="margin:0 0 10px"><strong>Previous Time:</strong></p>
+                  <p style="margin:0 0 15px" class="old-time">${oldWhen}</p>
+                  
+                  <p style="margin:0 0 10px"><strong>New Time:</strong></p>
+                  <p style="margin:0" class="new-time">${newWhen}</p>
+                </div>
+                
+                <p>Please update your calendar accordingly. We apologize for any inconvenience.</p>
+                
+                <p><a href="${meetLink}" class="btn" target="_blank">Join the class</a></p>
+                <p><a href="{{ADD_TO_CAL}}" class="btn cal" target="_blank">Add to Google Calendar</a></p>
+                <p class="muted">If the buttons don't work, copy &amp; paste this link:<br/>${meetLink}</p>
+              </td></tr>
+              <tr><td class="pad" style="background:#201f42;color:#fff;text-align:center;font-size:13px">
+                © ${new Date().getFullYear()} American Global Institute, All rights reserved.
+              </td></tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `;
+}
+
+export function renderLiveClassCancellationHtml({
+  name,
+  title,
+  startTime,
+}: {
+  name: string;
+  title: string;
+  startTime: Date;
+}) {
+  const when = new Date(startTime).toLocaleString('en-US', {
+    dateStyle: 'long',
+    timeStyle: 'short',
+    timeZone: 'Asia/Dubai', // Gulf Standard Time (GMT+4)
+  });
+
+  return dedent/*html*/ `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width,initial-scale=1"/>
+      <title>Live Class Cancelled</title>
+      <link href="https://fonts.googleapis.com/css?family=Inter:400,700|Noto+Serif:700" rel="stylesheet">
+      <style>
+        body{margin:0;background:#f7f7f7;font-family:Inter,Arial,sans-serif}
+        .row{width:100%;max-width:700px;margin:0 auto;background:#fff}
+        .pad{padding:25px}
+        h1,h2{font-family:'Noto Serif',Georgia,serif;margin:0 0 15px}
+        h1{color:${headerColor};font-size:30px}
+        p{line-height:1.6;margin:0 0 15px;font-size:16px;color:#201f42}
+        .muted{font-size:13px;color:#6b7280}
+        .hdr{background:${headerBlue}}
+        .cancellation-notice{background:#fef2f2;border-left:4px solid #ef4444;padding:15px;margin:15px 0;border-radius:4px}
+        .cancelled-time{color:#ef4444;font-weight:bold}
+        @media(prefers-color-scheme:dark){
+          body{background:#1f2937}
+          .row{background:#111827}
+          p,.muted{color:#d1d5db}
+          h1{color:#f3f4f6}
+          .hdr{background:${headerBlueDark}}
+        }
+      </style>
+    </head>
+    <body>
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f7f7f7">
+        <tr><td style="height:20px"></td></tr>
+        <tr>
+          <td>
+            <table class="row" role="presentation" cellspacing="0" cellpadding="0">
+              <!-- Logo row -->
+              <tr>
+                <td style="background:#f7f7f7;text-align:center;padding:25px 0">
+                  <img src="cid:agiLogo" alt="American Global Institute" style="height:80px">
+                </td>
+              </tr>
+              <tr>
+                <td class="pad hdr" style="background:${headerBlue} url('https://d1oco4z2z1fhwp.cloudfront.net/templates/default/7841/Header-bg.png') no-repeat center/cover;color:#fff">
+                </td>
+              </tr>
+              <tr><td class="pad" style="background:#efeef4;text-align:center">
+                <h1>❌ Live Class Cancelled</h1>
+              </td></tr>
+              <tr><td class="pad">
+                <p>Hi ${name || 'Student'},</p>
+                <p>We regret to inform you that the following live class has been cancelled:</p>
+                
+                <div class="cancellation-notice">
+                  <p style="margin:0 0 10px"><strong>Class:</strong> ${title}</p>
+                  <p style="margin:0" class="cancelled-time"><strong>Scheduled Time:</strong> ${when}</p>
+                </div>
+                
+                <p>We apologize for any inconvenience this may cause. If you have any questions, please contact our support team.</p>
+                
+                <p>We will notify you as soon as a new session is scheduled.</p>
+              </td></tr>
+              <tr><td class="pad" style="background:#201f42;color:#fff;text-align:center;font-size:13px">
+                © ${new Date().getFullYear()} American Global Institute, All rights reserved.
+              </td></tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `;
+}
+
+export function renderLiveClassReminderHtml({
+  name,
+  title,
+  startTime,
+  meetLink,
+}: {
+  name: string;
+  title: string;
+  startTime: Date;
+  meetLink: string;
+}) {
+  const when = new Date(startTime).toLocaleString('en-US', {
+    dateStyle: 'long',
+    timeStyle: 'short',
+    timeZone: 'Asia/Dubai', // Gulf Standard Time (GMT+4)
+  });
+
+  return dedent/*html*/ `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width,initial-scale=1"/>
+      <title>Live Class Starting Soon</title>
+      <link href="https://fonts.googleapis.com/css?family=Inter:400,700|Noto+Serif:700" rel="stylesheet">
+      <style>
+        body{margin:0;background:#f7f7f7;font-family:Inter,Arial,sans-serif}
+        .row{width:100%;max-width:700px;margin:0 auto;background:#fff}
+        .pad{padding:25px}
+        h1,h2{font-family:'Noto Serif',Georgia,serif;margin:0 0 15px}
+        h1{color:${headerColor};font-size:30px}
+        p{line-height:1.6;margin:0 0 15px;font-size:16px;color:#201f42}
+        .btn{display:inline-block;background:#10b981;color:#fff !important;padding:12px 30px;border-radius:4px;text-decoration:none;font-family:'Noto Serif',Georgia,serif;font-size:16px}
+        .cal{background:${accentRed}}
+        .muted{font-size:13px;color:#6b7280}
+        .hdr{background:${headerBlue}}
+        .reminder-notice{background:#fef3c7;border-left:4px solid #f59e0b;padding:15px;margin:15px 0;border-radius:4px}
+        .urgent-time{color:#f59e0b;font-weight:bold;font-size:18px}
+        .pulse{animation:pulse 2s infinite}
+        @keyframes pulse{0%{opacity:1}50%{opacity:0.7}100%{opacity:1}}
+        @media(prefers-color-scheme:dark){
+          body{background:#1f2937}
+          .row{background:#111827}
+          p,.muted{color:#d1d5db}
+          h1{color:#f3f4f6}
+          .btn{background:#34d399}
+          .hdr{background:${headerBlueDark}}
+          .cal{background:${accentRed}}
+        }
+      </style>
+    </head>
+    <body>
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f7f7f7">
+        <tr><td style="height:20px"></td></tr>
+        <tr>
+          <td>
+            <table class="row" role="presentation" cellspacing="0" cellpadding="0">
+              <!-- Logo row -->
+              <tr>
+                <td style="background:#f7f7f7;text-align:center;padding:25px 0">
+                  <img src="cid:agiLogo" alt="American Global Institute" style="height:80px">
+                </td>
+              </tr>
+              <tr>
+                <td class="pad hdr" style="background:${headerBlue} url('https://d1oco4z2z1fhwp.cloudfront.net/templates/default/7841/Header-bg.png') no-repeat center/cover;color:#fff">
+                </td>
+              </tr>
+              <tr><td class="pad" style="background:#efeef4;text-align:center">
+                <h1 class="pulse">🔔 Live Class Starting Soon!</h1>
+              </td></tr>
+              <tr><td class="pad">
+                <p>Hi ${name || 'Student'},</p>
+                <p>This is a friendly reminder that your live class is starting in <strong>30 minutes</strong>!</p>
+                
+                <div class="reminder-notice">
+                  <p style="margin:0 0 10px"><strong>Class:</strong> ${title}</p>
+                  <p style="margin:0" class="urgent-time"><strong>Starting at:</strong> ${when}</p>
+                </div>
+                
+                <p>Please make sure you have:</p>
+                <ul style="margin:0 0 15px;padding-left:20px">
+                  <li>A stable internet connection</li>
+                  <li>Your camera and microphone ready</li>
+                  <li>Course materials nearby</li>
+                  <li>A quiet environment for learning</li>
+                </ul>
+                
+                <p style="text-align:center;margin:25px 0">
+                  <a href="${meetLink}" class="btn" target="_blank" style="font-size:18px;padding:15px 40px">
+                    🚀 Join Class Now
+                  </a>
+                </p>
+                
+                <p class="muted">If you're having trouble joining, copy and paste this link into your browser:<br/>${meetLink}</p>
+                
+                <p>See you in class!</p>
+              </td></tr>
+              <tr><td class="pad" style="background:#201f42;color:#fff;text-align:center;font-size:13px">
+                © ${new Date().getFullYear()} American Global Institute, All rights reserved.
+              </td></tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `;
+}
+
 export function welcomeAttachments() {
   const heroPath = path.join(
     __dirname,

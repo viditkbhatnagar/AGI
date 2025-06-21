@@ -5,9 +5,31 @@ import { LiveClass } from '../models/liveclass';
 import { Course } from '../models/course';
 import { Student } from '../models/student';
 import { Enrollment } from '../models/enrollment';
-import { renderLiveClassHtml } from '../utils/emailTemplates';
+import { renderLiveClassHtml, renderLiveClassUpdateHtml, renderLiveClassCancellationHtml, renderLiveClassReminderHtml } from '../utils/emailTemplates';
 import path from 'path';
 import ics from 'ics';
+
+// Helper function to create email transporter
+const createEmailTransporter = () => {
+  return nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT),
+    secure: process.env.SMTP_SECURE === 'true',
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+};
+
+// Helper function to get students with emails for a live class
+const getStudentsWithEmails = async (studentIds: mongoose.Types.ObjectId[]) => {
+  const students = await Student.find({ _id: { $in: studentIds } })
+    .populate({ path: 'userId', select: 'email' })
+    .select('name userId');
+  
+  return students.filter((s: any) => s.userId?.email);
+};
 
 // Create a new live class
 export const createLiveClass = async (req: Request, res: Response) => {
@@ -266,6 +288,19 @@ export const updateLiveClass = async (req: Request, res: Response) => {
     if (!liveClass) {
       return res.status(404).json({ message: 'Live class not found' });
     }
+
+    // Store original values for email comparison
+    const originalStartTime = liveClass.startTime;
+    const originalEndTime = liveClass.endTime;
+    const originalStudentIds = [...liveClass.studentIds];
+    
+    // Check if timing is being changed
+    const timingChanged = startTime && (
+      new Date(startTime).getTime() !== originalStartTime.getTime() ||
+      (endTime && new Date(endTime).getTime() !== originalEndTime.getTime())
+    );
+
+
     
     // Update fields
     if (title) liveClass.title = title;
@@ -282,6 +317,74 @@ export const updateLiveClass = async (req: Request, res: Response) => {
     }
     
     await liveClass.save();
+
+    // Send email notification if timing was changed
+    if (timingChanged) {
+      try {
+        const students = await getStudentsWithEmails(originalStudentIds);
+        
+        if (students.length > 0) {
+          const transporter = createEmailTransporter();
+
+          // Format times for email
+          const oldWhen = originalStartTime.toLocaleString('en-US', {
+            dateStyle: 'long',
+            timeStyle: 'short',
+            timeZone: 'Asia/Dubai',
+          });
+          
+          const newWhen = new Date(startTime).toLocaleString('en-US', {
+            dateStyle: 'long',
+            timeStyle: 'short',
+            timeZone: 'Asia/Dubai',
+          });
+
+          // Google Calendar link for new time
+          const fmt = (d: Date) =>
+            d.toISOString().replace(/[-:]|\.000Z/g, '').slice(0, 15) + 'Z';
+          const addToCal = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
+            liveClass.title
+          )}&details=${encodeURIComponent(
+            `Join link: ${liveClass.meetLink}`
+          )}&location=${encodeURIComponent(
+            'Online'
+          )}&dates=${fmt(new Date(startTime))}/${fmt(new Date(endTime || startTime))}`;
+
+          await Promise.all(
+            students.map((student: any) => {
+              const htmlBase = renderLiveClassUpdateHtml({
+                name: student.name,
+                title: liveClass.title,
+                oldStartTime: originalStartTime,
+                newStartTime: new Date(startTime),
+                meetLink: liveClass.meetLink,
+              });
+
+              const html = htmlBase.replace('{{ADD_TO_CAL}}', addToCal);
+
+              return transporter.sendMail({
+                from: process.env.SMTP_FROM,
+                to: student.userId.email,
+                subject: `Live Class Time Updated: ${liveClass.title}`,
+                text: `Hi ${student.name || 'Student'},\n\nThe timing for your live class "${liveClass.title}" has been updated.\n\nPrevious Time: ${oldWhen}\nNew Time: ${newWhen}\n\nJoin: ${liveClass.meetLink}\nAdd to calendar: ${addToCal}\n\nCheers,\nAGI.online`,
+                html,
+                attachments: [
+                  {
+                    filename: 'logo.png',
+                    path: path.resolve('client/src/components/layout/AGI Logo.png'),
+                    cid: 'agiLogo',
+                  },
+                ],
+              });
+            })
+          );
+
+          console.log(`✅ Time update emails sent to ${students.length} students for class: ${liveClass.title}`);
+        }
+      } catch (mailError) {
+        console.error('Error sending live class update emails:', mailError);
+      }
+    }
     
     res.status(200).json({
       message: 'Live class updated successfully',
@@ -320,6 +423,55 @@ export const deleteLiveClass = async (req: Request, res: Response) => {
     if (!liveClass) {
       return res.status(404).json({ message: 'Live class not found' });
     }
+
+    // Store class details before deletion for email
+    const classTitle = liveClass.title;
+    const classStartTime = liveClass.startTime;
+    const classStudentIds = [...liveClass.studentIds];
+    
+    // Send cancellation emails before deleting
+    try {
+      const students = await getStudentsWithEmails(classStudentIds);
+      
+      if (students.length > 0) {
+        const transporter = createEmailTransporter();
+
+        await Promise.all(
+          students.map((student: any) => {
+            const html = renderLiveClassCancellationHtml({
+              name: student.name,
+              title: classTitle,
+              startTime: classStartTime,
+            });
+
+            const whenPretty = classStartTime.toLocaleString('en-US', {
+              dateStyle: 'long',
+              timeStyle: 'short',
+              timeZone: 'Asia/Dubai',
+            });
+
+            return transporter.sendMail({
+              from: process.env.SMTP_FROM,
+              to: student.userId.email,
+              subject: `Live Class Cancelled: ${classTitle}`,
+              text: `Hi ${student.name || 'Student'},\n\nWe regret to inform you that the live class "${classTitle}" scheduled for ${whenPretty} has been cancelled.\n\nWe apologize for any inconvenience. We will notify you as soon as a new session is scheduled.\n\nCheers,\nAGI.online`,
+              html,
+              attachments: [
+                {
+                  filename: 'logo.png',
+                  path: path.resolve('client/src/components/layout/AGI Logo.png'),
+                  cid: 'agiLogo',
+                },
+              ],
+            });
+          })
+        );
+
+        console.log(`✅ Cancellation emails sent to ${students.length} students for class: ${classTitle}`);
+      }
+    } catch (mailError) {
+      console.error('Error sending live class cancellation emails:', mailError);
+    }
     
     await LiveClass.deleteOne({ _id: id });
     
@@ -329,3 +481,5 @@ export const deleteLiveClass = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+
