@@ -292,8 +292,8 @@ const heatmapData = useMemo(() => {
         </CardContent>
       </Card>
 
-      {/* Calendar, Pathway Breakdown & Active Students Heat‑map */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+      {/* Calendar & Pathway Breakdown in 2x2 format */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Calendar Card */}
         <Card className="overflow-hidden">
           <div className="bg-[#8FA0D8] p-3 rounded-t-lg">
@@ -367,27 +367,27 @@ const heatmapData = useMemo(() => {
             </div>
           </CardContent>
         </Card>
-
-        {/* Active Students by Course Heat‑map */}
-        <Card>
-          <div className="bg-[#8FA0D8] p-3 rounded-t-lg">
-            <h3 className="text-[#0B0829] text-lg font-medium">Active Students by Course</h3>
-          </div>
-          <CardContent className="pt-6 border-t border-gray-200">
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={heatmapData} layout="vertical" margin={{ left: 60 }}>
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                <XAxis type="number" />
-                <YAxis dataKey="name" type="category" width={150} />
-                <RechartsTooltip />
-                <Bar dataKey="notStarted" stackId="a" fill="#d1d5db" name="Not Started" />
-                <Bar dataKey="inProgress" stackId="a" fill="#fbbf24" name="In Progress" />
-                <Bar dataKey="completed" stackId="a" fill="#4ade80" name="Completed" />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
       </div>
+
+      {/* Active Students by Course - Full Width */}
+      <Card className="mb-6">
+        <div className="bg-[#8FA0D8] p-3 rounded-t-lg">
+          <h3 className="text-[#0B0829] text-lg font-medium">Active Students by Course</h3>
+        </div>
+        <CardContent className="pt-6 border-t border-gray-200">
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart data={heatmapData} layout="vertical" margin={{ left: 150 }}>
+              <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+              <XAxis type="number" />
+              <YAxis dataKey="name" type="category" width={200} />
+              <RechartsTooltip />
+              <Bar dataKey="notStarted" stackId="a" fill="#d1d5db" name="Not Started" />
+              <Bar dataKey="inProgress" stackId="a" fill="#fbbf24" name="In Progress" />
+              <Bar dataKey="completed" stackId="a" fill="#4ade80" name="Completed" />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
       
       {/* Enrollment Trend & Progress Snapshot */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">

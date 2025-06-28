@@ -132,11 +132,13 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
             <Menu className="h-8 w-8 text-[#375BBE]" />
           </Button>
 
-          <img
-            src={logo}
-            alt="AGI Logo"
-            className="h-16 md:h-20 lg:h-22 w-auto"
-          />
+          <Link href={userRole === "admin" ? "/admin" : "/student"}>
+            <img
+              src={logo}
+              alt="AGI Logo"
+              className="h-16 md:h-20 lg:h-22 w-auto cursor-pointer hover:opacity-90 transition-opacity"
+            />
+          </Link>
 
           <nav className="hidden md:flex space-x-8 lg:space-x-12 mb-1">
             {links.map((link) => (

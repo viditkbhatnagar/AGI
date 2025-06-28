@@ -229,27 +229,68 @@ export function AdminRecordings() {
   // Removed formatFileSize and formatDuration since we no longer store file info
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Recordings Management</h1>
-        <p className="text-muted-foreground">
-          Upload and manage course recordings for students
-        </p>
+    <div className="space-y-8">
+      {/* Enhanced Header Section */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 rounded-xl border">
+        <div className="relative p-8">
+          <div className="flex items-start justify-between">
+            <div className="space-y-1">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <FileVideo className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <h1 className="text-3xl font-bold tracking-tight">Recordings Management</h1>
+                  <p className="text-lg text-muted-foreground">
+                    Upload and manage course recordings for students
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            {/* Quick Stats */}
+            <div className="hidden md:flex items-center gap-6">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">{recordings.length}</div>
+                <div className="text-sm text-muted-foreground">Total Recordings</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600">
+                  {recordings.filter((r: Recording) => r.isVisible).length}
+                </div>
+                <div className="text-sm text-muted-foreground">Visible</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-amber-600">
+                  {recordings.filter((r: Recording) => !r.isVisible).length}
+                </div>
+                <div className="text-sm text-muted-foreground">Hidden</div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Background Decoration */}
+          <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 opacity-10">
+            <FileVideo className="w-full h-full" />
+          </div>
+        </div>
       </div>
 
       {/* Upload Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Upload className="h-5 w-5" />
-            Add New Recording
+      <Card className="border-2 border-dashed border-primary/20 hover:border-primary/40 transition-colors">
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Upload className="h-4 w-4 text-primary" />
+            </div>
+            <span className="text-xl">Add New Recording</span>
           </CardTitle>
-          <CardDescription>
-            Add Google Drive video recordings for courses
+          <CardDescription className="text-base">
+            Upload Google Drive video recordings to make them available for students
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleUpload} className="space-y-4">
+        <CardContent className="pt-6">
+          <form onSubmit={handleUpload} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="course">Course *</Label>
@@ -330,12 +371,12 @@ export function AdminRecordings() {
               </p>
             </div>
 
-            <div className="flex gap-2">
-              <Button type="submit" disabled={isUploading || !uploadForm.fileUrl}>
+            <div className="flex gap-3 pt-2">
+              <Button type="submit" disabled={isUploading || !uploadForm.fileUrl} className="px-6">
                 {isUploading ? 'Creating...' : 'Add Recording'}
               </Button>
-              <Button type="button" variant="outline" onClick={resetUploadForm}>
-                Reset
+              <Button type="button" variant="outline" onClick={resetUploadForm} className="px-6">
+                Reset Form
               </Button>
             </div>
           </form>
@@ -343,39 +384,44 @@ export function AdminRecordings() {
       </Card>
 
       {/* Filters Section */}
-      <Card>
-        <CardHeader>
+      <Card className="shadow-sm">
+        <CardHeader className="pb-4">
           <CardTitle className="flex items-center justify-between">
-            <span className="flex items-center gap-2">
-              <Filter className="h-5 w-5" />
-              Filters & Search
+            <span className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                <Filter className="h-4 w-4 text-blue-600" />
+              </div>
+              <span className="text-xl">Filters & Search</span>
             </span>
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setShowFilters(!showFilters)}
+                className="gap-2"
               >
+                <Filter className="h-4 w-4" />
                 {showFilters ? 'Hide Filters' : 'Show Filters'}
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={clearFilters}
+                className="gap-2"
               >
-                <X className="h-4 w-4 mr-1" />
-                Clear
+                <X className="h-4 w-4" />
+                Clear All
               </Button>
             </div>
           </CardTitle>
         </CardHeader>
         
         {showFilters && (
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {/* Course Filter */}
               <div className="space-y-2">
-                <Label>Course</Label>
+                <Label className="text-sm font-medium">Course</Label>
                 <Select 
                   value={filters.courseSlug} 
                   onValueChange={(value) => setFilters(prev => ({ ...prev, courseSlug: value }))}
@@ -396,35 +442,37 @@ export function AdminRecordings() {
 
               {/* Title Search */}
               <div className="space-y-2">
-                <Label>Search Title</Label>
+                <Label className="text-sm font-medium">Search Title</Label>
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
-                    placeholder="Search by title..."
+                    placeholder="Search recordings..."
                     value={filters.titleSearch}
                     onChange={(e) => setFilters(prev => ({ ...prev, titleSearch: e.target.value }))}
-                    className="pl-9"
+                    className="pl-10 h-10"
                   />
                 </div>
               </div>
 
                              {/* Date Added */}
                <div className="space-y-2">
-                 <Label>Date Added</Label>
+                 <Label className="text-sm font-medium">Date Added</Label>
                  <Input
                    type="date"
                    value={filters.dateAdded}
                    onChange={(e) => setFilters(prev => ({ ...prev, dateAdded: e.target.value }))}
+                   className="h-10"
                  />
                </div>
 
                {/* Class Date */}
                <div className="space-y-2">
-                 <Label>Class Date</Label>
+                 <Label className="text-sm font-medium">Class Date</Label>
                  <Input
                    type="date"
                    value={filters.classDate}
                    onChange={(e) => setFilters(prev => ({ ...prev, classDate: e.target.value }))}
+                   className="h-10"
                  />
                </div>
             </div>
@@ -433,29 +481,40 @@ export function AdminRecordings() {
       </Card>
 
       {/* Recordings List */}
-      <Card>
-        <CardHeader>
+      <Card className="shadow-sm">
+        <CardHeader className="pb-6">
           <CardTitle className="flex items-center justify-between">
-            <span className="flex items-center gap-2">
-              <FileVideo className="h-5 w-5" />
-              Course Recordings
+            <span className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
+                <FileVideo className="h-4 w-4 text-green-600" />
+              </div>
+              <span className="text-xl">Course Recordings</span>
             </span>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-sm text-muted-foreground bg-slate-50 px-3 py-1 rounded-full">
               Showing {paginatedRecordings.length} of {filteredAndSortedRecordings.length} recordings
             </div>
           </CardTitle>
-          <CardDescription>
-            Manage existing recordings (sorted by latest first)
+          <CardDescription className="text-base">
+            Manage and organize your course recordings (sorted by latest first)
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           {recordingsLoading ? (
-            <div className="flex justify-center p-8">
+            <div className="flex flex-col items-center justify-center p-12 space-y-3">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
               <div className="text-muted-foreground">Loading recordings...</div>
             </div>
           ) : filteredAndSortedRecordings.length === 0 ? (
-            <div className="text-center p-8 text-muted-foreground">
-              {recordings.length === 0 ? 'No recordings uploaded yet' : 'No recordings match your filters'}
+            <div className="text-center p-12 space-y-3">
+              <div className="w-16 h-16 mx-auto rounded-full bg-slate-100 flex items-center justify-center">
+                <FileVideo className="h-8 w-8 text-slate-400" />
+              </div>
+              <div className="text-lg font-medium text-muted-foreground">
+                {recordings.length === 0 ? 'No recordings uploaded yet' : 'No recordings match your filters'}
+              </div>
+              {recordings.length === 0 && (
+                <p className="text-sm text-muted-foreground">Start by uploading your first course recording above</p>
+              )}
             </div>
           ) : (
             <>
