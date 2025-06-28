@@ -4,9 +4,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { HelpCircle, Mail, MessageSquare, Phone } from "lucide-react";
+import { Mail, MessageSquare, Phone, MapPin, GraduationCap } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 export function Support() {
   const [supportType, setSupportType] = useState<string>("technical");
@@ -17,39 +18,69 @@ export function Support() {
   
   const { toast } = useToast();
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      toast({
-        title: "Support request submitted",
-        description: "We'll get back to you as soon as possible.",
+    try {
+      // Validate form data
+      if (!name.trim() || !email.trim() || !message.trim()) {
+        toast({
+          title: "Error",
+          description: "Please fill in all required fields.",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Submit contact form
+      const response = await apiRequest('POST', '/api/contact', {
+        supportType,
+        name: name.trim(),
+        email: email.trim(),
+        message: message.trim()
       });
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast({
+          title: "Message sent successfully!",
+          description: result.message,
+        });
+        
+        // Reset form
+        setName("");
+        setEmail("");
+        setMessage("");
+        setSupportType("technical");
+      } else {
+        throw new Error(result.message || 'Failed to send message');
+      }
       
-      // Reset form
-      setMessage("");
+    } catch (error: any) {
+      console.error('Contact form error:', error);
+      toast({
+        title: "Error sending message",
+        description: error.message || "Please try again or contact us directly.",
+        variant: "destructive",
+      });
+    } finally {
       setIsSubmitting(false);
-    }, 1000);
+    }
   };
   
   return (
     <div className="p-4 md:p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Support</h1>
-        <p className="text-gray-500 mt-1">Get help with your courses or technical issues</p>
+        <h1 className="text-2xl font-bold text-gray-800">Contact Us</h1>
+        <p className="text-gray-500 mt-1">We'd love to hear from you! Whether you have questions about our programs, need assistance with your application, or want to learn more about our expansion into the US market, our team is here to help.</p>
       </div>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <Card>
-            <CardHeader>
-              <CardTitle>Contact Support</CardTitle>
-              <CardDescription>
-                Fill out the form below and we'll get back to you as soon as possible.
-              </CardDescription>
-            </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit}>
                 <div className="mb-4">
@@ -116,7 +147,7 @@ export function Support() {
                 </div>
                 
                 <Button type="submit" className="w-full sm:w-auto" disabled={isSubmitting}>
-                  {isSubmitting ? "Submitting..." : "Submit Support Request"}
+                  {isSubmitting ? "Sending Message..." : "Send Message"}
                 </Button>
               </form>
             </CardContent>
@@ -136,7 +167,7 @@ export function Support() {
                 <Mail className="h-5 w-5 text-primary mr-3 mt-0.5" />
                 <div>
                   <h4 className="font-medium">Email Support</h4>
-                  <p className="text-sm text-gray-500">support@agi.online</p>
+                  <p className="text-sm text-gray-500">info@ciafs.global</p>
                   <p className="text-xs text-gray-500 mt-1">Responses within 24 hours</p>
                 </div>
               </div>
@@ -145,34 +176,30 @@ export function Support() {
                 <Phone className="h-5 w-5 text-primary mr-3 mt-0.5" />
                 <div>
                   <h4 className="font-medium">Phone Support</h4>
-                  <p className="text-sm text-gray-500">+1 (800) 123-4567</p>
+                  <p className="text-sm text-gray-500">+27(0)870 585 058</p>
                   <p className="text-xs text-gray-500 mt-1">Mon-Fri, 9am-5pm EST</p>
                 </div>
               </div>
               
               <div className="flex items-start">
-                <MessageSquare className="h-5 w-5 text-primary mr-3 mt-0.5" />
+                <MapPin className="h-5 w-5 text-primary mr-3 mt-0.5" />
                 <div>
-                  <h4 className="font-medium">Live Chat</h4>
-                  <p className="text-sm text-gray-500">Available on our website</p>
-                  <p className="text-xs text-gray-500 mt-1">Business hours only</p>
+                  <h4 className="font-medium">Address</h4>
+                  <p className="text-sm text-gray-500">5214 F Diamond Heights Blvd</p>
+                  <p className="text-xs text-gray-500 mt-1">San Francisco, California, 94131, USA</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start">
+                <GraduationCap className="h-5 w-5 text-primary mr-3 mt-0.5" />
+                <div>
+                  <h4 className="font-medium">Campuses</h4>
+                  <p className="text-sm text-gray-500">Spaces Works (California)</p>
+                  <p className="text-xs text-gray-500 mt-1">3031 Tisch Way #110</p>
+                  <p className="text-xs text-gray-500">Plaza West, San Jose CA 95128</p>
                 </div>
               </div>
             </CardContent>
-            <CardFooter>
-              <div className="bg-gray-50 p-4 rounded-lg w-full">
-                <div className="flex items-center mb-2">
-                  <HelpCircle className="h-5 w-5 text-primary mr-2" />
-                  <h4 className="font-medium">FAQs</h4>
-                </div>
-                <p className="text-sm text-gray-600 mb-3">
-                  Find quick answers to common questions in our knowledge base.
-                </p>
-                <Button variant="outline" className="w-full">
-                  Visit Help Center
-                </Button>
-              </div>
-            </CardFooter>
           </Card>
         </div>
       </div>

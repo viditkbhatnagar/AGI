@@ -13,6 +13,7 @@ import * as courseController from "./controllers/course-controller";
 import * as enrollmentController from "./controllers/enrollment-controller";
 import * as liveClassController from "./controllers/liveclass-controller";
 import * as recordingController from "./controllers/recording-controller";
+import * as contactController from "./controllers/contact-controller";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // AUTH ROUTES
@@ -42,6 +43,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/student/notify-settings", auth, requireStudent, studentController.updateNotifySettings);
   app.get("/api/student/courses", auth, requireStudent, studentController.getCourses);
   app.get("/api/student/courses/:slug", auth, requireStudent, studentController.getCourseDetail);
+
+  // CONTACT FORM ROUTE
+  app.post("/api/contact", auth, requireStudent, contactController.submitContactForm);
 
   // QUIZ ROUTES
   app.get(

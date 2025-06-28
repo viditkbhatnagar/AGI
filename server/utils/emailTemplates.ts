@@ -510,6 +510,161 @@ export function renderLiveClassReminderHtml({
   `;
 }
 
+export function renderContactFormHtml({
+  supportType,
+  name,
+  email,
+  message,
+  submittedAt,
+}: {
+  supportType: string;
+  name: string;
+  email: string;
+  message: string;
+  submittedAt: Date;
+}) {
+  const formatSupportType = (type: string) => {
+    switch (type) {
+      case 'technical':
+        return 'Technical Support';
+      case 'course':
+        return 'Course Content';
+      case 'billing':
+        return 'Billing/Enrollment';
+      case 'other':
+        return 'Other';
+      default:
+        return type;
+    }
+  };
+
+  const formattedDate = submittedAt.toLocaleString('en-US', {
+    dateStyle: 'long',
+    timeStyle: 'short',
+    timeZone: 'UTC',
+  });
+
+  return dedent/*html*/ `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width,initial-scale=1"/>
+      <title>New Contact Form Submission</title>
+      <link href="https://fonts.googleapis.com/css?family=Inter:400,700|Noto+Serif:700" rel="stylesheet">
+      <style>
+        body{margin:0;background:#f7f7f7;font-family:Inter,Arial,sans-serif}
+        .row{
+          width:100%;
+          max-width:700px;
+          margin:0 auto;
+          background:#fff;
+          border-radius:10px;
+          box-shadow:0 2px 10px rgba(0,0,0,.06);
+          overflow:hidden;
+        }
+        .pad{padding:25px}
+        h1{font-family:'Noto Serif',Georgia,serif;margin:0 0 15px;color:${headerBlue};font-size:28px}
+        h2{font-family:'Noto Serif',Georgia,serif;margin:0 0 15px;color:${headerColor};font-size:20px}
+        p{line-height:1.6;margin:0 0 15px;font-size:16px;color:#201f42}
+        .info-box{background:#f9fafb;padding:15px;border-radius:6px;margin:15px 0;border-left:4px solid ${headerColor}}
+        .message-box{background:#fef3c7;padding:15px;border-radius:6px;margin:15px 0;border-left:4px solid #f59e0b}
+        .label{font-weight:600;color:#374151;margin-bottom:5px}
+        .value{color:#1f2937;font-size:15px}
+        .support-badge{
+          display:inline-block;
+          background:${accentRed};
+          color:#fff;
+          padding:4px 12px;
+          border-radius:15px;
+          font-size:12px;
+          font-weight:600;
+          text-transform:uppercase;
+        }
+        .hdr{background:${headerBlue}}
+        @media(prefers-color-scheme:dark){
+          body{background:#1f2937}
+          .row{background:#111827}
+          p{color:#d1d5db}
+          h1,h2{color:#f3f4f6}
+          .info-box{background:#1f2937;border-left-color:#9aa5f8}
+          .message-box{background:#451a03;border-left-color:#f59e0b}
+          .label{color:#d1d5db}
+          .value{color:#f3f4f6}
+          .hdr{background:${headerBlueDark}}
+        }
+      </style>
+    </head>
+    <body>
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f7f7f7">
+        <tr><td style="height:20px"></td></tr>
+        <tr>
+          <td>
+            <table class="row" role="presentation" cellspacing="0" cellpadding="0">
+              <!-- Header -->
+              <tr>
+                <td style="background:#fff;text-align:center;padding:25px 0">
+                  <h1 style="margin:0;color:${headerBlue};font-size:28px;font-family:'Noto Serif',Georgia,serif">
+                    📧 New Contact Form Submission
+                  </h1>
+                </td>
+              </tr>
+              
+              <!-- Content -->
+              <tr><td class="pad">
+                <p>A new contact form has been submitted on the student portal.</p>
+                
+                <div class="info-box">
+                  <div style="margin-bottom:15px">
+                    <div class="label">Support Type:</div>
+                    <div class="value">
+                      <span class="support-badge">${formatSupportType(supportType)}</span>
+                    </div>
+                  </div>
+                  
+                  <div style="margin-bottom:15px">
+                    <div class="label">Full Name:</div>
+                    <div class="value">${name}</div>
+                  </div>
+                  
+                  <div style="margin-bottom:15px">
+                    <div class="label">Email Address:</div>
+                    <div class="value">
+                      <a href="mailto:${email}" style="color:${headerBlue};text-decoration:none">${email}</a>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <div class="label">Submitted:</div>
+                    <div class="value">${formattedDate}</div>
+                  </div>
+                </div>
+                
+                <h2>Message:</h2>
+                <div class="message-box">
+                  <p style="margin:0;white-space:pre-wrap;line-height:1.6">${message}</p>
+                </div>
+                
+                <p style="margin-top:25px;font-size:14px;color:#6b7280">
+                  <strong>Next Steps:</strong> Please respond to this inquiry promptly. 
+                  You can reply directly to <a href="mailto:${email}" style="color:${headerBlue}">${email}</a> 
+                  or use your preferred support system.
+                </p>
+              </td></tr>
+              
+              <!-- Footer -->
+              <tr><td class="pad" style="background:#201f42;color:#fff;text-align:center;font-size:13px">
+                © ${new Date().getFullYear()} American Global Institute - Contact Form System
+              </td></tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `;
+}
+
 export function welcomeAttachments() {
   const heroPath = path.join(
     __dirname,
