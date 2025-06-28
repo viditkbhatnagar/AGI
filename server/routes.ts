@@ -1,4 +1,5 @@
 import type { Express } from "express";
+import express from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { auth } from "./middleware/auth";
@@ -11,6 +12,7 @@ import * as studentController from "./controllers/student-controller";
 import * as courseController from "./controllers/course-controller";
 import * as enrollmentController from "./controllers/enrollment-controller";
 import * as liveClassController from "./controllers/liveclass-controller";
+import * as recordingController from "./controllers/recording-controller";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // AUTH ROUTES
@@ -109,6 +111,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/live-classes", auth, requireAdmin, liveClassController.createLiveClass);
   app.put("/api/live-classes/:id", auth, requireAdmin, liveClassController.updateLiveClass);
   app.delete("/api/live-classes/:id", auth, requireAdmin, liveClassController.deleteLiveClass);
+
+  // RECORDING ROUTES
+  // Admin recording routes
+  app.get("/api/recordings", auth, requireAdmin, recordingController.getAllRecordings);
+  app.get("/api/recordings/:id", auth, recordingController.getRecording);
+  app.get("/api/recordings/course/:courseSlug", auth, requireAdmin, recordingController.getRecordingsByCourse);
+  app.post("/api/recordings", auth, requireAdmin, recordingController.createRecording);
+  app.put("/api/recordings/:id", auth, requireAdmin, recordingController.updateRecording);
+  app.delete("/api/recordings/:id", auth, requireAdmin, recordingController.deleteRecording);
+  
+  // Student recording routes
+  app.get("/api/student/recordings", auth, requireStudent, recordingController.getStudentRecordings);
+  app.get("/api/student/recordings/course/:courseSlug", auth, requireStudent, recordingController.getStudentRecordingsByCourse);
 
   const httpServer = createServer(app);
 

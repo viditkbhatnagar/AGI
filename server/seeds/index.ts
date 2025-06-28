@@ -25,6 +25,7 @@ import { Student } from '../models/student';
 import { Course } from '../models/course';
 import { Enrollment } from '../models/enrollment';
 import { LiveClass } from '../models/liveclass';
+import { Recording } from '../models/recording';
 import Quiz from '../models/quiz';
 
 // Course data
@@ -1731,6 +1732,164 @@ const coursesData = {
       frequency: "weekly",
       dayOfWeek: "Wednesday",
       durationMin: 60,
+    }
+  },
+  "Positive-Psychology-Leadership-and-Mindfulness": {
+    title: "Positive Psychology Leadership and Mindfulness",
+    slug: "Positive-Psychology-Leadership-and-Mindfulness",
+    type: "standalone",
+    description: "",
+    modules: [
+      {
+        title: "Module 1",
+        videos: [
+          // Videos will be added later
+        ],
+        documents: [
+          {
+            title: "Session 1 - Understanding Theory U in PP",
+            url: "https://drive.google.com/file/d/1Vwrq_2zP2zoTCIEgap3Qwwu2jYaNmnaY/preview"
+          }
+        ],
+      },
+      {
+        title: "Module 2",
+        videos: [
+          // Videos will be added later
+        ],
+        documents: [
+          {
+            title: "Session 2 - Attention and the Now",
+            url: "https://docs.google.com/presentation/d/1kCbUP-ClC9NzcL2nqbhXTG9BE8Pe5XUX/preview"
+          }
+        ],
+      },
+      {
+        title: "Module 3",
+        videos: [
+          // Videos will be added later
+        ],
+        documents: [
+          {
+            title: "Session 3 - Automaticity",
+            url: "https://docs.google.com/presentation/d/1YfNsSRnp5XEi7DU5ffZ-xB_AKfFgIdwo/preview"
+          }
+        ],
+      },
+      {
+        title: "Module 4",
+        videos: [
+          // Videos will be added later
+        ],
+        documents: [
+          {
+            title: "Session 4 - Judgment",
+            url: "https://docs.google.com/presentation/d/1zd0D8H_AU2R32_3FVeq15HDYMVj80GHg/preview"
+          }
+        ],
+      },
+      {
+        title: "Module 5",
+        videos: [
+          // Videos will be added later
+        ],
+                 documents: [
+           {
+             title: "Session 5 - Acceptance",
+             url: "https://docs.google.com/presentation/d/15_BiVDckNB1PRCqysvooggOc1QW_S_4o/preview"
+           }
+         ],
+       },
+       {
+         title: "Module 6",
+         videos: [
+           // Videos will be added later
+         ],
+         documents: [
+           {
+             title: "Session 6 - Goals",
+             url: "https://docs.google.com/presentation/d/1_ort_acF60JaMckn2A9wFHIglKh46XnB/preview"
+           }
+         ],
+       },
+       {
+         title: "Module 7",
+         videos: [
+           // Videos will be added later
+         ],
+         documents: [
+           {
+             title: "Session 7 - Compassion",
+             url: "https://docs.google.com/presentation/d/1OIhJJTwO8TxaftpWDt3CPgdvotLw4iTH/preview"
+           }
+         ],
+       },
+       {
+         title: "Module 8",
+         videos: [
+           // Videos will be added later
+         ],
+         documents: [
+           {
+             title: "Session 8 - The Ego",
+             url: "https://docs.google.com/presentation/d/1An6m-xoylp0EI31WEzbOEwDGq8z2MFt1/preview"
+           }
+         ],
+       },
+       {
+         title: "Module 9",
+         videos: [
+           // Videos will be added later
+         ],
+         documents: [
+           {
+             title: "Session 9 - Integration",
+             url: "https://docs.google.com/presentation/d/1zlTm8f9ULpeKmWsI4FcZFrk0ofrFZ-N6/preview"
+           }
+         ],
+       },
+       {
+         title: "Module 10",
+         videos: [
+           // Videos will be added later
+         ],
+         documents: [
+           {
+             title: "Session 10 - Presence & Human Development",
+             url: "https://drive.google.com/file/d/1OXYTFluI8y5voz7_ewKHn9nFSFgzN02Q/preview"
+           }
+         ],
+       },
+       {
+         title: "Module 11",
+         videos: [
+           // Videos will be added later
+         ],
+         documents: [
+           {
+             title: "Session 11 - Positive Leadership",
+             url: "https://docs.google.com/presentation/d/1alzEF6GMwkSrEYenEhWNF2CHcofFtnhl/preview"
+           }
+         ],
+       },
+       {
+         title: "Module 12",
+         videos: [
+           // Videos will be added later
+         ],
+         documents: [
+           {
+             title: "Session 12 - Emotional Intelligence",
+             url: "https://docs.google.com/presentation/d/1591G68oK_7isqHHAFV9Ks8gKNYgWB4gi/preview"
+           }
+         ],
+      }
+    ],
+    liveClassConfig: {
+      enabled: true,
+      frequency: "weekly", // Options: "weekly", "biweekly", "monthly"
+      dayOfWeek: "Tuesday", // Day of the week for live classes
+      durationMin: 60, // Duration in minutes
     }
   }
 };
@@ -3855,6 +4014,28 @@ const quizQuestionsMapping: {
       9: [build()]
     };
   })(),
+  "Positive-Psychology-Leadership-and-Mindfulness": (() => {
+    // helper to build one‑question arrays for 12 modules
+    const build = () => ({
+      prompt: "Click any option to go to the next module",
+      options: ["Click me", "Click me", "Click me", "Click me"],
+      correctIndex: -1, // -1 means "all choices correct"
+    });
+    return {
+      0: [build()],
+      1: [build()],
+      2: [build()],
+      3: [build()],
+      4: [build()],
+      5: [build()],
+      6: [build()],
+      7: [build()],
+      8: [build()],
+      9: [build()],
+      10: [build()],
+      11: [build()]
+    };
+  })(),
   "Certified-Project-Manager": {
     0: [
       {
@@ -5253,6 +5434,66 @@ const quizQuestionsMapping: {
   }
 };
 
+// Sample recordings data with Google Drive links
+const recordingsData = [
+  {
+    courseSlug: 'certified-supply-chain-professional',
+    classDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 days ago
+    title: 'Supply Chain Fundamentals Overview',
+    description: 'Complete overview of supply chain management principles and practices',
+    fileUrl: 'https://drive.google.com/file/d/1gs42UtqGjX7awCNgChaBA-mX8kPUC-ar/view?usp=share_link',
+    isVisible: true
+  },
+  {
+    courseSlug: 'certified-supply-chain-professional',
+    classDate: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000), // 8 days ago
+    title: 'Procurement Best Practices',
+    description: 'Deep dive into procurement strategies and supplier management',
+    fileUrl: 'https://drive.google.com/file/d/1gs42UtqGjX7awCNgChaBA-mX8kPUC-ar/view?usp=share_link',
+    isVisible: true
+  },
+  {
+    courseSlug: 'certified-supply-chain-professional',
+    classDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
+    title: 'Inventory Management Strategies',
+    description: 'Learn effective inventory control and optimization techniques',
+    fileUrl: 'https://drive.google.com/file/d/1gs42UtqGjX7awCNgChaBA-mX8kPUC-ar/view?usp=share_link',
+    isVisible: true
+  },
+  {
+    courseSlug: 'Accounting-and-Finance',
+    classDate: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000), // 12 days ago
+    title: 'Financial Accounting Foundations',
+    description: 'Introduction to financial accounting principles and practices',
+    fileUrl: 'https://drive.google.com/file/d/1gs42UtqGjX7awCNgChaBA-mX8kPUC-ar/view?usp=share_link',
+    isVisible: true
+  },
+  {
+    courseSlug: 'Accounting-and-Finance',
+    classDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 days ago
+    title: 'Ratio Analysis Workshop',
+    description: 'Hands-on workshop for financial ratio analysis and interpretation',
+    fileUrl: 'https://drive.google.com/file/d/1gs42UtqGjX7awCNgChaBA-mX8kPUC-ar/view?usp=share_link',
+    isVisible: true
+  },
+  {
+    courseSlug: 'Certified-Logistics-Manager',
+    classDate: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000), // 9 days ago
+    title: 'Strategic Logistics Planning',
+    description: 'Strategic approaches to logistics and transportation management',
+    fileUrl: 'https://drive.google.com/file/d/1gs42UtqGjX7awCNgChaBA-mX8kPUC-ar/view?usp=share_link',
+    isVisible: true
+  },
+  {
+    courseSlug: 'Certified-Logistics-Manager',
+    classDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+    title: 'Global Transportation Modes',
+    description: 'Understanding different transportation modes in global logistics',
+    fileUrl: 'https://drive.google.com/file/d/1gs42UtqGjX7awCNgChaBA-mX8kPUC-ar/view?usp=share_link',
+    isVisible: true
+  }
+];
+
 // Generate upcoming live classes for a course
 function generateLiveClasses(courseSlug: string, count: number = 3) {
   const courseData = coursesData[courseSlug as keyof typeof coursesData];
@@ -5305,6 +5546,7 @@ async function seed() {
       await Course.deleteMany({});
       await Enrollment.deleteMany({});
       await LiveClass.deleteMany({});
+      await Recording.deleteMany({});
       await Quiz.deleteMany({});
       console.log('All collections cleared');
     } else {
@@ -5470,6 +5712,41 @@ async function seed() {
       await liveClass.save();
       console.log(`Live class created: ${liveClass.title} (${liveClass._id})`);
     }
+
+    // Create sample recordings (only if none exist to preserve existing data)
+    console.log('Creating sample recordings...');
+    const existingRecordingsCount = await Recording.countDocuments();
+    
+    if (existingRecordingsCount === 0) {
+      // Find admin user to set as uploader
+      const adminUser = await User.findOne({ role: 'admin' });
+      if (adminUser) {
+        for (const recordingData of recordingsData) {
+          // Check if course exists before creating recording
+          const courseExists = await Course.findOne({ slug: recordingData.courseSlug });
+          if (courseExists) {
+            const recording = new Recording({
+              courseSlug: recordingData.courseSlug,
+              classDate: recordingData.classDate,
+              title: recordingData.title,
+              description: recordingData.description,
+              fileUrl: recordingData.fileUrl,
+              uploadedBy: adminUser._id,
+              uploadedAt: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000), // Random date within last 30 days
+              isVisible: recordingData.isVisible
+            });
+            await recording.save();
+            console.log(`Recording created: ${recording.title} for ${recording.courseSlug}`);
+          } else {
+            console.log(`Skipping recording for non-existent course: ${recordingData.courseSlug}`);
+          }
+        }
+      } else {
+        console.log('No admin user found, skipping recordings creation');
+      }
+    } else {
+      console.log(`Found ${existingRecordingsCount} existing recordings, skipping recordings creation to preserve data`);
+    }
     
     console.log('Seeding completed successfully!');
   } catch (error) {
@@ -5482,5 +5759,79 @@ async function seed() {
   }
 }
 
-// Execute the seed function
-seed();
+// Function to seed only recordings
+async function seedRecordings() {
+  console.log('Starting recordings seeding...');
+  
+  try {
+    // Connect to MongoDB
+    await connectDB();
+    console.log('Connected to MongoDB');
+
+    // Find admin user to set as uploader
+    const adminUser = await User.findOne({ role: 'admin' });
+    if (!adminUser) {
+      console.log('❌ No admin user found! Please make sure you have an admin user in your database.');
+      return;
+    }
+    console.log('✅ Found admin user:', adminUser.username);
+
+    // Clear existing recordings due to structure change
+    console.log('🗑️  Clearing existing recordings due to structure change...');
+    await Recording.deleteMany({});
+    console.log('✅ All existing recordings cleared');
+
+    // Add sample recordings
+    console.log('🎬 Adding sample recordings...');
+    let addedCount = 0;
+    
+    for (const recordingData of recordingsData) {
+      // Check if course exists before creating recording
+      const courseExists = await Course.findOne({ slug: recordingData.courseSlug });
+      if (!courseExists) {
+        console.log(`⚠️  Skipping recording for non-existent course: ${recordingData.courseSlug}`);
+        continue;
+      }
+
+      const recording = new Recording({
+        courseSlug: recordingData.courseSlug,
+        classDate: recordingData.classDate,
+        title: recordingData.title,
+        description: recordingData.description,
+        fileUrl: recordingData.fileUrl,
+        uploadedBy: adminUser._id,
+        uploadedAt: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000), // Random date within last 30 days
+        isVisible: recordingData.isVisible
+      });
+      
+      await recording.save();
+      addedCount++;
+      console.log(`✅ Created recording: ${recording.title} for ${recording.courseSlug}`);
+    }
+
+    // Show final count
+    const finalCount = await Recording.countDocuments();
+    console.log(`\n🎉 Recordings seeding completed!`);
+    console.log(`📊 Added: ${addedCount} new recordings`);
+    console.log(`📊 Total recordings in database: ${finalCount}`);
+    
+  } catch (error) {
+    console.error('❌ Recordings seeding failed:', error);
+  } finally {
+    // Close the database connection
+    await mongoose.connection.close();
+    console.log('🔌 Database connection closed');
+    process.exit(0);
+  }
+}
+
+// Check if we're being called with 'recordings' argument
+const isRecordingsOnly = process.argv.includes('recordings');
+
+if (isRecordingsOnly) {
+  // Execute recordings seeding only
+  seedRecordings();
+} else {
+  // Execute the main seed function
+  seed();
+}

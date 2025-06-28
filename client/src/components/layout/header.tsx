@@ -20,6 +20,7 @@ const STUDENT_LINKS: NavLink[] = [
   { label: "Overview",     href: "/student" },
   { label: "My Courses",   href: "/student/courses" },
   { label: "Live Classes", href: "/student/live-classes" },
+  { label: "Recordings",   href: "/student/recordings" },
   { label: "Profile",      href: "/student/profile" },
   { label: "Support",      href: "/student/support" },
 ];
@@ -30,6 +31,7 @@ const ADMIN_LINKS: NavLink[] = [
   { label: "Courses",     href: "/admin/courses" },
   { label: "Progress",    href: "/admin/enrollments" },
   { label: "Live Classes",href: "/admin/live-classes" },
+  { label: "Recordings",  href: "/admin/recordings" },
 ];
 
 // Utility button component

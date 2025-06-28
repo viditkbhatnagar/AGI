@@ -102,6 +102,30 @@ export const insertLiveClassSchema = createInsertSchema(liveClasses).pick({
   status: true,
 });
 
+// Recordings Schema
+export const recordings = pgTable("recordings", {
+  id: serial("id").primaryKey(),
+  courseSlug: text("course_slug").notNull().references(() => courses.slug),
+  classDate: timestamp("class_date").notNull(), // Date the class was taught
+  title: text("title").notNull(),
+  description: text("description"),
+  fileUrl: text("file_url").notNull(), // Google Drive link
+  uploadedBy: integer("uploaded_by").notNull().references(() => users.id),
+  uploadedAt: timestamp("uploaded_at").notNull(),
+  isVisible: boolean("is_visible").notNull().default(true),
+});
+
+export const insertRecordingSchema = createInsertSchema(recordings).pick({
+  courseSlug: true,
+  classDate: true,
+  title: true,
+  description: true,
+  fileUrl: true,
+  uploadedBy: true,
+  uploadedAt: true,
+  isVisible: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -117,6 +141,9 @@ export type InsertEnrollment = z.infer<typeof insertEnrollmentSchema>;
 
 export type LiveClass = typeof liveClasses.$inferSelect;
 export type InsertLiveClass = z.infer<typeof insertLiveClassSchema>;
+
+export type Recording = typeof recordings.$inferSelect;
+export type InsertRecording = z.infer<typeof insertRecordingSchema>;
 
 // Extended schema types based on MongoDB collections
 export type ModuleVideo = {

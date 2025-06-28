@@ -94,6 +94,13 @@ export function Sidebar({ className, isMobile, onClose }: SidebarProps) {
               isActive={isActive('/admin/live-classes')} 
               onClick={handleLinkClick}
             />
+            <NavItem 
+              href="/admin/recordings" 
+              icon={<Video className="h-4 w-4 md:h-5 md:w-5" />} 
+              label="Recordings" 
+              isActive={isActive('/admin/recordings')} 
+              onClick={handleLinkClick}
+            />
           </div>
         ) : (
           <div className="px-2 space-y-1">
@@ -119,6 +126,13 @@ export function Sidebar({ className, isMobile, onClose }: SidebarProps) {
               icon={<CalendarClock className="h-4 w-4 md:h-5 md:w-5" />} 
               label="Live Classes" 
               isActive={isActive('/student/live-classes')} 
+              onClick={handleLinkClick}
+            />
+            <NavItem 
+              href="/student/recordings" 
+              icon={<Video className="h-4 w-4 md:h-5 md:w-5" />} 
+              label="Recordings" 
+              isActive={isActive('/student/recordings')} 
               onClick={handleLinkClick}
             />
             <NavItem 

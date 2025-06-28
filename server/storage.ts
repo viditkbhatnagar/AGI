@@ -4,6 +4,7 @@ import {
   courses,
   enrollments,
   liveClasses,
+  recordings,
   type User,
   type InsertUser,
   type Student,
@@ -13,7 +14,9 @@ import {
   type Enrollment,
   type InsertEnrollment,
   type LiveClass,
-  type InsertLiveClass
+  type InsertLiveClass,
+  type Recording,
+  type InsertRecording
 } from "@shared/schema";
 
 // Modify the interface with CRUD methods for all models
@@ -59,6 +62,15 @@ export interface IStorage {
   createLiveClass(liveClass: InsertLiveClass): Promise<LiveClass>;
   updateLiveClass(id: number, liveClass: Partial<LiveClass>): Promise<LiveClass | undefined>;
   deleteLiveClass(id: number): Promise<boolean>;
+
+  // Recording operations
+  getRecording(id: number): Promise<Recording | undefined>;
+  getRecordingsByStudent(studentId: number): Promise<Recording[]>;
+  getRecordingsByCourse(courseSlug: string): Promise<Recording[]>;
+  getAllRecordings(): Promise<Recording[]>;
+  createRecording(recording: InsertRecording): Promise<Recording>;
+  updateRecording(id: number, recording: Partial<Recording>): Promise<Recording | undefined>;
+  deleteRecording(id: number): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -67,12 +79,14 @@ export class MemStorage implements IStorage {
   private courses: Map<number, Course>;
   private enrollments: Map<number, Enrollment>;
   private liveClasses: Map<number, LiveClass>;
+  private recordings: Map<number, Recording>;
 
   private userIdCounter: number;
   private studentIdCounter: number;
   private courseIdCounter: number;
   private enrollmentIdCounter: number;
   private liveClassIdCounter: number;
+  private recordingIdCounter: number;
 
   constructor() {
     this.users = new Map();
@@ -80,12 +94,14 @@ export class MemStorage implements IStorage {
     this.courses = new Map();
     this.enrollments = new Map();
     this.liveClasses = new Map();
+    this.recordings = new Map();
 
     this.userIdCounter = 1;
     this.studentIdCounter = 1;
     this.courseIdCounter = 1;
     this.enrollmentIdCounter = 1;
     this.liveClassIdCounter = 1;
+    this.recordingIdCounter = 1;
   }
 
   // USER OPERATIONS
@@ -276,6 +292,52 @@ export class MemStorage implements IStorage {
 
   async deleteLiveClass(id: number): Promise<boolean> {
     return this.liveClasses.delete(id);
+  }
+
+  // RECORDING OPERATIONS
+  async getRecording(id: number): Promise<Recording | undefined> {
+    return this.recordings.get(id);
+  }
+
+  async getRecordingsByStudent(studentId: number): Promise<Recording[]> {
+    // Get student's enrolled courses
+    const studentEnrollments = await this.getEnrollmentsByStudent(studentId);
+    const enrolledCourseSlugs = studentEnrollments.map(e => e.courseSlug);
+    
+    // Return recordings for courses the student is enrolled in
+    return Array.from(this.recordings.values()).filter(
+      (recording) => recording.isVisible && enrolledCourseSlugs.includes(recording.courseSlug),
+    );
+  }
+
+  async getRecordingsByCourse(courseSlug: string): Promise<Recording[]> {
+    return Array.from(this.recordings.values()).filter(
+      (recording) => recording.courseSlug === courseSlug,
+    );
+  }
+
+  async getAllRecordings(): Promise<Recording[]> {
+    return Array.from(this.recordings.values());
+  }
+
+  async createRecording(insertRecording: InsertRecording): Promise<Recording> {
+    const id = this.recordingIdCounter++;
+    const recording: Recording = { ...insertRecording, id };
+    this.recordings.set(id, recording);
+    return recording;
+  }
+
+  async updateRecording(id: number, recordingData: Partial<Recording>): Promise<Recording | undefined> {
+    const recording = this.recordings.get(id);
+    if (!recording) return undefined;
+
+    const updatedRecording = { ...recording, ...recordingData };
+    this.recordings.set(id, updatedRecording);
+    return updatedRecording;
+  }
+
+  async deleteRecording(id: number): Promise<boolean> {
+    return this.recordings.delete(id);
   }
 }
 

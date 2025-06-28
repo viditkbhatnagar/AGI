@@ -13,6 +13,7 @@ import StudentDashboard from "@/pages/student/dashboard";
 import StudentCourses from "@/pages/student/courses";
 import StudentCourseDetail from "@/pages/student/course-detail";
 import StudentLiveClasses from "@/pages/student/live-classes";
+import StudentRecordings from "@/pages/student/recordings";
 import StudentSupport from "@/pages/student/support";
 import StudentProfile from "@/pages/student/profile";
 import StudentDebug from "@/pages/student/debug";
@@ -23,6 +24,7 @@ import AdminStudents from "@/pages/admin/students";
 import AdminCourses from "@/pages/admin/courses";
 import AdminEnrollments from "@/pages/admin/enrollments";
 import AdminLiveClasses from "@/pages/admin/live-classes";
+import AdminRecordings from "@/pages/admin/recordings";
 import AddStudent from "@/pages/admin/AddStudent";
 import ScheduleLiveClass from "@/pages/admin/ScheduleLiveClass";
 
@@ -37,6 +39,7 @@ function Router() {
       <Route path="/student/courses" component={StudentCourses} />
       <Route path="/student/courses/:slug" component={StudentCourseDetail} />
       <Route path="/student/live-classes" component={StudentLiveClasses} />
+      <Route path="/student/recordings" component={StudentRecordings} />
       <Route path="/student/profile" component={StudentProfile} />
       <Route path="/student/support" component={StudentSupport} />
       <Route path="/student/debug" component={StudentDebug} />
@@ -48,6 +51,7 @@ function Router() {
       <Route path="/admin/courses" component={AdminCourses} />
       <Route path="/admin/enrollments" component={AdminEnrollments} />
       <Route path="/admin/live-classes" component={AdminLiveClasses} />
+      <Route path="/admin/recordings" component={AdminRecordings} />
       <Route path="/admin" component={AdminDashboard} />
       
       {/* Default Route - Redirect based on user role */}
