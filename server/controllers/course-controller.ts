@@ -57,6 +57,27 @@ export const createCourse = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Course with this slug already exists' });
     }
     
+    // Filter out empty videos and documents from modules
+    const cleanedModules = modules ? modules.map((module: any) => ({
+      ...module,
+      videos: module.videos ? module.videos.filter((video: any) => 
+        video.title && video.title.trim() && video.url && video.url.trim()
+      ) : [],
+      documents: module.documents ? module.documents.filter((doc: any) => 
+        doc.title && doc.title.trim() && doc.url && doc.url.trim()
+      ) : []
+    })) : [];
+
+    const cleanedMbaModules = mbaModules ? mbaModules.map((module: any) => ({
+      ...module,
+      videos: module.videos ? module.videos.filter((video: any) => 
+        video.title && video.title.trim() && video.url && video.url.trim()
+      ) : [],
+      documents: module.documents ? module.documents.filter((doc: any) => 
+        doc.title && doc.title.trim() && doc.url && doc.url.trim()
+      ) : []
+    })) : [];
+
     // Create new course
     const newCourse = new Course({
       slug,
@@ -68,11 +89,37 @@ export const createCourse = async (req: Request, res: Response) => {
         dayOfWeek: 'Monday',
         durationMin: 60
       },
-      modules: modules || [],
-      mbaModules: mbaModules || []
+      modules: cleanedModules,
+      mbaModules: cleanedMbaModules
     });
     
     await newCourse.save();
+    
+    // Create quizzes for each module if quiz questions are provided
+    if (modules && Array.isArray(modules)) {
+      for (let moduleIndex = 0; moduleIndex < modules.length; moduleIndex++) {
+        const module = modules[moduleIndex];
+        if (module.quiz && module.quiz.questions && module.quiz.questions.length > 0) {
+          // Import Quiz model
+          const Quiz = (await import('../models/quiz')).default;
+          
+          // Transform quiz questions to match the expected format
+          const quizQuestions = module.quiz.questions.map((q: any) => ({
+            text: q.text,
+            choices: q.choices,
+            correctIndex: q.correctIndex
+          }));
+          
+          const quiz = new Quiz({
+            courseSlug: slug,
+            moduleIndex: moduleIndex,
+            questions: quizQuestions
+          });
+          
+          await quiz.save();
+        }
+      }
+    }
     
     res.status(201).json({
       message: 'Course created successfully',
@@ -100,10 +147,66 @@ export const updateCourse = async (req: Request, res: Response) => {
     if (title) course.title = title;
     if (type) course.type = type;
     if (liveClassConfig) course.liveClassConfig = liveClassConfig;
-    if (modules) course.modules = modules;
-    if (mbaModules) course.mbaModules = mbaModules;
+    
+    if (modules) {
+      // Filter out empty videos and documents
+      const cleanedModules = modules.map((module: any) => ({
+        ...module,
+        videos: module.videos ? module.videos.filter((video: any) => 
+          video.title && video.title.trim() && video.url && video.url.trim()
+        ) : [],
+        documents: module.documents ? module.documents.filter((doc: any) => 
+          doc.title && doc.title.trim() && doc.url && doc.url.trim()
+        ) : []
+      }));
+      course.modules = cleanedModules;
+    }
+    
+    if (mbaModules) {
+      // Filter out empty videos and documents
+      const cleanedMbaModules = mbaModules.map((module: any) => ({
+        ...module,
+        videos: module.videos ? module.videos.filter((video: any) => 
+          video.title && video.title.trim() && video.url && video.url.trim()
+        ) : [],
+        documents: module.documents ? module.documents.filter((doc: any) => 
+          doc.title && doc.title.trim() && doc.url && doc.url.trim()
+        ) : []
+      }));
+      course.mbaModules = cleanedMbaModules;
+    }
     
     await course.save();
+    
+    // Update quizzes for each module if quiz questions are provided
+    if (modules && Array.isArray(modules)) {
+      // Import Quiz model
+      const Quiz = (await import('../models/quiz')).default;
+      
+      // First, delete existing quizzes for this course
+      await Quiz.deleteMany({ courseSlug: slug });
+      
+      // Then create new quizzes based on updated modules
+      for (let moduleIndex = 0; moduleIndex < modules.length; moduleIndex++) {
+        const module = modules[moduleIndex];
+        if (module.quiz && module.quiz.questions && module.quiz.questions.length > 0) {
+          // Transform quiz questions to match the expected format
+          const quizQuestions = module.quiz.questions.map((q: any) => ({
+            text: q.text,
+            choices: q.choices,
+            correctIndex: q.correctIndex
+          }));
+          
+          const quiz = new Quiz({
+            courseSlug: slug,
+            moduleIndex: moduleIndex,
+            questions: quizQuestions
+          });
+          
+          await quiz.save();
+        }
+      }
+    }
     
     res.status(200).json({
       message: 'Course updated successfully',

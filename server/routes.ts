@@ -73,6 +73,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // COURSE ROUTES
   app.get("/api/courses", auth, courseController.getAllCourses);
   app.get("/api/courses/:slug", auth, courseController.getCourse);
+  app.get("/api/courses/:slug/quizzes", auth, requireAdmin, async (req: any, res: any) => {
+    try {
+      const { slug } = req.params;
+      const Quiz = (await import('./models/quiz')).default;
+      const quizzes = await Quiz.find({ courseSlug: slug }).sort({ moduleIndex: 1 });
+      res.json(quizzes);
+    } catch (error) {
+      console.error('Get course quizzes error:', error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  });
   app.post("/api/courses", auth, requireAdmin, courseController.createCourse);
   app.put("/api/courses/:slug", auth, requireAdmin, courseController.updateCourse);
   app.delete("/api/courses/:slug", auth, requireAdmin, courseController.deleteCourse);
