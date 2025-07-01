@@ -1741,7 +1741,7 @@ const coursesData = {
     description: "",
     modules: [
       {
-        title: "Module 1",
+        title: "Understanding Theory U in PP",
         videos: [
           // Videos will be added later
         ],
@@ -1753,7 +1753,7 @@ const coursesData = {
         ],
       },
       {
-        title: "Module 2",
+        title: "Attention and the Now",
         videos: [
           // Videos will be added later
         ],
@@ -1765,7 +1765,7 @@ const coursesData = {
         ],
       },
       {
-        title: "Module 3",
+        title: "Automaticity",
         videos: [
           // Videos will be added later
         ],
@@ -1777,7 +1777,7 @@ const coursesData = {
         ],
       },
       {
-        title: "Module 4",
+        title: "Judgment",
         videos: [
           // Videos will be added later
         ],
@@ -1789,7 +1789,7 @@ const coursesData = {
         ],
       },
       {
-        title: "Module 5",
+        title: "Acceptance",
         videos: [
           // Videos will be added later
         ],
@@ -1801,7 +1801,7 @@ const coursesData = {
          ],
        },
        {
-         title: "Module 6",
+         title: "Goals",
          videos: [
            // Videos will be added later
          ],
@@ -1813,7 +1813,7 @@ const coursesData = {
          ],
        },
        {
-         title: "Module 7",
+         title: "Compassion",
          videos: [
            // Videos will be added later
          ],
@@ -1825,7 +1825,7 @@ const coursesData = {
          ],
        },
        {
-         title: "Module 8",
+         title: "The Ego",
          videos: [
            // Videos will be added later
          ],
@@ -1837,7 +1837,7 @@ const coursesData = {
          ],
        },
        {
-         title: "Module 9",
+         title: "Integration",
          videos: [
            // Videos will be added later
          ],
@@ -1849,7 +1849,7 @@ const coursesData = {
          ],
        },
        {
-         title: "Module 10",
+         title: "Presence & Human Development",
          videos: [
            // Videos will be added later
          ],
@@ -1861,7 +1861,7 @@ const coursesData = {
          ],
        },
        {
-         title: "Module 11",
+         title: "Positive Leadership",
          videos: [
            // Videos will be added later
          ],
@@ -1873,7 +1873,7 @@ const coursesData = {
          ],
        },
        {
-         title: "Module 12",
+         title: "Emotional Intelligence",
          videos: [
            // Videos will be added later
          ],

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link, useLocation } from "wouter";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Eye, Plus, Search, SlidersHorizontal, Trash2, Users, School, CalendarClock, Download, SortAsc, SortDesc } from "lucide-react";
+import { Edit, Eye, Plus, Search, SlidersHorizontal, Trash2, Users, School, CalendarClock, Download, SortAsc, SortDesc, ArrowUpDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useState, useMemo } from "react";
@@ -283,9 +283,17 @@ const displayedCourses = showAll
                           variant="ghost"
                           size="icon"
                           onClick={() => setLocation(`/admin/courses/edit/${course.slug}`)}
-                          title="Edit Course"
+                          title="Edit Course Content"
                         >
                           <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setLocation(`/admin/courses/reorder/${course.slug}`)}
+                          title="Reorder Modules"
+                        >
+                          <ArrowUpDown className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"

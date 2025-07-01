@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Trash2, Plus, Video, FileText, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { useToast } from '@/hooks/use-toast';
 
 interface VideoForm {
   title: string;
@@ -58,6 +59,7 @@ function EditCourseForm({ courseSlug }: { courseSlug: string }) {
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState<CourseForm | null>(null);
   const [expandedModules, setExpandedModules] = useState<boolean[]>([]);
+  const { toast } = useToast();
 
   // Fetch course data
   const { data: courseData, isLoading } = useQuery({
@@ -345,9 +347,26 @@ function EditCourseForm({ courseSlug }: { courseSlug: string }) {
         throw new Error(errorData.message || 'Failed to update course');
       }
 
-      setLocation('/admin/courses');
+      // Show success toast
+      toast({
+        title: "Success",
+        description: "Course updated successfully!",
+      });
+
+      // Small delay to show the success message before redirecting
+      setTimeout(() => {
+        setLocation('/admin/courses');
+      }, 1000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
+      setError(errorMessage);
+      
+      // Show error toast
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
     } finally {
       setSaving(false);
     }
@@ -364,7 +383,15 @@ function EditCourseForm({ courseSlug }: { courseSlug: string }) {
         <CardHeader>
           <CardTitle>Course Information</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="relative">
+          {saving && (
+            <div className="absolute inset-0 bg-white bg-opacity-75 z-50 flex items-center justify-center rounded-lg">
+              <div className="flex items-center space-x-3 bg-white p-4 rounded-lg shadow-lg border">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                <span className="text-lg font-medium text-gray-700">Updating course content...</span>
+              </div>
+            </div>
+          )}
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
               <div className="p-3 border border-red-300 bg-red-50 text-red-700 rounded">
@@ -381,6 +408,7 @@ function EditCourseForm({ courseSlug }: { courseSlug: string }) {
                   value={form.title}
                   onChange={(e) => handleTitleChange(e.target.value)}
                   placeholder="e.g., Certified Supply Chain Professional"
+                  disabled={saving}
                   required
                 />
               </div>
@@ -392,14 +420,15 @@ function EditCourseForm({ courseSlug }: { courseSlug: string }) {
                   value={form.slug}
                   onChange={(e) => setForm(prev => prev ? ({ ...prev, slug: e.target.value }) : null)}
                   placeholder="e.g., certified-supply-chain-professional"
+                  disabled={saving}
                   required
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="type">Course Type *</Label>
-                <Select value={form.type} onValueChange={(value: 'standalone' | 'with-mba') => setForm(prev => prev ? ({ ...prev, type: value }) : null)}>
-                  <SelectTrigger>
+                <Select value={form.type} onValueChange={(value: 'standalone' | 'with-mba') => setForm(prev => prev ? ({ ...prev, type: value }) : null)} disabled={saving}>
+                  <SelectTrigger disabled={saving}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -416,6 +445,7 @@ function EditCourseForm({ courseSlug }: { courseSlug: string }) {
                   value={form.description}
                   onChange={(e) => setForm(prev => prev ? ({ ...prev, description: e.target.value }) : null)}
                   placeholder="Brief description of the course"
+                  disabled={saving}
                   rows={3}
                 />
               </div>
@@ -514,7 +544,7 @@ function EditCourseForm({ courseSlug }: { courseSlug: string }) {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold">Course Modules</h3>
-                <Button type="button" onClick={addModule} variant="outline" size="sm">
+                <Button type="button" onClick={addModule} variant="outline" size="sm" disabled={saving}>
                   <Plus className="h-4 w-4 mr-2" />
                   Add Module
                 </Button>
@@ -790,13 +820,21 @@ function EditCourseForm({ courseSlug }: { courseSlug: string }) {
             </div>
 
             <div className="flex space-x-3 pt-6">
-              <Button type="submit" disabled={saving}>
-                {saving ? 'Updating Course...' : 'Update Course'}
+              <Button type="submit" disabled={saving} className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50">
+                {saving ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Updating Course...
+                  </>
+                ) : (
+                  'Update Course'
+                )}
               </Button>
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setLocation('/admin/courses')}
+                disabled={saving}
               >
                 Cancel
               </Button>

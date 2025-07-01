@@ -342,6 +342,37 @@ export const getStudentCourse = async (req: Request, res: Response) => {
   }
 };
 
+// Reorder course modules
+export const reorderModules = async (req: Request, res: Response) => {
+  try {
+    const { slug } = req.params;
+    const { modules } = req.body;
+    
+    if (!modules || !Array.isArray(modules)) {
+      return res.status(400).json({ message: 'Invalid modules data' });
+    }
+    
+    const course = await Course.findOne({ slug });
+    
+    if (!course) {
+      return res.status(404).json({ message: 'Course not found' });
+    }
+    
+    // Update the modules array with the new order
+    course.modules = modules;
+    
+    await course.save();
+    
+    res.status(200).json({
+      message: 'Module order updated successfully',
+      course
+    });
+  } catch (error) {
+    console.error('Reorder modules error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 // Helper function to format watch time
 function formatWatchTime(seconds: number): string {
   const hours = Math.floor(seconds / 3600);
@@ -357,5 +388,6 @@ export default {
   updateCourse,
   deleteCourse,
   getStudentCourse,
-  listCourses
+  listCourses,
+  reorderModules
 };

@@ -86,6 +86,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   app.post("/api/courses", auth, requireAdmin, courseController.createCourse);
   app.put("/api/courses/:slug", auth, requireAdmin, courseController.updateCourse);
+  app.put("/api/courses/:slug/reorder-modules", auth, requireAdmin, courseController.reorderModules);
   app.delete("/api/courses/:slug", auth, requireAdmin, courseController.deleteCourse);
 
   // ENROLLMENT ROUTES
