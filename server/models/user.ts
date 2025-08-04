@@ -6,6 +6,7 @@ export interface IUser {
   email: string;
   password: string;
   role: 'admin' | 'student';
+  accessEnabled: boolean;
 }
 
 export interface IUserDocument extends IUser, Document {
@@ -16,7 +17,8 @@ const UserSchema = new Schema<IUserDocument>({
   username: { type: String, required: true, unique: true },
   email:    { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  role:     { type: String, enum: ['admin','student'], required: true }
+  role:     { type: String, enum: ['admin','student'], required: true },
+  accessEnabled: { type: Boolean, default: true }
 }, { timestamps: true });
 
 // Hash password before save

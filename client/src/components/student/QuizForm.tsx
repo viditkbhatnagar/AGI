@@ -101,69 +101,89 @@ const QuizForm: React.FC<QuizFormProps> = ({ questions, onSubmit }) => {
   }
 
   return (
-    <div className="mt-6 p-4 sm:p-6 bg-white border rounded-lg shadow">
-      <h3 className="text-lg sm:text-xl font-semibold mb-4">Module Quiz</h3>
+    <div className="bg-white">
       <form onSubmit={e => { e.preventDefault(); handleSubmit(); }}>
         {(() => {
           const q = questions[current];
           return (
-            <div key={current} className="mb-4">
-              <p className="font-medium text-sm sm:text-base">
-                {current + 1}. {q.prompt}
-              </p>
-              <div className="mt-2 space-y-2">
+            <div key={current} className="mb-8">
+              <h2 className="text-2xl font-semibold text-gray-800 mb-8 leading-relaxed">
+                {q.prompt}
+              </h2>
+              <div className="space-y-4">
                 {q.options.map((opt, optIdx) => (
                   <label
                     key={optIdx}
-                    className="flex items-center space-x-2 text-sm sm:text-base cursor-pointer"
+                    className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all hover:bg-gray-50 ${
+                      answers[current] === optIdx 
+                        ? 'border-blue-600 bg-blue-50' 
+                        : 'border-gray-200'
+                    }`}
                   >
+                    <div className="flex items-center">
+                      <div className={`w-5 h-5 rounded-full border-2 mr-4 flex items-center justify-center ${
+                        answers[current] === optIdx 
+                          ? 'border-blue-600 bg-blue-600' 
+                          : 'border-gray-300'
+                      }`}>
+                        {answers[current] === optIdx && (
+                          <div className="w-2 h-2 bg-white rounded-full"></div>
+                        )}
+                      </div>
+                      <span className="text-lg text-gray-700">{opt}</span>
+                    </div>
                     <input
                       type="radio"
                       name={`question-${current}`}
                       value={optIdx}
                       checked={answers[current] === optIdx}
                       onChange={() => handleOptionChange(current, optIdx)}
-                      className="form-radio"
+                      className="sr-only"
                     />
-                    <span>{opt}</span>
                   </label>
                 ))}
               </div>
             </div>
           );
         })()}
-        <div className="flex justify-between items-center mb-4">
+        
+        <div className="flex justify-between items-center mt-12">
           <Button
-            variant="ghost"
+            variant="outline"
             type="button"
             disabled={current === 0}
             onClick={() => setCurrent((c) => Math.max(c - 1, 0))}
-            className="px-2"
+            className="px-8 py-3 text-lg border-gray-300 bg-white text-gray-700 hover:bg-gray-50 flex items-center"
           >
-            ←
+            ← Back
           </Button>
-          <span className="text-sm text-gray-600">
-            {current + 1} / {questions.length}
+          
+          <span className="text-sm text-gray-500 font-medium">
+            Question {current + 1} of {questions.length}
           </span>
-          <Button
-            variant="ghost"
-            type="button"
-            disabled={current === questions.length - 1}
-            onClick={() =>
-              setCurrent((c) => Math.min(c + 1, questions.length - 1))
-            }
-            className="px-2"
-          >
-            →
-          </Button>
-        </div>
-        {current === questions.length - 1 && (
-          <div className="flex justify-end">
-            <Button type="submit" className="w-full sm:w-auto">
-              Submit Quiz
+          
+          {current === questions.length - 1 ? (
+            <Button 
+              type="submit" 
+              className="px-12 py-3 text-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+              disabled={answers[current] === -1}
+            >
+              Submit
             </Button>
-          </div>
-        )}
+          ) : (
+            <Button
+              variant="outline"
+              type="button"
+              disabled={current === questions.length - 1 || answers[current] === -1}
+              onClick={() =>
+                setCurrent((c) => Math.min(c + 1, questions.length - 1))
+              }
+              className="px-8 py-3 text-lg border-blue-600 bg-blue-600 text-white hover:bg-blue-700"
+            >
+              Next →
+            </Button>
+          )}
+        </div>
       </form>
     </div>
   );

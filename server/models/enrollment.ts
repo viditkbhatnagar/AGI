@@ -15,6 +15,15 @@ interface IQuizAttempt {
   passed: boolean;
 }
 
+interface IFinalExamAttempt {
+  examId: string;
+  score: number;
+  maxScore: number;
+  attemptedAt: Date;
+  passed: boolean;
+  attemptNumber: number;
+}
+
 export interface IEnrollment {
   studentId: mongoose.Types.ObjectId;
   courseSlug: string;
@@ -22,6 +31,7 @@ export interface IEnrollment {
   validUntil: Date;
   completedModules: ICompletedModule[];
   quizAttempts: IQuizAttempt[];
+  finalExamAttempts: IFinalExamAttempt[];
 }
 
 export interface IEnrollmentDocument extends IEnrollment, Document {}
@@ -58,6 +68,15 @@ const EnrollmentSchema = new Schema<IEnrollmentDocument>({
     maxScore: { type: Number, required: true },
     attemptedAt: { type: Date, default: Date.now },
     passed: { type: Boolean, required: true }
+  }],
+  
+  finalExamAttempts: [{
+    examId: { type: String, required: true },
+    score: { type: Number, required: true },
+    maxScore: { type: Number, required: true },
+    attemptedAt: { type: Date, default: Date.now },
+    passed: { type: Boolean, required: true },
+    attemptNumber: { type: Number, required: true }
   }]
 }, { timestamps: true });
 

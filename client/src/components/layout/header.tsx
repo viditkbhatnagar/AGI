@@ -26,12 +26,14 @@ const STUDENT_LINKS: NavLink[] = [
 ];
 
 const ADMIN_LINKS: NavLink[] = [
-  { label: "Overview",    href: "/admin" },
-  { label: "Students",    href: "/admin/students" },
-  { label: "Courses",     href: "/admin/courses" },
-  { label: "Progress",    href: "/admin/enrollments" },
-  { label: "Live Classes",href: "/admin/live-classes" },
-  { label: "Recordings",  href: "/admin/recordings" },
+  { label: "Overview",          href: "/admin" },
+  { label: "Students",          href: "/admin/students" },
+  { label: "Courses",           href: "/admin/courses" },
+  { label: "Progress",          href: "/admin/enrollments" },
+  { label: "Live Classes",      href: "/admin/live-classes" },
+  { label: "Recordings",        href: "/admin/recordings" },
+  { label: "Quiz Scores",       href: "/admin/quiz-scores" },
+  { label: "Final Exams",       href: "/admin/final-examinations" },
 ];
 
 // Utility button component

@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useLocation } from "wouter";
 import { Badge } from "@/components/ui/badge";
 import { Edit, Eye, Plus, Search, SlidersHorizontal, Trash2, UserPlus, Download, SortAsc, SortDesc } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useState } from "react";
@@ -119,6 +120,36 @@ export function Students() {
     onSuccess: () => {
       queryClient.invalidateQueries(['/api/admin/students']);
       setShowDeleteDialog(false);
+    },
+  });
+
+  const toggleAccessMutation = useMutation({
+    mutationFn: async ({ studentId, accessEnabled }: { studentId: string; accessEnabled: boolean }) => {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`/api/admin/students/${studentId}/toggle-access`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        credentials: "include",
+        body: JSON.stringify({ accessEnabled }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to toggle access');
+      }
+
+      return response.json();
+    },
+    onSuccess: (data) => {
+      console.log('Toggle access success:', data);
+      queryClient.invalidateQueries(['/api/admin/students']);
+    },
+    onError: (error) => {
+      console.error('Toggle access error:', error);
+      alert(`Error: ${error.message}`);
     },
   });
   
@@ -440,6 +471,7 @@ export function Students() {
                 <TableHead className="font-bold">Date of Enrollment</TableHead>
                 <TableHead className="font-bold">Courses Enrolled</TableHead>
                 <TableHead className="font-bold">Pathway</TableHead>
+                <TableHead className="font-bold">Access to Dashboard</TableHead>
                 <TableHead className="text-right">More Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -484,6 +516,28 @@ export function Students() {
                         {student.pathway === 'with-mba' ? 'With MBA' : 'Standalone'}
                       </Badge>
                     </TableCell>
+                    <TableCell>
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          checked={student.accessEnabled !== false}
+                          onCheckedChange={(checked) => {
+                            console.log('Toggle clicked:', { 
+                              studentId: student._id, 
+                              currentAccess: student.accessEnabled, 
+                              newAccess: checked 
+                            });
+                            toggleAccessMutation.mutate({
+                              studentId: student._id,
+                              accessEnabled: checked
+                            });
+                          }}
+                          disabled={toggleAccessMutation.isLoading}
+                        />
+                        <span className="text-sm text-gray-600">
+                          {student.accessEnabled !== false ? 'Enabled' : 'Disabled'}
+                        </span>
+                      </div>
+                    </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
                         <Button
@@ -522,7 +576,7 @@ export function Students() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={8} className="h-24 text-center">
+                  <TableCell colSpan={9} className="h-24 text-center">
                     {searchQuery ? (
                       <div className="flex flex-col items-center justify-center">
                         <Search className="h-8 w-8 text-gray-300 mb-2" />

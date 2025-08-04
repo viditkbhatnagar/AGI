@@ -69,6 +69,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/students", auth, requireAdmin, adminController.createStudent);
   app.put("/api/admin/students/:id", auth, requireAdmin, adminController.updateStudent);
   app.delete("/api/admin/students/:id", auth, requireAdmin, adminController.deleteStudent);
+  app.put("/api/admin/students/:studentId/toggle-access", auth, requireAdmin, adminController.toggleStudentAccess);
 
   // COURSE ROUTES
   app.get("/api/courses", auth, courseController.getAllCourses);
@@ -140,6 +141,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Student recording routes
   app.get("/api/student/recordings", auth, requireStudent, recordingController.getStudentRecordings);
   app.get("/api/student/recordings/course/:courseSlug", auth, requireStudent, recordingController.getStudentRecordingsByCourse);
+
+  // QUIZ SCORES ROUTES (Admin)
+  app.get("/api/admin/quiz-scores", auth, requireAdmin, adminController.getAllStudentsQuizScores);
+
+  // FINAL EXAMINATION ROUTES
+  const finalExamController = await import("./controllers/finalExamination-controller");
+  
+  // Admin final exam routes
+  app.get("/api/admin/final-exams", auth, requireAdmin, finalExamController.getAllFinalExams);
+  app.get("/api/admin/final-exams/:courseSlug", auth, requireAdmin, finalExamController.getFinalExamByCourse);
+  app.post("/api/admin/final-exams", auth, requireAdmin, finalExamController.createOrUpdateFinalExam);
+  app.delete("/api/admin/final-exams/:courseSlug", auth, requireAdmin, finalExamController.deleteFinalExam);
+  
+  // Student final exam routes
+  app.get("/api/student/final-exam/:courseSlug", auth, requireStudent, finalExamController.getStudentFinalExam);
+  app.post("/api/student/final-exam/submit", auth, requireStudent, finalExamController.submitFinalExamAttempt);
+  app.get("/api/student/final-exam/:courseSlug/attempts", auth, requireStudent, finalExamController.getStudentFinalExamAttempts);
 
   const httpServer = createServer(app);
 

@@ -24,6 +24,9 @@ const UNIFIED_BAR_COLOR = "bg-gradient-to-r from-yellow-500 to-yellow-400";
 import { formatDateTime, formatTimeRemaining } from "@/lib/utils";
 import { useState, useEffect, useMemo } from "react";
 import AttendanceCalendar from "@/components/student/AttendanceCalendar";
+import FinalExamScoresChart from "@/components/student/FinalExamScoresChart";
+import { Trophy } from "lucide-react";
+import { useLocation } from "wouter";
 
 // Types based on API response from server
 interface DashboardData {
@@ -72,6 +75,23 @@ interface DashboardData {
   }>;
   attendance: { date: string; present: boolean }[];
   weeklyAttendanceRate: number;
+  finalExamStatus?: {
+    available: boolean;
+    eligible: boolean;
+    canAttempt: boolean;
+    attempts: number;
+    maxAttempts: number;
+    bestScore: number | null;
+    passed: boolean;
+  };
+  finalExamScores?: Array<{
+    score: number;
+    maxScore: number;
+    percentage: number;
+    passed: boolean;
+    attemptedAt: string;
+    attemptNumber: number;
+  }>;
 }
 
 
@@ -83,6 +103,8 @@ export function StudentDashboard() {
   // List of enrolled courses for course picker
   const [courses, setCourses] = useState<{ slug: string; title: string }[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<string | null>(null);
+  // useLocation returns [currentPath, setLocation]. We alias setLocation as navigate for clarity.
+  const [, navigate] = useLocation();
   // Motivational tips
   // derive quizScores array safely before any returns
   const quizScoresArray = dashboardData?.quizScores ?? [];
@@ -527,6 +549,80 @@ export function StudentDashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Final Examination Section */}
+      {dashboardData.finalExamStatus && dashboardData.finalExamStatus.available && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          {/* Final Exam Status Card */}
+          <Card className="rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow bg-[#FEFDF7]">
+            <div className="px-5 py-4 bg-[#375BBE] rounded-t-3xl">
+              <h2 className="text-2xl font-semibold text-white">Final Examination</h2>
+            </div>
+            <CardContent className="p-6 bg-[#FEFDF7]">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center">
+                  <Trophy className="h-12 w-12 text-yellow-500 mr-4" />
+                  <div>
+                    <h3 className="text-xl font-semibold text-[#2E3A59]">
+                      {dashboardData.finalExamStatus.passed ? 'Passed!' : 'Ready for Final Exam'}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      {dashboardData.finalExamStatus.eligible 
+                        ? `${dashboardData.finalExamStatus.attempts} of ${dashboardData.finalExamStatus.maxAttempts} attempts used`
+                        : 'Complete all modules to unlock'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {dashboardData.finalExamStatus.eligible ? (
+                <div className="space-y-4">
+                  {dashboardData.finalExamStatus.bestScore !== null && (
+                    <div className="bg-gray-100 p-4 rounded-lg">
+                      <p className="text-sm text-gray-600">Best Score</p>
+                      <p className="text-2xl font-bold text-[#2E3A59]">
+                        {dashboardData.finalExamStatus.bestScore}%
+                      </p>
+                    </div>
+                  )}
+                  
+                  {dashboardData.finalExamStatus.canAttempt && (
+                    <Button 
+                      className="w-full bg-[#FF7F50] text-white rounded-lg py-3 text-lg font-semibold"
+                      onClick={() => navigate(`/student/courses/${selectedCourse || course?.slug}?showFinalExam=true`)}
+                    >
+                      {dashboardData.finalExamStatus.attempts > 0 ? 'Retake Final Exam' : 'Take Final Exam'}
+                    </Button>
+                  )}
+                  
+                  {!dashboardData.finalExamStatus.canAttempt && dashboardData.finalExamStatus.attempts >= dashboardData.finalExamStatus.maxAttempts && (
+                    <div className="bg-red-50 p-4 rounded-lg">
+                      <p className="text-red-700 font-medium">
+                        Maximum attempts reached
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="bg-yellow-50 p-4 rounded-lg">
+                  <p className="text-yellow-800">
+                    Complete all {course?.totalModules} modules to unlock the final examination.
+                    You have completed {course?.completedModules} modules so far.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Final Exam Scores Chart */}
+          {dashboardData.finalExamScores && dashboardData.finalExamScores.length > 0 && (
+            <FinalExamScoresChart 
+              data={dashboardData.finalExamScores}
+              passingScore={70}
+            />
+          )}
+        </div>
+      )}
       
     </div>
   );

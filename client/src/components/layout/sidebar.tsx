@@ -13,7 +13,9 @@ import {
   Settings, 
   Users, 
   Video,
-  UserCircle
+  UserCircle,
+  Trophy,
+  FileText
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-provider";
 
@@ -101,6 +103,7 @@ export function Sidebar({ className, isMobile, onClose }: SidebarProps) {
               isActive={isActive('/admin/recordings')} 
               onClick={handleLinkClick}
             />
+            {/* Removed Quiz Scores and Final Examinations from sidebar; now available in header navigation */}
           </div>
         ) : (
           <div className="px-2 space-y-1">

@@ -13,14 +13,15 @@ declare global {
         username: string;
         email: string;
         role: string;
+        accessEnabled: boolean;
       };
     }
   }
 }
 
-export const generateToken = (user: { id: string; username: string; email: string; role: string }) => {
+export const generateToken = (user: { id: string; username: string; email: string; role: string; accessEnabled: boolean }) => {
   return jwt.sign(
-    { id: user.id, username: user.username, email: user.email, role: user.role },
+    { id: user.id, username: user.username, email: user.email, role: user.role, accessEnabled: user.accessEnabled },
     JWT_SECRET,
     { expiresIn: '24h' }
   );
@@ -50,7 +51,16 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
       username: string;
       email: string;
       role: string;
+      accessEnabled: boolean;
     };
+
+    // Check if student access is enabled (only block if explicitly set to false)
+    if (decoded.role === 'student' && decoded.accessEnabled === false) {
+      return res.status(403).json({ 
+        message: 'Your access has been temporarily suspended due to pending course fee payment. Please contact support.',
+        suspended: true
+      });
+    }
 
     // Set user to req object
     req.user = decoded;

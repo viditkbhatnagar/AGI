@@ -88,6 +88,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setIsLoading(true);
       
       const response = await apiRequest('POST', '/api/auth/login', { email, password });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        
+        // Handle suspended account
+        if (response.status === 403 && errorData.suspended) {
+          toast({
+            title: "Account Suspended",
+            description: errorData.message,
+            variant: "destructive",
+          });
+          throw new Error(errorData.message);
+        }
+        
+        // Handle other errors
+        throw new Error(errorData.message || 'Login failed');
+      }
+      
       const data = await response.json();
       
       // Save token to localStorage
@@ -112,11 +130,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
       });
     } catch (error) {
       console.error('Login error:', error);
-      toast({
-        title: "Login failed",
-        description: "Invalid email or password",
-        variant: "destructive",
-      });
+      
+      // If it's not already a suspended account error, show generic error
+      if (!error.message.includes('suspended') && !error.message.includes('payment')) {
+        toast({
+          title: "Login failed",
+          description: "Invalid email or password",
+          variant: "destructive",
+        });
+      }
+      
       throw error;
     } finally {
       setIsLoading(false);

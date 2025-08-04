@@ -129,23 +129,33 @@ export const getDashboard = async (req: Request, res: Response) => {
       isLocked: idx > 0 && !completedSet.has(idx - 1)
     }));
 
-    // Build pie‑chart data: best quiz score per module
+    // Overall course progress & counts (needed for subsequent calculations)
+    const totalModules = modules.length;
+    const completedModulesCount = modules.filter(m => m.isCompleted).length;
+
+    // Build pie-chart data: best quiz score per module
     const quizScores = modules
       .filter(m => m.quizAttempts > 0)
       .map(m => ({ title: m.title, score: m.avgQuizScore }));
 
+    // Check final exam status
+    const FinalExamination = (await import('../models/finalExamination')).default;
+    const finalExam = await FinalExamination.findOne({ courseSlug: enrollment.courseSlug, isActive: true });
+    const finalExamAttempts = enrollment.finalExamAttempts || [];
+    const canAttemptFinalExam = completedModulesCount === totalModules && finalExam && finalExamAttempts.length < (finalExam.maxAttempts || 3);
+    const finalExamStatus = {
+      available: !!finalExam,
+      eligible: completedModulesCount === totalModules,
+      canAttempt: canAttemptFinalExam,
+      attempts: finalExamAttempts.length,
+      maxAttempts: finalExam?.maxAttempts || 3,
+      bestScore: finalExamAttempts.length > 0 ? Math.max(...finalExamAttempts.map(a => a.score)) : null,
+      passed: finalExamAttempts.some(a => a.passed)
+    };
 
 
-    //Overall course progress & counts
-    // const totalModules     = modules.length;
-    // const completedModulesCount = modules.filter(m => m.percentComplete === 100).length;
-    // const courseProgress   = totalModules
-    //   ? Math.round(modules.reduce((sum, m) => sum + m.percentComplete, 0) / totalModules)
-    //   : 0;
 
-    //Overall course progress and counts
-    const totalModules         = modules.length;
-    const completedModulesCount = modules.filter(m => m.isCompleted).length;
+    //Overall course progress and counts (already have totalModules & completedModulesCount)
     const courseProgress       = totalModules > 0
      ? Math.round((completedModulesCount / totalModules) * 100)
     : 0;
@@ -268,7 +278,16 @@ export const getDashboard = async (req: Request, res: Response) => {
       // attendance data
       attendance,
       weeklyAttendanceRate,
-      monthlyAttendanceRate
+      monthlyAttendanceRate,
+      finalExamStatus,
+      finalExamScores: finalExamAttempts.map(a => ({
+        score: a.score,
+        maxScore: a.maxScore,
+        percentage: Math.round((a.score / a.maxScore) * 100),
+        passed: a.passed,
+        attemptedAt: a.attemptedAt,
+        attemptNumber: a.attemptNumber
+      }))
     });
   } catch (error) {
     console.error('Get student dashboard error:', error);
@@ -385,6 +404,21 @@ export const getDashboardByCourse = async (req: Request, res: Response) => {
     ).map(([date, seconds]) => ({ date, minutes: Math.round(seconds / 60) }))
       .sort((a, b) => a.date.localeCompare(b.date));
 
+    // Check final exam status
+    const FinalExamination = (await import('../models/finalExamination')).default;
+    const finalExam = await FinalExamination.findOne({ courseSlug: slug, isActive: true });
+    const finalExamAttempts = enrollment.finalExamAttempts || [];
+    const canAttemptFinalExam = completedModulesCount === totalModules && finalExam && finalExamAttempts.length < (finalExam.maxAttempts || 3);
+    const finalExamStatus = {
+      available: !!finalExam,
+      eligible: completedModulesCount === totalModules,
+      canAttempt: canAttemptFinalExam,
+      attempts: finalExamAttempts.length,
+      maxAttempts: finalExam?.maxAttempts || 3,
+      bestScore: finalExamAttempts.length > 0 ? Math.max(...finalExamAttempts.map(a => a.score)) : null,
+      passed: finalExamAttempts.some(a => a.passed)
+    };
+
     // --- attendance (past 7 days) ---
     // Build lookup for documents viewed per date
     const watchTimeByDate: Record<string, number> = {};
@@ -467,7 +501,16 @@ export const getDashboardByCourse = async (req: Request, res: Response) => {
       documentsViewed: totalDocViews,
       attendance,
       weeklyAttendanceRate,
-      monthlyAttendanceRate
+      monthlyAttendanceRate,
+      finalExamStatus,
+      finalExamScores: finalExamAttempts.map(a => ({
+        score: a.score,
+        maxScore: a.maxScore,
+        percentage: Math.round((a.score / a.maxScore) * 100),
+        passed: a.passed,
+        attemptedAt: a.attemptedAt,
+        attemptNumber: a.attemptNumber
+      }))
     });
   } catch (error) {
     console.error('Get student dashboard by course error:', error);

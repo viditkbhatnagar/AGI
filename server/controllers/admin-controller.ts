@@ -12,12 +12,24 @@ import mongoose from 'mongoose';
 // Get all students
 export const getAllStudents = async (req: Request, res: Response) => {
   try {
-    const students = await Student.find().populate({
-      path: 'enrollment',
-      select: 'courseSlug enrollDate validUntil completedModules'
-    });
+    const students = await Student.find()
+      .populate({
+        path: 'enrollment',
+        select: 'courseSlug enrollDate validUntil completedModules'
+      })
+      .populate({
+        path: 'userId',
+        select: 'accessEnabled email username',
+        model: 'User'
+      });
 
-    res.status(200).json(students);
+    // Transform the data to include accessEnabled at the student level for easier frontend access
+    const studentsWithAccess = students.map(student => ({
+      ...student.toObject(),
+      accessEnabled: student.userId?.accessEnabled !== false
+    }));
+
+    res.status(200).json(studentsWithAccess);
   } catch (error) {
     console.error('Get all students error:', error);
     res.status(500).json({ message: 'Server error' });
@@ -298,5 +310,143 @@ export const getDashboardStats = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Get dashboard stats error:', error);
     res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Get all students' quiz scores
+export const getAllStudentsQuizScores = async (req: Request, res: Response) => {
+  try {
+    const { courseSlug, studentId } = req.query;
+    
+    // Build query
+    const enrollmentQuery: any = {};
+    if (courseSlug) {
+      enrollmentQuery.courseSlug = courseSlug;
+    }
+    if (studentId) {
+      enrollmentQuery.studentId = studentId;
+    }
+    
+    // Get enrollments with quiz attempts
+    const enrollments = await Enrollment.find(enrollmentQuery)
+      .populate('studentId', 'name')
+      .sort({ enrollDate: -1 });
+    
+    // Process and format the data
+    const quizScoresData = await Promise.all(
+      enrollments.map(async (enrollment) => {
+        const course = await Course.findOne({ slug: enrollment.courseSlug });
+        if (!course) return null;
+        
+        // Get module-wise quiz scores
+        const moduleScores = await Promise.all(
+          course.modules.map(async (module, moduleIndex) => {
+            const moduleAttempts = enrollment.quizAttempts.filter(
+              (attempt: any) => attempt.moduleIndex === moduleIndex
+            );
+            
+            if (moduleAttempts.length === 0) {
+              return {
+                moduleIndex,
+                moduleTitle: module.title,
+                attempts: 0,
+                bestScore: null,
+                averageScore: null,
+                lastAttempt: null
+              };
+            }
+            
+            const scores = moduleAttempts.map((a: any) => a.score);
+            const bestScore = Math.max(...scores);
+            const averageScore = scores.reduce((sum, score) => sum + score, 0) / scores.length;
+            const lastAttempt = moduleAttempts
+              .sort((a: any, b: any) => new Date(b.attemptedAt).getTime() - new Date(a.attemptedAt).getTime())[0];
+            
+            return {
+              moduleIndex,
+              moduleTitle: module.title,
+              attempts: moduleAttempts.length,
+              bestScore,
+              averageScore: Math.round(averageScore),
+              lastAttempt: {
+                score: lastAttempt.score,
+                passed: lastAttempt.passed,
+                attemptedAt: lastAttempt.attemptedAt
+              }
+            };
+          })
+        );
+        
+        // Calculate overall performance
+        const allScores = enrollment.quizAttempts.map((a: any) => a.score);
+        const overallAverage = allScores.length > 0
+          ? Math.round(allScores.reduce((sum, score) => sum + score, 0) / allScores.length)
+          : null;
+        
+        return {
+          studentId: enrollment.studentId._id,
+          studentName: (enrollment.studentId as any).name,
+          courseSlug: enrollment.courseSlug,
+          courseTitle: course.title,
+          enrollDate: enrollment.enrollDate,
+          totalQuizAttempts: enrollment.quizAttempts.length,
+          overallAverage,
+          moduleScores: moduleScores.filter(ms => ms !== null),
+          completedModules: enrollment.completedModules.filter(m => m.completed).length,
+          totalModules: course.modules.length
+        };
+      })
+    );
+    
+    // Filter out null values
+    const validQuizScores = quizScoresData.filter(data => data !== null);
+    
+    res.status(200).json(validQuizScores);
+  } catch (error) {
+    console.error('Get all students quiz scores error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Toggle student access status
+export const toggleStudentAccess = async (req: Request, res: Response) => {
+  try {
+    const { studentId } = req.params;
+    const { accessEnabled } = req.body;
+
+    console.log('Toggle access request:', { studentId, accessEnabled });
+
+    // Find the student to get their userId
+    const student = await Student.findById(studentId);
+    if (!student) {
+      console.log('Student not found:', studentId);
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    console.log('Found student:', { studentId: student._id, userId: student.userId });
+
+    // Update the user's access status
+    const user = await User.findByIdAndUpdate(
+      student.userId,
+      { accessEnabled },
+      { new: true }
+    );
+
+    if (!user) {
+      console.log('User not found:', student.userId);
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    console.log('Updated user access:', { userId: user._id, accessEnabled: user.accessEnabled });
+
+    res.status(200).json({
+      message: `Student access ${accessEnabled ? 'enabled' : 'disabled'} successfully`,
+      accessEnabled: user.accessEnabled,
+      studentId,
+      userId: user._id
+    });
+  } catch (error) {
+    console.error('Toggle student access error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };

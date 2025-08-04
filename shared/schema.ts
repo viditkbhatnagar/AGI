@@ -71,6 +71,21 @@ export const enrollments = pgTable("enrollments", {
   validUntil: timestamp("valid_until").notNull(),
   completedModules: jsonb("completed_modules"),
   quizAttempts: jsonb("quiz_attempts"),
+  finalExamAttempts: jsonb("final_exam_attempts"),
+});
+
+// Final Examination Schema
+export const finalExaminations = pgTable("final_examinations", {
+  id: serial("id").primaryKey(),
+  courseSlug: text("course_slug").notNull().unique().references(() => courses.slug),
+  title: text("title").notNull(),
+  description: text("description"),
+  questions: jsonb("questions").notNull(),
+  passingScore: integer("passing_score").notNull().default(70),
+  maxAttempts: integer("max_attempts").notNull().default(3),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
 export const insertEnrollmentSchema = createInsertSchema(enrollments).pick({
@@ -200,4 +215,32 @@ export type QuizAttempt = {
   score: number;
   maxScore: number;
   passed: boolean;
+};
+
+export type FinalExamAttempt = {
+  examId: string;
+  attemptedAt: string;
+  score: number;
+  maxScore: number;
+  passed: boolean;
+  attemptNumber: number;
+};
+
+export type FinalExamQuestion = {
+  text: string;
+  choices: string[];
+  correctIndex: number;
+};
+
+export type FinalExamination = {
+  id: string;
+  courseSlug: string;
+  title: string;
+  description?: string;
+  questions: FinalExamQuestion[];
+  passingScore: number;
+  maxAttempts: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
 };

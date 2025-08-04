@@ -26,18 +26,27 @@ export const login = async (req: Request, res: Response) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
+    // Check if student access is enabled (only block if explicitly set to false)
+    if (user.role === 'student' && user.accessEnabled === false) {
+      return res.status(403).json({ 
+        message: 'Your access has been temporarily suspended due to pending course fee payment. Please contact support.',
+        suspended: true
+      });
+    }
+
     // Get student data if role is student
     let studentData = null;
     if (user.role === 'student') {
       studentData = await Student.findOne({ userId: user._id });
     }
 
-    // Generate token
+    // Generate token (ensure accessEnabled defaults to true for existing users)
     const token = generateToken({
       id: user._id.toString(),
       username: user.username,
       email: user.email,
       role: user.role,
+      accessEnabled: user.accessEnabled !== false, // Default to true if undefined
     });
 
     // Send response
@@ -46,6 +55,7 @@ export const login = async (req: Request, res: Response) => {
       username: user.username,
       email: user.email,
       role: user.role,
+      accessEnabled: user.accessEnabled !== false, // Default to true if undefined
       token,
       student: studentData,
     });
