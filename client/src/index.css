@@ -117,4 +117,14 @@
   .sidebar-item.active {
     @apply bg-accent/10 border-l-2 border-primary;
   }
+  
+  /* Quiz layout stability */
+  .quiz-container {
+    @apply transform-gpu; /* Use GPU acceleration for smoother animations */
+  }
+  
+  /* Prevent scroll jumping when content changes */
+  .quiz-container input[type="radio"] {
+    @apply transform-gpu transition-all duration-200;
+  }
 }

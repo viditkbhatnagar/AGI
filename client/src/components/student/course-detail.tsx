@@ -51,7 +51,12 @@ import ReactPlayer from "react-player";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ProgressRing } from "@/components/ui/progress-ring";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 import {
   ArrowLeft,
   BookOpen,
@@ -197,6 +202,10 @@ export function CourseDetail({ slug }: CourseDetailProps) {
   const quizAttempts = attemptsData?.attempts ?? [];
 
   const handleTakeQuiz = async (moduleIndex: number) => {
+    // Clear video and document content when opening quiz modal
+    clearVideoContent();
+    clearDocumentContent();
+    
     const token = localStorage.getItem("token");
     if (!token) return;
     const res = await fetch(`/api/student/quiz/${courseSlug}/${moduleIndex}`, {
@@ -326,7 +335,11 @@ export function CourseDetail({ slug }: CourseDetailProps) {
 
   useEffect(() => {
     if ((selectedVideoUrl || selectedDocUrl) && mediaRef.current) {
-      mediaRef.current.scrollIntoView({ behavior: 'smooth' });
+      // Scroll within the right content area only, not the entire page
+      const rightContentArea = mediaRef.current.closest('.overflow-y-auto');
+      if (rightContentArea) {
+        rightContentArea.scrollTop = 0;
+      }
     }
   }, [selectedVideoUrl, selectedDocUrl]);
 
@@ -479,6 +492,46 @@ export function CourseDetail({ slug }: CourseDetailProps) {
       navigateToPage(currentPage + 1);
     }
   };
+
+  // Helper function to clear all open content
+  const clearAllContent = () => {
+    setSelectedVideoUrl(null);
+    setSelectedDocUrl(null);
+    setSelectedContent({ type: null });
+    setSelectedVideoIndex(0);
+    lastSentRef.current = 0;
+    setCurrentPage(1);
+    setTotalPages(1);
+    setCurrentDocType(null);
+    setBaseDocUrl('');
+    setIsDocLoading(false);
+    setQuizModuleIndex(null);
+    setQuizQuestions([]);
+  };
+
+  // Helper function to clear document content only
+  const clearDocumentContent = () => {
+    setSelectedDocUrl(null);
+    setCurrentPage(1);
+    setTotalPages(1);
+    setCurrentDocType(null);
+    setBaseDocUrl('');
+    setIsDocLoading(false);
+  };
+
+  // Helper function to clear video content only
+  const clearVideoContent = () => {
+    setSelectedVideoUrl(null);
+    setSelectedVideoIndex(0);
+    lastSentRef.current = 0;
+  };
+
+  // Helper function to clear quiz content only
+  const clearQuizContent = () => {
+    setSelectedContent({ type: null });
+    setQuizModuleIndex(null);
+    setQuizQuestions([]);
+  };
   
   return (
     <div className="min-h-screen bg-gray-50">
@@ -494,41 +547,106 @@ export function CourseDetail({ slug }: CourseDetailProps) {
             </Link>
             <h1 className="text-2xl font-bold text-gray-800">{course?.title || 'My Course'}</h1>
           </div>
-          <div className="flex items-center space-x-6">
-            <button
-              className={`px-4 py-2 font-medium text-sm ${
-                activeTab === 'modules'
-                  ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-              onClick={() => setActiveTab('modules')}
-            >
-              MODULES
-            </button>
-            <button
-              className={`px-4 py-2 font-medium text-sm ${
-                activeTab === 'resources'
-                  ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-              onClick={() => setActiveTab('resources')}
-            >
-              RESOURCES
-            </button>
-            <div className="h-8 w-8 bg-gray-300 rounded-full"></div>
+        </div>
+      </div>
+
+      {/* Course Progress Tab */}
+      <div className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="space-y-3">
+          {/* Progress Bar */}
+          <div className="w-full">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-bold text-gray-700">Course Progress</span>
+              <span className="text-sm font-semibold text-blue-600">{(course?.progress ?? 0) ? Math.round(course.progress) : 0}%</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-in-out"
+                style={{ width: `${course?.progress ?? 0}%` }}
+              ></div>
+            </div>
+          </div>
+          
+          {/* Data Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+            {/* Modules Completed */}
+            <div className="text-center">
+              <p className="text-sm font-medium text-gray-500 mb-1">Modules Completed</p>
+              <p className="text-xl font-bold text-gray-800">
+                {completedCount} / {totalModules}
+              </p>
+              <p className="text-xs text-gray-600">
+                {(course?.progress ?? 0) < 100 ? "In Progress" : "Completed"}
+              </p>
+            </div>
+            
+            {/* Overall Progress */}
+            <div className="text-center">
+              <p className="text-sm font-medium text-gray-500 mb-1">Content Watched</p>
+              <p className="text-xl font-bold text-blue-600">
+                {(course?.progress ?? 0) ? Math.round(course.progress) : 0}%
+              </p>
+              <p className="text-xs text-gray-600">
+                Total Progress
+              </p>
+            </div>
+            
+            {/* Quiz Performance */}
+            <div className="text-center">
+              <p className="text-sm font-medium text-gray-500 mb-1">Quiz Average</p>
+              {quizPerformance !== null ? (
+                <>
+                  <p className="text-xl font-bold text-green-600">
+                    {quizPerformance}%
+                  </p>
+                  <p className="text-xs text-gray-600">
+                    {bestScores.length} quiz{bestScores.length > 1 ? 'es' : ''} taken
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-xl font-bold text-gray-400">
+                    --
+                  </p>
+                  <p className="text-xs text-gray-600">
+                    No quizzes yet
+                  </p>
+                </>
+              )}
+            </div>
+            
+            {/* Course Valid Until */}
+            <div className="text-center">
+              <p className="text-sm font-medium text-gray-500 mb-1">Valid Until</p>
+              <p className="text-lg font-bold text-gray-800">
+                {new Date(course?.enrollment?.validUntil || '').toLocaleDateString('en-US', { 
+                  month: 'short', 
+                  day: 'numeric', 
+                  year: 'numeric' 
+                })}
+              </p>
+              <p className="text-xs text-gray-600">
+                {course?.enrollment?.validUntil
+                  ? `${Math.ceil(
+                      (new Date(course.enrollment.validUntil).getTime() - new Date().getTime()) /
+                      (1000 * 60 * 60 * 24 * 30)
+                    )} months left`
+                  : "No expiry"}
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Main Content Layout */}
-      <div className="flex h-[calc(100vh-80px)]">
+      <div className="flex h-[calc(100vh-160px)] overflow-hidden">
         {/* Left Sidebar - Content Navigator */}
-        <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
-          <div className="p-4 border-b border-gray-200">
+        <div className="w-80 bg-white border-r border-gray-200 flex flex-col h-full">
+          <div className="p-4 border-b border-gray-200 flex-shrink-0">
             <h2 className="text-lg font-semibold text-gray-800">Content Navigator</h2>
           </div>
           
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto overflow-x-hidden">
             {course?.modules.map((module: any, moduleIndex: number) => {
               // Calculate video progress based on actual watch time or completion status
               const videoProgress = module.videos && module.videos.length > 0 
@@ -554,6 +672,9 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                     <div 
                       className="flex items-center cursor-pointer"
                       onClick={() => {
+                        // Clear any open content when switching modules
+                        clearAllContent();
+                        
                         setExpanded(prev => {
                           const next = [...prev];
                           next[moduleIndex] = !next[moduleIndex];
@@ -572,49 +693,107 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                     {expanded[moduleIndex] && (
                       <div className="mt-3 ml-6 space-y-2">
                         {/* Video Section */}
-                        <div 
-                          className="flex items-center justify-between py-2 cursor-pointer hover:bg-gray-50 rounded px-2"
-                          onClick={() => {
-                            if (module.videos.length > 0) {
-                              setSelectedContent({
-                                type: 'video',
-                                moduleIndex,
-                                content: module.videos
-                              });
-                            }
-                          }}
-                        >
-                          <div className="flex items-center">
-                            <Video className="h-4 w-4 mr-2 text-blue-600" />
-                            <span className="text-sm text-gray-700">VIDEO</span>
-                          </div>
-                          <span className="text-sm text-gray-500">{videoProgressFallback}%</span>
-                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <div className="flex items-center justify-between py-2 cursor-pointer hover:bg-gray-50 rounded px-2">
+                              <div className="flex items-center">
+                                <Video className="h-4 w-4 mr-2 text-blue-600" />
+                                <span className="text-sm text-gray-700">VIDEO</span>
+                                <ChevronDown className="h-3 w-3 ml-1 text-gray-400" />
+                              </div>
+                              <span className="text-sm text-gray-500">{videoProgressFallback}%</span>
+                            </div>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="w-64" align="start">
+                            {module.videos && module.videos.length > 0 ? (
+                              module.videos.map((video: any, vidIdx: number) => (
+                                <DropdownMenuItem
+                                  key={vidIdx}
+                                  className="cursor-pointer"
+                                  onClick={() => {
+                                    // Clear document and quiz when playing video
+                                    clearDocumentContent();
+                                    clearQuizContent();
+                                    
+                                    // Set video
+                                    setSelectedVideoUrl(video.url);
+                                    setSelectedVideoIndex(vidIdx);
+                                    lastSentRef.current = 0;
+                                  }}
+                                >
+                                  <div className="flex items-center justify-between w-full">
+                                    <div className="flex items-center">
+                                      <Play className="h-4 w-4 mr-2 text-blue-600" />
+                                      <span className="text-sm">{video.title || `Video ${vidIdx + 1}`}</span>
+                                    </div>
+                                    {video.watched && (
+                                      <Check className="h-3 w-3 text-green-600" />
+                                    )}
+                                  </div>
+                                </DropdownMenuItem>
+                              ))
+                            ) : (
+                              <DropdownMenuItem disabled>
+                                <span className="text-sm text-gray-500">No videos available</span>
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                         
                         {/* Reading Materials Section */}
-                        <div 
-                          className="flex items-center justify-between py-2 cursor-pointer hover:bg-gray-50 rounded px-2"
-                          onClick={() => {
-                            if (module.documents.length > 0) {
-                              setSelectedContent({
-                                type: 'document',
-                                moduleIndex,
-                                content: module.documents
-                              });
-                            }
-                          }}
-                        >
-                          <div className="flex items-center">
-                            <FileText className="h-4 w-4 mr-2 text-green-600" />
-                            <span className="text-sm text-gray-700">READING MATERIALS</span>
-                          </div>
-                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <div className="flex items-center justify-between py-2 cursor-pointer hover:bg-gray-50 rounded px-2">
+                              <div className="flex items-center">
+                                <FileText className="h-4 w-4 mr-2 text-green-600" />
+                                <span className="text-sm text-gray-700">READING MATERIALS</span>
+                                <ChevronDown className="h-3 w-3 ml-1 text-gray-400" />
+                              </div>
+                            </div>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="w-64" align="start">
+                            {module.documents && module.documents.length > 0 ? (
+                              module.documents.map((doc: any, docIdx: number) => (
+                                <DropdownMenuItem
+                                  key={docIdx}
+                                  className="cursor-pointer"
+                                  onClick={() => {
+                                    // Clear video and quiz when opening document
+                                    clearVideoContent();
+                                    clearQuizContent();
+                                    
+                                    // Open document
+                                    handleDocPreview(doc.url);
+                                  }}
+                                >
+                                  <div className="flex items-center justify-between w-full">
+                                    <div className="flex items-center">
+                                      <FileText className="h-4 w-4 mr-2 text-green-600" />
+                                      <span className="text-sm">{doc.title || `Document ${docIdx + 1}`}</span>
+                                    </div>
+                                    {doc.viewed && (
+                                      <Check className="h-3 w-3 text-green-600" />
+                                    )}
+                                  </div>
+                                </DropdownMenuItem>
+                              ))
+                            ) : (
+                              <DropdownMenuItem disabled>
+                                <span className="text-sm text-gray-500">No reading materials available</span>
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                         
                         {/* Quizzes Section */}
                         <div 
                           className="flex items-center justify-between py-2 cursor-pointer hover:bg-gray-50 rounded px-2"
                           onClick={() => {
                             if (module.percentComplete >= 65) {
+                              // Clear video and document when opening quiz
+                              clearVideoContent();
+                              clearDocumentContent();
+                              
                               setSelectedContent({
                                 type: 'quiz',
                                 moduleIndex,
@@ -639,85 +818,9 @@ export function CourseDetail({ slug }: CourseDetailProps) {
         </div>
 
         {/* Right Content Area */}
-        <div className="flex-1 overflow-y-auto">
-          {/* Course Progress Section */}
-          <div className="bg-white border-b border-gray-200">
-            <div className="p-6">
-              <h2 className="text-xl font-semibold text-gray-800 mb-6">Course Progress</h2>
-              <div className="flex flex-col lg:flex-row items-start">
-                <div className="w-full lg:w-1/4 mb-6 lg:mb-0 flex justify-center">
-                  <ProgressRing value={course?.progress ?? 0} size={144} />
-                </div>
-                <div className="w-full lg:w-3/4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <p className="text-sm font-medium text-gray-500 mb-1">Modules Completed</p>
-                      <p className="text-lg font-semibold text-gray-800 mb-2">
-                        {completedCount} of {totalModules} modules
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        {(course?.progress ?? 0) < 100 
-                          ? "Keep going! You're making great progress."
-                          : "Congratulations! You've completed all modules."}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-500 mb-1">Overall Progress</p>
-                      <p className="text-lg font-semibold text-gray-800 mb-2">
-                        You've watched {(course?.progress ?? 0) ? Math.round(course.progress) : 0}% of course content.
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-500 mb-1">Quiz Performance</p>
-                      {quizPerformance !== null ? (
-                        <>
-                          <p className="text-lg font-semibold text-gray-800 mb-2">
-                            {quizPerformance}% average score
-                          </p>
-                          <p className="text-sm text-gray-600 mb-1">
-                            Your Best Score from Each attempt is used to calculate this average.
-                          </p>
-                          <p className="text-sm text-gray-600 mb-1">
-                            Based on {bestScores.length} completed {bestScores.length > 1 ? 'quizzes' : 'quiz'}.
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            Calculation: (
-                            {bestScores.map((s, i) => (
-                              <span key={i}>
-                                {s}%{i < bestScores.length - 1 ? ' + ' : ''}
-                              </span>
-                            ))}
-                            ) / {bestScores.length} = {quizPerformance}%
-                          </p>
-                        </>
-                      ) : (
-                        <p className="text-lg font-semibold text-gray-800">
-                          No quizzes attempted yet
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-500 mb-1">Course Valid Until</p>
-                      <p className="text-lg font-semibold text-gray-800 mb-2">
-                        {formatDate(course?.enrollment.validUntil)}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        {course?.enrollment?.validUntil
-                          ? `You have access for ${Math.ceil(
-                              (new Date(course.enrollment.validUntil).getTime() - new Date().getTime()) /
-                              (1000 * 60 * 60 * 24 * 30)
-                            )} more months.`
-                          : ""}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
+        <div className="flex-1 overflow-y-auto overflow-x-hidden h-full">
           {/* Content Display Area */}
-          <div className="p-6">
+          <div className="p-6 min-h-full">
             {/* Media Player Area */}
             {selectedVideoUrl && (
               <div ref={mediaRef} className="mb-6 relative pt-[56.25%]">
@@ -782,67 +885,12 @@ export function CourseDetail({ slug }: CourseDetailProps) {
               </div>
             )}
 
-            {/* Selected Content Display */}
-            {selectedContent.type === 'video' && selectedContent.content && (
-              <Card className="mb-6">
-                <div className="px-5 py-4 border-b border-gray-200">
-                  <h3 className="text-lg font-medium text-gray-800">Module {(selectedContent.moduleIndex || 0) + 1} Videos</h3>
-                </div>
-                <CardContent className="p-5">
-                  <div className="space-y-3">
-                    {selectedContent.content.map((video: any, vidIdx: number) => (
-                      <div key={vidIdx} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                        <div className="flex items-center">
-                          <Video className="h-5 w-5 mr-3 text-blue-600" />
-                          <span className="text-gray-800">{video.title || `Video ${vidIdx + 1}`}</span>
-                        </div>
-                        <Button
-                          size="sm"
-                          onClick={() => {
-                            setSelectedVideoUrl(video.url);
-                            setSelectedVideoIndex(vidIdx);
-                            lastSentRef.current = 0;
-                          }}
-                        >
-                          Play
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
 
-            {selectedContent.type === 'document' && selectedContent.content && (
-              <Card className="mb-6">
-                <div className="px-5 py-4 border-b border-gray-200">
-                  <h3 className="text-lg font-medium text-gray-800">Module {(selectedContent.moduleIndex || 0) + 1} Reading Materials</h3>
-                </div>
-                <CardContent className="p-5">
-                  <div className="space-y-3">
-                    {selectedContent.content.map((doc: any, docIdx: number) => (
-                      <div key={docIdx} className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                        <div className="flex items-center">
-                          <FileText className="h-5 w-5 mr-3 text-green-600" />
-                          <span className="text-gray-800">{doc.title || `Document ${docIdx + 1}`}</span>
-                        </div>
-                        <Button
-                          size="sm"
-                          onClick={() => handleDocPreview(doc.url)}
-                        >
-                          Preview
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
 
             {selectedContent.type === 'quiz' && selectedContent.content && (
               <Card className="mb-6">
                 <div className="px-5 py-4 border-b border-gray-200">
-                  <h3 className="text-lg font-medium text-gray-800">Module {(selectedContent.moduleIndex || 0) + 1} Quiz</h3>
+                  <h3 className="text-lg font-medium text-gray-800">{selectedContent.content?.title || `Module ${(selectedContent.moduleIndex || 0) + 1}`} Quiz</h3>
                 </div>
                 <CardContent className="p-5">
                   <div className="p-4 bg-purple-50 rounded-lg">
@@ -903,7 +951,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                                           colSpan={descendingAttempts.length + 2}
                                           className="bg-gray-200 px-2 py-2 text-gray-1000 font-bold text-center"
                                         >
-                                          {`Your Last 5 Quiz Scores For Module ${moduleIndex + 1}: ${moduleTitle}`}
+                                          {`Your Last 5 Quiz Scores For ${moduleTitle}`}
                                         </th>
                                       </tr>
                                       <tr>
@@ -1028,12 +1076,39 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                     }
                     return null;
                   })()}
+                  
+                  {/* Inline Quiz Display */}
+                  {quizModuleIndex !== null && quizQuestions.length > 0 && (
+                    <div className="mt-6 border-t border-gray-200 pt-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-lg font-semibold text-gray-800">
+                          {selectedContent.content?.title || `Module ${(selectedContent.moduleIndex || 0) + 1}`} Quiz
+                        </h4>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setQuizModuleIndex(null);
+                            setQuizQuestions([]);
+                          }}
+                        >
+                          Close Quiz
+                        </Button>
+                      </div>
+                      <div className="quiz-container">
+                        <QuizForm
+                          questions={quizQuestions}
+                          onSubmit={handleQuizSubmit}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
 
             {/* Default Content - Updates and Announcements */}
-            {!selectedContent.type && (
+            {!selectedContent.type && !selectedVideoUrl && !selectedDocUrl && (
               <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
                 {/* Updates */}
                 <Card>
@@ -1069,31 +1144,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
         </div>
       </div>
 
-      {/* Quiz Modal/Form */}
-      {quizModuleIndex !== null && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
-          onClick={() => setQuizModuleIndex(null)}
-        >
-          <div
-            className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto relative"
-            onClick={e => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setQuizModuleIndex(null)}
-              className="absolute top-4 right-4 z-10 text-gray-500 hover:text-gray-700 text-xl font-bold"
-            >
-              ✕
-            </button>
-            <div className="p-8">
-                          <QuizForm
-              questions={quizQuestions}
-              onSubmit={handleQuizSubmit}
-            />
-            </div>
-          </div>
-        </div>
-      )}
+
 
       {/* Final Exam Modal */}
       {showFinalExam && finalExamData && (
@@ -1155,20 +1206,25 @@ function CourseDetailSkeleton() {
           <Skeleton className="h-6 w-40" />
         </div>
         <CardContent className="p-5">
-          <div className="flex flex-col md:flex-row items-start">
-            <div className="w-full md:w-1/4 mb-4 md:mb-0 flex justify-center">
-              <Skeleton className="h-36 w-36 rounded-full" />
-            </div>
-            <div className="w-full md:w-3/4">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i}>
-                    <Skeleton className="h-4 w-32 mb-2" />
-                    <Skeleton className="h-6 w-40 mb-1" />
-                    <Skeleton className="h-3 w-48" />
-                  </div>
-                ))}
+          <div className="space-y-3">
+            {/* Progress Bar Skeleton */}
+            <div className="w-full">
+              <div className="flex items-center justify-between mb-2">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-4 w-12" />
               </div>
+              <Skeleton className="w-full h-2 rounded-full" />
+            </div>
+            
+            {/* Data Grid Skeleton */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="text-center">
+                  <Skeleton className="h-4 w-24 mx-auto mb-2" />
+                  <Skeleton className="h-6 w-16 mx-auto mb-1" />
+                  <Skeleton className="h-3 w-20 mx-auto" />
+                </div>
+              ))}
             </div>
           </div>
         </CardContent>
