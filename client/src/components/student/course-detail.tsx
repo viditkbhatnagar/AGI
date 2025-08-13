@@ -76,6 +76,7 @@ import { Link } from "wouter";
 import { Badge } from "@/components/ui/badge";
 import { formatDate, formatDateTime, formatWatchTime } from "@/lib/utils";
 import { useParams } from "wouter";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 import QuizForm from "@/components/student/QuizForm";
 import FinalExamForm from "@/components/student/FinalExamForm";
@@ -213,9 +214,15 @@ export function CourseDetail({ slug }: CourseDetailProps) {
     });
     if (!res.ok) {
       console.error("Failed to load quiz");
+      // Notify if quiz missing/unavailable
+      showNotice('No quiz is available for this module.');
       return;
     }
     const { questions } = await res.json();
+    if (!questions || !Array.isArray(questions) || questions.length === 0) {
+      showNotice('No quiz is available for this module.');
+      return;
+    }
     const mapped = questions.map((q: any) => ({
       prompt: q.text ?? q.prompt,
       options: q.choices ?? q.options,
@@ -326,6 +333,16 @@ export function CourseDetail({ slug }: CourseDetailProps) {
     contentIndex?: number;
     content?: any;
   }>({ type: null });
+  // Inline notice for missing content
+  const [notice, setNotice] = useState<string | null>(null);
+  const noticeTimerRef = useRef<number | null>(null);
+  const showNotice = (message: string) => {
+    setNotice(message);
+    if (noticeTimerRef.current) {
+      window.clearTimeout(noticeTimerRef.current);
+    }
+    noticeTimerRef.current = window.setTimeout(() => setNotice(null), 4000);
+  };
 
   useEffect(() => {
     if (course?.modules) {
@@ -648,23 +665,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
           
           <div className="flex-1 overflow-y-auto overflow-x-hidden">
             {course?.modules.map((module: any, moduleIndex: number) => {
-              // Calculate video progress based on actual watch time or completion status
-              const videoProgress = module.videos && module.videos.length > 0 
-                ? Math.round((module.videos.filter((v: any) => v.watched || v.completed || v.isCompleted).length / module.videos.length) * 100)
-                : 0;
-              
-              // Calculate document progress based on viewing status
-              const documentsProgress = module.documents && module.documents.length > 0
-                ? Math.round((module.documents.filter((d: any) => d.viewed || d.completed || d.isCompleted).length / module.documents.length) * 100)
-                : 0;
-                
-              // Use module's overall progress as fallback for videos if no individual tracking
-              const videoProgressFallback = module.videos && module.videos.length > 0 && videoProgress === 0
-                ? Math.min(100, Math.round(module.percentComplete || 0))
-                : Math.min(100, videoProgress);
-                
-              // Quiz progress based on attempts or completion
-              const quizProgress = module.quizAttempts > 0 || module.lastQuizScore !== null ? 100 : 0;
+              // Progress percentages are intentionally not shown in the navigator.
 
               return (
                 <div key={moduleIndex} className="border-b border-gray-100">
@@ -695,13 +696,21 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                         {/* Video Section */}
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <div className="flex items-center justify-between py-2 cursor-pointer hover:bg-gray-50 rounded px-2">
+                            <div
+                              className="flex items-center justify-between py-2 cursor-pointer hover:bg-gray-50 rounded px-2"
+                              onClick={(e) => {
+                                if (!module.videos || module.videos.length === 0) {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  showNotice('No videos are available for this module.');
+                                }
+                              }}
+                            >
                               <div className="flex items-center">
                                 <Video className="h-4 w-4 mr-2 text-blue-600" />
                                 <span className="text-sm text-gray-700">VIDEO</span>
                                 <ChevronDown className="h-3 w-3 ml-1 text-gray-400" />
                               </div>
-                              <span className="text-sm text-gray-500">{videoProgressFallback}%</span>
                             </div>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent className="w-64" align="start">
@@ -743,7 +752,16 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                         {/* Reading Materials Section */}
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <div className="flex items-center justify-between py-2 cursor-pointer hover:bg-gray-50 rounded px-2">
+                            <div
+                              className="flex items-center justify-between py-2 cursor-pointer hover:bg-gray-50 rounded px-2"
+                              onClick={(e) => {
+                                if (!module.documents || module.documents.length === 0) {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  showNotice('No reading materials are available for this module.');
+                                }
+                              }}
+                            >
                               <div className="flex items-center">
                                 <FileText className="h-4 w-4 mr-2 text-green-600" />
                                 <span className="text-sm text-gray-700">READING MATERIALS</span>
@@ -789,7 +807,16 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                         <div 
                           className="flex items-center justify-between py-2 cursor-pointer hover:bg-gray-50 rounded px-2"
                           onClick={() => {
-                            if (module.percentComplete >= 65) {
+                            const hasQuizConfigured =
+                              (Array.isArray(module?.questions) && module.questions.length > 0) ||
+                              (!!module && typeof module.quizId !== 'undefined' && !!module.quizId) ||
+                              (Array.isArray((module as any).quizzes) && (module as any).quizzes.length > 0);
+
+                            if (!hasQuizConfigured) {
+                              showNotice('No quiz is available for this module.');
+                              return;
+                            }
+                            {
                               // Clear video and document when opening quiz
                               clearVideoContent();
                               clearDocumentContent();
@@ -806,7 +833,6 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                             <BookOpen className="h-4 w-4 mr-2 text-purple-600" />
                             <span className="text-sm text-gray-700">QUIZZES</span>
                           </div>
-                          <span className="text-sm text-gray-500">{quizProgress}%</span>
                         </div>
                       </div>
                     )}
@@ -821,6 +847,14 @@ export function CourseDetail({ slug }: CourseDetailProps) {
         <div className="flex-1 overflow-y-auto overflow-x-hidden h-full">
           {/* Content Display Area */}
           <div className="p-6 min-h-full">
+            {notice && (
+              <div className="mb-4">
+                <Alert>
+                  <AlertTitle>Notice</AlertTitle>
+                  <AlertDescription>{notice}</AlertDescription>
+                </Alert>
+              </div>
+            )}
             {/* Media Player Area */}
             {selectedVideoUrl && (
               <div ref={mediaRef} className="mb-6 relative pt-[56.25%]">
@@ -901,16 +935,11 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                       </div>
                       <Button
                         onClick={() => handleTakeQuiz(selectedContent.moduleIndex || 0)}
-                        disabled={selectedContent.content.percentComplete < 65}
                       >
                         {selectedContent.content.lastQuizScore !== null ? 'Retake Quiz' : 'Take Quiz'}
                       </Button>
                     </div>
-                    {selectedContent.content.percentComplete < 65 && (
-                      <p className="text-sm text-gray-600 mt-2">
-                        Reach at least 65% progress in this module to unlock the quiz.
-                      </p>
-                    )}
+                    
                   </div>
                   
                   {/* Quiz Scores Table */}
