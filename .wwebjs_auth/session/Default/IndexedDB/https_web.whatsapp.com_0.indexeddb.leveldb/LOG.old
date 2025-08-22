@@ -1,0 +1,15 @@
+2025/08/22-23:51:26.690 a103 Reusing MANIFEST /Users/viditkbhatnagar/codes/AgiOnlineDashboard/.wwebjs_auth/session/Default/IndexedDB/https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2025/08/22-23:51:26.691 a103 Recovering log #274
+2025/08/22-23:51:26.702 a103 Reusing old log /Users/viditkbhatnagar/codes/AgiOnlineDashboard/.wwebjs_auth/session/Default/IndexedDB/https_web.whatsapp.com_0.indexeddb.leveldb/000274.log 
+2025/08/22-23:51:28.516 a103 Level-0 table #280: started
+2025/08/22-23:51:28.524 a103 Level-0 table #280: 326652 bytes OK
+2025/08/22-23:51:28.541 a103 Delete type=0 #274
+2025/08/22-23:51:28.542 1f803 Manual compaction at level-0 from '\x00Y\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00Z\x00\x00\x00' @ 0 : 0; will stop at (end)
+2025/08/22-23:51:29.648 a103 Compacting 1@1 + 2@2 files
+2025/08/22-23:51:29.687 a103 Generated table #281@1: 55245 keys, 2244348 bytes
+2025/08/22-23:51:29.717 a103 Generated table #282@1: 36548 keys, 2011778 bytes
+2025/08/22-23:51:29.717 a103 Compacted 1@1 + 2@2 files => 4256126 bytes
+2025/08/22-23:51:29.726 a103 compacted to: files[ 0 0 2 0 0 0 0 ]
+2025/08/22-23:51:29.726 a103 Delete type=2 #277
+2025/08/22-23:51:29.726 a103 Delete type=2 #276
+2025/08/22-23:51:29.726 a103 Delete type=2 #280

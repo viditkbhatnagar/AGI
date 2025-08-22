@@ -27,6 +27,7 @@ import AdminLiveClasses from "@/pages/admin/live-classes";
 import AdminRecordings from "@/pages/admin/recordings";
 import AdminQuizScores from "@/pages/admin/quiz-scores";
 import AdminExamResults from "@/pages/admin/exam-results";
+import AdminWhatsAppManagement from "@/pages/admin/WhatsAppManagement";
 
 import AddStudent from "@/pages/admin/AddStudent";
 import AddCourse from "@/pages/admin/AddCourse";
@@ -63,6 +64,7 @@ function Router() {
       <Route path="/admin/recordings" component={AdminRecordings} />
       <Route path="/admin/quiz-scores" component={AdminQuizScores} />
       <Route path="/admin/exam-results" component={AdminExamResults} />
+      <Route path="/admin/whatsapp" component={AdminWhatsAppManagement} />
       <Route path="/admin" component={AdminDashboard} />
       
       {/* Default Route - Redirect based on user role */}

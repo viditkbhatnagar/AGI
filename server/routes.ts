@@ -14,6 +14,7 @@ import * as enrollmentController from "./controllers/enrollment-controller";
 import * as liveClassController from "./controllers/liveclass-controller";
 import * as recordingController from "./controllers/recording-controller";
 import * as contactController from "./controllers/contact-controller";
+import * as whatsappController from "./controllers/whatsapp-controller";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // AUTH ROUTES
@@ -163,6 +164,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/exam-results", auth, requireAdmin, finalExamController.getAllStudentExamResults);
   app.post("/api/admin/exam-results/update-score", auth, requireAdmin, finalExamController.updateStudentExamScore);
   app.get("/api/admin/exam-results/:studentId/:courseSlug/:attemptNumber", auth, requireAdmin, finalExamController.getStudentExamSubmission);
+
+  // WHATSAPP BOT ROUTES
+  app.post("/api/whatsapp/webhook", whatsappController.webhookHandler);
+  app.get("/api/whatsapp/status", auth, requireAdmin, whatsappController.getWhatsAppStatus);
+  app.get("/api/whatsapp/qr-code", auth, requireAdmin, whatsappController.getQRCode);
+  app.post("/api/whatsapp/send-test", auth, requireAdmin, whatsappController.sendTestMessage);
 
   const httpServer = createServer(app);
 

@@ -34,6 +34,7 @@ const ADMIN_LINKS: NavLink[] = [
   { label: "Recordings",        href: "/admin/recordings" },
   { label: "Quiz Scores",       href: "/admin/quiz-scores" },
   { label: "Exam Results",      href: "/admin/exam-results" },
+  { label: "WhatsApp Bot",      href: "/admin/whatsapp" },
 ];
 
 // Utility button component

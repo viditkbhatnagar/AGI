@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: agi-lms-whatsapp
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    plan: starter
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ENABLE_WHATSAPP_BOT
+        value: true
+    numInstances: 1
