@@ -29,15 +29,12 @@ let currentQRCode: string | null = null;
 let isClientReady: boolean = false;
 
 export const initializeWhatsApp = () => {
-  const isProduction = process.env.NODE_ENV === 'production';
-  
   whatsappClient = new Client({
     authStrategy: new LocalAuth({
       dataPath: './whatsapp-session' // Persistent session storage
     }),
     puppeteer: {
       headless: true,
-      executablePath: isProduction ? '/usr/bin/google-chrome' : undefined,
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
