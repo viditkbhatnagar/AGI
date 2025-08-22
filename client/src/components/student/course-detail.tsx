@@ -46,7 +46,7 @@ function getDocumentTypeAndPages(url: string): { type: 'slides' | 'document' | '
 import { useQuery, useQueries } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
 import throttle from "lodash/throttle";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import ReactPlayer from "react-player";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -232,6 +232,8 @@ export function CourseDetail({ slug }: CourseDetailProps) {
     setQuizModuleIndex(moduleIndex);
   };
 
+
+
   const handleQuizSubmit = async (answers: number[]) => {
     if (quizModuleIndex === null) return;
     const token = localStorage.getItem("token");
@@ -254,7 +256,13 @@ export function CourseDetail({ slug }: CourseDetailProps) {
   };
 
   // Final Exam handlers
-  const handleTakeFinalExam = async () => {
+  const handleTakeFinalExam = useCallback(async () => {
+    // Clear video, document, and quiz content when opening final exam
+    clearVideoContent();
+    clearDocumentContent();
+    setQuizModuleIndex(null);
+    setQuizQuestions([]);
+    
     const token = localStorage.getItem("token");
     if (!token) return;
     
@@ -276,9 +284,9 @@ export function CourseDetail({ slug }: CourseDetailProps) {
       console.error("Error loading final exam:", error);
       alert("Failed to load final examination");
     }
-  };
+  }, [courseSlug]);
 
-  const handleFinalExamSubmit = async (answers: number[]) => {
+  const handleFinalExamSubmit = async (answers: (number | { type: 'file' | 'text'; content: string; fileName?: string })[]) => {
     const token = localStorage.getItem("token");
     if (!token) return;
     
@@ -322,7 +330,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
     if (showFinalExam && !finalExamData) {
       handleTakeFinalExam();
     }
-  }, [showFinalExam, finalExamData]);
+  }, [showFinalExam, finalExamData, handleTakeFinalExam]);
 
   const [expanded, setExpanded] = useState<boolean[]>([]);
   // State for active tab
@@ -840,6 +848,38 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                 </div>
               );
             })}
+            
+            {/* Final Examination Section - Always available for enrolled students */}
+            <div className="border-b border-gray-100">
+              <div className="p-4">
+                <div className="flex items-center cursor-pointer">
+                  <div className="h-4 w-4 mr-2" /> {/* Spacer for alignment */}
+                  <h3 className="font-medium text-gray-800 flex items-center">
+                    <Badge className="mr-2 bg-yellow-100 text-yellow-800 border-yellow-300">
+                      Final Exam
+                    </Badge>
+                    Final Examination
+                  </h3>
+                </div>
+                
+                <div className="mt-3 ml-6">
+                  <div className="flex items-center justify-between py-2 px-2 bg-yellow-50 rounded border border-yellow-200">
+                    <div className="flex items-center">
+                      <BookOpen className="h-4 w-4 mr-2 text-yellow-600" />
+                      <span className="text-sm text-gray-700">Take Final Examination</span>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="bg-yellow-600 text-white hover:bg-yellow-700 border-yellow-600"
+                      onClick={handleTakeFinalExam}
+                    >
+                      Start
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1132,6 +1172,49 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                       </div>
                     </div>
                   )}
+
+
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Final Exam Display - Independent of content selection */}
+            {showFinalExam && finalExamData && (
+              <Card className="mb-6">
+                <div className="px-5 py-4 border-b border-gray-200">
+                  <h3 className="text-lg font-medium text-gray-800">Final Examination</h3>
+                </div>
+                <CardContent className="p-5">
+                  <FinalExamForm
+                    title={finalExamData.title}
+                    description={finalExamData.description}
+                    questions={finalExamData.questions}
+                    onSubmit={handleFinalExamSubmit}
+                    onCancel={handleFinalExamCancel}
+                  />
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Final Exam Results Display - Independent of content selection */}
+            {finalExamResults && (
+              <Card className="mb-6">
+                <div className="px-5 py-4 border-b border-gray-200">
+                  <h3 className="text-lg font-medium text-gray-800">Final Exam Results</h3>
+                </div>
+                <CardContent className="p-5">
+                  <FinalExamResults
+                    score={finalExamResults.score}
+                    maxScore={finalExamResults.maxScore}
+                    percentage={finalExamResults.percentage}
+                    passed={finalExamResults.passed}
+                    attemptNumber={finalExamResults.attemptNumber}
+                    correctAnswers={finalExamResults.correctAnswers}
+                    totalQuestions={finalExamResults.totalQuestions}
+                    questionResults={finalExamResults.questionResults}
+                    onClose={() => setFinalExamResults(null)}
+                    requiresManualGrading={finalExamResults.requiresManualGrading}
+                  />
                 </CardContent>
               </Card>
             )}
@@ -1175,47 +1258,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
 
 
 
-      {/* Final Exam Modal */}
-      {showFinalExam && finalExamData && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-          <div className="bg-white rounded-lg w-full max-w-6xl max-h-[95vh] overflow-y-auto">
-            <FinalExamForm
-              title={finalExamData.title}
-              description={finalExamData.description}
-              questions={finalExamData.questions}
-              passingScore={finalExamData.passingScore}
-              remainingAttempts={finalExamData.remainingAttempts}
-              onSubmit={handleFinalExamSubmit}
-              onCancel={handleFinalExamCancel}
-            />
-          </div>
-        </div>
-      )}
 
-      {/* Final Exam Results Modal */}
-      {finalExamResults && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-          <div className="bg-white rounded-lg w-full max-w-6xl max-h-[95vh] overflow-y-auto p-6">
-            <FinalExamResults
-              score={finalExamResults.score}
-              maxScore={finalExamResults.maxScore}
-              percentage={finalExamResults.percentage}
-              passed={finalExamResults.passed}
-              passingScore={finalExamResults.passingScore}
-              attemptNumber={finalExamResults.attemptNumber}
-              remainingAttempts={finalExamResults.remainingAttempts}
-              correctAnswers={finalExamResults.correctAnswers}
-              totalQuestions={finalExamResults.totalQuestions}
-              questionResults={finalExamResults.questionResults}
-              onClose={() => setFinalExamResults(null)}
-              onRetry={finalExamResults.remainingAttempts > 0 ? () => {
-                setFinalExamResults(null);
-                setShowFinalExam(true);
-              } : undefined}
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 }

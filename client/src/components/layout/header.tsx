@@ -33,7 +33,7 @@ const ADMIN_LINKS: NavLink[] = [
   { label: "Live Classes",      href: "/admin/live-classes" },
   { label: "Recordings",        href: "/admin/recordings" },
   { label: "Quiz Scores",       href: "/admin/quiz-scores" },
-  { label: "Final Exams",       href: "/admin/final-examinations" },
+  { label: "Exam Results",      href: "/admin/exam-results" },
 ];
 
 // Utility button component

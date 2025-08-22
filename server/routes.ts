@@ -158,6 +158,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/student/final-exam/:courseSlug", auth, requireStudent, finalExamController.getStudentFinalExam);
   app.post("/api/student/final-exam/submit", auth, requireStudent, finalExamController.submitFinalExamAttempt);
   app.get("/api/student/final-exam/:courseSlug/attempts", auth, requireStudent, finalExamController.getStudentFinalExamAttempts);
+  
+  // Admin final exam results routes
+  app.get("/api/admin/exam-results", auth, requireAdmin, finalExamController.getAllStudentExamResults);
+  app.post("/api/admin/exam-results/update-score", auth, requireAdmin, finalExamController.updateStudentExamScore);
+  app.get("/api/admin/exam-results/:studentId/:courseSlug/:attemptNumber", auth, requireAdmin, finalExamController.getStudentExamSubmission);
 
   const httpServer = createServer(app);
 

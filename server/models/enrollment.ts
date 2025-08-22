@@ -17,11 +17,15 @@ interface IQuizAttempt {
 
 interface IFinalExamAttempt {
   examId: string;
-  score: number;
+  score?: number;
   maxScore: number;
   attemptedAt: Date;
-  passed: boolean;
+  passed?: boolean;
   attemptNumber: number;
+  requiresManualGrading?: boolean;
+  answers?: any[];
+  gradedBy?: string;
+  gradedAt?: Date;
 }
 
 export interface IEnrollment {
@@ -72,11 +76,15 @@ const EnrollmentSchema = new Schema<IEnrollmentDocument>({
   
   finalExamAttempts: [{
     examId: { type: String, required: true },
-    score: { type: Number, required: true },
+    score: { type: Number },
     maxScore: { type: Number, required: true },
     attemptedAt: { type: Date, default: Date.now },
-    passed: { type: Boolean, required: true },
-    attemptNumber: { type: Number, required: true }
+    passed: { type: Boolean },
+    attemptNumber: { type: Number, required: true },
+    requiresManualGrading: { type: Boolean, default: false },
+    answers: [{ type: Schema.Types.Mixed }],
+    gradedBy: { type: String },
+    gradedAt: { type: Date }
   }]
 }, { timestamps: true });
 

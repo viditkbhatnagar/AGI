@@ -16,63 +16,59 @@ interface FinalExamResultsProps {
   maxScore: number;
   percentage: number;
   passed: boolean;
-  passingScore: number;
   attemptNumber: number;
-  remainingAttempts: number;
   correctAnswers: number;
   totalQuestions: number;
   questionResults: QuestionResult[];
   onClose: () => void;
-  onRetry?: () => void;
+  requiresManualGrading?: boolean;
 }
 
 const FinalExamResults: React.FC<FinalExamResultsProps> = ({
   score,
   percentage,
   passed,
-  passingScore,
   attemptNumber,
-  remainingAttempts,
   correctAnswers,
   totalQuestions,
   questionResults,
   onClose,
-  onRetry
+  requiresManualGrading
 }) => {
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
       {/* Overall Result Card */}
-      <Card className={passed ? 'border-green-500' : 'border-red-500'}>
+      <Card className={passed === true ? 'border-green-500' : passed === false ? 'border-red-500' : 'border-yellow-500'}>
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            {passed ? (
+            {passed === true ? (
               <Trophy className="h-16 w-16 text-yellow-500" />
+            ) : requiresManualGrading ? (
+              <AlertCircle className="h-16 w-16 text-blue-500" />
             ) : (
               <AlertCircle className="h-16 w-16 text-red-500" />
             )}
           </div>
           <CardTitle className="text-3xl">
-            {passed ? 'Congratulations!' : 'Keep Trying!'}
+            {passed === true ? 'Congratulations!' : 
+             requiresManualGrading ? 'Exam Submitted!' : 
+             'Exam Completed'}
           </CardTitle>
           <p className="text-lg text-gray-600 mt-2">
-            {passed 
+            {passed === true 
               ? 'You have passed the final examination!' 
-              : 'You did not pass this time, but you can try again.'}
+              : requiresManualGrading
+              ? 'Your exam has been submitted and is awaiting review.'
+              : 'Your exam has been completed.'}
           </p>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          <div className="grid grid-cols-2 gap-4 text-center">
             <div>
               <p className="text-sm text-gray-500">Your Score</p>
-              <p className="text-2xl font-bold">{percentage}%</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Passing Score</p>
-              <p className="text-2xl font-bold">{passingScore}%</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Correct Answers</p>
-              <p className="text-2xl font-bold">{correctAnswers}/{totalQuestions}</p>
+              <p className="text-2xl font-bold">
+                {requiresManualGrading ? 'Pending Review' : `${percentage}%`}
+              </p>
             </div>
             <div>
               <p className="text-sm text-gray-500">Attempt</p>
@@ -80,21 +76,12 @@ const FinalExamResults: React.FC<FinalExamResultsProps> = ({
             </div>
           </div>
 
-          {!passed && remainingAttempts > 0 && (
+          {requiresManualGrading && (
             <Alert className="mt-4">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                You have {remainingAttempts} attempt{remainingAttempts !== 1 ? 's' : ''} remaining. 
-                Review your answers below and try again when you're ready.
-              </AlertDescription>
-            </Alert>
-          )}
-
-          {!passed && remainingAttempts === 0 && (
-            <Alert className="mt-4" variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                You have used all your attempts for this examination.
+                Your exam contains essay questions that require manual grading. 
+                You will see your final score once the review is complete.
               </AlertDescription>
             </Alert>
           )}
@@ -133,7 +120,7 @@ const FinalExamResults: React.FC<FinalExamResultsProps> = ({
                       {result.yourAnswer}
                     </span>
                   </p>
-                  {!result.isCorrect && (
+                  {!result.isCorrect && result.correctAnswer && (
                     <p>
                       <span className="font-medium">Correct answer:</span>{' '}
                       <span className="text-green-700">{result.correctAnswer}</span>
@@ -151,11 +138,6 @@ const FinalExamResults: React.FC<FinalExamResultsProps> = ({
         <Button variant="outline" onClick={onClose}>
           Close
         </Button>
-        {!passed && remainingAttempts > 0 && onRetry && (
-          <Button onClick={onRetry}>
-            Try Again ({remainingAttempts} attempts left)
-          </Button>
-        )}
       </div>
     </div>
   );

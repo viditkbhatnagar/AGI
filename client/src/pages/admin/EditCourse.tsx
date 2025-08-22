@@ -9,9 +9,11 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Trash2, Plus, Video, FileText, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Trash2, Plus, Video, FileText, HelpCircle, ChevronDown, ChevronUp, GraduationCap, Upload, X, Loader2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
+import { uploadToCloudinary, validateFile, FILE_TYPES, FileUploadResponse, createDownloadLink } from '@/lib/cloudinary';
 
 interface VideoForm {
   title: string;
@@ -51,6 +53,636 @@ interface CourseForm {
     dayOfWeek: string;
     durationMin: number;
   };
+}
+
+interface FinalExamQuestion {
+  type: 'mcq' | 'essay';
+  text?: string;
+  choices?: string[];
+  correctIndex?: number;
+  questionDocument?: {
+    title: string;
+    url: string;
+    type: 'word' | 'pdf' | 'ppt' | 'image' | 'excel' | 'csv' | 'textbox';
+    fileName: string;
+  };
+  allowedAnswerFormats?: ('word' | 'powerpoint' | 'pdf' | 'excel' | 'csv' | 'image')[];
+}
+
+interface FinalExam {
+  _id?: string;
+  courseSlug: string;
+  title: string;
+  description?: string;
+  questions: FinalExamQuestion[];
+}
+
+function FinalExaminationSection({ courseSlug }: { courseSlug: string }) {
+  const [showForm, setShowForm] = useState(false);
+  const [finalExam, setFinalExam] = useState<FinalExam | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [uploadingFiles, setUploadingFiles] = useState<Record<number, boolean>>({});
+  const { toast } = useToast();
+
+  // Fetch existing final exam for this course
+  useEffect(() => {
+    const fetchFinalExam = async () => {
+      try {
+        setIsLoading(true);
+        const token = localStorage.getItem('token');
+        const response = await fetch(`/api/admin/final-exams/${courseSlug}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        });
+        
+        if (response.ok) {
+          const exam = await response.json();
+          setFinalExam(exam);
+        } else if (response.status !== 404) {
+          // Only show error if it's not a 404 (which means no exam exists)
+          console.error('Failed to fetch final exam');
+        }
+      } catch (error) {
+        console.error('Error fetching final exam:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (courseSlug) {
+      fetchFinalExam();
+    }
+  }, [courseSlug]);
+
+  const initializeNewExam = () => {
+    setFinalExam({
+      courseSlug,
+      title: 'Final Examination',
+      description: '',
+      questions: [{
+        type: 'mcq',
+        text: '',
+        choices: ['', '', '', ''],
+        correctIndex: 0
+      }]
+    });
+    setShowForm(true);
+  };
+
+  const addQuestion = (type: 'mcq' | 'essay') => {
+    if (!finalExam) return;
+    
+    const newQuestion: FinalExamQuestion = {
+      type,
+      ...(type === 'mcq' 
+        ? { 
+            text: '',
+            choices: ['', '', '', ''], 
+            correctIndex: 0 
+          }
+        : { 
+            questionDocument: {
+              title: '',
+              url: '',
+              type: 'pdf',
+              fileName: ''
+            },
+            allowedAnswerFormats: ['pdf']
+          }
+      )
+    };
+    
+    setFinalExam({
+      ...finalExam,
+      questions: [...finalExam.questions, newQuestion]
+    });
+  };
+
+  const updateQuestion = (index: number, field: string, value: any) => {
+    if (!finalExam) return;
+    
+    const updatedQuestions = [...finalExam.questions];
+    updatedQuestions[index] = {
+      ...updatedQuestions[index],
+      [field]: value
+    };
+    
+    setFinalExam({
+      ...finalExam,
+      questions: updatedQuestions
+    });
+  };
+
+  const updateChoice = (questionIndex: number, choiceIndex: number, value: string) => {
+    if (!finalExam) return;
+    
+    const updatedQuestions = [...finalExam.questions];
+    const question = updatedQuestions[questionIndex];
+    if (question.type === 'mcq' && question.choices) {
+      question.choices[choiceIndex] = value;
+    }
+    
+    setFinalExam({
+      ...finalExam,
+      questions: updatedQuestions
+    });
+  };
+
+  const removeQuestion = (index: number) => {
+    if (!finalExam || finalExam.questions.length <= 1) return;
+    
+    setFinalExam({
+      ...finalExam,
+      questions: finalExam.questions.filter((_, i) => i !== index)
+    });
+  };
+
+  const toggleAnswerFormat = (questionIndex: number, format: string) => {
+    if (!finalExam) return;
+    
+    const updatedQuestions = [...finalExam.questions];
+    const question = updatedQuestions[questionIndex];
+    
+    if (question.type === 'essay') {
+      const currentFormats = question.allowedAnswerFormats || [];
+      const newFormats = currentFormats.includes(format as any)
+        ? currentFormats.filter(f => f !== format)
+        : [...currentFormats, format as any];
+      
+      question.allowedAnswerFormats = newFormats;
+    }
+    
+    setFinalExam({
+      ...finalExam,
+      questions: updatedQuestions
+    });
+  };
+
+  const handleQuestionDocumentUpload = async (questionIndex: number, file: File) => {
+    if (!finalExam) return;
+
+    // Validate file before upload
+    const validation = validateFile(file, {
+      maxSizeMB: 10, // Cloudinary free tier limit
+      allowedTypes: FILE_TYPES.ALL_UPLOADS
+    });
+
+    if (!validation.isValid) {
+      toast({
+        title: 'Upload Error',
+        description: validation.error,
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    // Set loading state for this specific question
+    setUploadingFiles(prev => ({ ...prev, [questionIndex]: true }));
+
+    try {
+      // Upload to Cloudinary
+      const uploadResult: FileUploadResponse = await uploadToCloudinary(file, 'question-documents');
+      
+      const updatedQuestions = [...finalExam.questions];
+      const question = updatedQuestions[questionIndex];
+      
+      if (question.type === 'essay' && question.questionDocument) {
+        question.questionDocument.title = uploadResult.fileName;
+        question.questionDocument.url = uploadResult.url;
+        question.questionDocument.fileName = uploadResult.fileName;
+        question.questionDocument.type = getFileType(uploadResult.fileName);
+      }
+      
+      setFinalExam({
+        ...finalExam,
+        questions: updatedQuestions
+      });
+
+      toast({
+        title: 'Upload Successful',
+        description: `${uploadResult.fileName} has been uploaded successfully.`
+      });
+
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast({
+        title: 'Upload Failed',
+        description: error instanceof Error ? error.message : 'Failed to upload file. Please try again.',
+        variant: 'destructive'
+      });
+    } finally {
+      // Remove loading state
+      setUploadingFiles(prev => ({ ...prev, [questionIndex]: false }));
+    }
+  };
+
+  const getFileType = (fileName: string): 'word' | 'pdf' | 'ppt' | 'image' | 'excel' | 'csv' | 'textbox' => {
+    const ext = fileName.toLowerCase().split('.').pop();
+    switch (ext) {
+      case 'doc':
+      case 'docx':
+        return 'word';
+      case 'pdf':
+        return 'pdf';
+      case 'ppt':
+      case 'pptx':
+        return 'ppt';
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+        return 'image';
+      case 'xls':
+      case 'xlsx':
+        return 'excel';
+      case 'csv':
+        return 'csv';
+      default:
+        return 'pdf';
+    }
+  };
+
+  const saveFinalExam = async () => {
+    if (!finalExam) return;
+    
+    setIsSaving(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/admin/final-exams', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` })
+        },
+        body: JSON.stringify(finalExam)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save final examination');
+      }
+
+      toast({
+        title: "Success",
+        description: "Final examination saved successfully!",
+      });
+
+      setShowForm(false);
+    } catch (error) {
+      console.error('Error saving final exam:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save final examination",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const deleteFinalExam = async () => {
+    if (!finalExam || !confirm('Are you sure you want to delete this final examination?')) return;
+    
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/admin/final-exams/${courseSlug}`, {
+        method: 'DELETE',
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete final examination');
+      }
+
+      toast({
+        title: "Success",
+        description: "Final examination deleted successfully!",
+      });
+
+      setFinalExam(null);
+      setShowForm(false);
+    } catch (error) {
+      console.error('Error deleting final exam:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete final examination",
+        variant: "destructive",
+      });
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <GraduationCap className="h-5 w-5 mr-2" />
+            Final Examination
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="animate-pulse">
+            <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center justify-between">
+          <div className="flex items-center">
+            <GraduationCap className="h-5 w-5 mr-2" />
+            Final Examination
+          </div>
+          {finalExam && !showForm && (
+            <div className="flex space-x-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setShowForm(true)}
+              >
+                Edit
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={deleteFinalExam}
+                className="text-red-600 hover:text-red-700"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {!finalExam && !showForm ? (
+          <div className="text-center py-8">
+            <GraduationCap className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-500 mb-4">No final examination created for this course.</p>
+            <Button type="button" onClick={initializeNewExam}>
+              <Plus className="h-4 w-4 mr-2" />
+              Create Final Examination
+            </Button>
+          </div>
+        ) : !showForm && finalExam ? (
+          <div className="space-y-4">
+            <div>
+              <h3 className="font-semibold text-lg">{finalExam.title}</h3>
+              {finalExam.description && (
+                <p className="text-gray-600 mt-1">{finalExam.description}</p>
+              )}
+            </div>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="text-gray-500">Questions:</span>
+                <div className="font-medium">{finalExam.questions.length}</div>
+              </div>
+              <div>
+                <span className="text-gray-500">Question Types:</span>
+                <div className="font-medium">
+                  {finalExam.questions.map(q => q.type).join(', ')}
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {/* Basic Exam Info */}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>Examination Title *</Label>
+                <Input
+                  value={finalExam?.title || ''}
+                  onChange={(e) => setFinalExam(prev => prev ? { ...prev, title: e.target.value } : null)}
+                  placeholder="Final Examination"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Description</Label>
+                <Textarea
+                  value={finalExam?.description || ''}
+                  onChange={(e) => setFinalExam(prev => prev ? { ...prev, description: e.target.value } : null)}
+                  placeholder="Instructions for the examination..."
+                  rows={3}
+                />
+              </div>
+            </div>
+
+            {/* Questions */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label className="text-lg font-semibold">Questions</Label>
+                <div className="flex space-x-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => addQuestion('mcq')}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add MCQ
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => addQuestion('essay')}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Essay
+                  </Button>
+                </div>
+              </div>
+
+              {finalExam?.questions.map((question, qIndex) => (
+                <Card key={qIndex} className={`border-l-4 ${question.type === 'mcq' ? 'border-l-blue-500' : 'border-l-green-500'}`}>
+                  <CardHeader>
+                    <div className="flex justify-between items-start">
+                      <div className="flex items-center space-x-2">
+                        <Badge variant={question.type === 'mcq' ? 'default' : 'secondary'}>
+                          {question.type === 'mcq' ? 'Multiple Choice' : 'Essay/Long Answer'}
+                        </Badge>
+                        <span className="text-sm text-gray-500">Question {qIndex + 1}</span>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeQuestion(qIndex)}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {question.type === 'mcq' && (
+                      <>
+                        <div className="space-y-2">
+                          <Label>Question Text *</Label>
+                          <Textarea
+                            value={question.text || ''}
+                            onChange={(e) => updateQuestion(qIndex, 'text', e.target.value)}
+                            placeholder="Enter your question here..."
+                            rows={2}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Answer Choices</Label>
+                          {question.choices?.map((choice, cIndex) => (
+                            <div key={cIndex} className="flex items-center space-x-2">
+                              <input
+                                type="radio"
+                                name={`correct-${qIndex}`}
+                                checked={question.correctIndex === cIndex}
+                                onChange={() => updateQuestion(qIndex, 'correctIndex', cIndex)}
+                              />
+                              <Input
+                                value={choice}
+                                onChange={(e) => updateChoice(qIndex, cIndex, e.target.value)}
+                                placeholder={`Option ${String.fromCharCode(65 + cIndex)}`}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    )}
+
+                    {question.type === 'essay' && (
+                      <>
+                        <div className="space-y-2">
+                          <Label>Description</Label>
+                          <Textarea
+                            value={question.questionDocument?.title || ''}
+                            onChange={(e) => updateQuestion(qIndex, 'questionDocument', {
+                              ...question.questionDocument,
+                              title: e.target.value
+                            })}
+                            placeholder="Brief description or instructions for this question..."
+                            rows={2}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Question Document *</Label>
+                          <div className={`border-2 border-dashed border-gray-300 rounded-lg p-6 text-center ${
+                            uploadingFiles[qIndex] ? 'bg-gray-50' : ''
+                          }`}>
+                            {uploadingFiles[qIndex] ? (
+                              <div className="flex flex-col items-center">
+                                <Loader2 className="h-8 w-8 text-blue-500 animate-spin mx-auto mb-2" />
+                                <p className="text-sm text-blue-600">Uploading...</p>
+                              </div>
+                            ) : (
+                              <>
+                                <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                                <input
+                                  type="file"
+                                  accept=".doc,.docx,.pdf,.ppt,.pptx,.xls,.xlsx,.csv,.jpg,.jpeg,.png,.gif,.webp"
+                                  onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) handleQuestionDocumentUpload(qIndex, file);
+                                  }}
+                                  className="hidden"
+                                  id={`question-document-${qIndex}`}
+                                  disabled={uploadingFiles[qIndex]}
+                                />
+                                <label
+                                  htmlFor={`question-document-${qIndex}`}
+                                  className={`cursor-pointer text-blue-600 hover:text-blue-800 ${
+                                    uploadingFiles[qIndex] ? 'pointer-events-none opacity-50' : ''
+                                  }`}
+                                >
+                                  Click to upload question document
+                                </label>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  Supports: Word, PDF, PowerPoint, Excel, CSV, Images (Max 10MB)
+                                </p>
+                              </>
+                            )}
+                            {question.questionDocument?.fileName && (
+                              <div className="mt-3 p-2 bg-green-50 rounded border border-green-200">
+                                <p className="text-sm text-green-700 font-medium">
+                                  ✓ Uploaded: {question.questionDocument.fileName}
+                                </p>
+                                {question.questionDocument.url && (
+                                  <button
+                                    onClick={() => {
+                                      if (question.questionDocument?.url) {
+                                        createDownloadLink(question.questionDocument.url, question.questionDocument.fileName);
+                                      }
+                                    }}
+                                    className="text-xs text-blue-600 hover:text-blue-800 underline bg-transparent border-none cursor-pointer"
+                                  >
+                                    View/Download
+                                  </button>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          <Label>Allowed Answer Formats for Students</Label>
+                          <div className="grid grid-cols-2 md:grid-cols-6 gap-2">
+                            {['word', 'powerpoint', 'pdf', 'excel', 'csv', 'image'].map((format) => (
+                              <div key={format} className="flex items-center space-x-2">
+                                <Checkbox
+                                  checked={question.allowedAnswerFormats?.includes(format as any) || false}
+                                  onCheckedChange={() => toggleAnswerFormat(qIndex, format)}
+                                />
+                                <span className="text-sm capitalize">{format}</span>
+                              </div>
+                            ))}
+                          </div>
+                          <p className="text-xs text-gray-500">
+                            Select the file formats students can upload as their answer sheets
+                          </p>
+                        </div>
+                      </>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-end space-x-2 pt-4 border-t">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowForm(false)}
+                disabled={isSaving}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                onClick={saveFinalExam}
+                disabled={isSaving}
+              >
+                {isSaving ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Saving...
+                  </>
+                ) : (
+                  'Save Final Examination'
+                )}
+              </Button>
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
 }
 
 function EditCourseForm({ courseSlug }: { courseSlug: string }) {
@@ -818,6 +1450,9 @@ function EditCourseForm({ courseSlug }: { courseSlug: string }) {
                 );
               })}
             </div>
+
+            {/* Final Examination Section */}
+            <FinalExaminationSection courseSlug={courseSlug} />
 
             <div className="flex space-x-3 pt-6">
               <Button type="submit" disabled={saving} className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50">

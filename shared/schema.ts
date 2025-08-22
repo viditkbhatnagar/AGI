@@ -220,17 +220,40 @@ export type QuizAttempt = {
 export type FinalExamAttempt = {
   examId: string;
   attemptedAt: string;
-  score: number;
+  score?: number; // Optional for essay questions, set by admin later
   maxScore: number;
-  passed: boolean;
+  passed?: boolean; // Optional for essay questions, determined after grading
   attemptNumber: number;
+  answers: (number | {
+    type: 'file' | 'text';
+    content: string; // For text answers or file URL
+    fileName?: string; // For file uploads
+  })[];
+  requiresManualGrading: boolean;
+  gradedBy?: string; // Admin who graded this attempt
+  gradedAt?: string; // When it was graded
 };
 
-export type FinalExamQuestion = {
+// Final Exam Question Types
+export type FinalExamMCQQuestion = {
+  type: 'mcq';
   text: string;
   choices: string[];
   correctIndex: number;
 };
+
+export type FinalExamEssayQuestion = {
+  type: 'essay';
+  questionDocument: {
+    title: string;
+    url: string;
+    type: 'word' | 'pdf' | 'ppt' | 'image' | 'excel' | 'csv' | 'textbox';
+    fileName: string;
+  };
+  allowedAnswerFormats: ('word' | 'powerpoint' | 'pdf' | 'excel' | 'csv' | 'image')[];
+};
+
+export type FinalExamQuestion = FinalExamMCQQuestion | FinalExamEssayQuestion;
 
 export type FinalExamination = {
   id: string;
@@ -238,9 +261,6 @@ export type FinalExamination = {
   title: string;
   description?: string;
   questions: FinalExamQuestion[];
-  passingScore: number;
-  maxAttempts: number;
-  isActive: boolean;
   createdAt: string;
   updatedAt: string;
 };
