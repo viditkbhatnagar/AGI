@@ -14,9 +14,15 @@ interface StudentOption {
   name: string;
 }
 
+interface ModuleOption {
+  index: number;
+  title: string;
+}
+
 export default function ScheduleLiveClass() {
   const [, setLocation] = useLocation();
   const [courses, setCourses] = useState<CourseOption[]>([]);
+  const [modules, setModules] = useState<ModuleOption[]>([]);
   const [allStudents, setAllStudents] = useState<StudentOption[]>([]);
   const [availableStudents, setAvailableStudents] = useState<StudentOption[]>([]);
   const [loading, setLoading] = useState(true);
@@ -35,7 +41,8 @@ export default function ScheduleLiveClass() {
       title: '',
       description: '',
       startTime: '',
-      endTime: ''
+      endTime: '',
+      moduleIndex: -1
     }
   ]);
 
@@ -76,6 +83,35 @@ export default function ScheduleLiveClass() {
       }
     })();
   }, []);
+
+  // Fetch modules when course is selected
+  useEffect(() => {
+    if (!form.courseSlug) {
+      setModules([]);
+      return;
+    }
+    
+    (async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch(`/api/courses/${form.courseSlug}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        });
+        if (!res.ok) {
+          throw new Error('Failed to fetch course');
+        }
+        const course = await res.json();
+        const moduleOptions: ModuleOption[] = course.modules.map((module: any, index: number) => ({
+          index,
+          title: module.title
+        }));
+        setModules(moduleOptions);
+      } catch (err) {
+        console.error('Error fetching course modules:', err);
+        setModules([]);
+      }
+    })();
+  }, [form.courseSlug]);
 
   useEffect(() => {
     if (!form.courseSlug) {
@@ -123,7 +159,11 @@ export default function ScheduleLiveClass() {
   const handleSessionChange = (index: number, field: string, value: string) => {
     setSessions(prev => {
       const copy = [...prev];
-      (copy[index] as any)[field] = value;
+      if (field === 'moduleIndex') {
+        (copy[index] as any)[field] = parseInt(value);
+      } else {
+        (copy[index] as any)[field] = value;
+      }
       return copy;
     });
   };
@@ -132,6 +172,16 @@ export default function ScheduleLiveClass() {
     e.preventDefault();
     setSaving(true);
     setError(null);
+    
+    // Validate module selection for each session
+    for (let i = 0; i < sessions.length; i++) {
+      if (sessions[i].moduleIndex < 0) {
+        setError(`Please select a module for Session ${i + 1}`);
+        setSaving(false);
+        return;
+      }
+    }
+    
     try {
       const token = localStorage.getItem('token');
       for (const sess of sessions) {
@@ -146,7 +196,8 @@ export default function ScheduleLiveClass() {
           meetLink: form.meetLink,
           startTime,
           endTime,
-          studentIds: form.studentIds
+          studentIds: form.studentIds,
+          moduleIndex: sess.moduleIndex
         };
         const res = await fetch('/api/live-classes', {
           method: 'POST',
@@ -271,6 +322,27 @@ export default function ScheduleLiveClass() {
                   {sessions.map((sess, idx) => (
                     <div key={idx} className="space-y-4 border p-4 rounded">
                       <h3 className="font-bold">Session {idx + 1}</h3>
+                      
+                      {/* Module selection for this session */}
+                      <div>
+                        <label className="block text-sm font-medium">Module</label>
+                        <select
+                          name="moduleIndex"
+                          required
+                          className="mt-1 block w-full px-3 py-2 border rounded-md bg-white"
+                          value={sess.moduleIndex}
+                          onChange={(e) => handleSessionChange(idx, 'moduleIndex', e.target.value)}
+                          disabled={!form.courseSlug || modules.length === 0}
+                        >
+                          <option value={-1}>Select a module</option>
+                          {modules.map(m => (
+                            <option key={m.index} value={m.index}>
+                              Module {m.index + 1}: {m.title}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      
                       <Input
                         label="Title"
                         name="title"
@@ -309,7 +381,7 @@ export default function ScheduleLiveClass() {
                     <Button
                       variant="outline"
                       type="button"
-                      onClick={() => setSessions(prev => [...prev, { title:'', description:'', startTime:'', endTime:'' }])}
+                      onClick={() => setSessions(prev => [...prev, { title:'', description:'', startTime:'', endTime:'', moduleIndex: -1 }])}
                     >
                       + Add Session
                     </Button>

@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface ILiveClass {
   courseSlug: string;
+  moduleIndex: number; // Index of the module this live class belongs to
   title: string;
   description?: string;
   meetLink: string;
@@ -18,6 +19,11 @@ const LiveClassSchema = new Schema<ILiveClassDocument>({
     type: String, 
     required: true,
     index: true 
+  },
+  moduleIndex: { 
+    type: Number, 
+    required: true,
+    default: 0 // Default to first module for backward compatibility
   },
   title: { 
     type: String, 

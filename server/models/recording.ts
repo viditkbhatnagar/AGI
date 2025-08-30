@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IRecording {
   courseSlug: string;
+  moduleIndex: number; // Index of the module this recording belongs to
   classDate: Date; // Date the class was taught
   title: string;
   description?: string;
@@ -18,6 +19,11 @@ const RecordingSchema = new Schema<IRecordingDocument>({
     type: String, 
     required: true,
     index: true 
+  },
+  moduleIndex: { 
+    type: Number, 
+    required: true,
+    default: 0 // Default to first module for backward compatibility
   },
   classDate: {
     type: Date,
@@ -52,7 +58,7 @@ const RecordingSchema = new Schema<IRecordingDocument>({
 }, { timestamps: true });
 
 // Create compound index for better query performance
-RecordingSchema.index({ courseSlug: 1, classDate: 1 });
+RecordingSchema.index({ courseSlug: 1, moduleIndex: 1, classDate: 1 });
 RecordingSchema.index({ uploadedBy: 1 });
 
 export const Recording = mongoose.model<IRecordingDocument>('Recording', RecordingSchema); 

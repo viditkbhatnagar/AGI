@@ -2,9 +2,16 @@ import React, { useEffect, useState } from "react";
 import logo from "@/components/layout/AGI Logo.png";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Bell, User, LogOut, Menu } from "lucide-react";
+import { User, LogOut, Menu, UserIcon, HelpCircle } from "lucide-react";
 import { useAuth } from "@/lib/auth-provider";
 import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface HeaderProps {
   onMobileMenuToggle?: () => void;
@@ -19,10 +26,6 @@ interface NavLink {
 const STUDENT_LINKS: NavLink[] = [
   { label: "Overview",     href: "/student" },
   { label: "My Courses",   href: "/student/courses" },
-  { label: "Live Classes", href: "/student/live-classes" },
-  { label: "Recordings",   href: "/student/recordings" },
-  { label: "Profile",      href: "/student/profile" },
-  { label: "Support",      href: "/student/support" },
 ];
 
 const ADMIN_LINKS: NavLink[] = [
@@ -34,7 +37,6 @@ const ADMIN_LINKS: NavLink[] = [
   { label: "Recordings",        href: "/admin/recordings" },
   { label: "Quiz Scores",       href: "/admin/quiz-scores" },
   { label: "Exam Results",      href: "/admin/exam-results" },
-  { label: "WhatsApp Bot",      href: "/admin/whatsapp" },
 ];
 
 // Utility button component
@@ -66,7 +68,7 @@ const NavItem = ({ href, label }: NavLink) => {
     <Link
       href={href}
       className={cn(
-        "text-2xl font-semibold transition-colors",
+        "text-xl lg:text-2xl xl:text-3xl font-semibold transition-colors whitespace-nowrap",
         isActive
           ? "text-[#375BBE] font-semibold"
           : "text-[#375BBE]/80 hover:text-[#375BBE]"
@@ -82,7 +84,6 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
   const { userRole, logout } = useAuth();
   const [location, navigate] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [notificationCount, setNotificationCount] = useState(0); // Add notification state
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 1000);
@@ -106,10 +107,15 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
     setMobileOpen(false);
   };
 
+  const handleSupportClick = () => {
+    navigate(userRole === "admin" ? "/admin/support" : "/student/support");
+    setMobileOpen(false);
+  };
+
   return (
     <>
-      <header className="bg-[#FEFDF7] shadow-sm h-24 flex flex-col relative px-6 py-2">
-        <div className="hidden md:block absolute inset-x-0 top-1 text-center text-sm md:text-base font-medium text-[#375BBE]">
+      <header className="bg-[#FEFDF7] shadow-sm h-20 sm:h-24 flex flex-col relative px-4 sm:px-6 py-2">
+        <div className="hidden lg:block absolute inset-x-0 top-1 text-center text-sm font-medium text-[#375BBE]">
           {now.toLocaleString(undefined, {
             weekday: "short",
             year: "numeric",
@@ -121,50 +127,74 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
           })}
         </div>
 
-        <div className="flex items-center md:items-end justify-between flex-1 pb-2">
+        <div className="flex items-center justify-between flex-1 lg:items-end lg:pb-2">
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden mr-2"
+            className="md:hidden mr-2 p-2"
             onClick={() => {
               if (onMobileMenuToggle) onMobileMenuToggle();
               setMobileOpen((prev) => !prev);
             }}
             title="Menu"
           >
-            <Menu className="h-8 w-8 text-[#375BBE]" />
+            <Menu className="h-6 w-6 sm:h-7 sm:w-7 text-[#375BBE]" />
           </Button>
 
-          <Link href={userRole === "admin" ? "/admin" : "/student"}>
-            <img
-              src={logo}
-              alt="AGI Logo"
-              className="h-16 md:h-20 lg:h-22 w-auto cursor-pointer hover:opacity-90 transition-opacity"
-            />
-          </Link>
+          <div className="flex-shrink-0">
+            <Link href={userRole === "admin" ? "/admin" : "/student"}>
+              <img
+                src={logo}
+                alt="AGI Logo"
+                className="h-12 sm:h-14 md:h-16 lg:h-18 xl:h-20 w-auto cursor-pointer hover:opacity-90 transition-opacity"
+              />
+            </Link>
+          </div>
 
-          <nav className="hidden md:flex space-x-8 lg:space-x-12 mb-1">
+          <nav className="hidden md:flex items-center space-x-6 lg:space-x-10 xl:space-x-14 flex-1 justify-center">
             {links.map((link) => (
               <NavItem key={link.href} {...link} />
             ))}
           </nav>
 
-          <div className="flex items-center space-x-6">
-            <UtilityButton
-              icon={<Bell className="h-12 w-12 text-[#375BBE]" />}
-              title="Notifications"
-              onClick={() => setNotificationCount(0)}
-            />
-            <UtilityButton
-              icon={<User className="h-12 w-12 text-[#375BBE]" />}
-              title="Profile"
-              onClick={handleProfileClick}
-            />
-            <UtilityButton
-              icon={<LogOut className="h-12 w-12 text-[#375BBE]" />}
-              title="Logout"
-              onClick={handleLogout}
-            />
+          <div className="flex items-center justify-end flex-shrink-0">
+            {/* User Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-12 w-12 sm:h-14 sm:w-14 p-2 hover:bg-[#375BBE]/10 transition-colors"
+                  title="User Menu"
+                >
+                  <User className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 lg:h-11 lg:w-11 text-[#375BBE]" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48 sm:w-56 mt-2">
+                <DropdownMenuItem 
+                  onClick={handleProfileClick}
+                  className="cursor-pointer hover:bg-[#375BBE]/10 transition-colors"
+                >
+                  <UserIcon className="mr-2 h-4 w-4 text-[#375BBE]" />
+                  <span className="text-[#375BBE]">Profile</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={handleSupportClick}
+                  className="cursor-pointer hover:bg-[#375BBE]/10 transition-colors"
+                >
+                  <HelpCircle className="mr-2 h-4 w-4 text-[#375BBE]" />
+                  <span className="text-[#375BBE]">Support</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-[#375BBE]/20" />
+                <DropdownMenuItem 
+                  onClick={handleLogout}
+                  className="cursor-pointer hover:bg-red-50 transition-colors"
+                >
+                  <LogOut className="mr-2 h-4 w-4 text-red-600" />
+                  <span className="text-red-600">Logout</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>
@@ -180,50 +210,57 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
       {/* Drawer */}
       <div
         className={cn(
-          "fixed top-0 left-0 h-full w-64 bg-[#FEFDF7] shadow-lg z-50 transform transition-transform duration-300 ease-in-out md:hidden",
+          "fixed top-0 left-0 h-full w-72 sm:w-80 bg-[#FEFDF7] shadow-lg z-50 transform transition-transform duration-300 ease-in-out md:hidden",
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <div className="pt-24 px-6 flex flex-col space-y-6">
-          {links.map(({ href, label }) => {
-            const isActive =
-              href === location || (href !== "/" && location.startsWith(href));
-            return (
-              <Link
-                key={href}
-                href={href}
-                className={cn(
-                  "text-xl font-semibold",
-                  isActive
-                    ? "text-[#375BBE]"
-                    : "text-[#375BBE]/80 hover:text-[#375BBE]"
-                )}
-                onClick={() => setMobileOpen(false)}
-              >
-                {label}
-              </Link>
-            );
-          })}
+        <div className="pt-20 sm:pt-24 px-6 flex flex-col space-y-6">
+          {/* Mobile Navigation Links */}
+          <div className="space-y-4">
+            {links.map(({ href, label }) => {
+              const isActive =
+                href === location || (href !== "/" && location.startsWith(href));
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={cn(
+                    "block text-xl font-semibold py-2 px-3 rounded-lg transition-all duration-200",
+                    isActive
+                      ? "text-[#375BBE] bg-[#375BBE]/10"
+                      : "text-[#375BBE]/80 hover:text-[#375BBE] hover:bg-[#375BBE]/5"
+                  )}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {label}
+                </Link>
+              );
+            })}
+          </div>
 
-          <div className="flex items-center space-x-6 pt-6">
-            <UtilityButton
-              icon={<Bell className="h-10 w-10 text-[#375BBE]" />}
-              title="Notifications"
-              onClick={() => {
-                setNotificationCount(0);
-                setMobileOpen(false);
-              }}
-            />
-            <UtilityButton
-              icon={<User className="h-10 w-10 text-[#375BBE]" />}
-              title="Profile"
+          {/* Mobile User Actions */}
+          <div className="pt-6 space-y-3 border-t border-[#375BBE]/20">
+            <button
               onClick={handleProfileClick}
-            />
-            <UtilityButton
-              icon={<LogOut className="h-10 w-10 text-[#375BBE]" />}
-              title="Logout"
+              className="flex items-center w-full text-left text-lg font-semibold text-[#375BBE]/80 hover:text-[#375BBE] hover:bg-[#375BBE]/5 transition-all duration-200 py-3 px-3 rounded-lg"
+            >
+              <UserIcon className="mr-3 h-5 w-5" />
+              Profile
+            </button>
+            <button
+              onClick={handleSupportClick}
+              className="flex items-center w-full text-left text-lg font-semibold text-[#375BBE]/80 hover:text-[#375BBE] hover:bg-[#375BBE]/5 transition-all duration-200 py-3 px-3 rounded-lg"
+            >
+              <HelpCircle className="mr-3 h-5 w-5" />
+              Support
+            </button>
+            <button
               onClick={handleLogout}
-            />
+              className="flex items-center w-full text-left text-lg font-semibold text-red-600/80 hover:text-red-600 hover:bg-red-50 transition-all duration-200 py-3 px-3 rounded-lg"
+            >
+              <LogOut className="mr-3 h-5 w-5" />
+              Logout
+            </button>
           </div>
         </div>
       </div>

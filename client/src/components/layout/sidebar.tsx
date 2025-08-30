@@ -124,20 +124,8 @@ export function Sidebar({ className, isMobile, onClose }: SidebarProps) {
               isActive={isActive('/student/courses')} 
               onClick={handleLinkClick}
             />
-            <NavItem 
-              href="/student/live-classes" 
-              icon={<CalendarClock className="h-4 w-4 md:h-5 md:w-5" />} 
-              label="Live Classes" 
-              isActive={isActive('/student/live-classes')} 
-              onClick={handleLinkClick}
-            />
-            <NavItem 
-              href="/student/recordings" 
-              icon={<Video className="h-4 w-4 md:h-5 md:w-5" />} 
-              label="Recordings" 
-              isActive={isActive('/student/recordings')} 
-              onClick={handleLinkClick}
-            />
+
+
             <NavItem 
               href="/student/profile" 
               icon={<UserCircle className="h-4 w-4 md:h-5 md:w-5" />} 

@@ -6,7 +6,6 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { connectDB } from "./db";
 import { startReminderService } from "./services/reminderService";
-import { startWhatsAppBot } from "./services/whatsappService";
 
 // ─── CORS ──────────────────────────────────────────────────────────────
 /**
@@ -104,11 +103,6 @@ app.use((req, res, next) => {
   
   // Start the email reminder service
   startReminderService();
-  
-  // Start WhatsApp bot (only in production or when explicitly enabled)
-  if (process.env.ENABLE_WHATSAPP_BOT === 'true') {
-    startWhatsAppBot();
-  }
   
   const server = await registerRoutes(app);
 

@@ -34,12 +34,22 @@ const getStudentsWithEmails = async (studentIds: mongoose.Types.ObjectId[]) => {
 // Create a new live class
 export const createLiveClass = async (req: Request, res: Response) => {
   try {
-    const { courseSlug, title, description, meetLink, startTime, endTime, studentIds } = req.body;
+    const { courseSlug, moduleIndex, title, description, meetLink, startTime, endTime, studentIds } = req.body;
     
     // Check if course exists
     const course = await Course.findOne({ slug: courseSlug });
     if (!course) {
       return res.status(404).json({ message: 'Course not found' });
+    }
+    
+    // Validate moduleIndex
+    if (moduleIndex === undefined || moduleIndex < 0) {
+      return res.status(400).json({ message: 'moduleIndex is required and must be >= 0' });
+    }
+    
+    // Validate moduleIndex exists in course
+    if (moduleIndex >= course.modules.length) {
+      return res.status(400).json({ message: 'Invalid moduleIndex for this course' });
     }
     
     // Validate and convert studentIds to ObjectId[]
@@ -51,6 +61,7 @@ export const createLiveClass = async (req: Request, res: Response) => {
     // Create new live class
     const newLiveClass = new LiveClass({
       courseSlug,
+      moduleIndex,
       title,
       description: description || '',
       meetLink,
@@ -228,11 +239,45 @@ export const getLiveClassesByCourse = async (req: Request, res: Response) => {
     const { courseSlug } = req.params;
     
     const liveClasses = await LiveClass.find({ courseSlug })
-      .sort({ startTime: 1 });
+      .sort({ moduleIndex: 1, startTime: 1 });
     
     res.status(200).json(liveClasses);
   } catch (error) {
     console.error('Get live classes by course error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Get live classes by course and module
+export const getLiveClassesByCourseAndModule = async (req: Request, res: Response) => {
+  try {
+    const { courseSlug, moduleIndex } = req.params;
+    
+    // For students, we need to filter by studentId as well
+    let query: any = { 
+      courseSlug, 
+      moduleIndex: parseInt(moduleIndex) 
+    };
+    
+    // If this is a student request, filter by student enrollment
+    if (req.user) {
+      // Find the student record for this user
+      const Student = (await import('../models/student')).Student;
+      const student = await Student.findOne({ userId: req.user.id });
+      
+      if (student) {
+        // Only return live classes where this student is enrolled
+        query.studentIds = student._id;
+      } else {
+        return res.status(200).json([]);
+      }
+    }
+    
+    const liveClasses = await LiveClass.find(query).sort({ startTime: 1 });
+    
+    res.status(200).json(liveClasses);
+  } catch (error) {
+    console.error('Get live classes by course and module error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };

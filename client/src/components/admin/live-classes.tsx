@@ -100,6 +100,15 @@ export function LiveClasses() {
     [classEnrollments, studentMap]
   );
 
+  // Function to get module name by course slug and module index
+  const getModuleName = (courseSlug: string, moduleIndex: number): string => {
+    const course = coursesList.find((c: any) => c.slug === courseSlug);
+    if (!course || !course.modules || moduleIndex < 0 || moduleIndex >= course.modules.length) {
+      return 'Unknown Module';
+    }
+    return course.modules[moduleIndex]?.title || 'Unknown Module';
+  };
+
   // Fetch single class details when editId changes
   const { data: editData, isLoading: loadingEdit } = useQuery({
     queryKey: ["live-class", editId],
@@ -476,6 +485,7 @@ const deleteMutation = useMutation({
                 <TableHead className="font-bold">Class Title</TableHead>
                 <TableHead className="font-bold">Class Description</TableHead>
                 <TableHead className="font-bold">Course</TableHead>
+                <TableHead className="font-bold">Module</TableHead>
                 <TableHead className="font-bold">Assigned To</TableHead>
                 <TableHead className="font-bold">Date & Time</TableHead>
                 <TableHead className="font-bold">Duration</TableHead>
@@ -502,6 +512,12 @@ const deleteMutation = useMutation({
                     </TableCell>
                     <TableCell>
                       <div className="text-sm text-gray-500">{liveClass.courseSlug}</div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-sm text-gray-900">
+                        <div className="font-medium">Module {(liveClass.moduleIndex ?? 0) + 1}</div>
+                        <div className="text-xs text-gray-500">{getModuleName(liveClass.courseSlug, liveClass.moduleIndex ?? 0)}</div>
+                      </div>
                     </TableCell>
                     <TableCell className="text-sm text-gray-700 whitespace-normal">
                       {liveClass.studentIds?.length ? (

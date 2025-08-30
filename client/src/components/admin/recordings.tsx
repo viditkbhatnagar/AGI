@@ -17,6 +17,7 @@ import { apiRequest } from '@/lib/queryClient';
 interface Recording {
   _id: string;
   courseSlug: string;
+  moduleIndex: number;
   classDate: string;
   title: string;
   description?: string;
@@ -29,6 +30,12 @@ interface Recording {
 interface Course {
   _id: string;
   slug: string;
+  title: string;
+  modules: Array<{ title: string }>;
+}
+
+interface ModuleOption {
+  index: number;
   title: string;
 }
 
@@ -45,12 +52,25 @@ export function AdminRecordings() {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadForm, setUploadForm] = useState({
     courseSlug: '',
+    moduleIndex: -1,
     classDate: '',
     title: '',
     description: '',
     fileUrl: '',
     isVisible: true
   });
+  
+  // State for modules
+  const [modules, setModules] = useState<ModuleOption[]>([]);
+
+  // Function to get module name by course slug and module index
+  const getModuleName = (courseSlug: string, moduleIndex: number): string => {
+    const course = courses.find((c: Course) => c.slug === courseSlug);
+    if (!course || !course.modules || moduleIndex < 0 || moduleIndex >= course.modules.length) {
+      return 'Unknown Module';
+    }
+    return course.modules[moduleIndex]?.title || 'Unknown Module';
+  };
   const [editingRecording, setEditingRecording] = useState<Recording | null>(null);
   
   // Filter and pagination state
@@ -77,7 +97,34 @@ export function AdminRecordings() {
     queryKey: ['/api/admin/courses'],
   });
 
-  // No longer need live classes since we removed liveClassId
+  // Fetch modules when course is selected
+  useEffect(() => {
+    if (!uploadForm.courseSlug) {
+      setModules([]);
+      return;
+    }
+    
+    (async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch(`/api/courses/${uploadForm.courseSlug}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        });
+        if (!res.ok) {
+          throw new Error('Failed to fetch course');
+        }
+        const course = await res.json();
+        const moduleOptions: ModuleOption[] = course.modules.map((module: any, index: number) => ({
+          index,
+          title: module.title
+        }));
+        setModules(moduleOptions);
+      } catch (err) {
+        console.error('Error fetching course modules:', err);
+        setModules([]);
+      }
+    })();
+  }, [uploadForm.courseSlug]);
 
   // Create recording mutation
   const uploadMutation = useMutation({
@@ -174,8 +221,8 @@ export function AdminRecordings() {
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!uploadForm.courseSlug || !uploadForm.classDate || !uploadForm.title || !uploadForm.fileUrl) {
-      toast({ title: 'Error', description: 'Please fill in all required fields', variant: 'destructive' });
+    if (!uploadForm.courseSlug || uploadForm.moduleIndex < 0 || !uploadForm.classDate || !uploadForm.title || !uploadForm.fileUrl) {
+      toast({ title: 'Error', description: 'Please fill in all required fields including module selection', variant: 'destructive' });
       return;
     }
 
@@ -192,6 +239,7 @@ export function AdminRecordings() {
   const resetUploadForm = () => {
     setUploadForm({
       courseSlug: '',
+      moduleIndex: -1,
       classDate: '',
       title: '',
       description: '',
@@ -199,6 +247,7 @@ export function AdminRecordings() {
       isVisible: true
     });
     setIsUploading(false);
+    setModules([]);
   };
 
   const handleEdit = (recording: Recording) => {
@@ -296,7 +345,7 @@ export function AdminRecordings() {
                 <Label htmlFor="course">Course *</Label>
                 <Select 
                   value={uploadForm.courseSlug} 
-                  onValueChange={(value) => setUploadForm(prev => ({ ...prev, courseSlug: value }))}
+                  onValueChange={(value) => setUploadForm(prev => ({ ...prev, courseSlug: value, moduleIndex: -1 }))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a course" />
@@ -305,6 +354,26 @@ export function AdminRecordings() {
                     {courses.map((course: Course, index: number) => (
                       <SelectItem key={course.slug || `course-${index}`} value={course.slug}>
                         {course.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="module">Module *</Label>
+                <Select 
+                  value={uploadForm.moduleIndex.toString()} 
+                  onValueChange={(value) => setUploadForm(prev => ({ ...prev, moduleIndex: parseInt(value) }))}
+                  disabled={!uploadForm.courseSlug || modules.length === 0}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a module" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {modules.map((module) => (
+                      <SelectItem key={module.index} value={module.index.toString()}>
+                        Module {module.index + 1}: {module.title}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -524,6 +593,7 @@ export function AdminRecordings() {
                     <TableRow>
                       <TableHead>Title</TableHead>
                       <TableHead>Course</TableHead>
+                      <TableHead>Module</TableHead>
                       <TableHead>Class Date</TableHead>
                       <TableHead>Added</TableHead>
                       <TableHead>Status</TableHead>
@@ -545,6 +615,12 @@ export function AdminRecordings() {
                         </TableCell>
                         <TableCell>
                           <div className="text-sm font-medium">{getCourseTitle(recording.courseSlug)}</div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="text-sm text-gray-900">
+                            <div className="font-medium">Module {(recording.moduleIndex ?? 0) + 1}</div>
+                            <div className="text-xs text-gray-500">{getModuleName(recording.courseSlug, recording.moduleIndex ?? 0)}</div>
+                          </div>
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-1">

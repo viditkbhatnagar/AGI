@@ -102,12 +102,19 @@ export const createRecording = async (req: Request, res: Response) => {
       return res.status(401).json({ message: 'Not authenticated' });
     }
 
-    const { courseSlug, classDate, title, description, fileUrl, isVisible } = req.body;
+    const { courseSlug, moduleIndex, classDate, title, description, fileUrl, isVisible } = req.body;
 
     // Validate required fields
-    if (!courseSlug || !classDate || !title || !fileUrl) {
+    if (!courseSlug || moduleIndex === undefined || !classDate || !title || !fileUrl) {
       return res.status(400).json({ 
-        message: 'Missing required fields: courseSlug, classDate, title, fileUrl' 
+        message: 'Missing required fields: courseSlug, moduleIndex, classDate, title, fileUrl' 
+      });
+    }
+
+    // Validate moduleIndex
+    if (moduleIndex < 0 || !Number.isInteger(moduleIndex)) {
+      return res.status(400).json({ 
+        message: 'Module index must be a non-negative integer' 
       });
     }
 
@@ -120,6 +127,7 @@ export const createRecording = async (req: Request, res: Response) => {
 
     const recording = new Recording({
       courseSlug,
+      moduleIndex,
       classDate: new Date(classDate),
       title,
       description: description || '',
@@ -183,6 +191,59 @@ export const deleteRecording = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error deleting recording:', error);
     res.status(500).json({ message: 'Failed to delete recording' });
+  }
+};
+
+// Get recordings for a specific course and module
+export const getRecordingsByCourseAndModule = async (req: Request, res: Response) => {
+  try {
+    const { courseSlug, moduleIndex } = req.params;
+    const moduleIndexNum = parseInt(moduleIndex);
+
+    if (isNaN(moduleIndexNum) || moduleIndexNum < 0) {
+      return res.status(400).json({ message: 'Invalid module index' });
+    }
+
+    console.log(`🎥 [getRecordingsByCourseAndModule] Course: ${courseSlug}, Module: ${moduleIndexNum}`);
+
+    let query: any = { 
+      courseSlug, 
+      moduleIndex: moduleIndexNum,
+      isVisible: true 
+    };
+
+    // For student requests, verify enrollment
+    if (req.user?.role === 'student') {
+      const student = await Student.findOne({ userId: req.user.id });
+      if (!student) {
+        console.log(`🎥 [getRecordingsByCourseAndModule] Student not found for user: ${req.user.id}`);
+        return res.status(404).json({ message: 'Student not found' });
+      }
+
+      // Check if student is enrolled in the course
+      const enrollment = await Enrollment.findOne({ 
+        studentId: student._id, 
+        courseSlug 
+      });
+      
+      if (!enrollment) {
+        console.log(`🎥 [getRecordingsByCourseAndModule] Student not enrolled in course: ${courseSlug}`);
+        return res.status(403).json({ message: 'Not enrolled in this course' });
+      }
+
+      console.log(`🎥 [getRecordingsByCourseAndModule] Student ${student.name} is enrolled in ${courseSlug}`);
+    }
+
+    // Fetch recordings for the specific module
+    const recordings = await Recording.find(query)
+      .sort({ classDate: 1, uploadedAt: 1 });
+
+    console.log(`🎥 [getRecordingsByCourseAndModule] Found ${recordings.length} recordings for ${courseSlug} module ${moduleIndexNum}`);
+
+    res.json(recordings);
+  } catch (error) {
+    console.error('Error fetching recordings by course and module:', error);
+    res.status(500).json({ message: 'Failed to fetch recordings' });
   }
 };
 

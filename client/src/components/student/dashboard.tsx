@@ -99,6 +99,7 @@ export function StudentDashboard() {
   const { student } = useAuth();
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [coursesLoading, setCoursesLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   // List of enrolled courses for course picker
   const [courses, setCourses] = useState<{ slug: string; title: string }[]>([]);
@@ -162,7 +163,12 @@ export function StudentDashboard() {
   // Load enrolled courses for this student
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (!token) return;
+    if (!token) {
+      setCoursesLoading(false);
+      return;
+    }
+    
+    setCoursesLoading(true);
     fetch('/api/student/courses', {
       headers: { Authorization: `Bearer ${token}` }
     })
@@ -173,17 +179,30 @@ export function StudentDashboard() {
         if (data.length > 0) {
           setSelectedCourse(data[0].slug);
         }
+        setCoursesLoading(false);
       })
-      .catch(console.error);
+      .catch((err) => {
+        console.error(err);
+        setCoursesLoading(false);
+      });
   }, []);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       const token = localStorage.getItem('token');
-      if (!token || !selectedCourse) {
+      if (!token) {
         setIsLoading(false);
         return;
       }
+      
+      if (!selectedCourse) {
+        // Only set loading to false if courses have finished loading
+        if (!coursesLoading) {
+          setIsLoading(false);
+        }
+        return;
+      }
+      
       setIsLoading(true);
       try {
         const response = await fetch(`/api/student/dashboard/${selectedCourse}`, {
@@ -204,10 +223,10 @@ export function StudentDashboard() {
       }
     };
     fetchDashboardData();
-  }, [selectedCourse]);
+  }, [selectedCourse, coursesLoading]);
   
   // Display loading skeleton
-  if (isLoading) {
+  if (isLoading || coursesLoading) {
     return <DashboardSkeleton />;
   }
   
@@ -303,23 +322,62 @@ export function StudentDashboard() {
       </div>
       {/* Course Picker for multiple enrollments */}
       {courses.length > 1 && (
-        <div className="mb-6">
-          <label htmlFor="courseSelect" className="mr-2 font-medium">Select Course:</label>
-          <select
-            id="courseSelect"
-            className="border rounded px-3 py-1"
-            value={selectedCourse ?? ''}
-            onChange={e => setSelectedCourse(e.target.value)}
-          >
-            <option value="" disabled>
-              -- pick a course --
-            </option>
-            {courses.map(c => (
-              <option key={c.slug} value={c.slug}>
-                {c.title}
-              </option>
+        <div className="mb-4">
+          <h3 className="text-base font-semibold text-gray-800 mb-3">Select Course:</h3>
+          <div className={`grid gap-3 ${
+            courses.length === 2 ? 'grid-cols-2 sm:grid-cols-2' :
+            courses.length === 3 ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-3' :
+            courses.length === 4 ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4' :
+            courses.length <= 6 ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6' :
+            'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'
+          }`}>
+            {courses.map(course => (
+              <div
+                key={course.slug}
+                onClick={() => setSelectedCourse(course.slug)}
+                className={`
+                  relative cursor-pointer rounded-lg border-2 p-3 transition-all duration-200 
+                  hover:shadow-md hover:scale-105 group min-h-[80px] flex items-center justify-center
+                  ${selectedCourse === course.slug 
+                    ? 'border-[#375BBE] bg-[#375BBE]/5 shadow-md' 
+                    : 'border-gray-200 bg-white hover:border-[#375BBE]/50'
+                  }
+                `}
+              >
+                {/* Selected indicator */}
+                {selectedCourse === course.slug && (
+                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#375BBE] rounded-full flex items-center justify-center">
+                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                )}
+                
+                {/* Course title */}
+                <h4 className={`text-center font-medium text-sm transition-colors line-clamp-3 ${
+                  selectedCourse === course.slug 
+                    ? 'text-[#375BBE]' 
+                    : 'text-gray-700 group-hover:text-[#375BBE]'
+                }`}>
+                  {course.title}
+                </h4>
+                
+                {/* Hover effect overlay */}
+                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-[#375BBE]/0 to-[#375BBE]/0 group-hover:from-[#375BBE]/3 group-hover:to-[#375BBE]/5 transition-all duration-200 pointer-events-none" />
+              </div>
             ))}
-          </select>
+          </div>
+          
+          {/* Show selected course name */}
+          {selectedCourse && (
+            <div className="mt-3 p-2 bg-[#375BBE]/5 border border-[#375BBE]/20 rounded-md">
+              <p className="text-xs text-[#375BBE] font-medium">
+                Currently viewing: <span className="font-semibold">
+                  {courses.find(c => c.slug === selectedCourse)?.title}
+                </span>
+              </p>
+            </div>
+          )}
         </div>
       )}
       {/* Dashboard KPI Metrics */}
@@ -694,3 +752,4 @@ function DashboardSkeleton() {
 }
 
 export default StudentDashboard;
+

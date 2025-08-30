@@ -26,6 +26,27 @@ function toGooglePreviewUrl(url: string, page: number = 1) {
   return url;
 }
 
+// Convert Google Drive URL to embeddable video format
+function toGoogleVideoEmbedUrl(url: string) {
+  // Extract file ID from various Google Drive URL formats
+  const patterns = [
+    /\/file\/d\/([a-zA-Z0-9-_]+)/,     // /file/d/ID
+    /\/d\/([a-zA-Z0-9-_]+)/,           // /d/ID  
+    /id=([a-zA-Z0-9-_]+)/              // ?id=ID
+  ];
+  
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) {
+      const fileId = match[1];
+      // Return embeddable video URL
+      return `https://drive.google.com/file/d/${fileId}/preview`;
+    }
+  }
+  
+  return url; // Return original if no match
+}
+
 // Detect document type and estimate pages
 function getDocumentTypeAndPages(url: string): { type: 'slides' | 'document' | 'spreadsheet' | 'pdf', estimatedPages: number } {
   if (url.includes('/presentation/')) {
@@ -69,8 +90,11 @@ import {
   Lock,
   Play,
   Video,
+  VideoIcon,
+  Film,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  CalendarDays
 } from "lucide-react";
 import { Link } from "wouter";
 import { Badge } from "@/components/ui/badge";
@@ -200,6 +224,8 @@ export function CourseDetail({ slug }: CourseDetailProps) {
     },
     enabled: quizModuleIndex !== null,
   });
+
+
   const quizAttempts = attemptsData?.attempts ?? [];
 
   const handleTakeQuiz = async (moduleIndex: number) => {
@@ -842,6 +868,25 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                             <span className="text-sm text-gray-700">QUIZZES</span>
                           </div>
                         </div>
+
+                        {/* Live Classes Section */}
+                        <LiveClassesForModule courseSlug={courseSlug} moduleIndex={moduleIndex} />
+                        
+                        {/* Recordings Section */}
+                        <RecordingsForModule 
+                          courseSlug={courseSlug} 
+                          moduleIndex={moduleIndex}
+                          onRecordingClick={(recordingUrl: string) => {
+                            // Clear other content when playing recording
+                            clearVideoContent();
+                            clearQuizContent();
+                            
+                            // Convert Google Drive URL to embeddable format and set as document
+                            const embedUrl = toGoogleVideoEmbedUrl(recordingUrl);
+                            setSelectedDocUrl(embedUrl);
+                            setIsDocLoading(true);
+                          }}
+                        />
                       </div>
                     )}
                   </div>
@@ -1331,6 +1376,209 @@ function CourseDetailSkeleton() {
         </div>
       </Card>
     </div>
+  );
+}
+
+// Live Classes component for each module
+interface LiveClassesForModuleProps {
+  courseSlug: string;
+  moduleIndex: number;
+}
+
+function LiveClassesForModule({ courseSlug, moduleIndex }: LiveClassesForModuleProps) {
+  // Fetch live classes for this specific module
+  const { data: liveClasses = [] } = useQuery({
+    queryKey: ['liveClasses', courseSlug, moduleIndex],
+    queryFn: async () => {
+      const token = localStorage.getItem("token");
+      const url = `/api/live-classes/course/${courseSlug}/module/${moduleIndex}`;
+      
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      if (!res.ok) {
+        return [];
+      }
+      
+      const data = await res.json();
+      return data;
+    },
+  });
+
+  // Function to check if live class button should be enabled
+  const isLiveClassEnabled = (liveClass: any): boolean => {
+    const now = Date.now();
+    const startTime = new Date(liveClass.startTime).getTime();
+    const endTime = new Date(liveClass.endTime).getTime();
+    
+    // Enable 30 minutes before start time
+    const enableTime = startTime - (30 * 60 * 1000);
+    // Disable 15 minutes after end time
+    const disableTime = endTime + (15 * 60 * 1000);
+    
+    return now >= enableTime && now <= disableTime;
+  };
+
+  // Function to get live class button text
+  const getLiveClassButtonText = (liveClass: any): string => {
+    const now = Date.now();
+    const startTime = new Date(liveClass.startTime).getTime();
+    const endTime = new Date(liveClass.endTime).getTime();
+    
+    if (now < startTime) {
+      const timeUntilStart = startTime - now;
+      if (timeUntilStart <= 30 * 60 * 1000) { // 30 minutes or less
+        return 'Join Soon';
+      }
+      return 'Scheduled';
+    } else {
+      // Always show "Join Now" for both during and after the class
+      return 'Join Now';
+    }
+  };
+
+  // Don't show the section if no live classes are scheduled
+  if (!liveClasses || liveClasses.length === 0) {
+    return null;
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <div className="flex items-center justify-between py-2 cursor-pointer hover:bg-gray-50 rounded px-2">
+          <div className="flex items-center">
+            <CalendarDays className="h-4 w-4 mr-2 text-orange-600" />
+            <span className="text-sm text-gray-700">LIVE CLASSES</span>
+            <ChevronDown className="h-3 w-3 ml-1 text-gray-400" />
+          </div>
+        </div>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-80" align="start">
+        {liveClasses.map((liveClass: any, idx: number) => {
+          const isEnabled = isLiveClassEnabled(liveClass);
+          const buttonText = getLiveClassButtonText(liveClass);
+          
+          return (
+            <DropdownMenuItem key={idx} className="cursor-pointer p-3">
+              <div className="flex items-center justify-between w-full">
+                <div className="flex-1 mr-3">
+                  <div className="flex items-center mb-1">
+                    <CalendarDays className="h-4 w-4 mr-2 text-orange-600" />
+                    <span className="text-sm font-medium">{liveClass.title}</span>
+                  </div>
+                  <div className="text-xs text-gray-500 mb-1">
+                    {formatDateTime(liveClass.startTime)}
+                  </div>
+                  {liveClass.description && (
+                    <div className="text-xs text-gray-600">
+                      {liveClass.description}
+                    </div>
+                  )}
+                </div>
+                <Button
+                  size="sm"
+                  variant={isEnabled ? "default" : "outline"}
+                  disabled={!isEnabled}
+                  className={`${
+                    isEnabled 
+                      ? buttonText === 'Join Now' 
+                        ? 'bg-green-600 hover:bg-green-700' 
+                        : buttonText === 'Join Soon'
+                          ? 'bg-orange-600 hover:bg-orange-700'
+                          : 'bg-blue-600 hover:bg-blue-700'
+                      : 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                  } ${isEnabled ? 'text-white' : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (isEnabled && liveClass.meetLink) {
+                      window.open(liveClass.meetLink, '_blank');
+                    }
+                  }}
+                >
+                  {buttonText}
+                </Button>
+              </div>
+            </DropdownMenuItem>
+          );
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+// Component to show recordings for a specific module
+interface RecordingsForModuleProps {
+  courseSlug: string;
+  moduleIndex: number;
+  onRecordingClick: (recordingUrl: string) => void;
+}
+
+function RecordingsForModule({ courseSlug, moduleIndex, onRecordingClick }: RecordingsForModuleProps) {
+  // Fetch recordings for this specific module
+  const { data: recordings = [] } = useQuery({
+    queryKey: ['recordings', courseSlug, moduleIndex],
+    queryFn: async () => {
+      const token = localStorage.getItem("token");
+      const url = `/api/recordings/course/${courseSlug}/module/${moduleIndex}`;
+      
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      if (!res.ok) {
+        return [];
+      }
+      
+      const data = await res.json();
+      return data;
+    },
+  });
+
+  // Don't show the section if no recordings are available
+  if (!recordings || recordings.length === 0) {
+    return null;
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <div
+          className="flex items-center justify-between py-2 cursor-pointer hover:bg-gray-50 rounded px-2"
+        >
+          <div className="flex items-center">
+            <Film className="h-4 w-4 mr-2 text-red-600" />
+            <span className="text-sm text-gray-700">RECORDINGS</span>
+            <ChevronDown className="h-3 w-3 ml-1 text-gray-400" />
+          </div>
+        </div>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-64" align="start">
+        {recordings.map((recording: any) => (
+          <DropdownMenuItem
+            key={recording._id}
+            className="cursor-pointer"
+            onClick={() => {
+              if (recording.fileUrl) {
+                onRecordingClick(recording.fileUrl);
+              }
+            }}
+          >
+            <div className="flex items-center justify-between w-full">
+              <div className="flex items-center">
+                <Play className="h-4 w-4 mr-2 text-red-600" />
+                <div className="flex flex-col">
+                  <span className="text-sm">{recording.title}</span>
+                  <span className="text-xs text-gray-500">
+                    {new Date(recording.classDate).toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
