@@ -115,49 +115,49 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
   return (
     <>
       <header className="bg-[#FEFDF7] shadow-sm h-20 sm:h-24 flex flex-col relative px-4 sm:px-6 py-2">
-        <div className="hidden lg:block absolute inset-x-0 top-1 text-center text-sm font-medium text-[#375BBE]">
-          {now.toLocaleString(undefined, {
-            weekday: "short",
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-          })}
-        </div>
-
-        <div className="flex items-center justify-between flex-1 lg:items-end lg:pb-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden mr-2 p-2"
-            onClick={() => {
-              if (onMobileMenuToggle) onMobileMenuToggle();
-              setMobileOpen((prev) => !prev);
-            }}
-            title="Menu"
-          >
-            <Menu className="h-6 w-6 sm:h-7 sm:w-7 text-[#375BBE]" />
-          </Button>
-
-          <div className="flex-shrink-0">
-            <Link href={userRole === "admin" ? "/admin" : "/student"}>
-              <img
-                src={logo}
-                alt="AGI Logo"
-                className="h-12 sm:h-14 md:h-16 lg:h-18 xl:h-20 w-auto cursor-pointer hover:opacity-90 transition-opacity"
-              />
-            </Link>
+        <div className="flex items-center justify-between flex-1 lg:items-center lg:pb-2">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <Link href={userRole === "admin" ? "/admin" : "/student"}>
+                <img
+                  src={logo}
+                  alt="AGI Logo"
+                  className="h-12 sm:h-14 md:h-16 lg:h-18 xl:h-20 w-auto cursor-pointer hover:opacity-90 transition-opacity"
+                />
+              </Link>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="ml-2 p-2"
+              onClick={() => {
+                if (onMobileMenuToggle) onMobileMenuToggle();
+                setMobileOpen((prev) => !prev);
+              }}
+              title="Menu"
+            >
+              <Menu className="h-6 w-6 sm:h-7 sm:w-7 text-[#375BBE]" />
+            </Button>
           </div>
 
-          <nav className="hidden md:flex items-center space-x-6 lg:space-x-10 xl:space-x-14 flex-1 justify-center">
-            {links.map((link) => (
-              <NavItem key={link.href} {...link} />
-            ))}
+          <nav className="hidden">
+            {/* Navigation items are now only available in hamburger menu */}
           </nav>
 
-          <div className="flex items-center justify-end flex-shrink-0">
+          <div className="flex items-center justify-end flex-shrink-0 space-x-4">
+            {/* Time Display */}
+            <div className="hidden sm:block text-sm font-medium text-[#375BBE]">
+              {now.toLocaleString(undefined, {
+                weekday: "short",
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+              })}
+            </div>
+            
             {/* User Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -199,18 +199,18 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
         </div>
       </header>
 
-      {/* Mobile Sidebar */}
+      {/* Hamburger Menu Sidebar */}
       {/* Backdrop */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/30 md:hidden"
+          className="fixed inset-0 z-40 bg-black/30"
           onClick={() => setMobileOpen(false)}
         />
       )}
       {/* Drawer */}
       <div
         className={cn(
-          "fixed top-0 left-0 h-full w-72 sm:w-80 bg-[#FEFDF7] shadow-lg z-50 transform transition-transform duration-300 ease-in-out md:hidden",
+          "fixed top-0 left-0 h-full w-72 sm:w-80 bg-[#FEFDF7] shadow-lg z-50 transform transition-transform duration-300 ease-in-out",
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
