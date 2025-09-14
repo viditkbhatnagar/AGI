@@ -509,9 +509,7 @@ export const getStudentCourse = async (req: Request, res: Response) => {
         avgQuizScore
       };
     });
-    
-
-    // Disable caching for student course API
+        // Disable caching for student course API
     res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.set('Pragma', 'no-cache');
     res.set('Expires', '0');
