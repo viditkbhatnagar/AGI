@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Login from "@/pages/login";
 import { AuthProvider, useAuth } from "@/lib/auth-provider";
+import { PermissionsProvider } from "@/lib/permissions-provider";
 import { useEffect } from "react";
 
 // Student Pages
@@ -17,21 +18,38 @@ import StudentRecordings from "@/pages/student/recordings";
 import StudentSupport from "@/pages/student/support";
 import StudentProfile from "@/pages/student/profile";
 import StudentDebug from "@/pages/student/debug";
+import StudentFeedback from "@/pages/student/feedback";
+
+// Teacher Pages
+import TeacherDashboard from "./pages/teacher/dashboard";
+import TeacherStudents from "./pages/teacher/students";
+import TeacherCourses from "./pages/teacher/courses";
+import TeacherLiveClasses from "./pages/teacher/live-classes";
+import TeacherRecordings from "./pages/teacher/recordings";
+import TeacherExamResults from "./pages/teacher/exam-results";
+import TeacherChangePassword from "./pages/teacher/change-password";
 
 // Admin Pages
 import AdminDashboard from "@/pages/admin/dashboard";
 import AdminStudents from "@/pages/admin/students";
 import AdminCourses from "@/pages/admin/courses";
+import AdminSandboxCourses from "@/pages/admin/sandbox-courses";
 import AdminEnrollments from "@/pages/admin/enrollments";
 import AdminLiveClasses from "@/pages/admin/live-classes";
 import AdminRecordings from "@/pages/admin/recordings";
 import AdminQuizScores from "@/pages/admin/quiz-scores";
 import AdminExamResults from "@/pages/admin/exam-results";
+import AdminFeedbacks from "@/pages/admin/feedbacks";
+import QuizRepositoryPage from "@/pages/admin/quiz-repository";
 
 import AddStudent from "@/pages/admin/AddStudent";
+import AddTeacher from "@/pages/admin/AddTeacher";
 import AddCourse from "@/pages/admin/AddCourse";
+import AddSandboxCourse from "@/pages/admin/AddSandboxCourse";
 import EditCourse from "@/pages/admin/EditCourse";
+import EditSandboxCourse from "@/pages/admin/EditSandboxCourse";
 import CourseEditPage from "@/pages/admin/course-edit";
+import SandboxCourseEditPage from "@/pages/admin/sandbox-course-edit";
 import ScheduleLiveClass from "@/pages/admin/ScheduleLiveClass";
 
 function Router() {
@@ -47,22 +65,39 @@ function Router() {
       <Route path="/student/live-classes" component={StudentLiveClasses} />
       <Route path="/student/recordings" component={StudentRecordings} />
       <Route path="/student/profile" component={StudentProfile} />
+      <Route path="/student/feedback" component={StudentFeedback} />
       <Route path="/student/support" component={StudentSupport} />
       <Route path="/student/debug" component={StudentDebug} />
       
+      {/* Teacher Routes */}
+      <Route path="/teacher" component={TeacherDashboard} />
+      <Route path="/teacher/students" component={TeacherStudents} />
+      <Route path="/teacher/courses" component={TeacherCourses} />
+      <Route path="/teacher/live-classes" component={TeacherLiveClasses} />
+      <Route path="/teacher/recordings" component={TeacherRecordings} />
+      <Route path="/teacher/exam-results" component={TeacherExamResults} />
+      <Route path="/teacher/change-password" component={TeacherChangePassword} />
+      
       {/* Admin Routes */}
       <Route path="/admin/students/new" component={AddStudent} />
+      <Route path="/admin/teachers/new" component={AddTeacher} />
       <Route path="/admin/courses/new" component={AddCourse} />
       <Route path="/admin/courses/edit/:slug" component={EditCourse} />
       <Route path="/admin/courses/reorder/:slug" component={CourseEditPage} />
+      <Route path="/admin/sandbox-courses/new" component={AddSandboxCourse} />
+      <Route path="/admin/sandbox-courses/edit/:slug" component={EditSandboxCourse} />
+      <Route path="/admin/sandbox-courses/reorder/:slug" component={SandboxCourseEditPage} />
       <Route path="/admin/live-classes/new" component={ScheduleLiveClass} />
       <Route path="/admin/students" component={AdminStudents} />
       <Route path="/admin/courses" component={AdminCourses} />
+      <Route path="/admin/sandbox-courses" component={AdminSandboxCourses} />
+      <Route path="/admin/quiz-repository" component={QuizRepositoryPage} />
       <Route path="/admin/enrollments" component={AdminEnrollments} />
       <Route path="/admin/live-classes" component={AdminLiveClasses} />
       <Route path="/admin/recordings" component={AdminRecordings} />
       <Route path="/admin/quiz-scores" component={AdminQuizScores} />
       <Route path="/admin/exam-results" component={AdminExamResults} />
+      <Route path="/admin/feedbacks" component={AdminFeedbacks} />
       <Route path="/admin" component={AdminDashboard} />
       
       {/* Default Route - Redirect based on user role */}
@@ -83,8 +118,10 @@ function RoleBasedRedirect() {
   useEffect(() => {
     if (!isAuthenticated) {
       setLocation("/login");
-    } else if (userRole === "admin") {
+    } else if (userRole === "admin" || userRole === "superadmin") {
       setLocation("/admin");
+    } else if (userRole === "teacher") {
+      setLocation("/teacher");
     } else {
       setLocation("/student");
     }
@@ -97,10 +134,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
+        <PermissionsProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+          </TooltipProvider>
+        </PermissionsProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

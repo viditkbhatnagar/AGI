@@ -88,7 +88,7 @@ export const uploadToCloudinary = async (
       publicId: result.public_id,
       fileName: result.original_filename || file.name,
       fileSize: result.bytes,
-      fileType: result.format,
+      fileType: file.type, // Use original file's MIME type since Cloudinary raw uploads don't return format
     };
   } catch (error) {
     console.error('💥 Cloudinary upload error:', error);
@@ -155,6 +155,29 @@ export const getDownloadUrl = (cloudinaryUrl: string, fileName?: string): string
   
   // The correct format is: baseUrl/transformations/public_id
   return `${baseUrl}/${downloadParam}/${publicId}`;
+};
+
+/**
+ * Generate a preview URL for a Cloudinary file
+ * This ensures the file displays inline instead of downloading
+ */
+export const getPreviewUrl = (cloudinaryUrl: string): string => {
+  // For previewing, we can just use the original URL but ensure it doesn't have download flags
+  if (!cloudinaryUrl) return '';
+  
+  // If it's already a clean Cloudinary URL without fl_attachment, use it as is
+  if (cloudinaryUrl.includes('cloudinary.com') && !cloudinaryUrl.includes('fl_attachment')) {
+    return cloudinaryUrl;
+  }
+  
+  // If it has download flags, try to clean them
+  if (cloudinaryUrl.includes('fl_attachment')) {
+    // Remove the fl_attachment transformation
+    return cloudinaryUrl.replace(/\/fl_attachment[^\/]*\//, '/');
+  }
+  
+  // Fallback to original URL
+  return cloudinaryUrl;
 };
 
 /**

@@ -3,6 +3,7 @@ import path from 'path';
 import { Request, Response } from 'express';
 import { User } from '../models/user';
 import { Student } from '../models/student';
+import { TeacherAssignment } from '../models/teacher-assignment';
 import { Course } from '../models/course';
 import { Enrollment } from '../models/enrollment';
 import { LiveClass } from '../models/liveclass';
@@ -26,7 +27,7 @@ export const getAllStudents = async (req: Request, res: Response) => {
     // Transform the data to include accessEnabled at the student level for easier frontend access
     const studentsWithAccess = students.map(student => ({
       ...student.toObject(),
-      accessEnabled: student.userId?.accessEnabled !== false
+      accessEnabled: (student.userId as any)?.accessEnabled !== false
     }));
 
     res.status(200).json(studentsWithAccess);
@@ -153,6 +154,7 @@ AGI.online Team
 
     const html = renderWelcomeHtml({
       name,
+      courseTitle: courseSlugs.join(', '),
       email,
       tempPassword: password,
       appUrl: process.env.APP_URL!,
@@ -193,6 +195,160 @@ AGI.online Team
   }
 };
 
+// Create teacher
+export const createTeacher = async (req: Request, res: Response) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  
+  try {
+    const {
+      email,
+      password,
+      name,
+      phone,
+      address,
+      courseSlugs
+    } = req.body;
+
+    // Derive a simple username from email prefix
+    const username = email.split('@')[0];
+
+    // 1) Create the User account
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email already in use' });
+    }
+    
+    const user = new User({
+      username,
+      email,
+      password,
+      role: 'teacher'
+    });
+    await user.save({ session });
+
+    // 2) Assign teacher to courses
+    if (!Array.isArray(courseSlugs) || courseSlugs.length === 0) {
+      return res.status(400).json({ message: 'At least one course must be assigned' });
+    }
+
+    // Verify all courses exist
+    const courses = await Course.find({ slug: { $in: courseSlugs } });
+    if (courses.length !== courseSlugs.length) {
+      return res.status(400).json({ message: 'Some courses not found' });
+    }
+
+    // Create teacher assignments
+    await Promise.all(
+      courseSlugs.map(async (slug: string) => {
+        const assignment = new TeacherAssignment({
+          teacherId: user._id,
+          courseSlug: slug,
+          assignedBy: new mongoose.Types.ObjectId(req.user!.id)
+        });
+        await assignment.save({ session });
+      })
+    );
+
+    // 3) Send welcome email to teacher
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT),
+      secure: process.env.SMTP_SECURE === 'true',
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
+
+    const courseNames = courses.map(c => c.title).join(', ');
+    
+    const text = `Hello ${name},\n\nWelcome ${name} onboard! You have been assigned to teach the following courses: ${courseNames}\n\nHere are your credentials:\n• Email: ${email}\n• Temporary password: ${password}\n\nPlease sign in at ${process.env.APP_URL}/login and change your password.\n\nWelcome to the team!\nAGI.online Team`;
+
+    const html = `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Welcome ${name} - Teacher Account</title>
+</head>
+<body>
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <img src="cid:agiLogo" alt="AGI Logo" style="max-width: 200px; height: auto;">
+        </div>
+        
+        <h1 style="color: #0C5FB3; text-align: center;">Welcome ${name} Onboard!</h1>
+        
+        <p>Dear ${name},</p>
+        
+        <p>Welcome to the AGI.online teaching team! You have been assigned to teach the following courses:</p>
+        
+        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
+            <strong>Your Assigned Courses:</strong><br>
+            ${courseNames}
+        </div>
+        
+        <div style="background-color: #e3f2fd; padding: 15px; border-radius: 5px; margin: 20px 0;">
+            <h3 style="margin-top: 0; color: #0C5FB3;">Here are your credentials:</h3>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Temporary Password:</strong> ${password}</p>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="${process.env.APP_URL}/login" style="background-color: #0C5FB3; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">Login to Teacher Portal</a>
+        </div>
+        
+        <p>Welcome to the team!</p>
+        
+        <p>Best regards,<br>The AGI.online Team</p>
+        
+        <hr style="margin: 30px 0; border: none; border-top: 1px solid #ddd;">
+        <p style="font-size: 12px; color: #666; text-align: center;">
+            This email was sent from AGI.online. Please do not reply to this email.
+        </p>
+    </div>
+</body>
+</html>`;
+
+    await transporter.sendMail({
+      from: process.env.SMTP_FROM,
+      to: email,
+      replyTo: process.env.SUPPORT_EMAIL,
+      subject: `Welcome ${name} - Teacher Account Created`,
+      text,
+      html,
+      attachments: [
+        {
+          filename: 'logo.png',
+          path: path.resolve('client/src/components/layout/AGI Logo.png'),
+          cid: 'agiLogo'
+        }
+      ]
+    })
+    .then((info: any) => console.log('Teacher welcome email sent:', info.messageId))
+    .catch((err: any) => console.error('Error sending teacher welcome email:', err));
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(201).json({
+      message: 'Teacher created and assigned successfully',
+      teacher: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        name: name,
+        assignedCourses: courseSlugs
+      }
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    
+    console.error('Error creating teacher:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
 
 // Update student
 export const updateStudent = async (req: Request, res: Response) => {
@@ -448,5 +604,87 @@ export const toggleStudentAccess = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Toggle student access error:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// Update teacher
+export const updateTeacher = async (req: Request, res: Response) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  
+  try {
+    const { id } = req.params;
+    const { username, phone, address } = req.body;
+
+    // Find the teacher user
+    const teacher = await User.findById(id);
+    
+    if (!teacher || teacher.role !== 'teacher') {
+      return res.status(404).json({ message: 'Teacher not found' });
+    }
+    
+    // Update teacher details
+    if (username) teacher.username = username;
+    // Note: Email is not updated as per requirements
+    if (phone !== undefined) teacher.phone = phone;
+    if (address !== undefined) teacher.address = address;
+    
+    await teacher.save({ session });
+    
+    await session.commitTransaction();
+    session.endSession();
+    
+    res.status(200).json({
+      message: 'Teacher updated successfully',
+      teacher: {
+        _id: teacher._id,
+        username: teacher.username,
+        email: teacher.email,
+        phone: teacher.phone,
+        address: teacher.address,
+        accessEnabled: teacher.accessEnabled,
+        createdAt: teacher.createdAt
+      }
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    
+    console.error('Update teacher error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Delete teacher
+export const deleteTeacher = async (req: Request, res: Response) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  
+  try {
+    const { id } = req.params;
+    
+    // Find the teacher
+    const teacher = await User.findById(id);
+    
+    if (!teacher || teacher.role !== 'teacher') {
+      return res.status(404).json({ message: 'Teacher not found' });
+    }
+    
+    // Delete teacher assignments
+    await TeacherAssignment.deleteMany({ teacherId: teacher._id }, { session });
+    
+    // Delete the teacher user
+    await User.deleteOne({ _id: teacher._id }, { session });
+    
+    await session.commitTransaction();
+    session.endSession();
+    
+    res.status(200).json({ message: 'Teacher deleted successfully' });
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    
+    console.error('Delete teacher error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };

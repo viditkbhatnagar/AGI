@@ -117,6 +117,26 @@ export const insertLiveClassSchema = createInsertSchema(liveClasses).pick({
   status: true,
 });
 
+// Sandbox Course Schema
+export const sandboxCourses = pgTable("sandbox_courses", {
+  id: serial("id").primaryKey(),
+  slug: text("slug").notNull().unique(),
+  title: text("title").notNull(),
+  type: text("type", { enum: ["standalone", "with-mba"] }).notNull(),
+  liveClassConfig: jsonb("live_class_config"),
+  mbaModules: jsonb("mba_modules"),
+  modules: jsonb("modules"),
+});
+
+export const insertSandboxCourseSchema = createInsertSchema(sandboxCourses).pick({
+  slug: true,
+  title: true,
+  type: true,
+  liveClassConfig: true,
+  mbaModules: true,
+  modules: true,
+});
+
 // Recordings Schema
 export const recordings = pgTable("recordings", {
   id: serial("id").primaryKey(),
@@ -151,6 +171,9 @@ export type InsertStudent = z.infer<typeof insertStudentSchema>;
 export type Course = typeof courses.$inferSelect;
 export type InsertCourse = z.infer<typeof insertCourseSchema>;
 
+export type SandboxCourse = typeof sandboxCourses.$inferSelect;
+export type InsertSandboxCourse = z.infer<typeof insertSandboxCourseSchema>;
+
 export type Enrollment = typeof enrollments.$inferSelect;
 export type InsertEnrollment = z.infer<typeof insertEnrollmentSchema>;
 
@@ -173,7 +196,26 @@ export type ModuleVideo = {
 export type ModuleDocument = {
   id: string;
   title: string;
-  url: string;
+  type: 'link' | 'upload';
+  // For link-based documents (backward compatibility)
+  url?: string;
+  // For uploaded documents (new functionality)
+  fileUrl?: string;
+  fileName?: string;
+  fileSize?: number;
+  fileType?: string;
+  publicId?: string;
+  read?: boolean;
+};
+
+export type SandboxModuleDocument = {
+  id: string;
+  title: string;
+  fileUrl: string; // Cloudinary URL for uploaded files
+  fileName: string;
+  fileSize: number;
+  fileType: string;
+  publicId: string; // Cloudinary public ID for management
   read?: boolean;
 };
 

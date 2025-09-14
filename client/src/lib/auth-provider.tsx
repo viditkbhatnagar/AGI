@@ -7,7 +7,7 @@ type User = {
   id: string;
   username: string;
   email: string;
-  role: 'admin' | 'student';
+  role: 'admin' | 'student' | 'superadmin' | 'teacher';
 };
 
 type Student = {
@@ -22,7 +22,7 @@ type AuthContextType = {
   isLoading: boolean;
   user: User | null;
   student: Student | null;
-  userRole: 'admin' | 'student' | null;
+  userRole: 'admin' | 'student' | 'superadmin' | 'teacher' | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
 };
@@ -38,7 +38,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [user, setUser] = useState<User | null>(null);
   const [student, setStudent] = useState<Student | null>(null);
-  const [userRole, setUserRole] = useState<'admin' | 'student' | null>(null);
+  const [userRole, setUserRole] = useState<'admin' | 'student' | 'superadmin' | 'teacher' | null>(null);
   
   const { toast } = useToast();
   const [, setLocation] = useLocation();
@@ -118,8 +118,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setIsAuthenticated(true);
       
       // Redirect based on role
-      if (data.role === 'admin') {
+      if (data.role === 'admin' || data.role === 'superadmin') {
         setLocation('/admin');
+      } else if (data.role === 'teacher') {
+        setLocation('/teacher');
       } else {
         setLocation('/student');
       }

@@ -5,7 +5,7 @@ export interface IUser {
   username: string;
   email: string;
   password: string;
-  role: 'admin' | 'student';
+  role: 'admin' | 'student' | 'superadmin' | 'teacher';
   accessEnabled: boolean;
 }
 
@@ -17,7 +17,7 @@ const UserSchema = new Schema<IUserDocument>({
   username: { type: String, required: true, unique: true },
   email:    { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  role:     { type: String, enum: ['admin','student'], required: true },
+  role:     { type: String, enum: ['admin','student','superadmin','teacher'], required: true },
   accessEnabled: { type: Boolean, default: true }
 }, { timestamps: true });
 

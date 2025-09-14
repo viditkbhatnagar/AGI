@@ -16,6 +16,7 @@ export interface IQuiz extends Document {
   courseSlug: string;      // the course this quiz belongs to
   moduleIndex: number;     // which module this quiz is for
   questions: Question[];
+  isSandbox?: boolean;     // flag to identify sandbox course quizzes
 }
 
 const QuizSchema = new Schema<IQuiz>({
@@ -27,7 +28,8 @@ const QuizSchema = new Schema<IQuiz>({
       choices:      [{ type: String, required: true }],
       correctIndex: { type: Number, required: true },
     }
-  ]
+  ],
+  isSandbox: { type: Boolean, default: false }
 });
 
 export default mongoose.model<IQuiz>('Quiz', QuizSchema);

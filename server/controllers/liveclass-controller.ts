@@ -5,7 +5,9 @@ import { LiveClass } from '../models/liveclass';
 import { Course } from '../models/course';
 import { Student } from '../models/student';
 import { Enrollment } from '../models/enrollment';
-import { renderLiveClassHtml, renderLiveClassUpdateHtml, renderLiveClassCancellationHtml, renderLiveClassReminderHtml } from '../utils/emailTemplates';
+import { renderLiveClassHtml, renderLiveClassUpdateHtml, renderLiveClassCancellationHtml, renderLiveClassReminderHtml, renderTeacherLiveClassHtml } from '../utils/emailTemplates';
+import { User } from '../models/user';
+import { TeacherAssignment } from '../models/teacher-assignment';
 import path from 'path';
 import ics from 'ics';
 
@@ -185,6 +187,57 @@ export const createLiveClass = async (req: Request, res: Response) => {
     } catch (mailError) {
       console.error('Error sending live class emails:', mailError);
     }
+    
+    // -- TEACHER EMAIL NOTIFICATION LOGIC START --
+    try {
+      // Find teachers assigned to this course
+      const teacherAssignments = await TeacherAssignment.find({ courseSlug })
+        .populate('teacherId', 'email username');
+      
+      if (teacherAssignments.length > 0) {
+        const transporter = createEmailTransporter();
+        
+        await Promise.all(
+          teacherAssignments.map(async (assignment: any) => {
+            const teacher = assignment.teacherId;
+            if (teacher && teacher.email) {
+              const htmlBase = renderTeacherLiveClassHtml({
+                teacherName: teacher.username,
+                title,
+                courseSlug,
+                startTime: new Date(startTime),
+                meetLink,
+              });
+              
+              const html = htmlBase.replace('{{ADD_TO_CAL}}', addToCal);
+              
+              return transporter.sendMail({
+                from: process.env.SMTP_FROM,
+                to: teacher.email,
+                subject: `Teaching Assignment: Live Class Scheduled - ${title}`,
+                text: `Dear ${teacher.username},\n\nA live class "${title}" has been scheduled for your course ${courseSlug} on ${whenPretty}.\n\nAs the assigned teacher, please join: ${meetLink}\n\nAdd to calendar: ${addToCal}\n\nThank you for your teaching excellence!\n\nAGI.online Team`,
+                html,
+                attachments: [
+                  {
+                    filename: 'logo.png',
+                    path: path.resolve('client/src/components/layout/AGI Logo.png'),
+                    cid: 'agiLogo',
+                  },
+                  ...(icsAttachment ? [icsAttachment] : []),
+                ],
+              });
+            }
+          })
+        );
+        
+        console.log(`✅ Teacher notification emails sent to ${teacherAssignments.length} teachers for class: ${title}`);
+      } else {
+        console.warn(`⚠️  No teachers assigned to course ${courseSlug} for live class: ${title}`);
+      }
+    } catch (teacherMailError) {
+      console.error('Error sending teacher notification emails:', teacherMailError);
+    }
+    // -- TEACHER EMAIL NOTIFICATION LOGIC END --
     // -- EMAIL NOTIFICATION LOGIC END --
 
     res.status(201).json({

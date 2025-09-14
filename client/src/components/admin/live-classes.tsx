@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link, useLocation } from "wouter";
 import { Badge } from "@/components/ui/badge";
-import { CalendarClock, CalendarPlus, Calendar, Edit, Ellipsis, ExternalLink, Plus, Search, SlidersHorizontal, Trash2, SortAsc, SortDesc, Download } from "lucide-react";
+import { CalendarClock, CalendarPlus, Calendar, Edit, Ellipsis, ExternalLink, Plus, Search, SlidersHorizontal, Trash2, SortAsc, SortDesc, Download, Eye } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
@@ -17,8 +17,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { formatDate, formatDateTime, formatTime } from "@/lib/utils";
+import { useConditionalRender } from '@/lib/permissions-provider';
 
 export function LiveClasses() {
+  const { renderIfCanCreate, renderIfCanEdit, renderIfCanDelete } = useConditionalRender();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -36,6 +38,7 @@ export function LiveClasses() {
 
   const [editId, setEditId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<any>(null);
+  const [isViewOnlyMode, setIsViewOnlyMode] = useState(false);
 
   // --- Student selection state & available students query
   const [studentSearch, setStudentSearch] = useState<string>("");
@@ -55,7 +58,7 @@ export function LiveClasses() {
 
   const queryClient = useQueryClient();
   
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery<any[]>({
     queryKey: ['/api/live-classes'],
   });
 
@@ -79,11 +82,11 @@ export function LiveClasses() {
   }).length || 0;
   const totalCompleted = data?.filter(lc => new Date(lc.endTime).getTime() < now).length || 0;
 
-  const { data: students = [] } = useQuery({
+  const { data: students = [] } = useQuery<any[]>({
     queryKey: ['/api/admin/students'],
     // ensure auth cookie/header already included globally
   });
-  const { data: coursesList = [] } = useQuery({
+  const { data: coursesList = [] } = useQuery<any[]>({
     queryKey: ['/api/courses'],
   });
 
@@ -165,7 +168,7 @@ export function LiveClasses() {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['/api/live-classes']);
+      queryClient.invalidateQueries({ queryKey: ['/api/live-classes'] });
       setEditId(null);
     },
   });
@@ -184,21 +187,21 @@ const deleteMutation = useMutation({
     });
   },
   onSuccess: () => {
-    queryClient.invalidateQueries(['/api/live-classes']);
+    queryClient.invalidateQueries({ queryKey: ['/api/live-classes'] });
     setShowDeleteDialog(false);
     setDeleteConfirm("");
   },
 });
   
   
-  const filteredLiveClasses = data?.filter(lc => {
+  const filteredLiveClasses = data?.filter((lc: any) => {
     // Main search box filter: title, description, or student name
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       const titleMatch = lc.title.toLowerCase().includes(q);
       const descMatch = lc.description.toLowerCase().includes(q);
       const studentNames = (lc.studentIds || [])
-        .map(id => studentMap.get(id) || "")
+        .map((id: string) => studentMap.get(id) || "")
         .join(" ")
         .toLowerCase();
       if (!titleMatch && !descMatch && !studentNames.includes(q)) {
@@ -232,7 +235,7 @@ const deleteMutation = useMutation({
 
   const sortedFiltered = useMemo(() => {
     const now = Date.now();
-    return filteredLiveClasses.slice().sort((a, b) => {
+    return filteredLiveClasses.slice().sort((a: any, b: any) => {
       const aStart = new Date(a.startTime).getTime();
       const aEnd = new Date(a.endTime).getTime();
       const bStart = new Date(b.startTime).getTime();
@@ -261,10 +264,10 @@ const deleteMutation = useMutation({
     const header = ['Title','Description','Course','Assigned To','Start Time','End Time','Duration','Status'];
     // Use filtered (and sorted) list, not just paginated
     const list = sortedFiltered;
-    const rows = list.map(lc => {
+    const rows = list.map((lc: any) => {
       // Assigned names
       const names = (lc.studentIds || [])
-        .map(id => studentMap.get(id) || id)
+        .map((id: string) => studentMap.get(id) || id)
         .join('; ');
       // Duration in minutes
       const duration = Math.round((new Date(lc.endTime).getTime() - new Date(lc.startTime).getTime()) / 60000);
@@ -322,10 +325,12 @@ const deleteMutation = useMutation({
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Live Classes</h1>
         <div className="mt-2 md:mt-0">
-          <Button onClick={() => setLocation("/admin/live-classes/new")}>
-            <CalendarPlus className="mr-2 h-4 w-4" />
-            Schedule Live Class
-          </Button>
+          {renderIfCanCreate(
+            <Button onClick={() => setLocation("/admin/live-classes/new")}>
+              <CalendarPlus className="mr-2 h-4 w-4" />
+              Schedule Live Class
+            </Button>
+          )}
         </div>
       </div>
       
@@ -574,25 +579,46 @@ const deleteMutation = useMutation({
                             </a>
                           </Button>
                         )}
+                        {/* View button - always visible */}
                         <Button
                           variant="ghost"
                           size="icon"
-                          disabled={!(new Date(liveClass.startTime).getTime() > Date.now())}
-                          onClick={() => setEditId(liveClass._id)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          disabled={!(new Date(liveClass.startTime).getTime() > Date.now())}
                           onClick={() => {
-                            setDeleteId(liveClass._id);
-                            setShowDeleteDialog(true);
+                            setIsViewOnlyMode(true);
+                            setEditId(liveClass._id);
                           }}
+                          title="View Live Class Details"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Eye className="h-4 w-4" />
                         </Button>
+                        {renderIfCanEdit(
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            disabled={!(new Date(liveClass.startTime).getTime() > Date.now())}
+                            onClick={() => {
+                              setIsViewOnlyMode(false);
+                              setEditId(liveClass._id);
+                            }}
+                            title="Edit Live Class"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        )}
+                        {renderIfCanDelete(
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            disabled={!(new Date(liveClass.startTime).getTime() > Date.now())}
+                            onClick={() => {
+                              setDeleteId(liveClass._id);
+                              setShowDeleteDialog(true);
+                            }}
+                            title="Delete Live Class"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
@@ -641,7 +667,7 @@ const deleteMutation = useMutation({
       <Dialog open={!!editId} onOpenChange={(o) => !o && setEditId(null)}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Edit Live Class</DialogTitle>
+            <DialogTitle>{isViewOnlyMode ? 'View Live Class Details' : 'Edit Live Class'}</DialogTitle>
           </DialogHeader>
           {loadingEdit || !editForm ? (
             <div className="py-8 text-center text-sm text-gray-500">Loading…</div>
@@ -659,23 +685,32 @@ const deleteMutation = useMutation({
               }}
               className="space-y-4"
             >
-              <Input
-                label="Title"
-                value={editForm.title}
-                onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-              />
-              <textarea
-                label="Description"
-                rows={3}
-                className="block w-full border rounded px-3 py-2"
-                value={editForm.description}
-                onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-              />
-              <Input
-                label="Course"
-                value={editForm.courseSlug}
-                disabled
-              />
+              <div>
+                <label className="block text-sm font-medium mb-2">Title</label>
+                <Input
+                  value={editForm.title}
+                  onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                  readOnly={isViewOnlyMode}
+                  className={isViewOnlyMode ? 'bg-gray-50' : ''}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Description</label>
+                <textarea
+                  rows={3}
+                  className={`block w-full border rounded px-3 py-2 ${isViewOnlyMode ? 'bg-gray-50' : ''}`}
+                  value={editForm.description}
+                  onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                  readOnly={isViewOnlyMode}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Course</label>
+                <Input
+                  value={editForm.courseSlug}
+                  disabled
+                />
+              </div>
               {/* Student selection */}
               <div>
                 <label className="block text-sm font-medium">Students</label>
@@ -685,14 +720,16 @@ const deleteMutation = useMutation({
                     value={studentSearch}
                     onChange={(e) => setStudentSearch(e.target.value)}
                     className="flex-1"
+                    readOnly={isViewOnlyMode}
+                    disabled={isViewOnlyMode}
                   />
                 </div>
                 <div className="mt-2 max-h-40 overflow-y-auto border rounded p-2">
                   {availableStudents
-                    .filter((s) =>
+                    .filter((s: any) =>
                       s.name.toLowerCase().includes(studentSearch.toLowerCase())
                     )
-                    .map((s) => (
+                    .map((s: any) => (
                       <label key={s.id} className="flex items-center mb-1">
                         <input
                           type="checkbox"
@@ -714,28 +751,44 @@ const deleteMutation = useMutation({
                     ))}
                 </div>
               </div>
-              <Input
-                label="Meeting Link"
-                value={editForm.meetLink}
-                onChange={(e) => setEditForm({ ...editForm, meetLink: e.target.value })}
-              />
-              <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Meeting Link</label>
                 <Input
-                  label="Start Time"
-                  type="datetime-local"
-                  value={editForm.startTime}
-                  onChange={(e) => setEditForm({ ...editForm, startTime: e.target.value })}
-                />
-                <Input
-                  label="End Time"
-                  type="datetime-local"
-                  value={editForm.endTime}
-                  onChange={(e) => setEditForm({ ...editForm, endTime: e.target.value })}
+                  value={editForm.meetLink}
+                  onChange={(e) => setEditForm({ ...editForm, meetLink: e.target.value })}
+                  readOnly={isViewOnlyMode}
+                  className={isViewOnlyMode ? 'bg-gray-50' : ''}
                 />
               </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Start Time</label>
+                  <Input
+                    type="datetime-local"
+                    value={editForm.startTime}
+                    onChange={(e) => setEditForm({ ...editForm, startTime: e.target.value })}
+                    readOnly={isViewOnlyMode}
+                    className={isViewOnlyMode ? 'bg-gray-50' : ''}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">End Time</label>
+                  <Input
+                    type="datetime-local"
+                    value={editForm.endTime}
+                    onChange={(e) => setEditForm({ ...editForm, endTime: e.target.value })}
+                    readOnly={isViewOnlyMode}
+                    className={isViewOnlyMode ? 'bg-gray-50' : ''}
+                  />
+                </div>
+              </div>
               <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setEditId(null)}>Cancel</Button>
-                <Button type="submit" disabled={updateMutation.isLoading}>Save</Button>
+                <Button variant="outline" onClick={() => setEditId(null)}>
+                  {isViewOnlyMode ? 'Close' : 'Cancel'}
+                </Button>
+                {!isViewOnlyMode && (
+                  <Button type="submit" disabled={updateMutation.isPending}>Save</Button>
+                )}
               </div>
             </form>
           )}

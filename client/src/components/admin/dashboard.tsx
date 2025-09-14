@@ -6,6 +6,7 @@ import { Link } from "wouter";
 import { useState, useMemo } from 'react';
 import { subMonths, format } from 'date-fns';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
+import { useConditionalRender } from '@/lib/permissions-provider';
 import {
   BarChart,
   Bar,
@@ -41,6 +42,7 @@ function formatDateTime(isoString: string): string {
 }
 
 export function AdminDashboard() {
+  const { renderIfCanCreate } = useConditionalRender();
   const { data, isLoading, error } = useQuery<{ coursesBreakdown: { standalone: number; withMba: number }, totalEnrollments: number, totalStudents: number, newStudentsThisMonth: number, totalCourses: number, upcomingLiveClasses: number, nextLiveClass: { startTime: string } }>({
     queryKey: ['/api/admin/dashboard']
   });
@@ -219,12 +221,22 @@ const heatmapData = useMemo(() => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
         <div className="mt-2 md:mt-0 space-x-2">
-          <Link href="/admin/students/new">
-            <Button variant="secondary">
-              <UserPlus className="mr-2 h-4 w-4" />
-              Add Student
-            </Button>
-          </Link>
+          {renderIfCanCreate(
+            <Link href="/admin/students/new">
+              <Button variant="secondary">
+                <UserPlus className="mr-2 h-4 w-4" />
+                Add Student
+              </Button>
+            </Link>
+          )}
+          {renderIfCanCreate(
+            <Link href="/admin/teachers/new">
+              <Button variant="secondary">
+                <UserPlus className="mr-2 h-4 w-4" />
+                Add Teacher
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
       
@@ -306,7 +318,7 @@ const heatmapData = useMemo(() => {
                 tileContent={({ date, view }) => {
                   if (view !== 'month') return null;
                   const dayClasses = upcomingLiveClasses.filter(
-                    (lc) => new Date(lc.startTime).toDateString() === date.toDateString()
+                    (lc: any) => new Date(lc.startTime).toDateString() === date.toDateString()
                   );
                   if (!dayClasses.length) return null;
                   return (
@@ -318,7 +330,7 @@ const heatmapData = useMemo(() => {
                         </div>
                       </TooltipTrigger>
                       <TooltipContent side="top" className="whitespace-pre-line">
-                        {dayClasses.map((lc) => {
+                        {dayClasses.map((lc: any) => {
                           const time = format(new Date(lc.startTime), 'h:mm a');
                           return `${time} – ${lc.title}`;
                         }).join('\n')}
@@ -510,30 +522,38 @@ const heatmapData = useMemo(() => {
           <CardContent className="p-5 border-t border-gray-200">
             {/* existing Quick Actions buttons */}
             <div className="space-y-3">
-              <Link href="/admin/live-classes/new">
-                <Button variant="outline" className="w-full justify-start mb-2">
-                  <CalendarClock className="mr-2 h-4 w-4" />
-                  Schedule Live Class
-                </Button>
-              </Link>
-              <Link href="/admin/students/new">
-                <Button variant="outline" className="w-full justify-start mb-2">
-                  <UserPlus className="mr-2 h-4 w-4" />
-                  Add New Student
-                </Button>
-              </Link>
-              <Link href="/admin/courses/new">
-                <Button variant="outline" className="w-full justify-start mb-2">
-                  <School className="mr-2 h-4 w-4" />
-                  Add New Course
-                </Button>
-              </Link>
-              <Link href="/admin/enrollments/new">
-                <Button variant="outline" className="w-full justify-start">
-                  <GraduationCap className="mr-2 h-4 w-4" />
-                  Create Enrollment
-                </Button>
-              </Link>
+              {renderIfCanCreate(
+                <Link href="/admin/live-classes/new">
+                  <Button variant="outline" className="w-full justify-start mb-2">
+                    <CalendarClock className="mr-2 h-4 w-4" />
+                    Schedule Live Class
+                  </Button>
+                </Link>
+              )}
+              {renderIfCanCreate(
+                <Link href="/admin/students/new">
+                  <Button variant="outline" className="w-full justify-start mb-2">
+                    <UserPlus className="mr-2 h-4 w-4" />
+                    Add New Student
+                  </Button>
+                </Link>
+              )}
+              {renderIfCanCreate(
+                <Link href="/admin/courses/new">
+                  <Button variant="outline" className="w-full justify-start mb-2">
+                    <School className="mr-2 h-4 w-4" />
+                    Add New Course
+                  </Button>
+                </Link>
+              )}
+              {renderIfCanCreate(
+                <Link href="/admin/enrollments/new">
+                  <Button variant="outline" className="w-full justify-start">
+                    <GraduationCap className="mr-2 h-4 w-4" />
+                    Create Enrollment
+                  </Button>
+                </Link>
+              )}
             </div>
           </CardContent>
         </Card>

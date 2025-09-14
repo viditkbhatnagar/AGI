@@ -9,13 +9,15 @@ import {
   Home, 
   LayoutDashboard, 
   LogOut, 
+  MessageSquare,
   School, 
   Settings, 
   Users, 
   Video,
   UserCircle,
   Trophy,
-  FileText
+  FileText,
+  Brain
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-provider";
 
@@ -56,7 +58,7 @@ export function Sidebar({ className, isMobile, onClose }: SidebarProps) {
       </div>
       
       <ScrollArea className="flex-1 py-2">
-        {userRole === 'admin' ? (
+        {userRole === 'admin' || userRole === 'superadmin' ? (
           <div className="px-2 space-y-1">
             <p className="px-2 py-1.5 text-xs font-semibold text-blue-200 uppercase">
               Admin Dashboard
@@ -82,6 +84,30 @@ export function Sidebar({ className, isMobile, onClose }: SidebarProps) {
               isActive={isActive('/admin/courses')} 
               onClick={handleLinkClick}
             />
+            {/* Sandbox Courses Tab */}
+            <NavItem 
+              href="/admin/sandbox-courses" 
+              icon={<FileText className="h-4 w-4 md:h-5 md:w-5" />} 
+              label="Sandbox Courses" 
+              isActive={isActive('/admin/sandbox-courses')} 
+              onClick={handleLinkClick}
+            />
+            {/* Quiz Repository Tab */}
+            <NavItem 
+              href="/admin/quiz-repository" 
+              icon={<Brain className="h-4 w-4 md:h-5 md:w-5" />} 
+              label="Quiz Repository" 
+              isActive={isActive('/admin/quiz-repository')} 
+              onClick={handleLinkClick}
+            />
+            {/* Student Feedbacks Tab */}
+            <NavItem 
+              href="/admin/feedbacks" 
+              icon={<MessageSquare className="h-4 w-4 md:h-5 md:w-5" />} 
+              label="Student Feedbacks" 
+              isActive={isActive('/admin/feedbacks')} 
+              onClick={handleLinkClick}
+            />
             <NavItem 
               href="/admin/enrollments" 
               icon={<GraduationCap className="h-4 w-4 md:h-5 md:w-5" />} 
@@ -105,6 +131,54 @@ export function Sidebar({ className, isMobile, onClose }: SidebarProps) {
             />
             {/* Removed Quiz Scores and Final Examinations from sidebar; now available in header navigation */}
           </div>
+        ) : userRole === 'teacher' ? (
+          <div className="px-2 space-y-1">
+            <p className="px-2 py-1.5 text-xs font-semibold text-blue-200 uppercase">
+              Teacher Portal
+            </p>
+            <NavItem 
+              href="/teacher" 
+              icon={<LayoutDashboard className="h-4 w-4 md:h-5 md:w-5" />} 
+              label="Dashboard" 
+              isActive={isActive('/teacher') && !location.includes('/teacher/')} 
+              onClick={handleLinkClick}
+            />
+            <NavItem 
+              href="/teacher/students" 
+              icon={<Users className="h-4 w-4 md:h-5 md:w-5" />} 
+              label="My Students" 
+              isActive={isActive('/teacher/students')} 
+              onClick={handleLinkClick}
+            />
+            <NavItem 
+              href="/teacher/courses" 
+              icon={<BookOpen className="h-4 w-4 md:h-5 md:w-5" />} 
+              label="My Courses" 
+              isActive={isActive('/teacher/courses')} 
+              onClick={handleLinkClick}
+            />
+            <NavItem 
+              href="/teacher/live-classes" 
+              icon={<Video className="h-4 w-4 md:h-5 md:w-5" />} 
+              label="Live Classes" 
+              isActive={isActive('/teacher/live-classes')} 
+              onClick={handleLinkClick}
+            />
+            <NavItem 
+              href="/teacher/recordings" 
+              icon={<FileText className="h-4 w-4 md:h-5 md:w-5" />} 
+              label="Recordings" 
+              isActive={isActive('/teacher/recordings')} 
+              onClick={handleLinkClick}
+            />
+            <NavItem 
+              href="/teacher/exam-results" 
+              icon={<GraduationCap className="h-4 w-4 md:h-5 md:w-5" />} 
+              label="Exam Grading" 
+              isActive={isActive('/teacher/exam-results')} 
+              onClick={handleLinkClick}
+            />
+          </div>
         ) : (
           <div className="px-2 space-y-1">
             <p className="px-2 py-1.5 text-xs font-semibold text-blue-200 uppercase">
@@ -122,6 +196,13 @@ export function Sidebar({ className, isMobile, onClose }: SidebarProps) {
               icon={<BookOpen className="h-4 w-4 md:h-5 md:w-5" />} 
               label="My Courses" 
               isActive={isActive('/student/courses')} 
+              onClick={handleLinkClick}
+            />
+            <NavItem 
+              href="/student/feedback" 
+              icon={<MessageSquare className="h-4 w-4 md:h-5 md:w-5" />} 
+              label="Feedback" 
+              isActive={isActive('/student/feedback')} 
               onClick={handleLinkClick}
             />
 

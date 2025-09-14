@@ -48,20 +48,50 @@ function toGoogleVideoEmbedUrl(url: string) {
 }
 
 // Detect document type and estimate pages
-function getDocumentTypeAndPages(url: string): { type: 'slides' | 'document' | 'spreadsheet' | 'pdf', estimatedPages: number } {
-  if (url.includes('/presentation/')) {
-    return { type: 'slides', estimatedPages: 10 }; // Default estimate for slides
+function getDocumentTypeAndPages(url: string | undefined): { type: 'slides' | 'document' | 'spreadsheet' | 'pdf', estimatedPages: number } {
+  if (!url) {
+    return { type: 'pdf', estimatedPages: 5 }; // Default for undefined URLs
   }
-  if (url.includes('/document/')) {
-    return { type: 'document', estimatedPages: 5 }; // Default estimate for docs
+  
+  console.log('🔍 Detecting document type for URL:', url);
+  
+  // Check file extension first
+  const extension = url.toLowerCase().split('.').pop() || '';
+  
+  // PDF files
+  if (extension === 'pdf' || url.toLowerCase().includes('.pdf')) {
+    console.log('📄 Detected: PDF document');
+    return { type: 'pdf', estimatedPages: 10 };
   }
-  if (url.includes('/spreadsheets/')) {
-    return { type: 'spreadsheet', estimatedPages: 3 }; // Default estimate for sheets
+  
+  // PowerPoint files
+  if (['ppt', 'pptx'].includes(extension) || url.includes('/presentation/')) {
+    console.log('📊 Detected: PowerPoint presentation');
+    return { type: 'slides', estimatedPages: 20 };
   }
-  if (url.toLowerCase().includes('.pdf')) {
-    return { type: 'pdf', estimatedPages: 10 }; // Default estimate for PDFs
+  
+  // Excel files
+  if (['xls', 'xlsx', 'csv'].includes(extension) || url.includes('/spreadsheets/')) {
+    console.log('📉 Detected: Excel spreadsheet');
+    return { type: 'spreadsheet', estimatedPages: 5 };
   }
-  return { type: 'document', estimatedPages: 1 };
+  
+  // Word files
+  if (['doc', 'docx'].includes(extension) || url.includes('/document/')) {
+    console.log('📄 Detected: Word document');
+    return { type: 'document', estimatedPages: 10 };
+  }
+  
+  // Handle Cloudinary documents - limit page navigation since Office Online doesn't support it well
+  if (url.includes('res.cloudinary.com')) {
+    console.log('🌤️ Detected: Cloudinary document (generic)');
+    // For Office documents on Cloudinary, disable page navigation
+    return { type: 'document', estimatedPages: 1 };
+  }
+  
+  // Default fallback
+  console.log('📁 Detected: Generic document');
+  return { type: 'document', estimatedPages: 5 };
 }
 
 import { useQuery, useQueries } from "@tanstack/react-query";
@@ -87,6 +117,11 @@ import {
   ChevronLeft,
   Clock,
   FileText,
+  FileSpreadsheet,
+  FileImage,
+  File,
+  Monitor,
+  Presentation,
   Lock,
   Play,
   Video,
@@ -94,7 +129,8 @@ import {
   Film,
   ArrowUp,
   ArrowDown,
-  CalendarDays
+  CalendarDays,
+  Loader2
 } from "lucide-react";
 import { Link } from "wouter";
 import { Badge } from "@/components/ui/badge";
@@ -105,6 +141,104 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import QuizForm from "@/components/student/QuizForm";
 import FinalExamForm from "@/components/student/FinalExamForm";
 import FinalExamResults from "@/components/student/FinalExamResults";
+import { DocumentViewer } from "@/components/student/DocumentViewers";
+
+// Function to get appropriate icon based on file type
+function getDocumentIcon(document: any): React.ComponentType<any> {
+  const fileName = document.fileName || document.title || '';
+  const fileType = document.fileType || '';
+  const url = document.fileUrl || document.url || '';
+  
+  // Check file extension from fileName or URL
+  const extension = fileName.toLowerCase().split('.').pop() || 
+                   url.toLowerCase().split('.').pop() || '';
+  
+  // Check MIME type if available
+  const mimeType = fileType.toLowerCase();
+  
+  // PDF files
+  if (extension === 'pdf' || mimeType.includes('pdf')) {
+    return File; // PDF icon
+  }
+  
+  // PowerPoint files
+  if (['ppt', 'pptx'].includes(extension) || 
+      mimeType.includes('presentation') || 
+      mimeType.includes('powerpoint')) {
+    return Presentation; // PowerPoint icon
+  }
+  
+  // Excel files  
+  if (['xls', 'xlsx', 'csv'].includes(extension) || 
+      mimeType.includes('spreadsheet') || 
+      mimeType.includes('excel') ||
+      mimeType.includes('csv')) {
+    return FileSpreadsheet; // Excel icon
+  }
+  
+  // Word files
+  if (['doc', 'docx'].includes(extension) || 
+      mimeType.includes('document') || 
+      mimeType.includes('word')) {
+    return FileText; // Word icon
+  }
+  
+  // Image files
+  if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(extension) || 
+      mimeType.includes('image')) {
+    return FileImage; // Image icon
+  }
+  
+  // Default to generic file icon
+  return FileText;
+}
+
+// Function to get appropriate icon color based on file type
+function getDocumentIconColor(document: any): string {
+  const fileName = document.fileName || document.title || '';
+  const fileType = document.fileType || '';
+  const url = document.fileUrl || document.url || '';
+  
+  const extension = fileName.toLowerCase().split('.').pop() || 
+                   url.toLowerCase().split('.').pop() || '';
+  const mimeType = fileType.toLowerCase();
+  
+  // PDF files - red
+  if (extension === 'pdf' || mimeType.includes('pdf')) {
+    return 'text-red-600';
+  }
+  
+  // PowerPoint files - orange
+  if (['ppt', 'pptx'].includes(extension) || 
+      mimeType.includes('presentation') || 
+      mimeType.includes('powerpoint')) {
+    return 'text-orange-600';
+  }
+  
+  // Excel files - green
+  if (['xls', 'xlsx', 'csv'].includes(extension) || 
+      mimeType.includes('spreadsheet') || 
+      mimeType.includes('excel') ||
+      mimeType.includes('csv')) {
+    return 'text-green-600';
+  }
+  
+  // Word files - blue
+  if (['doc', 'docx'].includes(extension) || 
+      mimeType.includes('document') || 
+      mimeType.includes('word')) {
+    return 'text-blue-600';
+  }
+  
+  // Image files - purple
+  if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(extension) || 
+      mimeType.includes('image')) {
+    return 'text-purple-600';
+  }
+  
+  // Default - gray
+  return 'text-gray-600';
+}
 
 interface CourseDetailProps {
   slug: string;
@@ -182,6 +316,8 @@ export function CourseDetail({ slug }: CourseDetailProps) {
   const [currentDocType, setCurrentDocType] = useState<'slides' | 'document' | 'spreadsheet' | 'pdf' | null>(null);
   const [baseDocUrl, setBaseDocUrl] = useState<string>('');
   const [isDocLoading, setIsDocLoading] = useState<boolean>(false);
+  const [docLoadFailed, setDocLoadFailed] = useState<boolean>(false);
+  const [selectedDocument, setSelectedDocument] = useState<any>(null);
 
   // Media container ref for scrolling into view
   const mediaRef = useRef<HTMLDivElement>(null);
@@ -479,9 +615,14 @@ export function CourseDetail({ slug }: CourseDetailProps) {
     }
   }, 10000);
 
-  const handleDocPreview = async (docUrl: string) => {
+  const handleDocPreview = async (docUrl: string | undefined, document?: any) => {
     const token = localStorage.getItem("token");
-    if (!token) return;
+    if (!token || !docUrl) return;
+    
+    console.log('📄 Document preview requested:', { docUrl, document, timestamp: new Date().toISOString() });
+    
+    // Store document metadata for the viewer
+    setSelectedDocument(document);
     
     // Detect document type and set up navigation
     const { type, estimatedPages } = getDocumentTypeAndPages(docUrl);
@@ -489,6 +630,11 @@ export function CourseDetail({ slug }: CourseDetailProps) {
     setTotalPages(estimatedPages);
     setCurrentPage(1);
     setBaseDocUrl(docUrl);
+    setDocLoadFailed(false);
+    setIsDocLoading(true);
+    
+    // Add a small delay to ensure the component has time to initialize loading state
+    await new Promise(resolve => setTimeout(resolve, 100));
     
     // send original URL to backend
     await fetch("/api/student/view-document", {
@@ -505,9 +651,20 @@ export function CourseDetail({ slug }: CourseDetailProps) {
     });
     queryClient.invalidateQueries({ queryKey: ['studentDashboard'] });
     queryClient.invalidateQueries({ queryKey: ['courseDetail', slug] });
-    // convert to embeddable URL for iframe with page 1
-    const embedUrl = toGooglePreviewUrl(docUrl, 1);
-    setSelectedDocUrl(embedUrl);
+    
+    // Use the original URL without modifications to avoid 400 errors
+    console.log('🌤️ Using original Cloudinary URL without transformations');
+    
+    // Set document URL with a small delay to ensure loading state is visible
+    setTimeout(() => {
+      setSelectedDocUrl(docUrl);
+      // Keep setup loading for a bit longer to ensure viewer is ready
+      setTimeout(() => {
+        setIsDocLoading(false);
+      }, 300);
+    }, 200);
+    
+    console.log('✅ Document preview URL set:', { finalUrl: docUrl, type });
   };
 
   // Navigate to specific page
@@ -521,10 +678,44 @@ export function CourseDetail({ slug }: CourseDetailProps) {
     
     // Use a small delay to ensure the iframe is cleared before setting new URL
     setTimeout(() => {
-      const embedUrl = toGooglePreviewUrl(baseDocUrl, page);
+      let embedUrl;
+      
+      // Check if it's a Cloudinary document
+      if (baseDocUrl.includes('res.cloudinary.com')) {
+        console.log('🔄 Navigating Cloudinary document to page:', page);
+        
+        // Determine file type from URL
+        const isPDF = baseDocUrl.toLowerCase().includes('.pdf');
+        const isOfficeDoc = baseDocUrl.toLowerCase().match(/\.(doc|docx|xls|xlsx|ppt|pptx)$/);
+        
+        if (isPDF) {
+          // For PDFs, use direct Cloudinary URL with inline flag (page navigation may not work)
+          let pdfUrl = baseDocUrl;
+          if (!pdfUrl.includes('fl_inline')) {
+            const urlParts = pdfUrl.split('/upload/');
+            if (urlParts.length === 2) {
+              pdfUrl = `${urlParts[0]}/upload/fl_inline/${urlParts[1]}`;
+            }
+          }
+          embedUrl = pdfUrl;
+        } else if (isOfficeDoc) {
+          // For Office documents, use Microsoft Office Online viewer (doesn't support page navigation)
+          embedUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(baseDocUrl)}`;
+        } else {
+          // For other documents, use direct URL
+          embedUrl = baseDocUrl;
+        }
+      } else {
+        console.log('🔄 Navigating Google Drive document to page:', page);
+        // For Google Drive documents, use the existing Google preview logic with page navigation
+        embedUrl = toGooglePreviewUrl(baseDocUrl, page);
+      }
+      
       // Force refresh the iframe by adding a timestamp parameter
       const urlWithTimestamp = embedUrl + (embedUrl.includes('?') ? '&' : '?') + `t=${Date.now()}`;
       setSelectedDocUrl(urlWithTimestamp);
+      console.log('✅ Page navigation URL set:', { page, finalUrl: urlWithTimestamp });
+      
       // Remove loading state after a delay
       setTimeout(() => setIsDocLoading(false), 1000);
     }, 100);
@@ -568,6 +759,8 @@ export function CourseDetail({ slug }: CourseDetailProps) {
     setCurrentDocType(null);
     setBaseDocUrl('');
     setIsDocLoading(false);
+    setDocLoadFailed(false);
+    setSelectedDocument(null);
   };
 
   // Helper function to clear video content only
@@ -727,6 +920,210 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                     
                     {expanded[moduleIndex] && (
                       <div className="mt-3 ml-6 space-y-2">
+                        {/* Presentations Section - Only PPTX files */}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <div
+                              className="flex items-center justify-between py-2 cursor-pointer hover:bg-gray-50 rounded px-2"
+                              onClick={(e) => {
+                                const presentations = module.documents?.filter((doc: any) => {
+                                  const fileName = doc.fileName || doc.title || '';
+                                  const fileType = doc.fileType || '';
+                                  const url = doc.fileUrl || doc.url || '';
+                                  
+                                  const extension = fileName.toLowerCase().split('.').pop() || 
+                                                   url.toLowerCase().split('.').pop() || '';
+                                  const mimeType = fileType.toLowerCase();
+                                  
+                                  return ['ppt', 'pptx'].includes(extension) || 
+                                         mimeType.includes('presentation') || 
+                                         mimeType.includes('powerpoint');
+                                }) || [];
+                                
+                                if (presentations.length === 0) {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  showNotice('No presentations are available for this module.');
+                                }
+                              }}
+                            >
+                              <div className="flex items-center">
+                                <Presentation className="h-4 w-4 mr-2 text-orange-600" />
+                                <span className="text-sm text-gray-700">PRESENTATIONS</span>
+                                <ChevronDown className="h-3 w-3 ml-1 text-gray-400" />
+                              </div>
+                            </div>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="w-64" align="start">
+                            {(() => {
+                              const presentations = module.documents?.filter((doc: any) => {
+                                const fileName = doc.fileName || doc.title || '';
+                                const fileType = doc.fileType || '';
+                                const url = doc.fileUrl || doc.url || '';
+                                
+                                const extension = fileName.toLowerCase().split('.').pop() || 
+                                                 url.toLowerCase().split('.').pop() || '';
+                                const mimeType = fileType.toLowerCase();
+                                
+                                return ['ppt', 'pptx'].includes(extension) || 
+                                       mimeType.includes('presentation') || 
+                                       mimeType.includes('powerpoint');
+                              }) || [];
+                              
+                              return presentations.length > 0 ? (
+                                presentations.map((doc: any, docIdx: number) => (
+                                  <DropdownMenuItem
+                                    key={docIdx}
+                                    className="cursor-pointer"
+                                    onClick={() => {
+                                      // Clear video and quiz when opening document
+                                      clearVideoContent();
+                                      clearQuizContent();
+                                      
+                                      // Open document - handle both upload and link types properly
+                                      let documentUrl;
+                                      if (doc.type === 'upload') {
+                                        // For uploaded documents, use fileUrl
+                                        documentUrl = doc.fileUrl;
+                                      } else {
+                                        // For link documents, use url
+                                        documentUrl = doc.url;
+                                      }
+                                      
+                                      console.log('Presentation type:', doc.type, 'URL:', documentUrl, 'Full doc:', doc);
+                                      
+                                      if (documentUrl) {
+                                        handleDocPreview(documentUrl, doc);
+                                      } else {
+                                        console.error('No valid URL found for presentation:', doc);
+                                      }
+                                    }}
+                                  >
+                                    <div className="flex items-center justify-between w-full">
+                                      <div className="flex items-center">
+                                        <Presentation className="h-4 w-4 mr-2 text-orange-600" />
+                                        <span className="text-sm">{doc.title || `Presentation ${docIdx + 1}`}</span>
+                                      </div>
+                                      {doc.viewed && (
+                                        <Check className="h-3 w-3 text-green-600" />
+                                      )}
+                                    </div>
+                                  </DropdownMenuItem>
+                                ))
+                              ) : (
+                                <DropdownMenuItem disabled>
+                                  <span className="text-sm text-gray-500">No presentations available</span>
+                                </DropdownMenuItem>
+                              );
+                            })()}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                        
+                        {/* Reading Materials Section - Excluding PPTX files */}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <div
+                              className="flex items-center justify-between py-2 cursor-pointer hover:bg-gray-50 rounded px-2"
+                              onClick={(e) => {
+                                const readingMaterials = module.documents?.filter((doc: any) => {
+                                  const fileName = doc.fileName || doc.title || '';
+                                  const fileType = doc.fileType || '';
+                                  const url = doc.fileUrl || doc.url || '';
+                                  
+                                  const extension = fileName.toLowerCase().split('.').pop() || 
+                                                   url.toLowerCase().split('.').pop() || '';
+                                  const mimeType = fileType.toLowerCase();
+                                  
+                                  // Exclude presentations (PPTX) from reading materials
+                                  return !(['ppt', 'pptx'].includes(extension) || 
+                                          mimeType.includes('presentation') || 
+                                          mimeType.includes('powerpoint'));
+                                }) || [];
+                                
+                                if (readingMaterials.length === 0) {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  showNotice('No reading materials are available for this module.');
+                                }
+                              }}
+                            >
+                              <div className="flex items-center">
+                                <FileText className="h-4 w-4 mr-2 text-green-600" />
+                                <span className="text-sm text-gray-700">READING MATERIALS</span>
+                                <ChevronDown className="h-3 w-3 ml-1 text-gray-400" />
+                              </div>
+                            </div>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="w-64" align="start">
+                            {(() => {
+                              const readingMaterials = module.documents?.filter((doc: any) => {
+                                const fileName = doc.fileName || doc.title || '';
+                                const fileType = doc.fileType || '';
+                                const url = doc.fileUrl || doc.url || '';
+                                
+                                const extension = fileName.toLowerCase().split('.').pop() || 
+                                                 url.toLowerCase().split('.').pop() || '';
+                                const mimeType = fileType.toLowerCase();
+                                
+                                // Exclude presentations (PPTX) from reading materials
+                                return !(['ppt', 'pptx'].includes(extension) || 
+                                        mimeType.includes('presentation') || 
+                                        mimeType.includes('powerpoint'));
+                              }) || [];
+                              
+                              return readingMaterials.length > 0 ? (
+                                readingMaterials.map((doc: any, docIdx: number) => (
+                                  <DropdownMenuItem
+                                    key={docIdx}
+                                    className="cursor-pointer"
+                                    onClick={() => {
+                                      // Clear video and quiz when opening document
+                                      clearVideoContent();
+                                      clearQuizContent();
+                                      
+                                      // Open document - handle both upload and link types properly
+                                      let documentUrl;
+                                      if (doc.type === 'upload') {
+                                        // For uploaded documents, use fileUrl
+                                        documentUrl = doc.fileUrl;
+                                      } else {
+                                        // For link documents, use url
+                                        documentUrl = doc.url;
+                                      }
+                                      
+                                      console.log('Reading material type:', doc.type, 'URL:', documentUrl, 'Full doc:', doc);
+                                      
+                                      if (documentUrl) {
+                                        handleDocPreview(documentUrl, doc);
+                                      } else {
+                                        console.error('No valid URL found for reading material:', doc);
+                                      }
+                                    }}
+                                  >
+                                    <div className="flex items-center justify-between w-full">
+                                      <div className="flex items-center">
+                                        {(() => {
+                                          const IconComponent = getDocumentIcon(doc);
+                                          const iconColor = getDocumentIconColor(doc);
+                                          return <IconComponent className={`h-4 w-4 mr-2 ${iconColor}`} />;
+                                        })()}
+                                        <span className="text-sm">{doc.title || `Document ${docIdx + 1}`}</span>
+                                      </div>
+                                      {doc.viewed && (
+                                        <Check className="h-3 w-3 text-green-600" />
+                                      )}
+                                    </div>
+                                  </DropdownMenuItem>
+                                ))
+                              ) : (
+                                <DropdownMenuItem disabled>
+                                  <span className="text-sm text-gray-500">No reading materials available</span>
+                                </DropdownMenuItem>
+                              );
+                            })()}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                        
                         {/* Video Section */}
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -742,7 +1139,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                             >
                               <div className="flex items-center">
                                 <Video className="h-4 w-4 mr-2 text-blue-600" />
-                                <span className="text-sm text-gray-700">VIDEO</span>
+                                <span className="text-sm text-gray-700">VIDEOS</span>
                                 <ChevronDown className="h-3 w-3 ml-1 text-gray-400" />
                               </div>
                             </div>
@@ -778,60 +1175,6 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                             ) : (
                               <DropdownMenuItem disabled>
                                 <span className="text-sm text-gray-500">No videos available</span>
-                              </DropdownMenuItem>
-                            )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                        
-                        {/* Reading Materials Section */}
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <div
-                              className="flex items-center justify-between py-2 cursor-pointer hover:bg-gray-50 rounded px-2"
-                              onClick={(e) => {
-                                if (!module.documents || module.documents.length === 0) {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  showNotice('No reading materials are available for this module.');
-                                }
-                              }}
-                            >
-                              <div className="flex items-center">
-                                <FileText className="h-4 w-4 mr-2 text-green-600" />
-                                <span className="text-sm text-gray-700">READING MATERIALS</span>
-                                <ChevronDown className="h-3 w-3 ml-1 text-gray-400" />
-                              </div>
-                            </div>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent className="w-64" align="start">
-                            {module.documents && module.documents.length > 0 ? (
-                              module.documents.map((doc: any, docIdx: number) => (
-                                <DropdownMenuItem
-                                  key={docIdx}
-                                  className="cursor-pointer"
-                                  onClick={() => {
-                                    // Clear video and quiz when opening document
-                                    clearVideoContent();
-                                    clearQuizContent();
-                                    
-                                    // Open document
-                                    handleDocPreview(doc.url);
-                                  }}
-                                >
-                                  <div className="flex items-center justify-between w-full">
-                                    <div className="flex items-center">
-                                      <FileText className="h-4 w-4 mr-2 text-green-600" />
-                                      <span className="text-sm">{doc.title || `Document ${docIdx + 1}`}</span>
-                                    </div>
-                                    {doc.viewed && (
-                                      <Check className="h-3 w-3 text-green-600" />
-                                    )}
-                                  </div>
-                                </DropdownMenuItem>
-                              ))
-                            ) : (
-                              <DropdownMenuItem disabled>
-                                <span className="text-sm text-gray-500">No reading materials available</span>
                               </DropdownMenuItem>
                             )}
                           </DropdownMenuContent>
@@ -968,6 +1311,19 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                 <div className="bg-white border border-gray-200 rounded-t-lg p-4 flex items-center justify-between">
                   <div className="flex items-center">
                     <span className="text-sm text-gray-600 font-medium">Reading Material</span>
+                    {baseDocUrl && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="ml-4"
+                        onClick={() => {
+                          console.log('🔗 Opening document in new tab:', baseDocUrl);
+                          window.open(baseDocUrl, '_blank', 'noopener,noreferrer');
+                        }}
+                      >
+                        Open in New Tab
+                      </Button>
+                    )}
                   </div>
                   <Button
                     variant="ghost"
@@ -979,28 +1335,40 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                       setCurrentDocType(null);
                       setBaseDocUrl('');
                       setIsDocLoading(false);
+                      setDocLoadFailed(false);
+                      setSelectedDocument(null);
                     }}
                   >
                     ✕
                   </Button>
                 </div>
-                {/* Document Viewer */}
-                <div className="relative">
-                  {isDocLoading && (
-                    <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10 border-l border-r border-b border-gray-200 rounded-b-lg">
-                      <div className="text-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                        <p className="text-sm text-gray-600">Loading document...</p>
+                
+                {/* Document Setup Loading */}
+                {isDocLoading && (
+                  <div className="border-l border-r border-b border-gray-200 rounded-b-lg bg-white">
+                    <div className="w-full h-[60vh] md:h-[70vh] flex items-center justify-center">
+                      <div className="text-center p-8">
+                        <Loader2 className="h-16 w-16 animate-spin mx-auto mb-6 text-blue-600" />
+                        <p className="text-xl font-medium text-gray-700 mb-3">Preparing Document</p>
+                        <p className="text-sm text-gray-500">Setting up document viewer...</p>
+                        <div className="mt-4 w-64 mx-auto bg-gray-200 rounded-full h-1.5">
+                          <div className="bg-blue-600 h-1.5 rounded-full animate-pulse" style={{ width: '30%' }}></div>
+                        </div>
                       </div>
                     </div>
-                  )}
-                  <iframe
-                    src={selectedDocUrl}
-                    className="border-l border-r border-b border-gray-200 rounded-b-lg w-full h-[60vh] md:h-[70vh]"
-                    allow="fullscreen"
-                    onLoad={() => setIsDocLoading(false)}
-                  />
-                </div>
+                  </div>
+                )}
+                
+                {/* Document Viewer */}
+                {!isDocLoading && (
+                  <div className="border-l border-r border-b border-gray-200 rounded-b-lg">
+                    <DocumentViewer
+                      fileUrl={selectedDocUrl}
+                      fileName={selectedDocument?.fileName || selectedDocument?.title}
+                      fileType={selectedDocument?.fileType}
+                    />
+                  </div>
+                )}
               </div>
             )}
 

@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import { createDownloadLink } from '@/lib/cloudinary';
+import { useConditionalRender } from '@/lib/permissions-provider';
 import { 
   Eye, 
   Download, 
@@ -94,6 +95,7 @@ interface ExamSubmission {
 }
 
 export default function ExamResults() {
+  const { renderIfCanEdit } = useConditionalRender();
   const [results, setResults] = useState<StudentExamResult[]>([]);
   const [filteredResults, setFilteredResults] = useState<StudentExamResult[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -519,16 +521,18 @@ export default function ExamResults() {
                                       <Eye className="h-3 w-3 mr-1" />
                                       View
                                     </Button>
-                                    {attempt.requiresManualGrading && (
-                                      <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => openScoreDialogForAttempt(result, attempt.attemptNumber)}
-                                        className="flex items-center"
-                                      >
-                                        <Edit className="h-3 w-3 mr-1" />
-                                        Grade
-                                      </Button>
+                                    {renderIfCanEdit(
+                                      attempt.requiresManualGrading && (
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => openScoreDialogForAttempt(result, attempt.attemptNumber)}
+                                          className="flex items-center"
+                                        >
+                                          <Edit className="h-3 w-3 mr-1" />
+                                          Grade
+                                        </Button>
+                                      )
                                     )}
                                   </div>
                                 </div>
@@ -546,18 +550,22 @@ export default function ExamResults() {
                               variant="ghost"
                               size="sm"
                               onClick={() => viewSubmissionByAttempt(result, result.latestAttempt!.attemptNumber)}
+                              title="View Submission"
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
                           )}
-                          {result.latestAttempt?.requiresManualGrading && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => openScoreDialog(result)}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
+                          {renderIfCanEdit(
+                            result.latestAttempt?.requiresManualGrading && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => openScoreDialog(result)}
+                                title="Grade Submission"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                            )
                           )}
                         </div>
                       </TableCell>

@@ -1,13 +1,15 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link, useLocation } from "wouter";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Eye, Plus, Search, SlidersHorizontal, Trash2, Users, School, CalendarClock, Download, SortAsc, SortDesc, ArrowUpDown } from "lucide-react";
+import { Edit, Eye, Plus, Search, SlidersHorizontal, Trash2, Users, School, CalendarClock, Download, SortAsc, SortDesc, ArrowUpDown, Copy } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useConditionalRender } from '@/lib/permissions-provider';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,11 +20,13 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 
 export function Courses() {
+  const { renderIfCanCreate, renderIfCanEdit, renderIfCanDelete } = useConditionalRender();
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [courseNameFilter, setCourseNameFilter] = useState<string>('all');
@@ -30,12 +34,39 @@ export function Courses() {
   const [showAll, setShowAll] = useState(false);
 const [currentPage, setCurrentPage] = useState(1);
 const itemsPerPage = 4;
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   
-  const { data, isLoading, error } = useQuery({
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  const [courseToDelete, setCourseToDelete] = useState<string | null>(null);
+  
+  // Handle highlighting newly copied courses
+  const [highlightedCourses, setHighlightedCourses] = useState<Set<string>>(new Set());
+  
+  useEffect(() => {
+    // Parse query parameters to get highlighted course slugs
+    const urlParams = new URLSearchParams(location.split('?')[1] || '');
+    const highlightParam = urlParams.get('highlight');
+    
+    if (highlightParam) {
+      const courseSlugs = highlightParam.split(',').filter(Boolean);
+      setHighlightedCourses(new Set(courseSlugs));
+      
+      // Clear highlighting after 5 seconds
+      const timer = setTimeout(() => {
+        setHighlightedCourses(new Set());
+        // Remove query parameter from URL
+        setLocation('/admin/courses');
+      }, 5000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [location, setLocation]);
+  
+  const { data, isLoading, error } = useQuery<any[]>({
     queryKey: ['/api/courses'],
   });
-  const { data: enrollments = [] } = useQuery({
+  const { data: enrollments = [] } = useQuery<any[]>({
     queryKey: ['/api/enrollments'],
   });
   const enrollCountMap = useMemo(() => {
@@ -46,9 +77,45 @@ const itemsPerPage = 4;
     return m;
   }, [enrollments]);
 
+  const deleteMutation = useMutation({
+    mutationFn: async (slug: string) => {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`/api/courses/${slug}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to delete course");
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/courses'] });
+      toast({
+        title: "Success",
+        description: "Course deleted successfully.",
+      });
+      setCourseToDelete(null);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+      setCourseToDelete(null);
+    },
+  });
+
   const handleDownload = () => {
     const header = ['Course','Type','Students','Modules','Live Classes'];
-    const rows = (sortedCourses || []).map(c => [
+    const rows = (sortedCourses || []).map((c: any) => [
       c.title,
       c.type === 'with-mba' ? 'With MBA' : 'Standalone',
       enrollCountMap.get(c.slug) ?? 0,
@@ -56,7 +123,7 @@ const itemsPerPage = 4;
       c.liveClassConfig?.enabled ? 'Enabled' : 'Disabled',
     ]);
     const csv = [header, ...rows]
-      .map(r => r.map(cell => `"${cell}"`).join(','))
+      .map(r => r.map((cell: any) => `"${cell}"`).join(','))
       .join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -68,19 +135,29 @@ const itemsPerPage = 4;
     document.body.removeChild(link);
   };
 
+  const handleDeleteCourse = (slug: string) => {
+    setCourseToDelete(slug);
+  };
+
+  const confirmDelete = () => {
+    if (courseToDelete) {
+      deleteMutation.mutate(courseToDelete);
+    }
+  };
+
   const [showEnrollDialog, setShowEnrollDialog] = useState(false);
   const [selectedCourseSlug, setSelectedCourseSlug] = useState<string | null>(null);
   const courseEnrollments = useMemo(
-    () => enrollments.filter((e: any) => e.courseSlug === selectedCourseSlug),
+    () => (enrollments as any[]).filter((e: any) => e.courseSlug === selectedCourseSlug),
     [enrollments, selectedCourseSlug]
   );
   
   const query = searchQuery.toLowerCase();
-const filteredCourses = data?.filter(course =>
+const filteredCourses = data?.filter((course: any) =>
   (
     course.title.toLowerCase().includes(query) ||
     course.slug.toLowerCase().includes(query) ||
-    course.modules?.some(m =>
+    course.modules?.some((m: any) =>
       m.title.toLowerCase().includes(query)
     )
   ) &&
@@ -90,7 +167,7 @@ const filteredCourses = data?.filter(course =>
 
   const sortedCourses = useMemo(() => {
     if (!filteredCourses) return [];
-    return filteredCourses.slice().sort((a, b) => {
+    return filteredCourses.slice().sort((a: any, b: any) => {
       const ca = enrollCountMap.get(a.slug) || 0;
       const cb = enrollCountMap.get(b.slug) || 0;
       return studentSort === 'asc' ? ca - cb : cb - ca;
@@ -123,10 +200,12 @@ const displayedCourses = showAll
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Courses</h1>
         <div className="mt-2 md:mt-0">
-          <Button onClick={() => setLocation("/admin/courses/new")}>
-            <School className="mr-2 h-4 w-4" />
-            Add Course
-          </Button>
+          {renderIfCanCreate(
+            <Button onClick={() => setLocation("/admin/courses/new")}>
+              <School className="mr-2 h-4 w-4" />
+              Add Course
+            </Button>
+          )}
         </div>
       </div>
       
@@ -172,7 +251,7 @@ const displayedCourses = showAll
                       onChange={e => setCourseNameFilter(e.target.value)}
                     >
                       <option value="all">All Courses</option>
-                      {data?.map(c => (
+                      {data?.map((c: any) => (
                         <option key={c.slug} value={c.title}>{c.title}</option>
                       ))}
                     </select>
@@ -234,82 +313,111 @@ const displayedCourses = showAll
             </TableHeader>
             <TableBody>
               {sortedCourses.length > 0 ? (
-                displayedCourses.map((course) => (
-                  <TableRow key={course._id || course.slug}>
-                    <TableCell>
-                      <div className="text-lg font-bold text-gray-900">{course.title}</div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={
-                        course.type === 'with-mba' 
-                          ? 'bg-purple-100 text-purple-800 hover:bg-purple-200' 
-                          : 'bg-primary-100 text-primary-800 hover:bg-primary-200'
-                      }>
-                        {course.type === 'with-mba' ? 'With MBA' : 'Standalone'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center">
-                        <Users className="h-4 w-4 text-gray-400 mr-1" />
-                        <span className="text-sm text-gray-500">
-                          {(enrollCountMap.get(course.slug) ?? 0)} students
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="text-sm text-gray-900 space-y-1">
-                        {course.modules?.map((m: any) => (
-                          <div key={m._id} className="flex items-start">
-                            <span className="mr-2">•</span>
-                            <span>
-                              {m.title} ({m.videos?.length ?? 0} videos, {m.documents?.length ?? 0} reading material)
-                            </span>
-                          </div>
-                        )) || <div>No modules</div>}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={course.liveClassConfig?.enabled ? "outline" : "secondary"} className={
-                        course.liveClassConfig?.enabled 
-                          ? 'bg-green-100 text-green-800 hover:bg-green-200' 
-                          : 'bg-red-100 text-red-800 hover:bg-red-200'
-                      }>
-                        {course.liveClassConfig?.enabled ? 'Enabled' : 'Disabled'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end space-x-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setLocation(`/admin/courses/edit/${course.slug}`)}
-                          title="Edit Course Content"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setLocation(`/admin/courses/reorder/${course.slug}`)}
-                          title="Reorder Modules"
-                        >
-                          <ArrowUpDown className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => {
-                            setSelectedCourseSlug(course.slug);
-                            setShowEnrollDialog(true);
-                          }}
-                          title="View Enrollments"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
+                displayedCourses.map((course: any) => {
+                  const isHighlighted = highlightedCourses.has(course.slug);
+                  return (
+                    <TableRow 
+                      key={course._id || course.slug}
+                      className={isHighlighted ? "bg-green-50 border-green-200 animate-pulse" : ""}
+                    >
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <div className="text-lg font-bold text-gray-900">{course.title}</div>
+                          {isHighlighted && (
+                            <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300 animate-bounce">
+                              <Copy className="h-3 w-3 mr-1" />
+                              Recently Copied
+                            </Badge>
+                          )}
+                        </div>
+                        </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className={
+                          course.type === 'with-mba' 
+                            ? 'bg-purple-100 text-purple-800 hover:bg-purple-200' 
+                            : 'bg-primary-100 text-primary-800 hover:bg-primary-200'
+                        }>
+                          {course.type === 'with-mba' ? 'With MBA' : 'Standalone'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center">
+                          <Users className="h-4 w-4 text-gray-400 mr-1" />
+                          <span className="text-sm text-gray-500">
+                            {(enrollCountMap.get(course.slug) ?? 0)} students
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-sm text-gray-900 space-y-1">
+                          {course.modules?.map((m: any) => (
+                            <div key={m._id} className="flex items-start">
+                              <span className="mr-2">•</span>
+                              <span>
+                                {m.title} ({m.videos?.length ?? 0} videos, {m.documents?.length ?? 0} reading material)
+                              </span>
+                            </div>
+                          )) || <div>No modules</div>}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={course.liveClassConfig?.enabled ? "outline" : "secondary"} className={
+                          course.liveClassConfig?.enabled 
+                            ? 'bg-green-100 text-green-800 hover:bg-green-200' 
+                            : 'bg-red-100 text-red-800 hover:bg-red-200'
+                        }>
+                          {course.liveClassConfig?.enabled ? 'Enabled' : 'Disabled'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end space-x-2">
+                          {renderIfCanEdit(
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => setLocation(`/admin/courses/edit/${course.slug}`)}
+                              title="Edit Course Content"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          )}
+                          {renderIfCanEdit(
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => setLocation(`/admin/courses/reorder/${course.slug}`)}
+                              title="Reorder Modules"
+                            >
+                              <ArrowUpDown className="h-4 w-4" />
+                            </Button>
+                          )}
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              setSelectedCourseSlug(course.slug);
+                              setShowEnrollDialog(true);
+                            }}
+                            title="View Enrollments"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          {renderIfCanDelete(
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleDeleteCourse(course.slug)}
+                              title="Delete Course"
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
               ) : (
                 <TableRow>
                   <TableCell colSpan={6} className="h-24 text-center">
@@ -378,6 +486,37 @@ const displayedCourses = showAll
           ) : (
             <p className="text-sm text-gray-500">No students enrolled.</p>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={!!courseToDelete} onOpenChange={() => setCourseToDelete(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Course</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this course? This action cannot be undone. 
+              All course data, modules, and associated content will be permanently removed.
+              
+              Note: Courses with active enrollments cannot be deleted. Please remove all enrollments first.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end space-x-2 mt-4">
+            <Button 
+              variant="outline" 
+              onClick={() => setCourseToDelete(null)}
+              disabled={deleteMutation.isPending}
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={confirmDelete}
+              disabled={deleteMutation.isPending}
+            >
+              {deleteMutation.isPending ? "Deleting..." : "Delete Course"}
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

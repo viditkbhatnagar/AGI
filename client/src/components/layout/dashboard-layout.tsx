@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Header } from "./header";
-//import { Sidebar } from "./sidebar";
+import { Sidebar } from "./sidebar";
 import { useAuth } from "@/lib/auth-provider";
 import { Loader2 } from "lucide-react";
 import { useLocation, useSearch, Redirect } from "wouter";
@@ -33,10 +33,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   
   // Check if user is trying to access wrong section
   if (
-    (userRole === 'student' && location.startsWith('/admin')) ||
-    (userRole === 'admin' && location.startsWith('/student'))
+    (userRole === 'student' && (location.startsWith('/admin') || location.startsWith('/teacher'))) ||
+    ((userRole === 'admin' || userRole === 'superadmin') && (location.startsWith('/student') || location.startsWith('/teacher'))) ||
+    (userRole === 'teacher' && (location.startsWith('/admin') || location.startsWith('/student')))
   ) {
-    return <Redirect to={userRole === 'student' ? '/student' : '/admin'} />;
+    const redirectPath = userRole === 'student' ? '/student' :
+                        userRole === 'teacher' ? '/teacher' : '/admin';
+    return <Redirect to={redirectPath} />;
   }
   
   return (
@@ -54,7 +57,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        {/* <Sidebar isMobile={true} onClose={toggleMobileMenu} /> */}
+        <Sidebar isMobile={true} onClose={toggleMobileMenu} />
       </div>
 
       {/* Sidebar for desktop screens */}

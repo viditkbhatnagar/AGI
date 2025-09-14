@@ -40,7 +40,9 @@ export default function Login() {
   };
   
   if (isAuthenticated && !isLoading) {
-    return <Redirect to={userRole === 'admin' ? '/admin' : '/student'} />;
+    const redirectPath = userRole === 'admin' || userRole === 'superadmin' ? '/admin' :
+                        userRole === 'teacher' ? '/teacher' : '/student';
+    return <Redirect to={redirectPath} />;
   }
   
   return (

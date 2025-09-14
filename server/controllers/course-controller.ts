@@ -2,7 +2,41 @@ import { Request, Response } from 'express';
 import { Course } from '../models/course';
 import { Enrollment } from '../models/enrollment';
 import { Student } from '../models/student';
+import { deleteFromCloudinary } from '../lib/cloudinary';
 import { desc } from 'drizzle-orm';
+
+// Helper function to extract all publicIds from course modules
+const extractPublicIdsFromCourse = (course: any): string[] => {
+  const publicIds: string[] = [];
+  
+  // Extract from regular modules
+  if (course.modules) {
+    course.modules.forEach((module: any) => {
+      if (module.documents) {
+        module.documents.forEach((doc: any) => {
+          if (doc.type === 'upload' && doc.publicId) {
+            publicIds.push(doc.publicId);
+          }
+        });
+      }
+    });
+  }
+  
+  // Extract from MBA modules
+  if (course.mbaModules) {
+    course.mbaModules.forEach((module: any) => {
+      if (module.documents) {
+        module.documents.forEach((doc: any) => {
+          if (doc.type === 'upload' && doc.publicId) {
+            publicIds.push(doc.publicId);
+          }
+        });
+      }
+    });
+  }
+  
+  return publicIds;
+};
 
 // Get all courses
 export const getAllCourses = async (req: Request, res: Response) => {
@@ -18,9 +52,18 @@ export const getAllCourses = async (req: Request, res: Response) => {
 // List minimal course info for admin dropdowns
 export const listCourses = async (req: Request, res: Response) => {
   try {
-    // Fetch only slug and title for the dropdown
-    const courses = await Course.find({}, 'slug title');
-    res.status(200).json(courses);
+    // Check if modules are needed (for quiz deployment)
+    const includeModules = req.query.includeModules === 'true';
+    
+    if (includeModules) {
+      // Fetch courses with modules for quiz deployment
+      const courses = await Course.find({}, 'slug title modules');
+      res.status(200).json(courses);
+    } else {
+      // Fetch only slug and title for the dropdown
+      const courses = await Course.find({}, 'slug title');
+      res.status(200).json(courses);
+    }
   } catch (error) {
     console.error('List courses error:', error);
     res.status(500).json({ message: 'Server error' });
@@ -57,26 +100,62 @@ export const createCourse = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Course with this slug already exists' });
     }
     
-    // Filter out empty videos and documents from modules
-    const cleanedModules = modules ? modules.map((module: any) => ({
-      ...module,
-      videos: module.videos ? module.videos.filter((video: any) => 
+    // Filter out empty videos and documents from modules and validate content
+    const cleanedModules = modules ? modules.map((module: any) => {
+      const cleanedVideos = module.videos ? module.videos.filter((video: any) => 
         video.title && video.title.trim() && video.url && video.url.trim()
-      ) : [],
-      documents: module.documents ? module.documents.filter((doc: any) => 
-        doc.title && doc.title.trim() && doc.url && doc.url.trim()
-      ) : []
-    })) : [];
+      ) : [];
+      
+      const cleanedDocuments = module.documents ? module.documents.filter((doc: any) => {
+        const hasTitle = doc.title && doc.title.trim();
+        const hasLink = doc.type === 'link' && doc.url && doc.url.trim();
+        const hasUpload = doc.type === 'upload' && doc.fileUrl && doc.fileUrl.trim() && 
+                         doc.fileName && doc.publicId;
+        return hasTitle && (hasLink || hasUpload);
+      }) : [];
+      
+      const hasQuiz = module.quiz && module.quiz.questions && module.quiz.questions.length > 0 && 
+                     module.quiz.questions.some((q: any) => q.text && q.text.trim());
+      
+      // Validate that at least one content type is present
+      if (cleanedVideos.length === 0 && cleanedDocuments.length === 0 && !hasQuiz) {
+        throw new Error(`Module "${module.title}" must have at least one video, document, or quiz question`);
+      }
+      
+      return {
+        ...module,
+        videos: cleanedVideos,
+        documents: cleanedDocuments
+      };
+    }) : [];
 
-    const cleanedMbaModules = mbaModules ? mbaModules.map((module: any) => ({
-      ...module,
-      videos: module.videos ? module.videos.filter((video: any) => 
+    const cleanedMbaModules = mbaModules ? mbaModules.map((module: any) => {
+      const cleanedVideos = module.videos ? module.videos.filter((video: any) => 
         video.title && video.title.trim() && video.url && video.url.trim()
-      ) : [],
-      documents: module.documents ? module.documents.filter((doc: any) => 
-        doc.title && doc.title.trim() && doc.url && doc.url.trim()
-      ) : []
-    })) : [];
+      ) : [];
+      
+      const cleanedDocuments = module.documents ? module.documents.filter((doc: any) => {
+        const hasTitle = doc.title && doc.title.trim();
+        const hasLink = doc.type === 'link' && doc.url && doc.url.trim();
+        const hasUpload = doc.type === 'upload' && doc.fileUrl && doc.fileUrl.trim() && 
+                         doc.fileName && doc.publicId;
+        return hasTitle && (hasLink || hasUpload);
+      }) : [];
+      
+      const hasQuiz = module.quiz && module.quiz.questions && module.quiz.questions.length > 0 && 
+                     module.quiz.questions.some((q: any) => q.text && q.text.trim());
+      
+      // Validate that at least one content type is present
+      if (cleanedVideos.length === 0 && cleanedDocuments.length === 0 && !hasQuiz) {
+        throw new Error(`MBA Module "${module.title}" must have at least one video, document, or quiz question`);
+      }
+      
+      return {
+        ...module,
+        videos: cleanedVideos,
+        documents: cleanedDocuments
+      };
+    }) : [];
 
     // Create new course
     const newCourse = new Course({
@@ -149,31 +228,112 @@ export const updateCourse = async (req: Request, res: Response) => {
     if (liveClassConfig) course.liveClassConfig = liveClassConfig;
     
     if (modules) {
-      // Filter out empty videos and documents
-      const cleanedModules = modules.map((module: any) => ({
-        ...module,
-        videos: module.videos ? module.videos.filter((video: any) => 
+      // Get existing course data to preserve legacy quiz questions
+      const existingCourse = await Course.findOne({ slug });
+      
+      // Filter out empty videos and documents and validate content
+      const cleanedModules = modules.map((module: any, moduleIndex: number) => {
+        const cleanedVideos = module.videos ? module.videos.filter((video: any) => 
           video.title && video.title.trim() && video.url && video.url.trim()
-        ) : [],
-        documents: module.documents ? module.documents.filter((doc: any) => 
-          doc.title && doc.title.trim() && doc.url && doc.url.trim()
-        ) : []
-      }));
+        ) : [];
+        
+        const cleanedDocuments = module.documents ? module.documents.filter((doc: any) => {
+          const hasTitle = doc.title && doc.title.trim();
+          const hasLink = doc.type === 'link' && doc.url && doc.url.trim();
+          const hasUpload = doc.type === 'upload' && doc.fileUrl && doc.fileUrl.trim() && 
+                           doc.fileName && doc.publicId;
+          const isValid = hasTitle && (hasLink || hasUpload);
+          
+          console.log(`📄 Document "${doc.title}" - Type: ${doc.type} - Valid: ${isValid}`, {
+            hasTitle,
+            hasLink,
+            hasUpload,
+            fileUrl: doc.fileUrl,
+            fileName: doc.fileName,
+            publicId: doc.publicId
+          });
+          
+          return isValid;
+        }) : [];
+        
+        const hasQuiz = module.quiz && module.quiz.questions && module.quiz.questions.length > 0 && 
+                       module.quiz.questions.some((q: any) => q.text && q.text.trim());
+        
+        // Validate that at least one content type is present
+        if (cleanedVideos.length === 0 && cleanedDocuments.length === 0 && !hasQuiz) {
+          throw new Error(`Module "${module.title}" must have at least one video, document, or quiz question`);
+        }
+        
+        // Preserve legacy quiz questions if they exist from quiz repository deployment
+        const existingModule = existingCourse?.modules[moduleIndex];
+        const updatedModule = {
+          ...module,
+          videos: cleanedVideos,
+          documents: cleanedDocuments
+        };
+        
+        // Preserve legacy quiz fields (questions, quizTitle, quizDescription) from quiz repository deployment
+        if (existingModule?.questions && Array.isArray(existingModule.questions) && existingModule.questions.length > 0) {
+          console.log(`📚 Preserving legacy quiz questions for module ${moduleIndex}:`, existingModule.questions.length);
+          updatedModule.questions = existingModule.questions;
+          if (existingModule.quizTitle) updatedModule.quizTitle = existingModule.quizTitle;
+          if (existingModule.quizDescription) updatedModule.quizDescription = existingModule.quizDescription;
+        }
+        
+        return updatedModule;
+      });
       course.modules = cleanedModules;
     }
     
     if (mbaModules) {
-      // Filter out empty videos and documents
-      const cleanedMbaModules = mbaModules.map((module: any) => ({
-        ...module,
-        videos: module.videos ? module.videos.filter((video: any) => 
+      // Filter out empty videos and documents and validate content
+      const cleanedMbaModules = mbaModules.map((module: any) => {
+        const cleanedVideos = module.videos ? module.videos.filter((video: any) => 
           video.title && video.title.trim() && video.url && video.url.trim()
-        ) : [],
-        documents: module.documents ? module.documents.filter((doc: any) => 
-          doc.title && doc.title.trim() && doc.url && doc.url.trim()
-        ) : []
-      }));
+        ) : [];
+        
+        const cleanedDocuments = module.documents ? module.documents.filter((doc: any) => {
+          const hasTitle = doc.title && doc.title.trim();
+          const hasLink = doc.type === 'link' && doc.url && doc.url.trim();
+          const hasUpload = doc.type === 'upload' && doc.fileUrl && doc.fileUrl.trim() && 
+                           doc.fileName && doc.publicId;
+          const isValid = hasTitle && (hasLink || hasUpload);
+          
+          console.log(`📄 Document "${doc.title}" - Type: ${doc.type} - Valid: ${isValid}`, {
+            hasTitle,
+            hasLink,
+            hasUpload,
+            fileUrl: doc.fileUrl,
+            fileName: doc.fileName,
+            publicId: doc.publicId
+          });
+          
+          return isValid;
+        }) : [];
+        
+        const hasQuiz = module.quiz && module.quiz.questions && module.quiz.questions.length > 0 && 
+                       module.quiz.questions.some((q: any) => q.text && q.text.trim());
+        
+        // Validate that at least one content type is present
+        if (cleanedVideos.length === 0 && cleanedDocuments.length === 0 && !hasQuiz) {
+          throw new Error(`MBA Module "${module.title}" must have at least one video, document, or quiz question`);
+        }
+        
+        return {
+          ...module,
+          videos: cleanedVideos,
+          documents: cleanedDocuments
+        };
+      });
       course.mbaModules = cleanedMbaModules;
+    }
+    
+    // Mark modules as modified to ensure Mongoose saves changes
+    if (modules) {
+      course.markModified('modules');
+    }
+    if (mbaModules) {
+      course.markModified('mbaModules');
     }
     
     await course.save();
@@ -239,7 +399,26 @@ export const deleteCourse = async (req: Request, res: Response) => {
       });
     }
     
+    // Extract all publicIds from course modules for Cloudinary cleanup
+    const publicIds = extractPublicIdsFromCourse(course);
+    
+    // Delete course from database first
     await Course.deleteOne({ slug });
+    
+    // Clean up Cloudinary documents (do this after course deletion to avoid issues if cleanup fails)
+    if (publicIds.length > 0) {
+      console.log(`🗑️ Cleaning up ${publicIds.length} Cloudinary documents for course: ${slug}`);
+      
+      for (const publicId of publicIds) {
+        try {
+          await deleteFromCloudinary(publicId);
+          console.log(`✅ Deleted Cloudinary document: ${publicId}`);
+        } catch (cloudinaryError) {
+          console.error(`⚠️ Failed to delete Cloudinary document ${publicId}:`, cloudinaryError);
+          // Continue with other deletions even if one fails
+        }
+      }
+    }
     
     res.status(200).json({ message: 'Course deleted successfully' });
   } catch (error) {

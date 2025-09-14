@@ -9,7 +9,7 @@ export interface ILiveClass {
   startTime: Date;
   endTime: Date;
   status: 'scheduled' | 'completed' | 'cancelled';
-  studentIds?: string;
+  studentIds: mongoose.Types.ObjectId[];
 }
 
 export interface ILiveClassDocument extends ILiveClass, Document {}

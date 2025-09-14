@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useState } from "react";
+import { useConditionalRender } from '@/lib/permissions-provider';
 import {
   Dialog,
   DialogContent,
@@ -41,6 +42,7 @@ import {
 } from "@/components/ui/tabs";
 
 export function Students() {
+  const { renderIfCanCreate, renderIfCanEdit, renderIfCanDelete, canEdit } = useConditionalRender();
   const [searchQuery, setSearchQuery] = useState("");
   const [, setLocation] = useLocation();
   const [detailId, setDetailId] = useState<string | null>(null);
@@ -103,7 +105,7 @@ export function Students() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['/api/admin/students']);
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/students'] });
       setShowEditDialog(false);
     },
   });
@@ -118,7 +120,7 @@ export function Students() {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['/api/admin/students']);
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/students'] });
       setShowDeleteDialog(false);
     },
   });
@@ -145,7 +147,7 @@ export function Students() {
     },
     onSuccess: (data) => {
       console.log('Toggle access success:', data);
-      queryClient.invalidateQueries(['/api/admin/students']);
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/students'] });
     },
     onError: (error) => {
       console.error('Toggle access error:', error);
@@ -153,20 +155,20 @@ export function Students() {
     },
   });
   
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery<any[]>({
     queryKey: ['/api/admin/students'],
   });
 
-  const { data: courses = [], isLoading: isLoadingCourses } = useQuery({
+  const { data: courses = [], isLoading: isLoadingCourses } = useQuery<any[]>({
     queryKey: ['/api/admin/courses'],
   });
 
   const courseMap = useMemo(
-    () => new Map(courses.map(c => [c.slug, c.title])),
+    () => new Map(courses.map((c: any) => [c.slug, c.title])),
     [courses]
   );
 
-  const { data: enrollments = [] } = useQuery({
+  const { data: enrollments = [] } = useQuery<any[]>({
     queryKey: ['/api/enrollments'],
   });
 
@@ -174,7 +176,7 @@ export function Students() {
 
   const studentCoursesMap = useMemo(() => {
     const m = new Map<string, string[]>();
-    enrollments.forEach(e => {
+    enrollments.forEach((e: any) => {
       let id: string;
       if (e.studentId) {
         id = typeof e.studentId === 'string'
@@ -194,7 +196,7 @@ export function Students() {
         slug = e.course_slug;
       } else if (e.courseId || e.course_id) {
         const idVal = e.courseId || e.course_id;
-        const found = courses.find(c => c._id === idVal);
+        const found = courses.find((c: any) => c._id === idVal);
         slug = found?.slug || '';
       }
       if (!m.has(id)) m.set(id, []);
@@ -216,7 +218,7 @@ export function Students() {
     return m;
   }, [enrollments]);
   
-  const filteredStudents = data?.filter(student => {
+  const filteredStudents = data?.filter((student: any) => {
     // text search
     const matchesText =
       student._id.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -236,7 +238,7 @@ export function Students() {
 
   const sortedStudents = useMemo(() => {
     if (!filteredStudents) return [];
-    return filteredStudents.slice().sort((a, b) => {
+    return filteredStudents.slice().sort((a: any, b: any) => {
       const da = studentEnrollDateMap.get(a._id) || '';
       const db = studentEnrollDateMap.get(b._id) || '';
       const ta = da ? new Date(da).getTime() : 0;
@@ -383,11 +385,19 @@ export function Students() {
     <div className="p-4 md:p-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Current Students Enrolled</h1>
-        <div className="mt-2 md:mt-0">
-          <Button onClick={() => setLocation("/admin/students/new")}>
-            <UserPlus className="mr-2 h-4 w-4" />
-            Add Student
-          </Button>
+        <div className="mt-2 md:mt-0 space-x-2">
+          {renderIfCanCreate(
+            <Button onClick={() => setLocation("/admin/students/new")}>
+              <UserPlus className="mr-2 h-4 w-4" />
+              Add Student
+            </Button>
+          )}
+          {renderIfCanCreate(
+            <Button onClick={() => setLocation("/admin/teachers/new")} variant="secondary">
+              <UserPlus className="mr-2 h-4 w-4" />
+              Add Teacher
+            </Button>
+          )}
         </div>
       </div>
       
@@ -531,7 +541,7 @@ export function Students() {
                               accessEnabled: checked
                             });
                           }}
-                          disabled={toggleAccessMutation.isLoading}
+                          disabled={toggleAccessMutation.isPending || !canEdit}
                         />
                         <span className="text-sm text-gray-600">
                           {student.accessEnabled !== false ? 'Enabled' : 'Disabled'}
@@ -547,29 +557,33 @@ export function Students() {
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => {
-                      setEditForm({
-                        ...student,
-                        courseSlugs: studentCoursesMap.get(student._id) || [],
-                      });
-                      setShowEditDialog(true);
-                    }}
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => {
-                      setDeletingId(student._id);
-                      setShowDeleteDialog(true);
-                    }}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  {renderIfCanEdit(
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        setEditForm({
+                          ...student,
+                          courseSlugs: studentCoursesMap.get(student._id) || [],
+                        });
+                        setShowEditDialog(true);
+                      }}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  )}
+                  {renderIfCanDelete(
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        setDeletingId(student._id);
+                        setShowDeleteDialog(true);
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
                       </div>
                     </TableCell>
                   </TableRow>
@@ -603,27 +617,33 @@ export function Students() {
           </DialogHeader>
           {editForm && (
             <div className="space-y-4">
-              <Input
-                label="Name"
-                value={editForm.name}
-                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-              />
-              <Input
-                label="Phone"
-                value={editForm.phone}
-                onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
-              />
-              <Input
-                label="Date of Birth"
-                type="date"
-                value={editForm.dob?.split('T')[0]}
-                onChange={(e) => setEditForm({ ...editForm, dob: e.target.value })}
-              />
+              <div>
+                <label className="block text-sm font-medium mb-2">Name</label>
+                <Input
+                  value={editForm.name}
+                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Phone</label>
+                <Input
+                  value={editForm.phone}
+                  onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Date of Birth</label>
+                <Input
+                  type="date"
+                  value={editForm.dob?.split('T')[0]}
+                  onChange={(e) => setEditForm({ ...editForm, dob: e.target.value })}
+                />
+              </div>
               <label className="block text-sm font-medium">Courses</label>
               <div className="max-h-40 overflow-y-auto border rounded p-2">
                 {courses.map((c) => {
-                  const started = !!(editForm.watchTime?.find?.(wt => (editForm.courseSlugs || []).includes(c.slug)) ||
-                    (selectedStudent?.watchTime?.find?.(wt => (studentCoursesMap.get(editForm._id)||[]).includes(c.slug))));
+                  const started = !!(editForm.watchTime?.find?.((wt: any) => (editForm.courseSlugs || []).includes(c.slug)) ||
+                    (selectedStudent?.watchTime?.find?.((wt: any) => (studentCoursesMap.get(editForm._id)||[]).includes(c.slug))));
                   return (
                     <label key={c.slug} className="flex items-center mb-1">
                       <input
@@ -633,11 +653,11 @@ export function Students() {
                         disabled={started}
                         onChange={(e) => {
                           const { value, checked } = e.target;
-                          setEditForm(prev => ({
+                          setEditForm((prev: any) => ({
                             ...prev,
                             courseSlugs: checked
                               ? [...prev.courseSlugs, value]
-                              : prev.courseSlugs.filter(s => s !== value),
+                              : prev.courseSlugs.filter((s: string) => s !== value),
                           }));
                         }}
                         className="mr-2"
@@ -786,6 +806,7 @@ export function Students() {
                         )
                         .forEach((wt: any) => {
                           const mod = c.modules[wt.moduleIndex];
+                          if (!mod || !mod.videos) return; // Skip if module or videos don't exist
                           const vid =
                             mod.videos[wt.videoIndex] ??
                             { title: `Video ${wt.videoIndex + 1}` };
@@ -828,6 +849,7 @@ export function Students() {
                         )
                         .forEach((dv: any) => {
                           const mod = c.modules[dv.moduleIndex];
+                          if (!mod || !mod.documents) return; // Skip if module or documents don't exist
                           const doc =
                             mod.documents.find((d: any) => d.url === dv.docUrl) ??
                             { title: dv.docUrl };

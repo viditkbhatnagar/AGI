@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import logo from "@/components/layout/AGI Logo.png";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { User, LogOut, Menu, UserIcon, HelpCircle } from "lucide-react";
+import { User, LogOut, Menu, UserIcon, HelpCircle, Brain, UserPlus, MessageSquare } from "lucide-react";
 import { useAuth } from "@/lib/auth-provider";
+import { useConditionalRender } from '@/lib/permissions-provider';
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -26,17 +27,33 @@ interface NavLink {
 const STUDENT_LINKS: NavLink[] = [
   { label: "Overview",     href: "/student" },
   { label: "My Courses",   href: "/student/courses" },
+  { label: "Feedback",     href: "/student/feedback" },
+];
+
+const TEACHER_LINKS: NavLink[] = [
+  { label: "Dashboard",      href: "/teacher" },
+  { label: "My Students",    href: "/teacher/students" },
+  { label: "My Courses",     href: "/teacher/courses" },
+  { label: "Live Classes",   href: "/teacher/live-classes" },
+  { label: "Recordings",     href: "/teacher/recordings" },
+  { label: "Exam Grading",   href: "/teacher/exam-results" },
+  { label: "Student Feedbacks", href: "/admin/feedbacks" },
+  { label: "Change Password", href: "/teacher/change-password" },
 ];
 
 const ADMIN_LINKS: NavLink[] = [
   { label: "Overview",          href: "/admin" },
   { label: "Students",          href: "/admin/students" },
   { label: "Courses",           href: "/admin/courses" },
+  { label: "Sandbox Courses",   href: "/admin/sandbox-courses" },
+  { label: "Quiz Repository",   href: "/admin/quiz-repository" },
+  { label: "Student Feedbacks", href: "/admin/feedbacks" },
   { label: "Progress",          href: "/admin/enrollments" },
   { label: "Live Classes",      href: "/admin/live-classes" },
   { label: "Recordings",        href: "/admin/recordings" },
   { label: "Quiz Scores",       href: "/admin/quiz-scores" },
   { label: "Exam Results",      href: "/admin/exam-results" },
+  { label: "Add Teacher",      href: "/admin/teachers/new" }
 ];
 
 // Utility button component
@@ -82,6 +99,7 @@ const NavItem = ({ href, label }: NavLink) => {
 export function Header({ onMobileMenuToggle }: HeaderProps) {
   const [now, setNow] = useState(new Date());
   const { userRole, logout } = useAuth();
+  const { renderIfCanCreate } = useConditionalRender();
   const [location, navigate] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -95,7 +113,8 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
     setMobileOpen(false);
   }, [location]);
 
-  const links = userRole === "admin" ? ADMIN_LINKS : STUDENT_LINKS;
+  const links = userRole === "admin" || userRole === "superadmin" ? ADMIN_LINKS : 
+               userRole === "teacher" ? TEACHER_LINKS : STUDENT_LINKS;
 
   const handleLogout = () => {
     logout();
@@ -103,50 +122,61 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
   };
 
   const handleProfileClick = () => {
-    navigate(userRole === "admin" ? "/admin/profile" : "/student/profile");
+    const profilePath = userRole === "admin" || userRole === "superadmin" ? "/admin/profile" :
+                       userRole === "teacher" ? "/teacher/profile" : "/student/profile";
+    navigate(profilePath);
     setMobileOpen(false);
   };
 
   const handleSupportClick = () => {
-    navigate(userRole === "admin" ? "/admin/support" : "/student/support");
+    const supportPath = userRole === "admin" || userRole === "superadmin" ? "/admin/support" :
+                       userRole === "teacher" ? "/teacher/support" : "/student/support";
+    navigate(supportPath);
+    setMobileOpen(false);
+  };
+
+  const handleFeedbackClick = () => {
+    const feedbackPath = userRole === "student" ? "/student/feedback" : "/admin/feedbacks";
+    navigate(feedbackPath);
     setMobileOpen(false);
   };
 
   return (
     <>
       <header className="bg-[#FEFDF7] shadow-sm h-20 sm:h-24 flex flex-col relative px-4 sm:px-6 py-2">
-        <div className="flex items-center justify-between flex-1 lg:items-center lg:pb-2">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <Link href={userRole === "admin" ? "/admin" : "/student"}>
-                <img
-                  src={logo}
-                  alt="AGI Logo"
-                  className="h-12 sm:h-14 md:h-16 lg:h-18 xl:h-20 w-auto cursor-pointer hover:opacity-90 transition-opacity"
-                />
-              </Link>
-            </div>
+        <div className="relative flex items-center justify-center flex-1 lg:items-center lg:pb-2">
+          {/* Hamburger Menu - Left Side */}
+          <div className="absolute left-0 flex items-center">
             <Button
               variant="ghost"
               size="icon"
-              className="ml-2 p-2"
+              className="p-2"
               onClick={() => {
                 if (onMobileMenuToggle) onMobileMenuToggle();
                 setMobileOpen((prev) => !prev);
               }}
               title="Menu"
             >
-              <Menu className="h-6 w-6 sm:h-7 sm:w-7 text-[#375BBE]" />
+              <Menu className="h-8 w-8 sm:h-9 sm:w-9 text-[#375BBE]" />
             </Button>
           </div>
 
-          <nav className="hidden">
-            {/* Navigation items are now only available in hamburger menu */}
-          </nav>
+          {/* Centered Logo */}
+          <div className="flex-shrink-0">
+            <Link href={userRole === "admin" || userRole === "superadmin" ? "/admin" : 
+                        userRole === "teacher" ? "/teacher" : "/student"}>
+              <img
+                src={logo}
+                alt="AGI Logo"
+                className="h-12 sm:h-14 md:h-16 lg:h-18 xl:h-20 w-auto cursor-pointer hover:opacity-90 transition-opacity"
+              />
+            </Link>
+          </div>
 
-          <div className="flex items-center justify-end flex-shrink-0 space-x-4">
+          {/* Right Side - Time Display, Add Teacher Button and User Menu */}
+          <div className="absolute right-0 flex items-center space-x-2 sm:space-x-4">
             {/* Time Display */}
-            <div className="hidden sm:block text-sm font-medium text-[#375BBE]">
+            <div className="hidden sm:block text-xs sm:text-sm font-medium text-[#375BBE]">
               {now.toLocaleString(undefined, {
                 weekday: "short",
                 year: "numeric",
@@ -158,16 +188,18 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
               })}
             </div>
             
+  
+            
             {/* User Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-12 w-12 sm:h-14 sm:w-14 p-2 hover:bg-[#375BBE]/10 transition-colors"
+                  className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 p-2 hover:bg-[#375BBE]/10 transition-colors"
                   title="User Menu"
                 >
-                  <User className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 lg:h-11 lg:w-11 text-[#375BBE]" />
+                  <User className="h-6 w-6 sm:h-8 sm:w-8 md:h-9 md:w-9 lg:h-10 lg:w-10 text-[#375BBE]" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48 sm:w-56 mt-2">
@@ -178,6 +210,7 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
                   <UserIcon className="mr-2 h-4 w-4 text-[#375BBE]" />
                   <span className="text-[#375BBE]">Profile</span>
                 </DropdownMenuItem>
+                
                 <DropdownMenuItem 
                   onClick={handleSupportClick}
                   className="cursor-pointer hover:bg-[#375BBE]/10 transition-colors"
@@ -210,13 +243,22 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
       {/* Drawer */}
       <div
         className={cn(
-          "fixed top-0 left-0 h-full w-72 sm:w-80 bg-[#FEFDF7] shadow-lg z-50 transform transition-transform duration-300 ease-in-out",
+          "fixed top-0 left-0 h-full w-72 sm:w-80 bg-[#FEFDF7] shadow-lg z-50 transform transition-transform duration-300 ease-in-out flex flex-col",
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <div className="pt-20 sm:pt-24 px-6 flex flex-col space-y-6">
+        {/* Fixed header space */}
+        <div className="pt-20 sm:pt-24 px-6 flex-shrink-0">
+          <div className="text-sm font-semibold text-[#375BBE]/60 uppercase tracking-wide mb-4">
+            {userRole === 'admin' || userRole === 'superadmin' ? 'Admin Dashboard' : 
+             userRole === 'teacher' ? 'Teacher Portal' : 'Student Dashboard'}
+          </div>
+        </div>
+        
+        {/* Scrollable content area */}
+        <div className="flex-1 overflow-y-auto px-6 pb-6">
           {/* Mobile Navigation Links */}
-          <div className="space-y-4">
+          <div className="space-y-4 mb-6">
             {links.map(({ href, label }) => {
               const isActive =
                 href === location || (href !== "/" && location.startsWith(href));
@@ -240,6 +282,8 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
 
           {/* Mobile User Actions */}
           <div className="pt-6 space-y-3 border-t border-[#375BBE]/20">
+            {/* Add Teacher Button for Mobile - Only for Admin/Superadmin */}
+            
             <button
               onClick={handleProfileClick}
               className="flex items-center w-full text-left text-lg font-semibold text-[#375BBE]/80 hover:text-[#375BBE] hover:bg-[#375BBE]/5 transition-all duration-200 py-3 px-3 rounded-lg"
@@ -247,6 +291,7 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
               <UserIcon className="mr-3 h-5 w-5" />
               Profile
             </button>
+            
             <button
               onClick={handleSupportClick}
               className="flex items-center w-full text-left text-lg font-semibold text-[#375BBE]/80 hover:text-[#375BBE] hover:bg-[#375BBE]/5 transition-all duration-200 py-3 px-3 rounded-lg"

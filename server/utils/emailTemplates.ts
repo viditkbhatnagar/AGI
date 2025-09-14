@@ -510,6 +510,103 @@ export function renderLiveClassReminderHtml({
   `;
 }
 
+export function renderTeacherLiveClassHtml({
+  teacherName,
+  title,
+  courseSlug,
+  startTime,
+  meetLink,
+}: {
+  teacherName: string;
+  title: string;
+  courseSlug: string;
+  startTime: Date;
+  meetLink: string;
+}) {
+  const when = new Date(startTime).toLocaleString('en-US', {
+    dateStyle: 'long',
+    timeStyle: 'short',
+    timeZone: 'Asia/Dubai', // Gulf Standard Time (GMT+4)
+  });
+
+  const headerColor = '#0C5FB3';
+  const headerBlue = '#201f42';
+  const headerBlueDark = '#111827';
+  const accentRed = '#e11d48';
+
+  return dedent/*html*/ `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width,initial-scale=1"/>
+      <title>Live Class Scheduled - Teaching Assignment</title>
+      <link href="https://fonts.googleapis.com/css?family=Inter:400,700|Noto+Serif:700" rel="stylesheet">
+      <style>
+        body{margin:0;background:#f7f7f7;font-family:Inter,Arial,sans-serif}
+        .row{width:100%;max-width:700px;margin:0 auto;background:#fff}
+        .pad{padding:25px}
+        h1,h2{font-family:'Noto Serif',Georgia,serif;margin:0 0 15px}
+        h1{color:${headerColor};font-size:30px}
+        p{line-height:1.6;margin:0 0 15px;font-size:16px;color:#201f42}
+        .btn{display:inline-block;background:#10b981;color:#fff !important;padding:12px 30px;border-radius:4px;text-decoration:none;font-family:'Noto Serif',Georgia,serif;font-size:16px}
+        .cal{background:${accentRed}}
+        .muted{font-size:13px;color:#6b7280}
+        .hdr{background:${headerBlue}}
+        .teacher-notice{background:#e0f2fe;border-left:4px solid #0277bd;padding:15px;margin:15px 0;border-radius:4px}
+        @media(prefers-color-scheme:dark){
+          body{background:#1f2937}
+          .row{background:#111827}
+          p,.muted{color:#d1d5db}
+          h1{color:#f3f4f6}
+          .btn{background:#34d399}
+          .hdr{background:${headerBlueDark}}
+          .cal{background:${accentRed}}
+        }
+      </style>
+    </head>
+    <body>
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f7f7f7">
+        <tr><td style="height:20px"></td></tr>
+        <tr>
+          <td>
+            <table class="row" role="presentation" width="100%" cellspacing="0" cellpadding="0">
+              <tr><td class="pad hdr" style="text-align:center;margin:0">
+                <img src="cid:agiLogo" alt="AGI" style="width:100px;height:auto;margin:0 auto;display:block"/>
+              </td></tr>
+              <tr><td class="pad hdr" style="color:#fff;text-align:center;font-size:32px;margin:0;background:${headerBlue}">
+                <h1 style="color:#fff;margin:0">Live Class Scheduled</h1>
+              </td></tr>
+              <tr><td class="pad">
+                <p>Dear ${teacherName},</p>
+                <p>A new live class has been scheduled for your course <strong>${courseSlug}</strong>.</p>
+                
+                <div class="teacher-notice">
+                  <p style="margin:0 0 10px"><strong>Class:</strong> ${title}</p>
+                  <p style="margin:0 0 10px"><strong>Course:</strong> ${courseSlug}</p>
+                  <p style="margin:0"><strong>Scheduled for:</strong> ${when}</p>
+                </div>
+                
+                <p>As the assigned teacher for this course, you are expected to conduct this live class session. Please prepare your materials and join the session on time.</p>
+                
+                <p><a href="${meetLink}" class="btn" target="_blank">Join the class</a></p>
+                <p><a href="{{ADD_TO_CAL}}" class="btn cal" target="_blank">Add to Google Calendar</a></p>
+                <p class="muted">If the buttons don't work, copy &amp; paste this link:<br/>${meetLink}</p>
+                
+                <p>Thank you for your dedication to teaching excellence!</p>
+              </td></tr>
+              <tr><td class="pad" style="background:#201f42;color:#fff;text-align:center;font-size:13px">
+                © ${new Date().getFullYear()} American Global Institute, All rights reserved.
+              </td></tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `;
+}
+
 export function renderContactFormHtml({
   supportType,
   name,

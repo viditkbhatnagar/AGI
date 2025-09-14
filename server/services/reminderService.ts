@@ -1,4 +1,4 @@
-import cron from 'node-cron';
+import * as cron from 'node-cron';
 import mongoose from 'mongoose';
 import nodemailer from 'nodemailer';
 import { LiveClass } from '../models/liveclass';
@@ -8,6 +8,9 @@ import path from 'path';
 
 // Track which reminders have been sent to avoid duplicates
 const sentReminders = new Set<string>();
+
+// Store the cron task for cleanup
+let reminderTask: any = null;
 
 // Helper function to create email transporter
 const createEmailTransporter = () => {
@@ -56,7 +59,9 @@ export const sendLiveClassReminders = async () => {
       }
 
       try {
-        const students = await getStudentsWithEmails(liveClass.studentIds);
+        // Ensure studentIds exists and is an array
+        const studentIds = Array.isArray(liveClass.studentIds) ? liveClass.studentIds : [];
+        const students = await getStudentsWithEmails(studentIds);
         
         if (students.length > 0) {
           const transporter = createEmailTransporter();
@@ -123,7 +128,7 @@ export const startReminderService = () => {
   console.log('🔔 Starting Live Class Reminder Service...');
   
   // Run every 2 minutes to check for upcoming classes
-  cron.schedule('*/2 * * * *', () => {
+  reminderTask = cron.schedule('*/2 * * * *', () => {
     sendLiveClassReminders();
   });
 
@@ -132,8 +137,13 @@ export const startReminderService = () => {
 
 // Stop the reminder service (for testing or shutdown)
 export const stopReminderService = () => {
-  cron.destroy();
-  console.log('🔔 Reminder service stopped');
+  if (reminderTask) {
+    reminderTask.destroy();
+    reminderTask = null;
+    console.log('🔔 Reminder service stopped');
+  } else {
+    console.log('🔔 Reminder service was not running');
+  }
 };
 
  

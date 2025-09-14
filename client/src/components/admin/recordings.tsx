@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Upload, Trash2, Edit, Eye, Calendar, Clock, FileVideo, Users, Search, Filter, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
+import { useConditionalRender } from '@/lib/permissions-provider';
 
 interface Recording {
   _id: string;
@@ -49,6 +50,7 @@ interface FilterState {
 // Removed LiveClass interface since we no longer use live class associations
 
 export function AdminRecordings() {
+  const { renderIfCanCreate, renderIfCanEdit, renderIfCanDelete } = useConditionalRender();
   const [isUploading, setIsUploading] = useState(false);
   const [uploadForm, setUploadForm] = useState({
     courseSlug: '',
@@ -72,6 +74,7 @@ export function AdminRecordings() {
     return course.modules[moduleIndex]?.title || 'Unknown Module';
   };
   const [editingRecording, setEditingRecording] = useState<Recording | null>(null);
+  const [isViewOnlyMode, setIsViewOnlyMode] = useState(false);
   
   // Filter and pagination state
   const [filters, setFilters] = useState<FilterState>({
@@ -88,12 +91,12 @@ export function AdminRecordings() {
   const queryClient = useQueryClient();
 
   // Fetch recordings
-  const { data: recordings = [], isLoading: recordingsLoading } = useQuery({
+  const { data: recordings = [], isLoading: recordingsLoading } = useQuery<Recording[]>({
     queryKey: ['/api/recordings'],
   });
 
   // Fetch courses for dropdown
-  const { data: courses = [] } = useQuery({
+  const { data: courses = [] } = useQuery<Course[]>({
     queryKey: ['/api/admin/courses'],
   });
 
@@ -252,6 +255,12 @@ export function AdminRecordings() {
 
   const handleEdit = (recording: Recording) => {
     setEditingRecording(recording);
+    setIsViewOnlyMode(false);
+  };
+
+  const handleView = (recording: Recording) => {
+    setEditingRecording(recording);
+    setIsViewOnlyMode(true);
   };
 
   const handleUpdateRecording = (updates: any) => {
@@ -326,131 +335,133 @@ export function AdminRecordings() {
       </div>
 
       {/* Upload Section */}
-      <Card className="border-2 border-dashed border-primary/20 hover:border-primary/40 transition-colors">
-        <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Upload className="h-4 w-4 text-primary" />
-            </div>
-            <span className="text-xl">Add New Recording</span>
-          </CardTitle>
-          <CardDescription className="text-base">
-            Upload Google Drive video recordings to make them available for students
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="pt-6">
-          <form onSubmit={handleUpload} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="course">Course *</Label>
-                <Select 
-                  value={uploadForm.courseSlug} 
-                  onValueChange={(value) => setUploadForm(prev => ({ ...prev, courseSlug: value, moduleIndex: -1 }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a course" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {courses.map((course: Course, index: number) => (
-                      <SelectItem key={course.slug || `course-${index}`} value={course.slug}>
-                        {course.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+      {renderIfCanCreate(
+        <Card className="border-2 border-dashed border-primary/20 hover:border-primary/40 transition-colors">
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Upload className="h-4 w-4 text-primary" />
+              </div>
+              <span className="text-xl">Add New Recording</span>
+            </CardTitle>
+            <CardDescription className="text-base">
+              Upload Google Drive video recordings to make them available for students
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <form onSubmit={handleUpload} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="course">Course *</Label>
+                  <Select 
+                    value={uploadForm.courseSlug} 
+                    onValueChange={(value) => setUploadForm(prev => ({ ...prev, courseSlug: value, moduleIndex: -1 }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a course" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {courses.map((course: Course, index: number) => (
+                        <SelectItem key={course.slug || `course-${index}`} value={course.slug}>
+                          {course.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="module">Module *</Label>
+                  <Select 
+                    value={uploadForm.moduleIndex.toString()} 
+                    onValueChange={(value) => setUploadForm(prev => ({ ...prev, moduleIndex: parseInt(value) }))}
+                    disabled={!uploadForm.courseSlug || modules.length === 0}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a module" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {modules.map((module) => (
+                        <SelectItem key={module.index} value={module.index.toString()}>
+                          Module {module.index + 1}: {module.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="classDate">Class Date *</Label>
+                  <Input
+                    id="classDate"
+                    type="date"
+                    value={uploadForm.classDate}
+                    onChange={(e) => setUploadForm(prev => ({ ...prev, classDate: e.target.value }))}
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="module">Module *</Label>
-                <Select 
-                  value={uploadForm.moduleIndex.toString()} 
-                  onValueChange={(value) => setUploadForm(prev => ({ ...prev, moduleIndex: parseInt(value) }))}
-                  disabled={!uploadForm.courseSlug || modules.length === 0}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a module" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {modules.map((module) => (
-                      <SelectItem key={module.index} value={module.index.toString()}>
-                        Module {module.index + 1}: {module.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="classDate">Class Date *</Label>
+                <Label htmlFor="title">Recording Title *</Label>
                 <Input
-                  id="classDate"
-                  type="date"
-                  value={uploadForm.classDate}
-                  onChange={(e) => setUploadForm(prev => ({ ...prev, classDate: e.target.value }))}
+                  id="title"
+                  value={uploadForm.title}
+                  onChange={(e) => setUploadForm(prev => ({ ...prev, title: e.target.value }))}
+                  placeholder="Enter recording title"
                 />
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="title">Recording Title *</Label>
-              <Input
-                id="title"
-                value={uploadForm.title}
-                onChange={(e) => setUploadForm(prev => ({ ...prev, title: e.target.value }))}
-                placeholder="Enter recording title"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={uploadForm.description}
-                onChange={(e) => setUploadForm(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="Enter recording description"
-                rows={3}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="isVisible">Visible to Students</Label>
-              <div className="flex items-center space-x-2 pt-2">
-                <Switch
-                  id="isVisible"
-                  checked={uploadForm.isVisible}
-                  onCheckedChange={(checked) => setUploadForm(prev => ({ ...prev, isVisible: checked }))}
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  value={uploadForm.description}
+                  onChange={(e) => setUploadForm(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Enter recording description"
+                  rows={3}
                 />
-                <span className="text-sm text-muted-foreground">
-                  {uploadForm.isVisible ? 'Visible' : 'Hidden'}
-                </span>
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="fileUrl">Google Drive Video Link *</Label>
-              <Input
-                id="fileUrl"
-                type="url"
-                value={uploadForm.fileUrl}
-                onChange={(e) => setUploadForm(prev => ({ ...prev, fileUrl: e.target.value }))}
-                placeholder="https://drive.google.com/file/d/your-file-id/view"
-              />
-              <p className="text-sm text-muted-foreground">
-                Provide a shareable Google Drive link to your video recording
-              </p>
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="isVisible">Visible to Students</Label>
+                <div className="flex items-center space-x-2 pt-2">
+                  <Switch
+                    id="isVisible"
+                    checked={uploadForm.isVisible}
+                    onCheckedChange={(checked) => setUploadForm(prev => ({ ...prev, isVisible: checked }))}
+                  />
+                  <span className="text-sm text-muted-foreground">
+                    {uploadForm.isVisible ? 'Visible' : 'Hidden'}
+                  </span>
+                </div>
+              </div>
 
-            <div className="flex gap-3 pt-2">
-              <Button type="submit" disabled={isUploading || !uploadForm.fileUrl} className="px-6">
-                {isUploading ? 'Creating...' : 'Add Recording'}
-              </Button>
-              <Button type="button" variant="outline" onClick={resetUploadForm} className="px-6">
-                Reset Form
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+              <div className="space-y-2">
+                <Label htmlFor="fileUrl">Google Drive Video Link *</Label>
+                <Input
+                  id="fileUrl"
+                  type="url"
+                  value={uploadForm.fileUrl}
+                  onChange={(e) => setUploadForm(prev => ({ ...prev, fileUrl: e.target.value }))}
+                  placeholder="https://drive.google.com/file/d/your-file-id/view"
+                />
+                <p className="text-sm text-muted-foreground">
+                  Provide a shareable Google Drive link to your video recording
+                </p>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <Button type="submit" disabled={isUploading || !uploadForm.fileUrl} className="px-6">
+                  {isUploading ? 'Creating...' : 'Add Recording'}
+                </Button>
+                <Button type="button" variant="outline" onClick={resetUploadForm} className="px-6">
+                  Reset Form
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Filters Section */}
       <Card className="shadow-sm">
@@ -640,44 +651,51 @@ export function AdminRecordings() {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
+                            {/* View details button - always visible */}
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => handleEdit(recording)}
-                            >
-                              <Edit className="h-3 w-3" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => window.open(recording.fileUrl, '_blank')}
+                              onClick={() => handleView(recording)}
+                              title="View Recording Details"
                             >
                               <Eye className="h-3 w-3" />
                             </Button>
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button size="sm" variant="outline">
-                                  <Trash2 className="h-3 w-3" />
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>Delete Recording</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    Are you sure you want to delete "{recording.title}"? This action cannot be undone.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                  <AlertDialogAction
-                                    onClick={() => deleteMutation.mutate(recording._id)}
-                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                  >
-                                    Delete
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
+                            {renderIfCanEdit(
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleEdit(recording)}
+                                title="Edit Recording"
+                              >
+                                <Edit className="h-3 w-3" />
+                              </Button>
+                            )}
+                            {renderIfCanDelete(
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button size="sm" variant="outline" title="Delete Recording">
+                                    <Trash2 className="h-3 w-3" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Delete Recording</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Are you sure you want to delete "{recording.title}"? This action cannot be undone.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() => deleteMutation.mutate(recording._id)}
+                                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                    >
+                                      Delete
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            )}
                           </div>
                         </TableCell>
                       </TableRow>
@@ -735,14 +753,14 @@ export function AdminRecordings() {
         </CardContent>
       </Card>
 
-      {/* Edit Recording Modal */}
+      {/* Edit/View Recording Modal */}
       {editingRecording && (
         <AlertDialog open={true} onOpenChange={() => setEditingRecording(null)}>
           <AlertDialogContent className="max-w-md">
             <AlertDialogHeader>
-              <AlertDialogTitle>Edit Recording</AlertDialogTitle>
+              <AlertDialogTitle>{isViewOnlyMode ? 'View Recording Details' : 'Edit Recording'}</AlertDialogTitle>
               <AlertDialogDescription>
-                Update recording details
+                {isViewOnlyMode ? 'Recording details and information.' : 'Update recording details'}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <div className="space-y-4 py-4">
@@ -752,6 +770,8 @@ export function AdminRecordings() {
                   id="edit-title"
                   defaultValue={editingRecording.title}
                   onChange={(e) => setEditingRecording(prev => prev ? { ...prev, title: e.target.value } : null)}
+                  readOnly={isViewOnlyMode}
+                  className={isViewOnlyMode ? 'bg-gray-50' : ''}
                 />
               </div>
               <div className="space-y-2">
@@ -761,6 +781,8 @@ export function AdminRecordings() {
                   defaultValue={editingRecording.description || ''}
                   onChange={(e) => setEditingRecording(prev => prev ? { ...prev, description: e.target.value } : null)}
                   rows={3}
+                  readOnly={isViewOnlyMode}
+                  className={isViewOnlyMode ? 'bg-gray-50' : ''}
                 />
               </div>
               <div className="space-y-2">
@@ -770,39 +792,57 @@ export function AdminRecordings() {
                   type="date"
                   defaultValue={editingRecording.classDate.split('T')[0]}
                   onChange={(e) => setEditingRecording(prev => prev ? { ...prev, classDate: e.target.value } : null)}
+                  readOnly={isViewOnlyMode}
+                  className={isViewOnlyMode ? 'bg-gray-50' : ''}
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="edit-fileUrl">Google Drive Link</Label>
-                <Input
-                  id="edit-fileUrl"
-                  type="url"
-                  defaultValue={editingRecording.fileUrl}
-                  onChange={(e) => setEditingRecording(prev => prev ? { ...prev, fileUrl: e.target.value } : null)}
-                  placeholder="https://drive.google.com/file/d/your-file-id/view"
-                />
+                <div className="flex gap-2">
+                  <Input
+                    id="edit-fileUrl"
+                    type="url"
+                    defaultValue={editingRecording.fileUrl}
+                    onChange={(e) => setEditingRecording(prev => prev ? { ...prev, fileUrl: e.target.value } : null)}
+                    placeholder="https://drive.google.com/file/d/your-file-id/view"
+                    readOnly={isViewOnlyMode}
+                    className={`flex-1 ${isViewOnlyMode ? 'bg-gray-50' : ''}`}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => window.open(editingRecording.fileUrl, '_blank')}
+                    title="Open Recording"
+                  >
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
               <div className="flex items-center space-x-2">
                 <Switch
                   checked={editingRecording.isVisible}
                   onCheckedChange={(checked) => setEditingRecording(prev => prev ? { ...prev, isVisible: checked } : null)}
+                  disabled={isViewOnlyMode}
                 />
                 <Label>Visible to students</Label>
               </div>
             </div>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() => editingRecording && handleUpdateRecording({
-                  title: editingRecording.title,
-                  description: editingRecording.description,
-                  classDate: editingRecording.classDate,
-                  fileUrl: editingRecording.fileUrl,
-                  isVisible: editingRecording.isVisible
-                })}
-              >
-                Update
-              </AlertDialogAction>
+              <AlertDialogCancel>{isViewOnlyMode ? 'Close' : 'Cancel'}</AlertDialogCancel>
+              {!isViewOnlyMode && (
+                <AlertDialogAction
+                  onClick={() => editingRecording && handleUpdateRecording({
+                    title: editingRecording.title,
+                    description: editingRecording.description,
+                    classDate: editingRecording.classDate,
+                    fileUrl: editingRecording.fileUrl,
+                    isVisible: editingRecording.isVisible
+                  })}
+                >
+                  Update
+                </AlertDialogAction>
+              )}
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

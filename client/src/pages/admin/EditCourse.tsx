@@ -10,10 +10,20 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { Trash2, Plus, Video, FileText, HelpCircle, ChevronDown, ChevronUp, GraduationCap, Upload, X, Loader2 } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { Trash2, Plus, Video, FileText, HelpCircle, ChevronDown, ChevronUp, GraduationCap, Upload, X, Loader2, Eye, Link } from 'lucide-react';
+import { QuizUpload } from '@/components/admin/QuizUpload';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { uploadToCloudinary, validateFile, FILE_TYPES, FileUploadResponse, createDownloadLink } from '@/lib/cloudinary';
+import { PDFPreview } from "@/components/ui/pdf-preview";
+import { CSVPreview } from "@/components/ui/csv-preview";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface VideoForm {
   title: string;
@@ -23,7 +33,16 @@ interface VideoForm {
 
 interface DocumentForm {
   title: string;
-  url: string;
+  type: 'link' | 'upload';
+  // For link-based documents (backward compatibility)
+  url?: string;
+  // For uploaded documents (new functionality)
+  file?: File | null;
+  fileUrl?: string;
+  fileName?: string;
+  fileSize?: number;
+  fileType?: string;
+  publicId?: string;
 }
 
 interface QuizQuestionForm {
@@ -34,6 +53,7 @@ interface QuizQuestionForm {
 
 interface ModuleForm {
   title: string;
+  description: string; // Optional module description
   videos: VideoForm[];
   documents: DocumentForm[];
   quiz: {
@@ -687,11 +707,16 @@ function FinalExaminationSection({ courseSlug }: { courseSlug: string }) {
 
 function EditCourseForm({ courseSlug }: { courseSlug: string }) {
   const [, setLocation] = useLocation();
+  const [moduleToDelete, setModuleToDelete] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState<CourseForm | null>(null);
   const [expandedModules, setExpandedModules] = useState<boolean[]>([]);
   const { toast } = useToast();
+  const [uploading, setUploading] = useState<{ [key: string]: boolean }>({});
+  const [previewDocument, setPreviewDocument] = useState<DocumentForm | null>(null);
+  const [showPreviewDialog, setShowPreviewDialog] = useState(false);
+  const queryClient = useQueryClient();
 
   // Fetch course data
   const { data: courseData, isLoading } = useQuery({
@@ -726,13 +751,46 @@ function EditCourseForm({ courseSlug }: { courseSlug: string }) {
   // Initialize form when course data is loaded
   useEffect(() => {
     if (courseData) {
+      console.log('🔍 Raw course data from backend:', courseData);
+      console.log('🔍 First module documents:', courseData.modules?.[0]?.documents);
+      console.log('🔍 First module questions (legacy):', courseData.modules?.[0]?.questions);
+      console.log('🔍 Separate quiz documents:', quizzes);
+      
       // Transform course data to match form structure
       const transformedModules = courseData.modules?.map((module: any, index: number) => {
         // Find corresponding quiz for this module
         const moduleQuiz = quizzes.find((q: any) => q.moduleIndex === index);
         
+        // Prioritize legacy questions (from quiz repository deployment) over separate Quiz documents
+        let quizQuestions;
+        if (module.questions && Array.isArray(module.questions) && module.questions.length > 0) {
+          // Use legacy questions from module (deployed from quiz repository)
+          console.log(`🔄 Using legacy questions for module ${index}:`, module.questions);
+          quizQuestions = module.questions.map((q: any) => ({
+            text: q.text || '',
+            choices: q.choices || ['', '', '', ''],
+            correctIndex: q.correctIndex || 0
+          }));
+        } else if (moduleQuiz?.questions?.length > 0) {
+          // Fallback to separate Quiz documents
+          console.log(`🔄 Using separate quiz document for module ${index}:`, moduleQuiz.questions);
+          quizQuestions = moduleQuiz.questions.map((q: any) => ({
+            text: q.text || '',
+            choices: q.choices || ['', '', '', ''],
+            correctIndex: q.correctIndex || 0
+          }));
+        } else {
+          // Default empty question
+          quizQuestions = [{
+            text: '',
+            choices: ['', '', '', ''],
+            correctIndex: 0
+          }];
+        }
+        
         return {
           title: module.title || '',
+          description: module.description || '', // Optional module description
           videos: module.videos?.map((v: any) => ({
             title: v.title || '',
             duration: v.duration || 0,
@@ -740,18 +798,17 @@ function EditCourseForm({ courseSlug }: { courseSlug: string }) {
           })) || [{ title: '', duration: 0, url: '' }],
           documents: module.documents?.map((d: any) => ({
             title: d.title || '',
-            url: d.url || ''
-          })) || [{ title: '', url: '' }],
+            type: d.type || 'link',
+            // Always include all properties, let the UI decide what to show
+            url: d.url || '',
+            fileUrl: d.fileUrl,
+            fileName: d.fileName,
+            fileSize: d.fileSize,
+            fileType: d.fileType,
+            publicId: d.publicId
+          })) || [{ title: '', type: 'link', url: '' }],
           quiz: {
-            questions: moduleQuiz?.questions?.map((q: any) => ({
-              text: q.text || '',
-              choices: q.choices || ['', '', '', ''],
-              correctIndex: q.correctIndex || 0
-            })) || [{
-              text: '',
-              choices: ['', '', '', ''],
-              correctIndex: 0
-            }]
+            questions: quizQuestions
           }
         };
       }) || [];
@@ -764,7 +821,7 @@ function EditCourseForm({ courseSlug }: { courseSlug: string }) {
         modules: transformedModules.length > 0 ? transformedModules : [{
           title: '',
           videos: [{ title: '', duration: 0, url: '' }],
-          documents: [{ title: '', url: '' }],
+          documents: [{ title: '', type: 'link', url: '' }],
           quiz: {
             questions: [{
               text: '',
@@ -831,8 +888,9 @@ function EditCourseForm({ courseSlug }: { courseSlug: string }) {
       ...prev,
       modules: [...prev.modules, {
         title: '',
+        description: '', // Optional module description
         videos: [{ title: '', duration: 0, url: '' }],
-        documents: [{ title: '', url: '' }],
+        documents: [{ title: '', type: 'link', url: '' }],
         quiz: {
           questions: [{
             text: '',
@@ -846,14 +904,70 @@ function EditCourseForm({ courseSlug }: { courseSlug: string }) {
     setExpandedModules(prev => [...prev, true]);
   };
 
-  const removeModule = (moduleIndex: number) => {
+  const removeModule = async (moduleIndex: number) => {
     if (form && form.modules.length > 1) {
-      setForm(prev => prev ? ({
-        ...prev,
-        modules: prev.modules.filter((_, i) => i !== moduleIndex)
-      }) : null);
+      // Update local state first
+      const updatedForm = {
+        ...form,
+        modules: form.modules.filter((_, i) => i !== moduleIndex)
+      };
+      
+      setForm(updatedForm);
       // Remove the corresponding expanded state
       setExpandedModules(prev => prev.filter((_, i) => i !== moduleIndex));
+      
+      // Immediately save to database
+      try {
+        setSaving(true);
+        const token = localStorage.getItem('token');
+        const response = await fetch(`/api/courses/${courseSlug}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token && { Authorization: `Bearer ${token}` })
+          },
+          body: JSON.stringify(updatedForm)
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Failed to delete module');
+        }
+
+        toast({
+          title: "Success",
+          description: "Module deleted successfully!",
+        });
+        
+        // Close confirmation dialog
+        setModuleToDelete(null);
+      } catch (error) {
+        // Revert the state if save failed
+        setForm(form);
+        setExpandedModules(prev => {
+          const newExpanded = [...prev];
+          newExpanded.splice(moduleIndex, 0, true); // Re-insert the expanded state
+          return newExpanded;
+        });
+        
+        toast({
+          title: "Error",
+          description: error instanceof Error ? error.message : "Failed to delete module",
+          variant: "destructive",
+        });
+      } finally {
+        setSaving(false);
+      }
+    }
+  };
+  
+  const handleDeleteModule = (moduleIndex: number) => {
+    setModuleToDelete(moduleIndex);
+  };
+  
+  const confirmDeleteModule = () => {
+    if (moduleToDelete !== null) {
+      removeModule(moduleToDelete);
     }
   };
 
@@ -895,8 +1009,64 @@ function EditCourseForm({ courseSlug }: { courseSlug: string }) {
   const addDocument = (moduleIndex: number) => {
     if (!form) return;
     const updatedModules = [...form.modules];
-    updatedModules[moduleIndex].documents.push({ title: '', url: '' });
+    updatedModules[moduleIndex].documents.push({ title: '', type: 'link', url: '' });
     setForm(prev => prev ? ({ ...prev, modules: updatedModules }) : null);
+  };
+
+  const handleFileUpload = async (
+    moduleIndex: number, 
+    documentIndex: number, 
+    file: File
+  ) => {
+    const validation = validateFile(file, {
+      maxSizeMB: 10,
+      allowedTypes: FILE_TYPES.DOCUMENTS
+    });
+
+    if (!validation.isValid) {
+      toast({
+        title: "Invalid File",
+        description: validation.error,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const uploadKey = `modules-${moduleIndex}-${documentIndex}`;
+    setUploading(prev => ({ ...prev, [uploadKey]: true }));
+
+    try {
+      const result = await uploadToCloudinary(file, 'question-documents');
+      
+      const documentData: DocumentForm = {
+        title: file.name.split('.')[0],
+        type: 'upload',
+        file: null,
+        fileUrl: result.url,
+        fileName: result.fileName,
+        fileSize: result.fileSize,
+        fileType: result.fileType,
+        publicId: result.publicId
+      };
+
+      if (!form) return;
+      const updatedModules = [...form.modules];
+      updatedModules[moduleIndex].documents[documentIndex] = documentData;
+      setForm(prev => prev ? ({ ...prev, modules: updatedModules }) : null);
+
+      toast({
+        title: "Upload Successful",
+        description: `${file.name} uploaded successfully.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Upload Failed",
+        description: error instanceof Error ? error.message : "Failed to upload file",
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(prev => ({ ...prev, [uploadKey]: false }));
+    }
   };
 
   const removeDocument = (moduleIndex: number, docIndex: number) => {
@@ -960,6 +1130,9 @@ function EditCourseForm({ courseSlug }: { courseSlug: string }) {
     e.preventDefault();
     if (!form) return;
     
+    console.log('📤 Submitting form data:', form);
+    console.log('📤 First module documents being sent:', form.modules[0]?.documents);
+    
     setSaving(true);
     setError(null);
 
@@ -984,6 +1157,11 @@ function EditCourseForm({ courseSlug }: { courseSlug: string }) {
         title: "Success",
         description: "Course updated successfully!",
       });
+
+      // Invalidate queries to refresh data
+      queryClient.invalidateQueries({ queryKey: [`/api/courses/${courseSlug}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/courses/${courseSlug}/quizzes`] });
+      queryClient.invalidateQueries({ queryKey: ['courses'] });
 
       // Small delay to show the success message before redirecting
       setTimeout(() => {
@@ -1185,7 +1363,7 @@ function EditCourseForm({ courseSlug }: { courseSlug: string }) {
               {form.modules.map((module, moduleIndex) => {
                 const isExpanded = expandedModules[moduleIndex] ?? true;
                 const videoCount = module.videos.filter(v => v.title.trim() || v.url.trim()).length;
-                const documentCount = module.documents.filter(d => d.title.trim() || d.url.trim()).length;
+                const documentCount = module.documents.filter(d => d.title.trim() || (d.url && d.url.trim()) || d.fileUrl).length;
                 const questionCount = module.quiz.questions.filter(q => q.text.trim()).length;
                 
                 return (
@@ -1231,12 +1409,13 @@ function EditCourseForm({ courseSlug }: { courseSlug: string }) {
                       {form.modules.length > 1 && (
                         <Button
                           type="button"
-                          onClick={() => removeModule(moduleIndex)}
+                          onClick={() => handleDeleteModule(moduleIndex)}
                           variant="outline"
                           size="sm"
                           className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          disabled={saving}
                         >
-                          <Trash2 className="h-4 w-4" />
+                          {saving && moduleToDelete === moduleIndex ? <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600"></div> : <Trash2 className="h-4 w-4" />}
                         </Button>
                       )}
                     </div>
@@ -1250,6 +1429,16 @@ function EditCourseForm({ courseSlug }: { courseSlug: string }) {
                         onChange={(e) => updateModule(moduleIndex, 'title', e.target.value)}
                         placeholder="e.g., Supply Chain Fundamentals"
                         required
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Module Description (Optional)</Label>
+                      <Textarea
+                        value={module.description}
+                        onChange={(e) => updateModule(moduleIndex, 'description', e.target.value)}
+                        placeholder="Brief description of what this module covers..."
+                        rows={3}
                       />
                     </div>
 
@@ -1332,37 +1521,141 @@ function EditCourseForm({ courseSlug }: { courseSlug: string }) {
                         </Button>
                       </div>
 
-                      {module.documents.map((document, docIndex) => (
-                        <div key={docIndex} className="grid grid-cols-1 md:grid-cols-12 gap-2 p-3 bg-white border border-orange-200 rounded-lg shadow-sm">
-                          <div className="md:col-span-5">
-                            <Input
-                              value={document.title}
-                              onChange={(e) => updateDocument(moduleIndex, docIndex, 'title', e.target.value)}
-                              placeholder="Document title"
-                            />
-                          </div>
-                          <div className="md:col-span-6">
-                            <Input
-                              value={document.url}
-                              onChange={(e) => updateDocument(moduleIndex, docIndex, 'url', e.target.value)}
-                              placeholder="Document URL"
-                            />
-                          </div>
-                          <div className="md:col-span-1">
-                            {module.documents.length > 1 && (
-                              <Button
-                                type="button"
-                                onClick={() => removeDocument(moduleIndex, docIndex)}
-                                variant="outline"
-                                size="sm"
-                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      {module.documents.map((document, docIndex) => {
+                        const uploadKey = `modules-${moduleIndex}-${docIndex}`;
+                        const isUploading = uploading[uploadKey];
+                        
+                        return (
+                          <div key={docIndex} className="p-4 bg-white border border-orange-200 rounded-lg shadow-sm space-y-3">
+                            {/* Title and Type Selection */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              <Input
+                                value={document.title}
+                                onChange={(e) => updateDocument(moduleIndex, docIndex, 'title', e.target.value)}
+                                placeholder="Document title"
+                              />
+                              <Select
+                                value={document.type}
+                                onValueChange={(value: 'link' | 'upload') => {
+                                  if (!form) return;
+                                  const updatedModules = [...form.modules];
+                                  updatedModules[moduleIndex].documents[docIndex] = {
+                                    title: document.title,
+                                    type: value,
+                                    ...(value === 'link' ? { url: document.url || '' } : {})
+                                  };
+                                  setForm(prev => prev ? ({ ...prev, modules: updatedModules }) : null);
+                                }}
                               >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select type" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="link">
+                                    <div className="flex items-center">
+                                      <Link className="h-4 w-4 mr-2" />
+                                      Link
+                                    </div>
+                                  </SelectItem>
+                                  <SelectItem value="upload">
+                                    <div className="flex items-center">
+                                      <Upload className="h-4 w-4 mr-2" />
+                                      Upload
+                                    </div>
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            {/* Content based on type */}
+                            {document.type === 'link' ? (
+                              <Input
+                                value={document.url || ''}
+                                onChange={(e) => updateDocument(moduleIndex, docIndex, 'url', e.target.value)}
+                                placeholder="Document URL"
+                              />
+                            ) : (
+                              <div className="space-y-2">
+                                {document.fileUrl ? (
+                                  <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
+                                    <div className="flex items-center space-x-2">
+                                      <FileText className="h-5 w-5 text-green-600" />
+                                      <div>
+                                        <p className="font-medium text-green-800">{document.fileName}</p>
+                                        <p className="text-sm text-green-600">
+                                          {document.fileSize ? `${(document.fileSize / 1024 / 1024).toFixed(2)} MB` : 'Unknown size'}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => {
+                                          setPreviewDocument(document);
+                                          setShowPreviewDialog(true);
+                                        }}
+                                        className="text-green-700 border-green-300 hover:bg-green-100"
+                                      >
+                                        <Eye className="h-4 w-4" />
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="border-2 border-dashed border-orange-300 rounded-lg p-6 text-center">
+                                    <input
+                                      type="file"
+                                      id={`file-upload-${moduleIndex}-${docIndex}`}
+                                      className="hidden"
+                                      accept=".pdf,.doc,.docx,.txt,.csv,.xlsx,.xls"
+                                      onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) {
+                                          handleFileUpload(moduleIndex, docIndex, file);
+                                        }
+                                      }}
+                                      disabled={isUploading}
+                                    />
+                                    <label
+                                      htmlFor={`file-upload-${moduleIndex}-${docIndex}`}
+                                      className="cursor-pointer"
+                                    >
+                                      {isUploading ? (
+                                        <div className="flex flex-col items-center">
+                                          <Loader2 className="h-8 w-8 text-orange-500 animate-spin mb-2" />
+                                          <p className="text-orange-600">Uploading...</p>
+                                        </div>
+                                      ) : (
+                                        <div className="flex flex-col items-center">
+                                          <Upload className="h-8 w-8 text-orange-500 mb-2" />
+                                          <p className="text-orange-600 font-medium">Click to upload document</p>
+                                          <p className="text-sm text-gray-500">PDF, DOC, TXT, CSV, Excel (Max 10MB)</p>
+                                        </div>
+                                      )}
+                                    </label>
+                                  </div>
+                                )}
+                              </div>
                             )}
+
+                            {/* Actions */}
+                            <div className="flex justify-end">
+                              {module.documents.length > 1 && (
+                                <Button
+                                  type="button"
+                                  onClick={() => removeDocument(moduleIndex, docIndex)}
+                                  variant="outline"
+                                  size="sm"
+                                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
 
                     {/* Quiz Questions */}
@@ -1372,16 +1665,50 @@ function EditCourseForm({ courseSlug }: { courseSlug: string }) {
                           <HelpCircle className="h-4 w-4 mr-2 text-purple-600" />
                           Quiz Questions
                         </Label>
-                        <Button
-                          type="button"
-                          onClick={() => addQuizQuestion(moduleIndex)}
-                          variant="outline"
-                          size="sm"
-                          className="border-purple-300 text-purple-700 hover:bg-purple-100"
-                        >
-                          <Plus className="h-4 w-4 mr-2" />
-                          Add Question
-                        </Button>
+                        <div className="flex gap-2">
+                          <QuizUpload
+                            moduleTitle={module.title || `Module ${moduleIndex + 1}`}
+                            moduleIndex={moduleIndex}
+                            courseSlug={form?.slug || ''}
+                            courseTitle={form?.title || ''}
+                            onQuizUploaded={(questions, title, description) => {
+                              if (!form) return;
+                              const updatedModules = [...form.modules];
+                              updatedModules[moduleIndex].quiz.questions = questions;
+                              setForm(prev => prev ? ({ ...prev, modules: updatedModules }) : null);
+                              
+                              // Invalidate queries to refresh quiz data
+                              queryClient.invalidateQueries({ queryKey: [`/api/courses/${courseSlug}`] });
+                              queryClient.invalidateQueries({ queryKey: [`/api/courses/${courseSlug}/quizzes`] });
+                              
+                              toast({
+                                title: 'Quiz Uploaded',
+                                description: `Added ${questions.length} questions to ${module.title || `Module ${moduleIndex + 1}`}`,
+                              });
+                            }}
+                            trigger={
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                className="border-purple-300 text-purple-700 hover:bg-purple-100"
+                              >
+                                <Upload className="h-4 w-4 mr-2" />
+                                Upload Quiz
+                              </Button>
+                            }
+                          />
+                          <Button
+                            type="button"
+                            onClick={() => addQuizQuestion(moduleIndex)}
+                            variant="outline"
+                            size="sm"
+                            className="border-purple-300 text-purple-700 hover:bg-purple-100"
+                          >
+                            <Plus className="h-4 w-4 mr-2" />
+                            Add Question
+                          </Button>
+                        </div>
                       </div>
 
                       {module.quiz.questions.map((question, questionIndex) => (
@@ -1477,6 +1804,126 @@ function EditCourseForm({ courseSlug }: { courseSlug: string }) {
           </form>
         </CardContent>
       </Card>
+
+      {/* Document Preview Dialog */}
+      <Dialog open={showPreviewDialog} onOpenChange={setShowPreviewDialog}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Document Preview: {previewDocument?.title}</DialogTitle>
+          </DialogHeader>
+          {previewDocument && (
+            <div className="w-full h-[70vh] border rounded">
+              <div className="text-xs text-gray-500 p-2 border-b">
+                File: {previewDocument.fileName} ({previewDocument.fileType})
+              </div>
+              {previewDocument.fileType === 'application/pdf' ? (
+                <PDFPreview fileUrl={previewDocument.fileUrl!} fileName={previewDocument.fileName!} />
+              ) : previewDocument.fileType === 'text/csv' ? (
+                <CSVPreview fileUrl={previewDocument.fileUrl!} fileName={previewDocument.fileName!} />
+              ) : previewDocument.fileType?.startsWith('image/') ? (
+                // Show images directly
+                <img
+                  src={previewDocument.fileUrl}
+                  alt={previewDocument.fileName}
+                  className="w-full h-[calc(70vh-60px)] object-contain rounded"
+                />
+              ) : previewDocument.fileType?.includes('word') || previewDocument.fileType?.includes('document') ? (
+                // Try Microsoft Office Online for Word documents
+                <iframe
+                  src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(previewDocument.fileUrl!)}`}
+                  className="w-full h-[calc(70vh-60px)] rounded"
+                  title={`Preview of ${previewDocument.fileName}`}
+                  onError={() => console.error('Office viewer failed to load')}
+                />
+              ) : previewDocument.fileType?.includes('sheet') || previewDocument.fileType?.includes('excel') ? (
+                // Try Microsoft Office Online for Excel documents  
+                <iframe
+                  src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(previewDocument.fileUrl!)}`}
+                  className="w-full h-[calc(70vh-60px)] rounded"
+                  title={`Preview of ${previewDocument.fileName}`}
+                  onError={() => console.error('Office viewer failed to load')}
+                />
+              ) : previewDocument.fileType?.includes('presentation') || previewDocument.fileType?.includes('powerpoint') ? (
+                // Try Microsoft Office Online for PowerPoint documents
+                <iframe
+                  src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(previewDocument.fileUrl!)}`}
+                  className="w-full h-[calc(70vh-60px)] rounded"
+                  title={`Preview of ${previewDocument.fileName}`}
+                  onError={() => console.error('Office viewer failed to load')}
+                />
+              ) : (
+                // For other document types, show a message with download option
+                <div className="flex flex-col items-center justify-center h-[calc(70vh-60px)] text-center space-y-4">
+                  <FileText className="h-16 w-16 text-gray-400" />
+                  <div>
+                    <h3 className="text-lg font-medium">Preview not available</h3>
+                    <p className="text-gray-500 mt-2">
+                      {previewDocument.fileName} ({previewDocument.fileType})
+                    </p>
+                    <p className="text-sm text-gray-400 mt-1">
+                      Use "Open in New Tab" to view this document
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+          
+          <div className="flex justify-end space-x-2 mt-4">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowPreviewDialog(false)}
+            >
+              Close
+            </Button>
+            <Button 
+              onClick={() => {
+                if (previewDocument?.fileUrl) {
+                  window.open(previewDocument.fileUrl, '_blank');
+                }
+              }}
+            >
+              Open in New Tab
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Module Delete Confirmation Dialog */}
+      <Dialog open={moduleToDelete !== null} onOpenChange={() => setModuleToDelete(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Module</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this module? This action cannot be undone.
+              All module content including videos, documents, and quizzes will be permanently removed.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end space-x-2 mt-4">
+            <Button 
+              variant="outline" 
+              onClick={() => setModuleToDelete(null)}
+              disabled={saving}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={confirmDeleteModule}
+              variant="destructive"
+              disabled={saving}
+            >
+              {saving ? (
+                <div className="flex items-center">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Deleting...
+                </div>
+              ) : (
+                "Delete Module"
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
