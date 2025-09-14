@@ -280,6 +280,7 @@ export class HybridCopyService {
   private transformSandboxModule(sandboxModule: any): any {
     return {
       title: sandboxModule.title || 'Untitled Module',
+      description: sandboxModule.description || '',
       videos: Array.isArray(sandboxModule.videos) ? sandboxModule.videos.filter((video: any) => 
         video && video.title && video.url
       ) : [],

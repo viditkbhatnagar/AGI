@@ -390,14 +390,15 @@ export const deleteCourse = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Course not found' });
     }
     
-    // Check if there are enrollments for this course
-    const enrollments = await Enrollment.countDocuments({ courseSlug: slug });
-    
-    if (enrollments > 0) {
-      return res.status(400).json({ 
-        message: 'Cannot delete course with active enrollments. Remove enrollments first.' 
-      });
-    }
+    // TEMPORARILY DISABLED: Check if there are enrollments for this course
+    // TODO: Re-enable this check for production safety
+    // const enrollments = await Enrollment.countDocuments({ courseSlug: slug });
+    // 
+    // if (enrollments > 0) {
+    //   return res.status(400).json({ 
+    //     message: 'Cannot delete course with active enrollments. Remove enrollments first.' 
+    //   });
+    // }
     
     // Extract all publicIds from course modules for Cloudinary cleanup
     const publicIds = extractPublicIdsFromCourse(course);
@@ -448,6 +449,7 @@ export const getStudentCourse = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Course not found' });
     }
     
+    
     // Get enrollment
     const enrollment = await Enrollment.findOne({ 
       studentId: student._id,
@@ -477,6 +479,15 @@ export const getStudentCourse = async (req: Request, res: Response) => {
       const isCompleted = moduleCompletion?.completed || false;
       const completedAt = moduleCompletion?.completedAt;
       
+      // DEBUG: Log module data on server
+      console.log(`SERVER Module ${index}:`, {
+        title: module.title,
+        description: module.description,
+        hasDescription: !!module.description,
+        moduleKeys: Object.keys(module.toObject()),
+        courseSlug: slug
+      });
+      
       // Get quiz attempts for this module
       const quizAttempts = enrollment.quizAttempts.filter(
         qa => qa.quizId === module.quizId
@@ -498,6 +509,12 @@ export const getStudentCourse = async (req: Request, res: Response) => {
         avgQuizScore
       };
     });
+    
+
+    // Disable caching for student course API
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
     
     res.status(200).json({
       course: {

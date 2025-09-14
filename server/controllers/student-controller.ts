@@ -887,6 +887,7 @@ export const getCourseDetail = async (req: Request, res: Response) => {
         const isCompleted = completedSet.has(idx);
         return {
           title: module.title,
+          description: module.description || "", // Add missing description field
           videos: module.videos,
           documents: module.documents,
           quizId: module.quizId,

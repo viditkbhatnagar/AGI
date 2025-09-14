@@ -302,6 +302,7 @@ export class SandboxToCoursesCopyService {
     if (!sandboxModule) {
       return {
         title: 'Untitled Module',
+        description: '',
         videos: [],
         documents: [],
         quizId: null
@@ -310,6 +311,7 @@ export class SandboxToCoursesCopyService {
 
     return {
       title: sandboxModule.title || 'Untitled Module',
+      description: sandboxModule.description || '',
       videos: Array.isArray(sandboxModule.videos) ? sandboxModule.videos.filter((video: any) => 
         video && video.title && video.url
       ) : [],

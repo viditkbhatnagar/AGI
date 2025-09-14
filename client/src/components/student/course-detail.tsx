@@ -900,6 +900,22 @@ export function CourseDetail({ slug }: CourseDetailProps) {
           <div className="flex-1 overflow-y-auto overflow-x-hidden">
             {course?.modules.map((module: any, moduleIndex: number) => {
               // Progress percentages are intentionally not shown in the navigator.
+              
+              // DEBUG: Log module data to console
+              console.log(`Module ${moduleIndex}:`, {
+                title: module.title,
+                description: module.description,
+                hasDescription: !!module.description,
+                descriptionType: typeof module.description,
+                allKeys: Object.keys(module),
+                keysList: Object.keys(module).join(', '),
+                courseSlug: window.location.pathname.split('/').pop()
+              });
+              
+              // Show all properties for first module
+              if (moduleIndex === 0) {
+                console.log('🔍 FULL MODULE 0 DATA:', module);
+              }
 
               return (
                 <div key={moduleIndex} className="border-b border-gray-100">
@@ -926,8 +942,8 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                         <h3 className="font-medium text-gray-800">{module.title}</h3>
                       </div>
                       
-                      {/* Info button with tooltip */}
-                      {module.description && (
+                      {/* Info button with tooltip - Always show for debugging */}
+                      {true && (
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
@@ -942,7 +958,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                               side="right" 
                               className="max-w-xs p-3 text-sm"
                             >
-                              <p>{module.description}</p>
+                              <p>{module.description || 'No description available for this module.'}</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
