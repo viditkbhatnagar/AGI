@@ -581,7 +581,7 @@ function AddSandboxCourseForm() {
                 </div>
 
                 <div>
-                  <Label>Module Description (Optional)</Label>
+                  <Label>Module Description</Label>
                   <Textarea
                     value={module.description}
                     onChange={(e) => updateModuleField(moduleIndex, 'description', e.target.value)}

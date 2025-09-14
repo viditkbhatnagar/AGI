@@ -1433,7 +1433,7 @@ function EditCourseForm({ courseSlug }: { courseSlug: string }) {
                     </div>
 
                     <div className="space-y-2">
-                      <Label>Module Description (Optional)</Label>
+                      <Label>Module Description</Label>
                       <Textarea
                         value={module.description}
                         onChange={(e) => updateModule(moduleIndex, 'description', e.target.value)}

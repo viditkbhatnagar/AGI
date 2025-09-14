@@ -109,6 +109,12 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   ArrowLeft,
   BookOpen,
   Check,
@@ -130,7 +136,8 @@ import {
   ArrowUp,
   ArrowDown,
   CalendarDays,
-  Loader2
+  Loader2,
+  Info
 } from "lucide-react";
 import { Link } from "wouter";
 import { Badge } from "@/components/ui/badge";
@@ -897,25 +904,49 @@ export function CourseDetail({ slug }: CourseDetailProps) {
               return (
                 <div key={moduleIndex} className="border-b border-gray-100">
                   <div className="p-4">
-                    <div 
-                      className="flex items-center cursor-pointer"
-                      onClick={() => {
-                        // Clear any open content when switching modules
-                        clearAllContent();
-                        
-                        setExpanded(prev => {
-                          const next = [...prev];
-                          next[moduleIndex] = !next[moduleIndex];
-                          return next;
-                        });
-                      }}
-                    >
-                      {expanded[moduleIndex] ? (
-                        <ChevronDown className="h-4 w-4 mr-2 text-gray-500" />
-                      ) : (
-                        <ChevronRight className="h-4 w-4 mr-2 text-gray-500" />
+                    <div className="flex items-center justify-between">
+                      <div 
+                        className="flex items-center cursor-pointer flex-1"
+                        onClick={() => {
+                          // Clear any open content when switching modules
+                          clearAllContent();
+                          
+                          setExpanded(prev => {
+                            const next = [...prev];
+                            next[moduleIndex] = !next[moduleIndex];
+                            return next;
+                          });
+                        }}
+                      >
+                        {expanded[moduleIndex] ? (
+                          <ChevronDown className="h-4 w-4 mr-2 text-gray-500" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4 mr-2 text-gray-500" />
+                        )}
+                        <h3 className="font-medium text-gray-800">{module.title}</h3>
+                      </div>
+                      
+                      {/* Info button with tooltip */}
+                      {module.description && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button 
+                                className="ml-2 p-1 rounded-full hover:bg-gray-100 transition-colors"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <Info className="h-4 w-4 text-gray-500 hover:text-gray-700" />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent 
+                              side="right" 
+                              className="max-w-xs p-3 text-sm"
+                            >
+                              <p>{module.description}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       )}
-                      <h3 className="font-medium text-gray-800">{module.title}</h3>
                     </div>
                     
                     {expanded[moduleIndex] && (

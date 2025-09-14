@@ -40,6 +40,7 @@ interface VideoForm {
 
 interface ModuleForm {
   title: string;
+  description: string;
   videos: VideoForm[];
   documents: DocumentForm[];
   quiz: {
@@ -83,7 +84,7 @@ function EditSandboxCourseForm() {
       dayOfWeek: "Monday",
       durationMin: 60
     },
-    modules: [{ title: "", videos: [], documents: [], quiz: { questions: [] } }],
+    modules: [{ title: "", description: "", videos: [], documents: [], quiz: { questions: [] } }],
     mbaModules: []
   });
 
@@ -98,9 +99,10 @@ function EditSandboxCourseForm() {
     if (courseData) {
       console.log('🔄 Loading course data for editing:', courseData);
       
-      const processedModules = (courseData.modules || [{ title: "", videos: [], documents: [], quiz: { questions: [] } }]).map(module => {
+      const processedModules = (courseData.modules || [{ title: "", description: "", videos: [], documents: [], quiz: { questions: [] } }]).map(module => {
         const processedModule = {
           ...module,
+          description: module.description || "",
           quiz: module.quiz || { questions: [] }
         };
         
@@ -232,7 +234,7 @@ function EditSandboxCourseForm() {
       ...prev,
       [isStandalone ? 'modules' : 'mbaModules']: [
         ...(isStandalone ? prev.modules : prev.mbaModules),
-        { title: "", videos: [], documents: [], quiz: { questions: [] } }
+        { title: "", description: "", videos: [], documents: [], quiz: { questions: [] } }
       ]
     }));
   };
@@ -633,6 +635,16 @@ function EditSandboxCourseForm() {
                     value={module.title}
                     onChange={(e) => updateModuleField(moduleIndex, 'title', e.target.value)}
                     placeholder="Enter module title"
+                  />
+                </div>
+
+                <div>
+                  <Label>Module Description</Label>
+                  <Textarea
+                    value={module.description}
+                    onChange={(e) => updateModuleField(moduleIndex, 'description', e.target.value)}
+                    placeholder="Brief description of what this module covers..."
+                    rows={3}
                   />
                 </div>
 
