@@ -3,7 +3,6 @@ import FinalExamination from '../models/finalExamination';
 import { Course } from '../models/course';
 import { Enrollment } from '../models/enrollment';
 import { Student } from '../models/student';
-import { Feedback } from '../models/feedback';
 import mongoose from 'mongoose';
 
 // Admin: Create or update final examination for a course
@@ -116,21 +115,6 @@ export const getStudentFinalExam = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Enrollment not found' });
     }
     
-    // Check if student has completed feedback for this specific course (required before accessing exam)
-    const feedback = await Feedback.findOne({ 
-      studentId: req.user.id,
-      courseSlug: courseSlug,
-      isCompleted: true 
-    });
-    
-    if (!feedback) {
-      return res.status(403).json({ 
-        message: `You must complete the feedback for this course before accessing the final examination. Please visit the Feedback tab to provide your feedback for "${courseSlug}".`,
-        requiresFeedback: true,
-        courseSlug: courseSlug
-      });
-    }
-    
     // Get final exam
     const finalExam = await FinalExamination.findOne({ courseSlug });
     if (!finalExam) {
@@ -203,21 +187,6 @@ export const submitFinalExamAttempt = async (req: Request, res: Response) => {
     
     if (!enrollment) {
       return res.status(404).json({ message: 'Enrollment not found' });
-    }
-    
-    // Check if student has completed feedback for this specific course (required before exam)
-    const feedback = await Feedback.findOne({ 
-      studentId: req.user.id,
-      courseSlug: courseSlug,
-      isCompleted: true 
-    });
-    
-    if (!feedback) {
-      return res.status(403).json({ 
-        message: `You must complete the feedback for this course before taking the final examination. Please visit the Feedback tab to provide your feedback for "${courseSlug}".`,
-        requiresFeedback: true,
-        courseSlug: courseSlug
-      });
     }
 
     // Get final exam
