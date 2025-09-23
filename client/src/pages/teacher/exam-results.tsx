@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
+import { createDownloadLink } from "@/lib/cloudinary";
 import { 
   GraduationCap, 
   Eye, 
@@ -19,7 +20,8 @@ import {
   Filter,
   FileText,
   AlertCircle,
-  ChevronDown
+  ChevronDown,
+  Download
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { Helmet } from "react-helmet-async";
@@ -239,6 +241,12 @@ export default function TeacherExamResults() {
 
   // Get unique courses for filter
   const uniqueCourses = Array.from(new Set(results.map(r => r.courseSlug)));
+
+  const downloadAnswerFile = (answer: any) => {
+    if (typeof answer === 'object' && answer.type === 'file' && answer.content) {
+      createDownloadLink(answer.content, answer.fileName || 'answer-file');
+    }
+  };
 
   if (isLoading) {
     return (
@@ -570,34 +578,64 @@ export default function TeacherExamResults() {
                           </div>
                         </div>
                       ) : (
-                        <div className="space-y-2">
+                        <div className="space-y-4">
                           {qa.questionDocument && (
-                            <div className="mb-2">
-                              <p className="text-sm text-gray-600">Question Document:</p>
-                              <a 
-                                href={qa.questionDocument.url} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="text-blue-600 hover:underline flex items-center space-x-1"
-                              >
-                                <FileText className="h-4 w-4" />
-                                <span>{qa.questionDocument.title}</span>
-                              </a>
-                            </div>
-                          )}
-                          <div>
-                            <p className="text-sm text-gray-600 mb-1">Student Answer:</p>
-                            <div className="bg-gray-50 p-3 rounded border">
-                              {qa.studentAnswer ? (
-                                typeof qa.studentAnswer === 'string' ? (
-                                  <p className="whitespace-pre-wrap">{qa.studentAnswer}</p>
-                                ) : (
-                                  <p className="text-gray-500">File submission</p>
-                                )
-                              ) : (
-                                <p className="text-gray-500 italic">No answer provided</p>
+                            <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center">
+                                  <FileText className="h-4 w-4 mr-2 text-blue-600" />
+                                  <span className="font-medium">Question Document</span>
+                                </div>
+                                <a
+                                  href={qa.questionDocument.url}
+                                  download={qa.questionDocument.fileName}
+                                  className="text-blue-600 hover:text-blue-800 underline text-sm"
+                                >
+                                  <Download className="h-4 w-4 mr-1 inline" />
+                                  Download
+                                </a>
+                              </div>
+                              <div className="text-sm text-gray-600 mt-1">
+                                {qa.questionDocument.fileName}
+                              </div>
+                              {qa.questionDocument.title && (
+                                <div className="text-sm text-gray-700 mt-2">
+                                  {qa.questionDocument.title}
+                                </div>
                               )}
                             </div>
+                          )}
+                          
+                          <div className="p-4 bg-gray-50 rounded-lg">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="font-medium">Student Answer</span>
+                              {typeof qa.studentAnswer === 'object' && qa.studentAnswer.type === 'file' && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => downloadAnswerFile(qa.studentAnswer)}
+                                >
+                                  <Download className="h-4 w-4 mr-1" />
+                                  Download Answer
+                                </Button>
+                              )}
+                            </div>
+                            
+                            {typeof qa.studentAnswer === 'object' && qa.studentAnswer.type === 'file' ? (
+                              <div className="text-sm text-gray-600">
+                                File: {qa.studentAnswer.fileName}
+                              </div>
+                            ) : typeof qa.studentAnswer === 'object' && qa.studentAnswer.type === 'text' ? (
+                              <div className="text-sm">
+                                {qa.studentAnswer.content || 'No text answer provided'}
+                              </div>
+                            ) : typeof qa.studentAnswer === 'string' ? (
+                              <div className="text-sm whitespace-pre-wrap">
+                                {qa.studentAnswer}
+                              </div>
+                            ) : (
+                              <div className="text-sm text-gray-500">No answer provided</div>
+                            )}
                           </div>
                         </div>
                       )}

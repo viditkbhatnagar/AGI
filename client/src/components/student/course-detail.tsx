@@ -109,12 +109,6 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
   ArrowLeft,
   BookOpen,
   Check,
@@ -136,8 +130,7 @@ import {
   ArrowUp,
   ArrowDown,
   CalendarDays,
-  Loader2,
-  Info
+  Loader2
 } from "lucide-react";
 import { Link } from "wouter";
 import { Badge } from "@/components/ui/badge";
@@ -510,6 +503,12 @@ export function CourseDetail({ slug }: CourseDetailProps) {
     contentIndex?: number;
     content?: any;
   }>({ type: null });
+  // State for selected module to show description on right side
+  const [selectedModule, setSelectedModule] = useState<{
+    index: number;
+    title: string;
+    description?: string;
+  } | null>(null);
   // Inline notice for missing content
   const [notice, setNotice] = useState<string | null>(null);
   const noticeTimerRef = useRef<number | null>(null);
@@ -747,6 +746,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
     setSelectedVideoUrl(null);
     setSelectedDocUrl(null);
     setSelectedContent({ type: null });
+    setSelectedModule(null);
     setSelectedVideoIndex(0);
     lastSentRef.current = 0;
     setCurrentPage(1);
@@ -927,6 +927,13 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                           // Clear any open content when switching modules
                           clearAllContent();
                           
+                          // Set selected module for description display
+                          setSelectedModule({
+                            index: moduleIndex,
+                            title: module.title,
+                            description: module.description
+                          });
+                          
                           setExpanded(prev => {
                             const next = [...prev];
                             next[moduleIndex] = !next[moduleIndex];
@@ -942,27 +949,6 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                         <h3 className="font-medium text-gray-800">{module.title}</h3>
                       </div>
                       
-                      {/* Info button with tooltip - Always show for debugging */}
-                      {true && (
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button 
-                                className="ml-2 p-1 rounded-full hover:bg-gray-100 transition-colors"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <Info className="h-4 w-4 text-gray-500 hover:text-gray-700" />
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent 
-                              side="right" 
-                              className="max-w-xs p-3 text-sm"
-                            >
-                              <p>{module.description || 'No description available for this module.'}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      )}
                     </div>
                     
                     {expanded[moduleIndex] && (
@@ -1679,16 +1665,28 @@ export function CourseDetail({ slug }: CourseDetailProps) {
               </Card>
             )}
 
-            {/* Default Content - Updates and Announcements */}
+            {/* Default Content - Module Description or Updates */}
             {!selectedContent.type && !selectedVideoUrl && !selectedDocUrl && (
               <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
-                {/* Updates */}
+                {/* Module Description or Updates */}
                 <Card>
                   <div className="px-5 py-4 border-b border-gray-200">
-                    <h3 className="text-lg font-medium text-gray-800">Updates</h3>
+                    <h3 className="text-lg font-medium text-gray-800">
+                      {selectedModule ? `${selectedModule.title} - Module Description` : 'Updates'}
+                    </h3>
                   </div>
                   <CardContent className="p-5">
-                    <p className="text-gray-600">There are no current updates for {course?.title || 'My Course'}</p>
+                    {selectedModule ? (
+                      selectedModule.description ? (
+                        <div>
+                          <p className="text-gray-800 whitespace-pre-wrap">{selectedModule.description}</p>
+                        </div>
+                      ) : (
+                        <p className="text-gray-600">No description available for {selectedModule.title}</p>
+                      )
+                    ) : (
+                      <p className="text-gray-600">There are no current updates for {course?.title || 'My Course'}</p>
+                    )}
                   </CardContent>
                 </Card>
 
