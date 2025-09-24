@@ -48,6 +48,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/student/notify-settings", auth, requireStudent, studentController.updateNotifySettings);
   app.get("/api/student/courses", auth, requireStudent, studentController.getCourses);
   app.get("/api/student/courses/:slug", auth, requireStudent, studentController.getCourseDetail);
+  
+  // STUDENT FINAL EXAMINATIONS ROUTES
+  app.get("/api/student/final-examinations", auth, requireStudent, studentController.getStudentFinalExaminations);
+  app.get("/api/student/final-exam/:courseSlug/attempt/:attemptNumber", auth, requireStudent, studentController.getStudentAttemptDetails);
 
   // CONTACT FORM ROUTE
   app.post("/api/contact", auth, requireStudent, contactController.submitContactForm);
@@ -86,6 +90,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/teacher/exam-results", auth, requireTeacher, teacherController.getTeacherExamResults);
   app.get("/api/teacher/exam-results/:studentId/:courseSlug/:attemptNumber", auth, requireTeacher, teacherController.getTeacherExamSubmission);
   app.post("/api/teacher/exam-results/update-score", auth, requireTeacher, teacherController.updateTeacherExamScore);
+  app.post("/api/teacher/exam-results/update-feedback", auth, requireTeacher, teacherController.updateTeacherExamFeedback);
 
   // TEACHER MANAGEMENT ROUTES (Admin only)
   app.get("/api/admin/teachers", auth, requireAdminAccess, teacherController.getAllTeachers);

@@ -25,9 +25,10 @@ interface NavLink {
 }
 
 const STUDENT_LINKS: NavLink[] = [
-  { label: "Overview",     href: "/student" },
-  { label: "My Courses",   href: "/student/courses" },
-  { label: "Feedback",     href: "/student/feedback" },
+  { label: "Overview",         href: "/student" },
+  { label: "My Courses",       href: "/student/courses" },
+  { label: "Final Examinations", href: "/student/final-examinations" },
+  { label: "Feedback",         href: "/student/feedback" },
 ];
 
 const TEACHER_LINKS: NavLink[] = [

@@ -26,6 +26,7 @@ interface IFinalExamAttempt {
   answers?: any[];
   gradedBy?: string;
   gradedAt?: Date;
+  feedback?: string; // Teacher/Admin feedback for this attempt (max 2000 chars)
 }
 
 export interface IEnrollment {
@@ -84,7 +85,8 @@ const EnrollmentSchema = new Schema<IEnrollmentDocument>({
     requiresManualGrading: { type: Boolean, default: false },
     answers: [{ type: Schema.Types.Mixed }],
     gradedBy: { type: String },
-    gradedAt: { type: Date }
+    gradedAt: { type: Date },
+    feedback: { type: String, maxlength: 2000 } // Teacher/Admin feedback (max 2000 chars)
   }]
 }, { timestamps: true });
 

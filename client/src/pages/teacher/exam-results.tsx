@@ -1,5 +1,5 @@
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,11 +21,12 @@ import {
   FileText,
   AlertCircle,
   ChevronDown,
-  Download
+  Download,
+  XCircle
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { Helmet } from "react-helmet-async";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 interface StudentExamResult {
   studentId: string;
@@ -108,24 +109,17 @@ export default function TeacherExamResults() {
   const [selectedResult, setSelectedResult] = useState<StudentExamResult | null>(null);
   const [newScore, setNewScore] = useState('');
   const [newPassed, setNewPassed] = useState<boolean>(false);
+  const [newFeedback, setNewFeedback] = useState('');
+  const [showFeedbackDialog, setShowFeedbackDialog] = useState(false);
+  const [editingFeedback, setEditingFeedback] = useState('');
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: examResults = [], isError } = useQuery<StudentExamResult[]>({
     queryKey: ['/api/teacher/exam-results'],
   });
 
-  useEffect(() => {
-    if (examResults) {
-      setResults(examResults);
-      setIsLoading(false);
-    }
-  }, [examResults]);
-
-  useEffect(() => {
-    filterResults();
-  }, [results, searchQuery, courseFilter, statusFilter]);
-
-  const filterResults = () => {
+  const filterResults = useCallback(() => {
     let filtered = [...results];
 
     // Search filter
@@ -165,7 +159,18 @@ export default function TeacherExamResults() {
     }
 
     setFilteredResults(filtered);
-  };
+  }, [results, searchQuery, courseFilter, statusFilter]);
+
+  useEffect(() => {
+    if (examResults) {
+      setResults(examResults);
+      setIsLoading(false);
+    }
+  }, [examResults]);
+
+  useEffect(() => {
+    filterResults();
+  }, [filterResults]);
 
   const viewSubmissionByAttempt = async (result: StudentExamResult, attemptNumber: number) => {
     try {
@@ -196,6 +201,7 @@ export default function TeacherExamResults() {
     setSelectedResult(result);
     setNewScore(result.latestAttempt?.score?.toString() || '');
     setNewPassed(result.latestAttempt?.passed || false);
+    setNewFeedback(result.latestAttempt?.feedback || '');
     setShowScoreDialog(true);
   };
 
@@ -215,7 +221,8 @@ export default function TeacherExamResults() {
           courseSlug: selectedResult.courseSlug,
           attemptNumber: selectedResult.latestAttempt.attemptNumber,
           score: parseInt(newScore),
-          passed: newPassed
+          passed: newPassed,
+          feedback: newFeedback
         })
       });
 
@@ -245,6 +252,97 @@ export default function TeacherExamResults() {
   const downloadAnswerFile = (answer: any) => {
     if (typeof answer === 'object' && answer.type === 'file' && answer.content) {
       createDownloadLink(answer.content, answer.fileName || 'answer-file');
+    }
+  };
+
+  const openFeedbackDialog = (result: StudentExamResult) => {
+    setSelectedResult(result);
+    setEditingFeedback(result.latestAttempt?.feedback || '');
+    setShowFeedbackDialog(true);
+  };
+
+  const saveFeedback = async () => {
+    if (!selectedResult?.latestAttempt) return;
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/teacher/exam-results/update-feedback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` })
+        },
+        body: JSON.stringify({
+          studentId: selectedResult.studentId,
+          courseSlug: selectedResult.courseSlug,
+          attemptNumber: selectedResult.latestAttempt.attemptNumber,
+          feedback: editingFeedback.trim() || null
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.text();
+        throw new Error(`Failed to update feedback: ${response.status} ${errorData}`);
+      }
+
+      toast({
+        title: 'Success',
+        description: editingFeedback.trim() ? 'Feedback updated successfully' : 'Feedback deleted successfully'
+      });
+
+      setShowFeedbackDialog(false);
+      // Refresh the data without page reload
+      await queryClient.invalidateQueries({ queryKey: ['/api/teacher/exam-results'] });
+    } catch (error) {
+      console.error('Error updating feedback:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to update feedback',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  const deleteFeedback = async (result: StudentExamResult) => {
+    if (!result.latestAttempt || !result.latestAttempt.feedback) return;
+
+    if (!confirm('Are you sure you want to delete this feedback?')) return;
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/teacher/exam-results/update-feedback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` })
+        },
+        body: JSON.stringify({
+          studentId: result.studentId,
+          courseSlug: result.courseSlug,
+          attemptNumber: result.latestAttempt.attemptNumber,
+          feedback: null
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.text();
+        throw new Error(`Failed to delete feedback: ${response.status} ${errorData}`);
+      }
+
+      toast({
+        title: 'Success',
+        description: 'Feedback deleted successfully'
+      });
+
+      // Refresh the data without page reload
+      await queryClient.invalidateQueries({ queryKey: ['/api/teacher/exam-results'] });
+    } catch (error) {
+      console.error('Error deleting feedback:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to delete feedback',
+        variant: 'destructive'
+      });
     }
   };
 
@@ -357,6 +455,7 @@ export default function TeacherExamResults() {
                       <TableHead>Status</TableHead>
                       <TableHead>Score</TableHead>
                       <TableHead>Submitted</TableHead>
+                      <TableHead>Feedback</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -421,6 +520,47 @@ export default function TeacherExamResults() {
                             </div>
                           ) : (
                             <span className="text-gray-400">No attempts</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {result.latestAttempt?.feedback ? (
+                            <div className="max-w-xs group">
+                              <div className="flex items-center space-x-2">
+                                <p className="text-xs text-gray-600 truncate flex-1" title={result.latestAttempt.feedback}>
+                                  {result.latestAttempt.feedback}
+                                </p>
+                                <div className="opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => openFeedbackDialog(result)}
+                                    className="h-6 w-6 p-0"
+                                    title="Edit feedback"
+                                  >
+                                    <Edit className="h-3 w-3" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => deleteFeedback(result)}
+                                    className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                                    title="Delete feedback"
+                                  >
+                                    <XCircle className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => openFeedbackDialog(result)}
+                              className="text-xs text-gray-400 hover:text-blue-600 p-1 h-auto"
+                            >
+                              <Edit className="h-3 w-3 mr-1" />
+                              Add feedback
+                            </Button>
                           )}
                         </TableCell>
                         <TableCell>
@@ -678,6 +818,21 @@ export default function TeacherExamResults() {
                     />
                   </div>
 
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Feedback (Optional)</label>
+                    <textarea
+                      className="w-full p-3 border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      rows={4}
+                      maxLength={2000}
+                      value={newFeedback}
+                      onChange={(e) => setNewFeedback(e.target.value)}
+                      placeholder="Provide feedback for the student (max 2000 characters)"
+                    />
+                    <div className="text-xs text-gray-500 mt-1">
+                      {newFeedback.length}/2000 characters
+                    </div>
+                  </div>
+
                   <div className="flex items-center space-x-2">
                     <input
                       type="checkbox"
@@ -703,6 +858,102 @@ export default function TeacherExamResults() {
                       disabled={!newScore || isNaN(parseInt(newScore))}
                     >
                       Update Score
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Feedback Edit Dialog */}
+        <Dialog open={showFeedbackDialog} onOpenChange={setShowFeedbackDialog}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Edit Feedback</DialogTitle>
+            </DialogHeader>
+            
+            {selectedResult && (
+              <div className="space-y-4">
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <div className="text-sm text-gray-500">Student</div>
+                      <div className="font-medium">{selectedResult.studentName}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-500">Course</div>
+                      <div className="font-medium">{selectedResult.courseSlug}</div>
+                    </div>
+                  </div>
+                  <div className="mt-2">
+                    <div className="text-sm text-gray-500">Latest Attempt</div>
+                    <div className="font-medium">
+                      #{selectedResult.latestAttempt?.attemptNumber} - {selectedResult.latestAttempt?.score}%
+                      {selectedResult.latestAttempt?.passed ? ' (Passed)' : ' (Failed)'}
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Feedback for Student
+                    <span className="text-gray-500 text-xs ml-1">(Optional)</span>
+                  </label>
+                  <textarea
+                    className="w-full p-3 border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    rows={6}
+                    maxLength={2000}
+                    value={editingFeedback}
+                    onChange={(e) => setEditingFeedback(e.target.value)}
+                    placeholder="Provide detailed feedback about the student's performance, areas for improvement, or commendation for good work..."
+                  />
+                  <div className="flex items-center justify-between mt-1">
+                    <div className="text-xs text-gray-500">
+                      {editingFeedback.length}/2000 characters
+                    </div>
+                    {selectedResult.latestAttempt?.feedback && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setEditingFeedback('')}
+                        className="text-xs"
+                      >
+                        Clear
+                      </Button>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex justify-between pt-4">
+                  <div>
+                    {selectedResult.latestAttempt?.feedback && (
+                      <Button 
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => {
+                          if (confirm('Are you sure you want to delete this feedback?')) {
+                            deleteFeedback(selectedResult);
+                            setShowFeedbackDialog(false);
+                          }
+                        }}
+                      >
+                        Delete Feedback
+                      </Button>
+                    )}
+                  </div>
+                  <div className="space-x-2">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setShowFeedbackDialog(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      onClick={saveFeedback}
+                      disabled={editingFeedback.length > 2000}
+                    >
+                      {selectedResult.latestAttempt?.feedback ? 'Update Feedback' : 'Add Feedback'}
                     </Button>
                   </div>
                 </div>

@@ -274,6 +274,7 @@ export type FinalExamAttempt = {
   requiresManualGrading: boolean;
   gradedBy?: string; // Admin who graded this attempt
   gradedAt?: string; // When it was graded
+  feedback?: string; // Teacher/Admin feedback for this attempt (max 2000 chars)
 };
 
 // Final Exam Question Types

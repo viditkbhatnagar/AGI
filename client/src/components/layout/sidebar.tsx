@@ -199,6 +199,13 @@ export function Sidebar({ className, isMobile, onClose }: SidebarProps) {
               onClick={handleLinkClick}
             />
             <NavItem 
+              href="/student/final-examinations" 
+              icon={<GraduationCap className="h-4 w-4 md:h-5 md:w-5" />} 
+              label="Final Examinations" 
+              isActive={isActive('/student/final-examinations')} 
+              onClick={handleLinkClick}
+            />
+            <NavItem 
               href="/student/feedback" 
               icon={<MessageSquare className="h-4 w-4 md:h-5 md:w-5" />} 
               label="Feedback" 

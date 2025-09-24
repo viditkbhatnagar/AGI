@@ -3,6 +3,7 @@ import { Student } from '../models/student';
 import { Course } from '../models/course';
 import { Enrollment } from '../models/enrollment';
 import { LiveClass } from '../models/liveclass';
+import FinalExamination from '../models/finalExamination';
 import mongoose from 'mongoose';
 import Quiz from '../models/quiz';
 import { Description } from '@radix-ui/react-toast';
@@ -84,7 +85,7 @@ export const getDashboard = async (req: Request, res: Response) => {
               )[0].score
           : null;
         const avgQuizScore = quizAttempts > 0
-          ? Math.max(...moduleAttempts.map(a => a.score))
+          ? Math.max(...moduleAttempts.map(a => a.score || 0))
           : 0;
 
         // Final completion percentage
@@ -149,7 +150,7 @@ export const getDashboard = async (req: Request, res: Response) => {
       canAttempt: canAttemptFinalExam,
       attempts: finalExamAttempts.length,
       maxAttempts: finalExam?.maxAttempts || 3,
-      bestScore: finalExamAttempts.length > 0 ? Math.max(...finalExamAttempts.map(a => a.score)) : null,
+      bestScore: finalExamAttempts.length > 0 ? Math.max(...finalExamAttempts.map(a => a.score || 0)) : null,
       passed: finalExamAttempts.some(a => a.passed)
     };
 
@@ -283,7 +284,7 @@ export const getDashboard = async (req: Request, res: Response) => {
       finalExamScores: finalExamAttempts.map(a => ({
         score: a.score,
         maxScore: a.maxScore,
-        percentage: Math.round((a.score / a.maxScore) * 100),
+        percentage: Math.round(((a.score || 0) / a.maxScore) * 100),
         passed: a.passed,
         attemptedAt: a.attemptedAt,
         attemptNumber: a.attemptNumber
@@ -347,7 +348,7 @@ export const getDashboardByCourse = async (req: Request, res: Response) => {
         const lastQuizScore = quizAttempts
           ? moduleAttempts.sort((a, b) => (b.attemptedAt as any) - (a.attemptedAt as any))[0].score
           : null;
-        const avgQuizScore = quizAttempts > 0 ? Math.max(...moduleAttempts.map(a => a.score)) : 0;
+        const avgQuizScore = quizAttempts > 0 ? Math.max(...moduleAttempts.map(a => a.score || 0)) : 0;
 
         const percentComplete = Math.round((percentWatched + percentViewed + quizPercent) / 3);
         let quiz: any = null;
@@ -415,7 +416,7 @@ export const getDashboardByCourse = async (req: Request, res: Response) => {
       canAttempt: canAttemptFinalExam,
       attempts: finalExamAttempts.length,
       maxAttempts: finalExam?.maxAttempts || 3,
-      bestScore: finalExamAttempts.length > 0 ? Math.max(...finalExamAttempts.map(a => a.score)) : null,
+      bestScore: finalExamAttempts.length > 0 ? Math.max(...finalExamAttempts.map(a => a.score || 0)) : null,
       passed: finalExamAttempts.some(a => a.passed)
     };
 
@@ -506,7 +507,7 @@ export const getDashboardByCourse = async (req: Request, res: Response) => {
       finalExamScores: finalExamAttempts.map(a => ({
         score: a.score,
         maxScore: a.maxScore,
-        percentage: Math.round((a.score / a.maxScore) * 100),
+        percentage: Math.round(((a.score || 0) / a.maxScore) * 100),
         passed: a.passed,
         attemptedAt: a.attemptedAt,
         attemptNumber: a.attemptNumber
@@ -865,7 +866,7 @@ export const getCourseDetail = async (req: Request, res: Response) => {
               )[0].score
           : null;
         const avgQuizScore = quizAttempts > 0
-          ? Math.max(...moduleAttempts.map((a: any) => a.score))
+          ? Math.max(...moduleAttempts.map((a: any) => a.score || 0))
           : 0;
 
         // Final completion percentage
@@ -942,6 +943,166 @@ export const getCourseDetail = async (req: Request, res: Response) => {
   }
 };
 
+// Get student's final examinations overview
+export const getStudentFinalExaminations = async (req: Request, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Not authenticated' });
+    }
+
+    // Find student
+    const student = await Student.findOne({ userId: req.user.id });
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    // Get all enrollments for the student
+    const enrollments = await Enrollment.find({ studentId: student._id });
+    
+    // Get course information
+    const courseSlugs = enrollments.map(e => e.courseSlug);
+    const courses = await Course.find({ slug: { $in: courseSlugs } });
+    const courseMap = new Map(courses.map(c => [c.slug, c]));
+
+    // Get final examinations
+    const finalExams = await FinalExamination.find({ courseSlug: { $in: courseSlugs } });
+    const examMap = new Map(finalExams.map((e: any) => [e.courseSlug, e]));
+
+    // Build final examination data for each enrollment
+    const examinations = enrollments.map(enrollment => {
+      const course = courseMap.get(enrollment.courseSlug);
+      const finalExam = examMap.get(enrollment.courseSlug);
+      const attempts = enrollment.finalExamAttempts || [];
+      
+      // Sort attempts by latest first
+      const sortedAttempts = attempts
+        .sort((a, b) => new Date(b.attemptedAt).getTime() - new Date(a.attemptedAt).getTime())
+        .map(attempt => ({
+          attemptNumber: attempt.attemptNumber,
+          score: attempt.score,
+          passed: attempt.passed,
+          attemptedAt: attempt.attemptedAt,
+          requiresManualGrading: attempt.requiresManualGrading || false,
+          gradedBy: attempt.gradedBy,
+          gradedAt: attempt.gradedAt,
+          feedback: attempt.feedback
+        }));
+
+      // Determine exam type
+      let finalExamType = null;
+      if (finalExam) {
+        const hasEssay = (finalExam as any).questions.some((q: any) => q.type === 'essay');
+        const hasMcq = (finalExam as any).questions.some((q: any) => q.type === 'mcq');
+        
+        if (hasEssay && hasMcq) finalExamType = 'mixed';
+        else if (hasEssay) finalExamType = 'essay';
+        else if (hasMcq) finalExamType = 'mcq';
+      }
+
+      // Check if student can attempt (enrollment valid and attempts remaining)
+      const canAttempt = enrollment.validUntil > new Date() && 
+                        (!finalExam || attempts.length < ((finalExam as any).maxAttempts || 3));
+
+      return {
+        courseSlug: enrollment.courseSlug,
+        courseName: course?.title || enrollment.courseSlug,
+        examTitle: (finalExam as any)?.title || 'Final Examination',
+        hasFinalExam: !!finalExam,
+        finalExamType,
+        attempts: sortedAttempts,
+        totalAttempts: attempts.length,
+        maxAttempts: (finalExam as any)?.maxAttempts || 3,
+        passingScore: (finalExam as any)?.passingScore || 70,
+        canAttempt,
+        enrollmentValid: enrollment.validUntil > new Date()
+      };
+    });
+
+    res.json(examinations);
+  } catch (error) {
+    console.error('Get student final examinations error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Get specific attempt details for student
+export const getStudentAttemptDetails = async (req: Request, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Not authenticated' });
+    }
+
+    const { courseSlug, attemptNumber } = req.params;
+
+    // Find student
+    const student = await Student.findOne({ userId: req.user.id });
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    // Find enrollment
+    const enrollment = await Enrollment.findOne({
+      studentId: student._id,
+      courseSlug
+    });
+
+    if (!enrollment) {
+      return res.status(404).json({ message: 'Enrollment not found' });
+    }
+
+    // Find the specific attempt
+    const attempts = enrollment.finalExamAttempts || [];
+    const attempt = attempts.find(a => a.attemptNumber === parseInt(attemptNumber));
+
+    if (!attempt) {
+      return res.status(404).json({ message: 'Exam attempt not found' });
+    }
+
+    // Get the final exam for question details
+    const finalExam = await FinalExamination.findOne({ courseSlug });
+    if (!finalExam) {
+      return res.status(404).json({ message: 'Final exam not found' });
+    }
+
+    // Prepare detailed attempt view
+    const attemptDetails = {
+      attemptNumber: attempt.attemptNumber,
+      score: attempt.score,
+      passed: attempt.passed,
+      attemptedAt: attempt.attemptedAt,
+      requiresManualGrading: attempt.requiresManualGrading || false,
+      gradedBy: attempt.gradedBy,
+      gradedAt: attempt.gradedAt,
+      feedback: attempt.feedback,
+      questionsAndAnswers: (finalExam as any).questions.map((question: any, index: number) => {
+        const answer = attempt.answers?.[index];
+        
+        if (question.type === 'mcq') {
+          return {
+            type: 'mcq',
+            questionText: question.text,
+            choices: question.choices,
+            correctIndex: question.correctIndex,
+            studentAnswer: answer,
+            isCorrect: answer === question.correctIndex
+          };
+        } else {
+          return {
+            type: 'essay',
+            questionDocument: question.questionDocument,
+            studentAnswer: answer
+          };
+        }
+      })
+    };
+
+    res.json(attemptDetails);
+  } catch (error) {
+    console.error('Get student attempt details error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 // Helper function to format watch time from seconds to hours and minutes
 function formatWatchTime(seconds: number): string {
   const hours = Math.floor(seconds / 3600);
@@ -1011,7 +1172,7 @@ export const submitQuizAttempt = async (req: Request, res: Response) => {
 
     // Record the student's quiz attempt on the enrollment
     enrollment.quizAttempts.push({
-      quizId: quiz._id.toString(),
+      quizId: (quiz._id as mongoose.Types.ObjectId).toString(),
       score,
       maxScore: quiz.questions.length,
       attemptedAt: new Date(),

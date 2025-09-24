@@ -267,7 +267,8 @@ export const getTeacherExamResults = async (req: Request, res: Response) => {
           essayTotal: finalExam ? (finalExam as any).questions.filter((q: any) => q.type === 'essay').length : 0,
           answers: latestAttempt.answers || [],
           gradedBy: latestAttempt.gradedBy,
-          gradedAt: latestAttempt.gradedAt
+          gradedAt: latestAttempt.gradedAt,
+          feedback: latestAttempt.feedback
         } : null,
         allAttempts: finalExamAttempts.map(attempt => ({
           attemptNumber: attempt.attemptNumber,
@@ -276,7 +277,8 @@ export const getTeacherExamResults = async (req: Request, res: Response) => {
           attemptedAt: attempt.attemptedAt,
           requiresManualGrading: attempt.requiresManualGrading || false,
           gradedBy: attempt.gradedBy,
-          gradedAt: attempt.gradedAt
+          gradedAt: attempt.gradedAt,
+          feedback: attempt.feedback
         })),
         totalAttempts: finalExamAttempts.length
       });
@@ -394,7 +396,7 @@ export const updateTeacherExamScore = async (req: Request, res: Response) => {
       return res.status(401).json({ message: 'Not authenticated' });
     }
 
-    const { studentId, courseSlug, attemptNumber, score, passed } = req.body;
+    const { studentId, courseSlug, attemptNumber, score, passed, feedback } = req.body;
     const teacherId = new mongoose.Types.ObjectId(req.user.id);
     const teacher = await User.findById(teacherId);
     
@@ -433,6 +435,9 @@ export const updateTeacherExamScore = async (req: Request, res: Response) => {
     attempts[attemptIndex].requiresManualGrading = false;
     attempts[attemptIndex].gradedBy = teacher.username;
     attempts[attemptIndex].gradedAt = new Date();
+    if (feedback !== undefined) {
+      attempts[attemptIndex].feedback = feedback;
+    }
 
     enrollment.finalExamAttempts = attempts;
     await enrollment.save();
@@ -443,6 +448,57 @@ export const updateTeacherExamScore = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Update teacher exam score error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Update exam feedback only (teacher)
+export const updateTeacherExamFeedback = async (req: Request, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Not authenticated' });
+    }
+
+    const { studentId, courseSlug, attemptNumber, feedback } = req.body;
+    const teacherId = new mongoose.Types.ObjectId(req.user.id);
+    const teacher = await User.findById(teacherId);
+    
+    if (!teacher) {
+      return res.status(404).json({ message: 'Teacher not found' });
+    }
+
+    // Verify teacher is assigned to this course
+    const assignment = await TeacherAssignment.findOne({ teacherId, courseSlug });
+    if (!assignment) {
+      return res.status(403).json({ message: 'Not authorized to grade this course' });
+    }
+
+    // Find the enrollment
+    const enrollment = await Enrollment.findOne({ studentId, courseSlug });
+    if (!enrollment) {
+      return res.status(404).json({ message: 'Enrollment not found' });
+    }
+
+    // Find and update the specific attempt
+    const attempts = enrollment.finalExamAttempts || [];
+    const attemptIndex = attempts.findIndex(a => a.attemptNumber === attemptNumber);
+    
+    if (attemptIndex === -1) {
+      return res.status(404).json({ message: 'Exam attempt not found' });
+    }
+
+    // Update only the feedback
+    attempts[attemptIndex].feedback = feedback || undefined;
+
+    enrollment.finalExamAttempts = attempts;
+    await enrollment.save();
+
+    res.status(200).json({ 
+      message: feedback ? 'Feedback updated successfully' : 'Feedback deleted successfully',
+      updatedAttempt: attempts[attemptIndex]
+    });
+  } catch (error) {
+    console.error('Update teacher exam feedback error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };

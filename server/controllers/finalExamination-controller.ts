@@ -403,7 +403,8 @@ export const getAllStudentExamResults = async (req: Request, res: Response) => {
           essayTotal: finalExam ? finalExam.questions.filter((q: any) => q.type === 'essay').length : 0,
           answers: latestAttempt.answers || [],
           gradedBy: latestAttempt.gradedBy,
-          gradedAt: latestAttempt.gradedAt
+          gradedAt: latestAttempt.gradedAt,
+          feedback: latestAttempt.feedback
         } : null,
         allAttempts: finalExamAttempts.map(attempt => ({
           attemptNumber: attempt.attemptNumber,
@@ -412,7 +413,8 @@ export const getAllStudentExamResults = async (req: Request, res: Response) => {
           attemptedAt: attempt.attemptedAt,
           requiresManualGrading: attempt.requiresManualGrading || false,
           gradedBy: attempt.gradedBy,
-          gradedAt: attempt.gradedAt
+          gradedAt: attempt.gradedAt,
+          feedback: attempt.feedback
         })),
         totalAttempts: finalExamAttempts.length
       };
@@ -428,7 +430,7 @@ export const getAllStudentExamResults = async (req: Request, res: Response) => {
 // Admin: Update student exam score
 export const updateStudentExamScore = async (req: Request, res: Response) => {
   try {
-    const { studentId, courseSlug, attemptNumber, score, passed } = req.body;
+    const { studentId, courseSlug, attemptNumber, score, passed, feedback } = req.body;
 
     if (!req.user) {
       return res.status(401).json({ message: 'Not authenticated' });
@@ -457,6 +459,9 @@ export const updateStudentExamScore = async (req: Request, res: Response) => {
     attempts[attemptIndex].passed = passed;
     attempts[attemptIndex].gradedBy = req.user.username || req.user.email;
     attempts[attemptIndex].gradedAt = new Date();
+    if (feedback !== undefined) {
+      attempts[attemptIndex].feedback = feedback;
+    }
 
     enrollment.finalExamAttempts = attempts;
     await enrollment.save();

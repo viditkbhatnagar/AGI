@@ -25,6 +25,9 @@ export interface IFinalExamination extends Document {
   title: string;
   description?: string;
   questions: IFinalExamQuestion[];
+  passingScore: number;
+  maxAttempts: number;
+  isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -42,6 +45,21 @@ const FinalExaminationSchema = new Schema<IFinalExamination>({
   },
   description: { 
     type: String 
+  },
+  passingScore: {
+    type: Number,
+    required: true,
+    default: 70
+  },
+  maxAttempts: {
+    type: Number,
+    required: true,
+    default: 3
+  },
+  isActive: {
+    type: Boolean,
+    required: true,
+    default: true
   },
   questions: [{
     type: {
