@@ -1,20 +1,35 @@
 // server/utils/mailer.ts
-import * as SendinBlue from "@sendinblue/client";
+import nodemailer from 'nodemailer';
 
-const defaultClient = SendinBlue.ApiClient.instance;
-const apiKeyAuth = defaultClient.authentications["api-key"] as SendinBlue.ApiKeyAuth;
-apiKeyAuth.apiKey = process.env.SENDINBLUE_API_KEY as string;  // put your key in .env
+// Helper function to create email transporter (same as existing controllers)
+const createEmailTransporter = () => {
+  return nodemailer.createTransporter({
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT),
+    secure: process.env.SMTP_SECURE === 'true',
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+};
 
 export async function sendEmail(
   to: { email: string; name?: string }[],
   subject: string,
   htmlContent: string
 ) {
-  const api = new SendinBlue.TransactionalEmailsApi();
-  return api.sendTransacEmail({
-    subject,
-    htmlContent,
-    sender: { name: "American Global Institute", email: "no-reply@agi.online" },
-    to,
-  });
+  const transporter = createEmailTransporter();
+  
+  // Send to each recipient (following the pattern from live class controller)
+  const emailPromises = to.map(recipient => 
+    transporter.sendMail({
+      from: process.env.SMTP_FROM || '"American Global Institute" <no-reply@agi.online>',
+      to: recipient.name ? `"${recipient.name}" <${recipient.email}>` : recipient.email,
+      subject,
+      html: htmlContent,
+    })
+  );
+
+  return Promise.all(emailPromises);
 }
