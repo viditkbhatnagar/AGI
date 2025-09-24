@@ -3,6 +3,10 @@ import FinalExamination from '../models/finalExamination';
 import { Course } from '../models/course';
 import { Enrollment } from '../models/enrollment';
 import { Student } from '../models/student';
+import { TeacherAssignment } from '../models/teacher-assignment';
+import { User } from '../models/user';
+import { sendEmail } from '../utils/mailer';
+import { renderFinalExamSubmissionNotificationHtml, renderFinalExamGradingNotificationHtml } from '../utils/emailTemplates';
 import mongoose from 'mongoose';
 
 // Admin: Create or update final examination for a course
@@ -285,6 +289,39 @@ export const submitFinalExamAttempt = async (req: Request, res: Response) => {
       })
     };
     
+    // Send email notification to assigned teacher(s)
+    try {
+      const teacherAssignments = await TeacherAssignment.find({ courseSlug }).populate('teacherId');
+      const course = await Course.findOne({ slug: courseSlug });
+      
+      for (const assignment of teacherAssignments) {
+        const teacher = assignment.teacherId as any; // Type assertion for populated document
+        if (teacher && teacher.email) {
+          const dashboardUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+          const emailHtml = renderFinalExamSubmissionNotificationHtml({
+            teacherName: teacher.username || teacher.email,
+            studentName: student.name,
+            courseTitle: course?.title || courseSlug,
+            courseSlug,
+            examTitle: finalExam.title,
+            submissionDate: new Date(),
+            attemptNumber: attemptCount + 1,
+            requiresManualGrading,
+            dashboardUrl
+          });
+          
+          await sendEmail(
+            [{ email: teacher.email, name: teacher.username }],
+            `Final Exam Submission - ${student.name}`,
+            emailHtml
+          );
+        }
+      }
+    } catch (emailError) {
+      console.error('Failed to send email notification to teacher(s):', emailError);
+      // Don't fail the entire request if email fails
+    }
+    
     res.status(200).json(results);
   } catch (error) {
     console.error('Submit final exam attempt error:', error);
@@ -465,6 +502,42 @@ export const updateStudentExamScore = async (req: Request, res: Response) => {
 
     enrollment.finalExamAttempts = attempts;
     await enrollment.save();
+
+    // Send email notification to student about grading
+    try {
+      const studentUser = await User.findById((enrollment.studentId as any).userId);
+      const course = await Course.findOne({ slug: courseSlug });
+      const finalExam = await FinalExamination.findOne({ courseSlug });
+      
+      if (studentUser && studentUser.email && finalExam) {
+        const dashboardUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+        const gradedAttempt = attempts[attemptIndex];
+        
+        const emailHtml = renderFinalExamGradingNotificationHtml({
+          studentName: studentUser.username || studentUser.email,
+          courseTitle: course?.title || courseSlug,
+          courseSlug,
+          examTitle: finalExam.title,
+          score: gradedAttempt.score || 0,
+          maxScore: gradedAttempt.maxScore,
+          passed: gradedAttempt.passed || false,
+          teacherName: req.user.username || req.user.email || 'Administrator',
+          feedback: gradedAttempt.feedback,
+          gradedDate: gradedAttempt.gradedAt || new Date(),
+          attemptNumber: gradedAttempt.attemptNumber,
+          dashboardUrl
+        });
+        
+        await sendEmail(
+          [{ email: studentUser.email, name: studentUser.username }],
+          `Final Exam Graded - ${finalExam.title}`,
+          emailHtml
+        );
+      }
+    } catch (emailError) {
+      console.error('Failed to send grading notification email to student:', emailError);
+      // Don't fail the entire request if email fails
+    }
 
     res.status(200).json({ 
       message: 'Score updated successfully',

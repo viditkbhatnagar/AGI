@@ -7,6 +7,8 @@ import { Enrollment } from '../models/enrollment';
 import { LiveClass } from '../models/liveclass';
 import { Recording } from '../models/recording';
 import FinalExamination from '../models/finalExamination';
+import { sendEmail } from '../utils/mailer';
+import { renderFinalExamGradingNotificationHtml } from '../utils/emailTemplates';
 import mongoose from 'mongoose';
 
 // Get teacher dashboard data
@@ -442,6 +444,42 @@ export const updateTeacherExamScore = async (req: Request, res: Response) => {
     enrollment.finalExamAttempts = attempts;
     await enrollment.save();
 
+    // Send email notification to student about grading
+    try {
+      const studentUser = await User.findById((enrollment.studentId as any).userId);
+      const course = await Course.findOne({ slug: courseSlug });
+      const finalExam = await FinalExamination.findOne({ courseSlug });
+      
+      if (studentUser && studentUser.email && finalExam) {
+        const dashboardUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+        const gradedAttempt = attempts[attemptIndex];
+        
+        const emailHtml = renderFinalExamGradingNotificationHtml({
+          studentName: studentUser.username || studentUser.email,
+          courseTitle: course?.title || courseSlug,
+          courseSlug,
+          examTitle: finalExam.title,
+          score: gradedAttempt.score || 0,
+          maxScore: gradedAttempt.maxScore,
+          passed: gradedAttempt.passed || false,
+          teacherName: teacher.name || teacher.username || teacher.email,
+          feedback: gradedAttempt.feedback,
+          gradedDate: gradedAttempt.gradedAt || new Date(),
+          attemptNumber: gradedAttempt.attemptNumber,
+          dashboardUrl
+        });
+        
+        await sendEmail(
+          [{ email: studentUser.email, name: studentUser.username }],
+          `Final Exam Graded - ${finalExam.title}`,
+          emailHtml
+        );
+      }
+    } catch (emailError) {
+      console.error('Failed to send grading notification email to student:', emailError);
+      // Don't fail the entire request if email fails
+    }
+
     res.status(200).json({ 
       message: 'Score updated successfully',
       updatedAttempt: attempts[attemptIndex]
@@ -492,6 +530,44 @@ export const updateTeacherExamFeedback = async (req: Request, res: Response) => 
 
     enrollment.finalExamAttempts = attempts;
     await enrollment.save();
+
+    // Send email notification to student about feedback (only when feedback is added/updated, not deleted)
+    if (feedback && feedback.trim()) {
+      try {
+        const studentUser = await User.findById((enrollment.studentId as any).userId);
+        const course = await Course.findOne({ slug: courseSlug });
+        const finalExam = await FinalExamination.findOne({ courseSlug });
+        
+        if (studentUser && studentUser.email && finalExam) {
+          const dashboardUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+          const gradedAttempt = attempts[attemptIndex];
+          
+          const emailHtml = renderFinalExamGradingNotificationHtml({
+            studentName: studentUser.username || studentUser.email,
+            courseTitle: course?.title || courseSlug,
+            courseSlug,
+            examTitle: finalExam.title,
+            score: gradedAttempt.score || 0,
+            maxScore: gradedAttempt.maxScore,
+            passed: gradedAttempt.passed || false,
+            teacherName: teacher.username || teacher.email,
+            feedback: gradedAttempt.feedback,
+            gradedDate: gradedAttempt.gradedAt || new Date(),
+            attemptNumber: gradedAttempt.attemptNumber,
+            dashboardUrl
+          });
+          
+          await sendEmail(
+            [{ email: studentUser.email, name: studentUser.username }],
+            `Updated Feedback - ${finalExam.title}`,
+            emailHtml
+          );
+        }
+      } catch (emailError) {
+        console.error('Failed to send feedback notification email to student:', emailError);
+        // Don't fail the entire request if email fails
+      }
+    }
 
     res.status(200).json({ 
       message: feedback ? 'Feedback updated successfully' : 'Feedback deleted successfully',

@@ -762,6 +762,203 @@ export function renderContactFormHtml({
   `;
 }
 
+// Final Exam Submission Notification Template (to Teacher)
+export function renderFinalExamSubmissionNotificationHtml({
+  teacherName,
+  studentName,
+  courseTitle,
+  courseSlug,
+  examTitle,
+  submissionDate,
+  attemptNumber,
+  requiresManualGrading,
+  dashboardUrl,
+}: {
+  teacherName: string;
+  studentName: string;
+  courseTitle: string;
+  courseSlug: string;
+  examTitle: string;
+  submissionDate: Date;
+  attemptNumber: number;
+  requiresManualGrading: boolean;
+  dashboardUrl: string;
+}) {
+  return dedent/*html*/ `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width,initial-scale=1"/>
+      <title>Final Exam Submission</title>
+      <link href="https://fonts.googleapis.com/css?family=Inter:400,700|Noto+Serif:700" rel="stylesheet">
+      <style>
+        body{margin:0;background:#f7f7f7;font-family:Inter,Arial,sans-serif}
+        .row{width:100%;max-width:700px;margin:0 auto;background:#fff;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.06);overflow:hidden}
+        .pad{padding:25px}
+        h1{font-family:'Noto Serif',Georgia,serif;margin:0 0 15px}
+        h2{font-family:'Noto Serif',Georgia,serif;margin:0 0 15px;color:${headerColor}}
+        p{line-height:1.6;margin:0 0 15px;font-size:16px;color:#201f42}
+        .btn{display:inline-block;background:${accentRed};color:#fff !important;padding:12px 30px;border-radius:4px;text-decoration:none;font-family:'Noto Serif',Georgia,serif;font-size:16px}
+        .muted{font-size:13px;color:#6b7280}
+        .hdr{background:${headerBlue}}
+        .highlight{background:#e3f2fd;padding:20px;border-left:4px solid ${headerColor};margin:15px 0;border-radius:4px}
+        .urgent{background:#fff3e0;border-left-color:#f57c00}
+      </style>
+    </head>
+    <body>
+      <div class="row">
+        <div class="hdr pad">
+          <h1 style="color:#fff;margin:0;">🎓 Final Exam Submission</h1>
+        </div>
+        <div class="pad">
+          <p>Dear <strong>${teacherName}</strong>,</p>
+          
+          <p>A student has submitted their final examination and ${requiresManualGrading ? 'requires your grading attention' : 'has been auto-graded'}.</p>
+          
+          <div class="highlight ${requiresManualGrading ? 'urgent' : ''}">
+            <h2 style="margin-top:0;">Submission Details</h2>
+            <p><strong>Student:</strong> ${studentName}</p>
+            <p><strong>Course:</strong> ${courseTitle} (${courseSlug})</p>
+            <p><strong>Exam:</strong> ${examTitle}</p>
+            <p><strong>Attempt:</strong> #${attemptNumber}</p>
+            <p><strong>Submitted:</strong> ${submissionDate.toLocaleString()}</p>
+            ${requiresManualGrading ? 
+              '<p style="color:#f57c00;font-weight:bold;">⚠️ Manual grading required</p>' : 
+              '<p style="color:#4caf50;font-weight:bold;">✅ Auto-graded</p>'
+            }
+          </div>
+          
+          ${requiresManualGrading ? 
+            '<p>This examination contains essay questions that require manual grading. Please review and grade the submission as soon as possible.</p>' :
+            '<p>The examination has been automatically graded. You can review the results and provide additional feedback if needed.</p>'
+          }
+          
+          <div style="text-align:center;margin:30px 0;">
+            <a href="${dashboardUrl}/teacher/exam-results" class="btn">
+              Review & Grade Exam
+            </a>
+          </div>
+          
+          <p class="muted">
+            You can access the complete submission details, student answers, and grading interface from your teacher dashboard.
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+// Final Exam Grading Notification Template (to Student)
+export function renderFinalExamGradingNotificationHtml({
+  studentName,
+  courseTitle,
+  courseSlug,
+  examTitle,
+  score,
+  maxScore,
+  passed,
+  teacherName,
+  feedback,
+  gradedDate,
+  attemptNumber,
+  dashboardUrl,
+}: {
+  studentName: string;
+  courseTitle: string;
+  courseSlug: string;
+  examTitle: string;
+  score: number;
+  maxScore: number;
+  passed: boolean;
+  teacherName: string;
+  feedback?: string;
+  gradedDate: Date;
+  attemptNumber: number;
+  dashboardUrl: string;
+}) {
+  const percentage = Math.round((score / maxScore) * 100);
+  const statusColor = passed ? '#4caf50' : '#f44336';
+  const statusIcon = passed ? '✅' : '❌';
+  const statusText = passed ? 'Passed' : 'Failed';
+  
+  return dedent/*html*/ `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width,initial-scale=1"/>
+      <title>Final Exam Results</title>
+      <link href="https://fonts.googleapis.com/css?family=Inter:400,700|Noto+Serif:700" rel="stylesheet">
+      <style>
+        body{margin:0;background:#f7f7f7;font-family:Inter,Arial,sans-serif}
+        .row{width:100%;max-width:700px;margin:0 auto;background:#fff;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.06);overflow:hidden}
+        .pad{padding:25px}
+        h1{font-family:'Noto Serif',Georgia,serif;margin:0 0 15px}
+        h2{font-family:'Noto Serif',Georgia,serif;margin:0 0 15px;color:${headerColor}}
+        p{line-height:1.6;margin:0 0 15px;font-size:16px;color:#201f42}
+        .btn{display:inline-block;background:${accentRed};color:#fff !important;padding:12px 30px;border-radius:4px;text-decoration:none;font-family:'Noto Serif',Georgia,serif;font-size:16px}
+        .muted{font-size:13px;color:#6b7280}
+        .hdr{background:${headerBlue}}
+        .score-box{background:#f8f9fa;padding:25px;border-radius:8px;text-align:center;margin:20px 0;border:2px solid ${statusColor}}
+        .score-big{font-size:48px;font-weight:bold;color:${statusColor};margin:10px 0}
+        .feedback-box{background:#f0f4f8;padding:20px;border-left:4px solid ${headerColor};margin:20px 0;border-radius:4px}
+      </style>
+    </head>
+    <body>
+      <div class="row">
+        <div class="hdr pad">
+          <h1 style="color:#fff;margin:0;">${statusIcon} Final Exam Graded</h1>
+        </div>
+        <div class="pad">
+          <p>Dear <strong>${studentName}</strong>,</p>
+          
+          <p>Your final examination has been graded by your instructor. Here are your results:</p>
+          
+          <div class="score-box">
+            <h2 style="margin-top:0;color:${statusColor}">${examTitle}</h2>
+            <div class="score-big">${percentage}%</div>
+            <p style="margin:5px 0;color:${statusColor};font-weight:bold;font-size:18px">${statusText}</p>
+            <p style="margin:0;color:#666">
+              ${score}/${maxScore} points • Attempt #${attemptNumber}
+            </p>
+          </div>
+          
+          <div style="background:#f9f9f9;padding:15px;border-radius:4px;margin:20px 0">
+            <p style="margin:0"><strong>Course:</strong> ${courseTitle} (${courseSlug})</p>
+            <p style="margin:5px 0 0 0"><strong>Graded by:</strong> ${teacherName}</p>
+            <p style="margin:5px 0 0 0"><strong>Graded on:</strong> ${gradedDate.toLocaleString()}</p>
+          </div>
+          
+          ${feedback ? `
+            <div class="feedback-box">
+              <h2 style="margin-top:0">📝 Teacher Feedback</h2>
+              <p style="white-space:pre-wrap;margin:0">${feedback}</p>
+            </div>
+          ` : ''}
+          
+          ${passed ? 
+            '<p style="color:#4caf50;font-weight:bold">🎉 Congratulations! You have successfully passed the final examination.</p>' :
+            '<p style="color:#f44336">This attempt did not meet the passing requirements. Please review the material and consider retaking the exam if attempts are available.</p>'
+          }
+          
+          <div style="text-align:center;margin:30px 0;">
+            <a href="${dashboardUrl}/student/final-examinations" class="btn">
+              View Complete Results
+            </a>
+          </div>
+          
+          <p class="muted">
+            You can view your detailed exam results, answers, and attempt history from your student dashboard.
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
 export function welcomeAttachments() {
   const heroPath = path.join(
     __dirname,
