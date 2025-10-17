@@ -28,6 +28,7 @@ const STUDENT_LINKS: NavLink[] = [
   { label: "Overview",         href: "/student" },
   { label: "My Courses",       href: "/student/courses" },
   { label: "Final Examinations", href: "/student/final-examinations" },
+  { label: "My Certificates",   href: "/student/certificates" },
   { label: "Feedback",         href: "/student/feedback" },
 ];
 

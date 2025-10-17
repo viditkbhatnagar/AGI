@@ -287,11 +287,9 @@ export const getTeacherExamResults = async (req: Request, res: Response) => {
     }
 
     // Filter for exams that require manual grading or can be graded by teachers
+    // Allow teachers to re-grade any attempt multiple times
     const gradableResults = examResults.filter(result => 
-      result.hasFinalExam && (
-        (result.latestAttempt?.requiresManualGrading && !result.latestAttempt.gradedBy) ||
-        result.latestAttempt
-      )
+      result.hasFinalExam && result.latestAttempt
     );
 
     res.json(gradableResults);
@@ -443,6 +441,34 @@ export const updateTeacherExamScore = async (req: Request, res: Response) => {
 
     enrollment.finalExamAttempts = attempts;
     await enrollment.save();
+
+    // Check if student passed with >= 60% and issue certificate if needed
+    const PASSING_THRESHOLD = 60; // 60% passing threshold as requested
+    const gradedAttempt = attempts[attemptIndex];
+    
+    if (gradedAttempt.passed && gradedAttempt.score && gradedAttempt.score >= PASSING_THRESHOLD) {
+      try {
+        // Import certificate controller function
+        const { issueCertificateForPassedExam } = await import('./certificate-controller');
+        
+        const certificateResult = await issueCertificateForPassedExam(
+          enrollment.studentId,
+          courseSlug,
+          gradedAttempt.attemptNumber,
+          gradedAttempt.score,
+          teacher.username || teacher.email
+        );
+        
+        if (certificateResult.success) {
+          console.log(`🎓 Certificate issued successfully for student ${enrollment.studentId}, course ${courseSlug}`);
+        } else {
+          console.warn(`⚠️  Failed to issue certificate: ${certificateResult.message}`);
+        }
+      } catch (certError) {
+        console.error('❌ Error during certificate issuance:', certError);
+        // Don't fail the entire grading process if certificate issuance fails
+      }
+    }
 
     // Send email notification to student about grading
     try {
@@ -715,6 +741,46 @@ export const getAllTeachers = async (req: Request, res: Response) => {
     res.json(enhancedTeachers);
   } catch (error) {
     console.error('Get all teachers error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Update certificate issuance status (admin only)
+export const updateCertificateIssuance = async (req: Request, res: Response) => {
+  try {
+    const { studentId, courseSlug, online, offline } = req.body;
+    const adminUsername = req.user?.username;
+
+    if (!studentId || !courseSlug) {
+      return res.status(400).json({ message: 'Student ID and course slug are required' });
+    }
+
+    // Find the enrollment
+    const enrollment = await Enrollment.findOne({ 
+      studentId: new mongoose.Types.ObjectId(studentId), 
+      courseSlug 
+    });
+
+    if (!enrollment) {
+      return res.status(404).json({ message: 'Enrollment not found' });
+    }
+
+    // Update certificate issuance status
+    enrollment.certificateIssuance = {
+      online: Boolean(online),
+      offline: Boolean(offline),
+      updatedAt: new Date(),
+      updatedBy: adminUsername || 'admin'
+    };
+
+    await enrollment.save();
+
+    res.status(200).json({ 
+      message: 'Certificate issuance status updated successfully',
+      certificateIssuance: enrollment.certificateIssuance
+    });
+  } catch (error) {
+    console.error('Update certificate issuance error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };

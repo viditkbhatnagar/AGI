@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
+  Award,
   BookOpen, 
   CalendarClock, 
   GraduationCap, 
@@ -203,6 +204,13 @@ export function Sidebar({ className, isMobile, onClose }: SidebarProps) {
               icon={<GraduationCap className="h-4 w-4 md:h-5 md:w-5" />} 
               label="Final Examinations" 
               isActive={isActive('/student/final-examinations')} 
+              onClick={handleLinkClick}
+            />
+            <NavItem 
+              href="/student/certificates" 
+              icon={<Award className="h-4 w-4 md:h-5 md:w-5" />} 
+              label="My Certificates" 
+              isActive={isActive('/student/certificates')} 
               onClick={handleLinkClick}
             />
             <NavItem 

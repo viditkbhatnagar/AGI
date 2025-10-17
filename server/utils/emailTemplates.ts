@@ -763,6 +763,130 @@ export function renderContactFormHtml({
 }
 
 // Final Exam Submission Notification Template (to Teacher)
+export function renderCertificateIssuedHtml({
+  studentName,
+  courseTitle,
+  certificateUrl,
+  finalScore,
+  issuedDate,
+  dashboardUrl,
+}: {
+  studentName: string;
+  courseTitle: string;
+  certificateUrl: string;
+  finalScore: number;
+  issuedDate: Date;
+  dashboardUrl: string;
+}) {
+  const formattedDate = issuedDate.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>🎓 Certificate Issued - ${courseTitle}</title>
+      <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f8f9fa; }
+        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px 20px; text-align: center; }
+        .header h1 { margin: 0; font-size: 28px; font-weight: 600; }
+        .header .subtitle { margin: 10px 0 0 0; font-size: 16px; opacity: 0.9; }
+        .content { padding: 30px 20px; }
+        .achievement-badge { text-align: center; margin: 20px 0; }
+        .achievement-badge .trophy { font-size: 48px; margin-bottom: 10px; }
+        .achievement-badge .score { font-size: 24px; font-weight: bold; color: #28a745; margin: 10px 0; }
+        .certificate-info { background: #f8f9fa; border-radius: 8px; padding: 20px; margin: 20px 0; border-left: 4px solid #ffd700; }
+        .certificate-info h3 { margin: 0 0 15px 0; color: #495057; font-size: 18px; }
+        .certificate-info p { margin: 5px 0; color: #6c757d; }
+        .cta-button { display: inline-block; background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 20px 0; transition: transform 0.2s; }
+        .cta-button:hover { transform: translateY(-2px); }
+        .secondary-button { display: inline-block; background: #6c757d; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500; margin: 10px 5px; }
+        .footer { background: #f8f9fa; padding: 20px; text-align: center; color: #6c757d; font-size: 14px; }
+        .logo { max-width: 120px; height: auto; }
+        .divider { height: 1px; background: #e9ecef; margin: 20px 0; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <img src="cid:agiLogo" alt="AGI Logo" class="logo" style="margin-bottom: 15px;">
+          <h1>🎓 Congratulations!</h1>
+          <p class="subtitle">Your Digital Certificate is Ready</p>
+        </div>
+        
+        <div class="content">
+          <p>Dear <strong>${studentName}</strong>,</p>
+          
+          <div class="achievement-badge">
+            <div class="trophy">🏆</div>
+            <div class="score">Final Score: ${finalScore}%</div>
+            <p><strong>You've successfully earned your certificate!</strong></p>
+          </div>
+          
+          <p>We're thrilled to inform you that you have successfully completed the <strong>${courseTitle}</strong> course and earned your digital certificate!</p>
+          
+          <div class="certificate-info">
+            <h3>📜 Certificate Details</h3>
+            <p><strong>Course:</strong> ${courseTitle}</p>
+            <p><strong>Final Score:</strong> ${finalScore}%</p>
+            <p><strong>Issue Date:</strong> ${formattedDate}</p>
+            <p><strong>Status:</strong> <span style="color: #28a745; font-weight: bold;">✅ Verified & Issued</span></p>
+          </div>
+          
+          <div style="background: #e3f2fd; border-radius: 8px; padding: 20px; margin: 30px 0; border-left: 4px solid #2196f3;">
+            <h3 style="margin: 0 0 15px 0; color: #1976d2; font-size: 18px;">📧 Certificate Issuance Request</h3>
+            <p style="margin: 10px 0; color: #424242; font-size: 16px;">
+              <strong>To receive your certificate, please send an email to:</strong>
+            </p>
+            <div style="background: white; border-radius: 6px; padding: 15px; margin: 15px 0; text-align: center; border: 2px dashed #2196f3;">
+              <p style="margin: 0; font-size: 18px; font-weight: bold; color: #1976d2;">
+                📧 support@learnerseducation.com or request@learnerseducation.com
+              </p>
+            </div>
+            <p style="margin: 10px 0; color: #424242;">
+              <strong>Email Subject:</strong> Certificate Issuance Request - ${courseTitle}
+            </p>
+            <p style="margin: 10px 0; color: #424242;">
+              <strong>Message:</strong> Please mention that you have completed the course and your final grade has been awarded. The admin will then issue your certificate directly.
+            </p>
+          </div>
+          
+          <div class="divider"></div>
+          
+          <h3>🎯 What's Next?</h3>
+          <ul style="color: #6c757d; line-height: 1.8;">
+            <li><strong>Share Your Achievement:</strong> Add your certificate to LinkedIn or share on social media</li>
+            <li><strong>Download & Print:</strong> Your certificate is available for download anytime</li>
+            <li><strong>Verification:</strong> Your certificate includes a unique verification link</li>
+            <li><strong>Continue Learning:</strong> Explore more courses to advance your skills</li>
+          </ul>
+          
+          <p style="margin-top: 30px;">This achievement represents your dedication and hard work. We're proud to have been part of your learning journey!</p>
+          
+          <p>Keep up the excellent work!</p>
+          
+          <p style="margin-top: 20px;">
+            Best regards,<br>
+            <strong>American Global Institute</strong>
+          </p>
+        </div>
+        
+        <div class="footer">
+          <p>American Global Institute | Professional Certification Programs</p>
+          <p>This is an automated message. Your certificate is digitally verified and secure.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
 export function renderFinalExamSubmissionNotificationHtml({
   teacherName,
   studentName,

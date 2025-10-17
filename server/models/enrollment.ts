@@ -29,6 +29,26 @@ interface IFinalExamAttempt {
   feedback?: string; // Teacher/Admin feedback for this attempt (max 2000 chars)
 }
 
+interface ICertificate {
+  certificateId: string; // Certifier.io certificate ID
+  certificateUrl: string; // Direct URL to view certificate
+  issuedAt: Date; // When certificate was issued
+  issuedBy: string; // Who triggered the issuance (teacher/admin username)
+  courseSlug: string; // Course for which certificate was issued
+  courseName: string; // Course title at time of issuance
+  studentName: string; // Student name at time of issuance
+  studentEmail: string; // Student email at time of issuance
+  finalScore: number; // Final exam score that earned the certificate
+  attemptNumber: number; // Which exam attempt earned the certificate
+  certifierGroupId: string; // Certifier.io group ID used
+  status: 'issued' | 'revoked' | 'expired' | 'superseded'; // Certificate status
+  metadata?: { // Additional certificate data from Certifier.io
+    templateId?: string;
+    verificationUrl?: string;
+    expiresAt?: Date;
+  };
+}
+
 export interface IEnrollment {
   studentId: mongoose.Types.ObjectId;
   courseSlug: string;
@@ -37,6 +57,13 @@ export interface IEnrollment {
   completedModules: ICompletedModule[];
   quizAttempts: IQuizAttempt[];
   finalExamAttempts: IFinalExamAttempt[];
+  certificates: ICertificate[]; // Digital certificates issued for this enrollment
+  certificateIssuance?: {
+    online: boolean; // Admin has issued certificate online via Certifier.io
+    offline: boolean; // Admin has sent physical certificate
+    updatedAt?: Date; // When issuance status was last updated
+    updatedBy?: string; // Admin who updated the status
+  };
 }
 
 export interface IEnrollmentDocument extends IEnrollment, Document {}
@@ -87,7 +114,37 @@ const EnrollmentSchema = new Schema<IEnrollmentDocument>({
     gradedBy: { type: String },
     gradedAt: { type: Date },
     feedback: { type: String, maxlength: 2000 } // Teacher/Admin feedback (max 2000 chars)
-  }]
+  }],
+  
+  certificates: [{
+    certificateId: { type: String, required: true }, // Certifier.io certificate ID
+    certificateUrl: { type: String, required: true }, // Direct URL to view certificate
+    issuedAt: { type: Date, required: true, default: Date.now }, // When certificate was issued
+    issuedBy: { type: String, required: true }, // Who triggered the issuance
+    courseSlug: { type: String, required: true }, // Course for which certificate was issued
+    courseName: { type: String, required: true }, // Course title at time of issuance
+    studentName: { type: String, required: true }, // Student name at time of issuance
+    studentEmail: { type: String, required: true }, // Student email at time of issuance
+    finalScore: { type: Number, required: true }, // Final exam score that earned the certificate
+    attemptNumber: { type: Number, required: true }, // Which exam attempt earned the certificate
+    certifierGroupId: { type: String, required: true }, // Certifier.io group ID used
+    status: { 
+      type: String, 
+      enum: ['issued', 'revoked', 'expired', 'superseded'], 
+      default: 'issued' 
+    }, // Certificate status
+    metadata: { // Additional certificate data from Certifier.io
+      templateId: { type: String },
+      verificationUrl: { type: String },
+      expiresAt: { type: Date }
+    }
+  }],
+  certificateIssuance: {
+    online: { type: Boolean, default: false },
+    offline: { type: Boolean, default: false },
+    updatedAt: { type: Date },
+    updatedBy: { type: String }
+  }
 }, { timestamps: true });
 
 // Create a compound index to ensure a student can only enroll in a course once

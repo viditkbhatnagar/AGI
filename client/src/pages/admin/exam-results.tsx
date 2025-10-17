@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { createDownloadLink } from '@/lib/cloudinary';
 import { useConditionalRender } from '@/lib/permissions-provider';
@@ -46,6 +47,12 @@ interface StudentExamResult {
     gradedBy?: string;
     gradedAt?: string;
   } | null;
+  certificateIssuance?: {
+    online: boolean;
+    offline: boolean;
+    updatedAt?: string;
+    updatedBy?: string;
+  };
   allAttempts: Array<{
     attemptNumber: number;
     score?: number;
@@ -57,6 +64,105 @@ interface StudentExamResult {
   }>;
   totalAttempts: number;
 }
+
+// Certificate Issuance Cell Component
+interface CertificateIssuanceCellProps {
+  result: StudentExamResult;
+  onUpdate: () => void;
+}
+
+const CertificateIssuanceCell = ({ result, onUpdate }: CertificateIssuanceCellProps) => {
+  const { toast } = useToast();
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const updateCertificateIssuance = async (online: boolean, offline: boolean) => {
+    setIsUpdating(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/admin/certificate-issuance', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` })
+        },
+        body: JSON.stringify({
+          studentId: result.studentId,
+          courseSlug: result.courseSlug,
+          online,
+          offline
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update certificate issuance');
+      }
+
+      toast({
+        title: "Success",
+        description: "Certificate issuance status updated successfully",
+      });
+      
+      onUpdate();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update certificate issuance status",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleOnlineChange = (checked: boolean) => {
+    updateCertificateIssuance(checked, result.certificateIssuance?.offline || false);
+  };
+
+  const handleOfflineChange = (checked: boolean) => {
+    updateCertificateIssuance(result.certificateIssuance?.online || false, checked);
+  };
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center space-x-2">
+        <Checkbox
+          id={`online-${result.studentId}-${result.courseSlug}`}
+          checked={result.certificateIssuance?.online || false}
+          onCheckedChange={handleOnlineChange}
+          disabled={isUpdating}
+        />
+        <label 
+          htmlFor={`online-${result.studentId}-${result.courseSlug}`}
+          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          Online
+        </label>
+      </div>
+      <div className="flex items-center space-x-2">
+        <Checkbox
+          id={`offline-${result.studentId}-${result.courseSlug}`}
+          checked={result.certificateIssuance?.offline || false}
+          onCheckedChange={handleOfflineChange}
+          disabled={isUpdating}
+        />
+        <label 
+          htmlFor={`offline-${result.studentId}-${result.courseSlug}`}
+          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          Offline
+        </label>
+      </div>
+      {result.certificateIssuance?.updatedAt && (
+        <div className="text-xs text-gray-500">
+          Updated: {new Date(result.certificateIssuance.updatedAt).toLocaleDateString()}
+          {result.certificateIssuance.updatedBy && (
+            <div>By: {result.certificateIssuance.updatedBy}</div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 
 interface ExamSubmission {
   student: {
@@ -376,6 +482,7 @@ export default function ExamResults() {
                     <TableHead>Essay Status</TableHead>
                     <TableHead>Final Score</TableHead>
                     <TableHead>Attempts</TableHead>
+                    <TableHead>Certificate Issuance</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -544,6 +651,12 @@ export default function ExamResults() {
                         )}
                       </TableCell>
                       <TableCell>
+                        <CertificateIssuanceCell 
+                          result={result}
+                          onUpdate={() => fetchExamResults()}
+                        />
+                      </TableCell>
+                      <TableCell>
                         <div className="flex space-x-2">
                           {result.latestAttempt && (
                             <Button
@@ -573,7 +686,7 @@ export default function ExamResults() {
                   ))}
                   {filteredResults.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={9} className="text-center py-8">
+                      <TableCell colSpan={10} className="text-center py-8">
                         <div className="text-gray-500">No exam results found.</div>
                       </TableCell>
                     </TableRow>

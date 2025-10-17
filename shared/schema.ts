@@ -277,6 +277,26 @@ export type FinalExamAttempt = {
   feedback?: string; // Teacher/Admin feedback for this attempt (max 2000 chars)
 };
 
+export type Certificate = {
+  certificateId: string; // Certifier.io certificate ID
+  certificateUrl: string; // Direct URL to view certificate
+  issuedAt: string; // When certificate was issued
+  issuedBy: string; // Who triggered the issuance (teacher/admin username)
+  courseSlug: string; // Course for which certificate was issued
+  courseName: string; // Course title at time of issuance
+  studentName: string; // Student name at time of issuance
+  studentEmail: string; // Student email at time of issuance
+  finalScore: number; // Final exam score that earned the certificate
+  attemptNumber: number; // Which exam attempt earned the certificate
+  certifierGroupId: string; // Certifier.io group ID used
+  status: 'issued' | 'revoked' | 'expired' | 'superseded'; // Certificate status
+  metadata?: { // Additional certificate data from Certifier.io
+    templateId?: string;
+    verificationUrl?: string;
+    expiresAt?: string;
+  };
+};
+
 // Final Exam Question Types
 export type FinalExamMCQQuestion = {
   type: 'mcq';

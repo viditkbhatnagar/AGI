@@ -453,7 +453,13 @@ export const getAllStudentExamResults = async (req: Request, res: Response) => {
           gradedAt: attempt.gradedAt,
           feedback: attempt.feedback
         })),
-        totalAttempts: finalExamAttempts.length
+        totalAttempts: finalExamAttempts.length,
+        certificateIssuance: enrollment.certificateIssuance || {
+          online: false,
+          offline: false,
+          updatedAt: null,
+          updatedBy: null
+        }
       };
     });
 
@@ -502,6 +508,34 @@ export const updateStudentExamScore = async (req: Request, res: Response) => {
 
     enrollment.finalExamAttempts = attempts;
     await enrollment.save();
+
+    // Check if student passed with >= 60% and issue certificate if needed
+    const PASSING_THRESHOLD = 60; // 60% passing threshold as requested
+    const gradedAttempt = attempts[attemptIndex];
+    
+    if (gradedAttempt.passed && gradedAttempt.score && gradedAttempt.score >= PASSING_THRESHOLD) {
+      try {
+        // Import certificate controller function
+        const { issueCertificateForPassedExam } = await import('./certificate-controller');
+        
+        const certificateResult = await issueCertificateForPassedExam(
+          enrollment.studentId,
+          courseSlug,
+          gradedAttempt.attemptNumber,
+          gradedAttempt.score,
+          req.user.username || req.user.email
+        );
+        
+        if (certificateResult.success) {
+          console.log(`🎓 Certificate issued successfully for student ${enrollment.studentId}, course ${courseSlug}`);
+        } else {
+          console.warn(`⚠️  Failed to issue certificate: ${certificateResult.message}`);
+        }
+      } catch (certError) {
+        console.error('❌ Error during certificate issuance:', certError);
+        // Don't fail the entire grading process if certificate issuance fails
+      }
+    }
 
     // Send email notification to student about grading
     try {

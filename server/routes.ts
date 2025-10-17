@@ -18,6 +18,7 @@ import * as recordingController from "./controllers/recording-controller";
 import * as contactController from "./controllers/contact-controller";
 import * as documentProxyController from "./controllers/document-proxy-controller";
 import * as feedbackController from "./controllers/feedback-controller";
+import * as certificateController from "./controllers/certificate-controller";
 import quizRepositoryRoutes from "./routes/quizRepository";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -91,6 +92,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/teacher/exam-results/:studentId/:courseSlug/:attemptNumber", auth, requireTeacher, teacherController.getTeacherExamSubmission);
   app.post("/api/teacher/exam-results/update-score", auth, requireTeacher, teacherController.updateTeacherExamScore);
   app.post("/api/teacher/exam-results/update-feedback", auth, requireTeacher, teacherController.updateTeacherExamFeedback);
+  app.post("/api/admin/certificate-issuance", auth, requireAdmin, teacherController.updateCertificateIssuance);
 
   // TEACHER MANAGEMENT ROUTES (Admin only)
   app.get("/api/admin/teachers", auth, requireAdminAccess, teacherController.getAllTeachers);
@@ -223,6 +225,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/exam-results", auth, requireAdminAccess, finalExamController.getAllStudentExamResults);
   app.post("/api/admin/exam-results/update-score", auth, requireAdmin, finalExamController.updateStudentExamScore);
   app.get("/api/admin/exam-results/:studentId/:courseSlug/:attemptNumber", auth, requireAdminAccess, finalExamController.getStudentExamSubmission);
+
+  // CERTIFICATE ROUTES
+  // Student certificate routes
+  app.get("/api/student/certificates", auth, requireStudent, certificateController.getStudentCertificates);
+  app.get("/api/student/certificates/:courseSlug", auth, requireStudent, certificateController.getCourseCertificates);
+  
+  // Admin certificate routes
+  app.get("/api/admin/certificates", auth, requireAdminAccess, certificateController.getAllIssuedCertificates);
+  app.get("/api/admin/certifier/test", auth, requireAdmin, certificateController.testCertifierConnection);
 
   // FEEDBACK ROUTES
   // Student feedback routes

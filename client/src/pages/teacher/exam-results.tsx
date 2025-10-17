@@ -575,6 +575,17 @@ export default function TeacherExamResults() {
                                 <Eye className="h-4 w-4" />
                               </Button>
                             )}
+                            {result.latestAttempt && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => openScoreDialog(result)}
+                                title={result.latestAttempt.gradedBy ? 'Re-grade Exam' : 'Grade Exam'}
+                                className="text-blue-600 hover:text-blue-800"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                            )}
                             {result.totalAttempts > 0 && (
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
@@ -600,7 +611,7 @@ export default function TeacherExamResults() {
                                       )}
                                     </DropdownMenuItem>
                                   ))}
-                                  {result.latestAttempt?.requiresManualGrading && (
+                                  {result.latestAttempt && (
                                     <>
                                       <DropdownMenuItem className="border-t mt-1 pt-1">
                                         <span className="text-xs text-gray-500 font-medium">GRADING</span>
