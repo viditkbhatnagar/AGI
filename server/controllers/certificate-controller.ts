@@ -11,6 +11,7 @@ import path from 'path';
 
 // Dynamic group selection is now handled in the Certifier service
 // Groups are automatically selected based on course name:
+// - Courses with "director" → AGI-Director group (01k7s2jdz7x947af5s80xpfqnm)
 // - Courses with "manager" → AGI-Manager group (01k7rrxc2fddy1bkbsx0rt3tgv)
 // - Courses with "professional" → AGI-Professional group (01k6fv17x6fw24jgpnvbqervt6)
 // - Default → AGI-Professional group (01k6fv17x6fw24jgpnvbqervt6)
@@ -352,6 +353,7 @@ export const testCertifierConnection = async (req: Request, res: Response) => {
       connected: isConnected,
       groups: groups,
       dynamicGroupSelection: {
+        'director/directors': '01k7s2jdz7x947af5s80xpfqnm', // AGI-Director
         'manager/managers': '01k7rrxc2fddy1bkbsx0rt3tgv', // AGI-Manager
         'professional/professionals': '01k6fv17x6fw24jgpnvbqervt6', // AGI-Professional
         'default': '01k6fv17x6fw24jgpnvbqervt6' // AGI-Professional (default)

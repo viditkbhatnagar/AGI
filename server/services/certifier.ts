@@ -48,6 +48,11 @@ class CertifierService {
   private selectGroupId(courseTitle: string): string {
     const courseLower = courseTitle.toLowerCase();
     
+    // Check for director-related keywords
+    if (courseLower.includes('director') || courseLower.includes('directors')) {
+      return '01k7s2jdz7x947af5s80xpfqnm'; // AGI-Director group
+    }
+    
     // Check for manager-related keywords
     if (courseLower.includes('manager') || courseLower.includes('managers')) {
       return '01k7rrxc2fddy1bkbsx0rt3tgv'; // AGI-Manager group
