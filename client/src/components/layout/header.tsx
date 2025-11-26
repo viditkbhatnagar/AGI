@@ -25,37 +25,38 @@ interface NavLink {
 }
 
 const STUDENT_LINKS: NavLink[] = [
-  { label: "Overview",         href: "/student" },
-  { label: "My Courses",       href: "/student/courses" },
+  { label: "Overview", href: "/student" },
+  { label: "My Courses", href: "/student/courses" },
   { label: "Final Examinations", href: "/student/final-examinations" },
-  { label: "My Certificates",   href: "/student/certificates" },
-  { label: "Feedback",         href: "/student/feedback" },
+  { label: "My Certificates", href: "/student/certificates" },
+  { label: "Feedback", href: "/student/feedback" },
 ];
 
 const TEACHER_LINKS: NavLink[] = [
-  { label: "Dashboard",      href: "/teacher" },
-  { label: "My Students",    href: "/teacher/students" },
-  { label: "My Courses",     href: "/teacher/courses" },
-  { label: "Live Classes",   href: "/teacher/live-classes" },
-  { label: "Recordings",     href: "/teacher/recordings" },
-  { label: "Exam Grading",   href: "/teacher/exam-results" },
+  { label: "Dashboard", href: "/teacher" },
+  { label: "My Students", href: "/teacher/students" },
+  { label: "My Courses", href: "/teacher/courses" },
+  { label: "Live Classes", href: "/teacher/live-classes" },
+  { label: "Recordings", href: "/teacher/recordings" },
+  { label: "Exam Grading", href: "/teacher/exam-results" },
   { label: "Student Feedbacks", href: "/admin/feedbacks" },
   { label: "Change Password", href: "/teacher/change-password" },
 ];
 
 const ADMIN_LINKS: NavLink[] = [
-  { label: "Overview",          href: "/admin" },
-  { label: "Students",          href: "/admin/students" },
-  { label: "Courses",           href: "/admin/courses" },
-  { label: "Sandbox Courses",   href: "/admin/sandbox-courses" },
-  { label: "Quiz Repository",   href: "/admin/quiz-repository" },
+  { label: "Overview", href: "/admin" },
+  { label: "Students", href: "/admin/students" },
+  { label: "Courses", href: "/admin/courses" },
+  { label: "Sandbox Courses", href: "/admin/sandbox-courses" },
+  { label: "Quiz Repository", href: "/admin/quiz-repository" },
   { label: "Student Feedbacks", href: "/admin/feedbacks" },
-  { label: "Progress",          href: "/admin/enrollments" },
-  { label: "Live Classes",      href: "/admin/live-classes" },
-  { label: "Recordings",        href: "/admin/recordings" },
-  { label: "Quiz Scores",       href: "/admin/quiz-scores" },
-  { label: "Exam Results",      href: "/admin/exam-results" },
-  { label: "Add Teacher",      href: "/admin/teachers/new" }
+  { label: "Progress", href: "/admin/enrollments" },
+  { label: "Live Classes", href: "/admin/live-classes" },
+  { label: "Recordings", href: "/admin/recordings" },
+  { label: "Quiz Scores", href: "/admin/quiz-scores" },
+  { label: "Exam Results", href: "/admin/exam-results" },
+  { label: "Last Logins", href: "/admin/last-logins" },
+  { label: "Add Teacher", href: "/admin/teachers/new" }
 ];
 
 // Utility button component
@@ -82,7 +83,7 @@ const UtilityButton = ({ icon, onClick, title, className }: UtilityButtonProps) 
 const NavItem = ({ href, label }: NavLink) => {
   const [location] = useLocation();
   const isActive = href === location || (href !== "/" && location.startsWith(href));
-  
+
   return (
     <Link
       href={href}
@@ -115,8 +116,8 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
     setMobileOpen(false);
   }, [location]);
 
-  const links = userRole === "admin" || userRole === "superadmin" ? ADMIN_LINKS : 
-               userRole === "teacher" ? TEACHER_LINKS : STUDENT_LINKS;
+  const links = userRole === "admin" || userRole === "superadmin" ? ADMIN_LINKS :
+    userRole === "teacher" ? TEACHER_LINKS : STUDENT_LINKS;
 
   const handleLogout = () => {
     logout();
@@ -125,14 +126,14 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
 
   const handleProfileClick = () => {
     const profilePath = userRole === "admin" || userRole === "superadmin" ? "/admin/profile" :
-                       userRole === "teacher" ? "/teacher/profile" : "/student/profile";
+      userRole === "teacher" ? "/teacher/profile" : "/student/profile";
     navigate(profilePath);
     setMobileOpen(false);
   };
 
   const handleSupportClick = () => {
     const supportPath = userRole === "admin" || userRole === "superadmin" ? "/admin/support" :
-                       userRole === "teacher" ? "/teacher/support" : "/student/support";
+      userRole === "teacher" ? "/teacher/support" : "/student/support";
     navigate(supportPath);
     setMobileOpen(false);
   };
@@ -165,8 +166,8 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
 
           {/* Centered Logo */}
           <div className="flex-shrink-0">
-            <Link href={userRole === "admin" || userRole === "superadmin" ? "/admin" : 
-                        userRole === "teacher" ? "/teacher" : "/student"}>
+            <Link href={userRole === "admin" || userRole === "superadmin" ? "/admin" :
+              userRole === "teacher" ? "/teacher" : "/student"}>
               <img
                 src={logo}
                 alt="AGI Logo"
@@ -189,9 +190,9 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
                 second: "2-digit",
               })}
             </div>
-            
-  
-            
+
+
+
             {/* User Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -205,15 +206,15 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48 sm:w-56 mt-2">
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   onClick={handleProfileClick}
                   className="cursor-pointer hover:bg-[#375BBE]/10 transition-colors"
                 >
                   <UserIcon className="mr-2 h-4 w-4 text-[#375BBE]" />
                   <span className="text-[#375BBE]">Profile</span>
                 </DropdownMenuItem>
-                
-                <DropdownMenuItem 
+
+                <DropdownMenuItem
                   onClick={handleSupportClick}
                   className="cursor-pointer hover:bg-[#375BBE]/10 transition-colors"
                 >
@@ -221,7 +222,7 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
                   <span className="text-[#375BBE]">Support</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-[#375BBE]/20" />
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   onClick={handleLogout}
                   className="cursor-pointer hover:bg-red-50 transition-colors"
                 >
@@ -252,11 +253,11 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
         {/* Fixed header space */}
         <div className="pt-20 sm:pt-24 px-6 flex-shrink-0">
           <div className="text-sm font-semibold text-[#375BBE]/60 uppercase tracking-wide mb-4">
-            {userRole === 'admin' || userRole === 'superadmin' ? 'Admin Dashboard' : 
-             userRole === 'teacher' ? 'Teacher Portal' : 'Student Dashboard'}
+            {userRole === 'admin' || userRole === 'superadmin' ? 'Admin Dashboard' :
+              userRole === 'teacher' ? 'Teacher Portal' : 'Student Dashboard'}
           </div>
         </div>
-        
+
         {/* Scrollable content area */}
         <div className="flex-1 overflow-y-auto px-6 pb-6">
           {/* Mobile Navigation Links */}
@@ -285,7 +286,7 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
           {/* Mobile User Actions */}
           <div className="pt-6 space-y-3 border-t border-[#375BBE]/20">
             {/* Add Teacher Button for Mobile - Only for Admin/Superadmin */}
-            
+
             <button
               onClick={handleProfileClick}
               className="flex items-center w-full text-left text-lg font-semibold text-[#375BBE]/80 hover:text-[#375BBE] hover:bg-[#375BBE]/5 transition-all duration-200 py-3 px-3 rounded-lg"
@@ -293,7 +294,7 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
               <UserIcon className="mr-3 h-5 w-5" />
               Profile
             </button>
-            
+
             <button
               onClick={handleSupportClick}
               className="flex items-center w-full text-left text-lg font-semibold text-[#375BBE]/80 hover:text-[#375BBE] hover:bg-[#375BBE]/5 transition-all duration-200 py-3 px-3 rounded-lg"

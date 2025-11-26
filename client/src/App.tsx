@@ -41,6 +41,7 @@ import AdminRecordings from "@/pages/admin/recordings";
 import AdminQuizScores from "@/pages/admin/quiz-scores";
 import AdminExamResults from "@/pages/admin/exam-results";
 import AdminFeedbacks from "@/pages/admin/feedbacks";
+import AdminLastLogins from "@/pages/admin/last-logins";
 import QuizRepositoryPage from "@/pages/admin/quiz-repository";
 
 import AddStudent from "@/pages/admin/AddStudent";
@@ -58,7 +59,7 @@ function Router() {
     <Switch>
       {/* Auth Routes */}
       <Route path="/login" component={Login} />
-      
+
       {/* Student Routes */}
       <Route path="/student" component={StudentDashboard} />
       <Route path="/student/courses" component={StudentCourses} />
@@ -70,7 +71,7 @@ function Router() {
       <Route path="/student/feedback" component={StudentFeedback} />
       <Route path="/student/support" component={StudentSupport} />
       <Route path="/student/debug" component={StudentDebug} />
-      
+
       {/* Teacher Routes */}
       <Route path="/teacher" component={TeacherDashboard} />
       <Route path="/teacher/students" component={TeacherStudents} />
@@ -79,7 +80,7 @@ function Router() {
       <Route path="/teacher/recordings" component={TeacherRecordings} />
       <Route path="/teacher/exam-results" component={TeacherExamResults} />
       <Route path="/teacher/change-password" component={TeacherChangePassword} />
-      
+
       {/* Admin Routes */}
       <Route path="/admin/students/new" component={AddStudent} />
       <Route path="/admin/teachers/new" component={AddTeacher} />
@@ -100,13 +101,14 @@ function Router() {
       <Route path="/admin/quiz-scores" component={AdminQuizScores} />
       <Route path="/admin/exam-results" component={AdminExamResults} />
       <Route path="/admin/feedbacks" component={AdminFeedbacks} />
+      <Route path="/admin/last-logins" component={AdminLastLogins} />
       <Route path="/admin" component={AdminDashboard} />
-      
+
       {/* Default Route - Redirect based on user role */}
       <Route path="/">
         <RoleBasedRedirect />
       </Route>
-      
+
       {/* Fallback to 404 */}
       <Route component={NotFound} />
     </Switch>
@@ -116,7 +118,7 @@ function Router() {
 function RoleBasedRedirect() {
   const [_, setLocation] = useLocation();
   const { isAuthenticated, userRole } = useAuth();
-  
+
   useEffect(() => {
     if (!isAuthenticated) {
       setLocation("/login");
@@ -128,7 +130,7 @@ function RoleBasedRedirect() {
       setLocation("/student");
     }
   }, [isAuthenticated, userRole, setLocation]);
-  
+
   return null;
 }
 

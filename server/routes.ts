@@ -19,6 +19,7 @@ import * as contactController from "./controllers/contact-controller";
 import * as documentProxyController from "./controllers/document-proxy-controller";
 import * as feedbackController from "./controllers/feedback-controller";
 import * as certificateController from "./controllers/certificate-controller";
+import * as loginHistoryController from "./controllers/loginHistory-controller";
 import quizRepositoryRoutes from "./routes/quizRepository";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -49,7 +50,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/student/notify-settings", auth, requireStudent, studentController.updateNotifySettings);
   app.get("/api/student/courses", auth, requireStudent, studentController.getCourses);
   app.get("/api/student/courses/:slug", auth, requireStudent, studentController.getCourseDetail);
-  
+
   // STUDENT FINAL EXAMINATIONS ROUTES
   app.get("/api/student/final-examinations", auth, requireStudent, studentController.getStudentFinalExaminations);
   app.get("/api/student/final-exam/:courseSlug/attempt/:attemptNumber", auth, requireStudent, studentController.getStudentAttemptDetails);
@@ -81,6 +82,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/admin/students/:id", auth, requireAdmin, adminController.updateStudent);
   app.delete("/api/admin/students/:id", auth, requireAdmin, adminController.deleteStudent);
   app.put("/api/admin/students/:studentId/toggle-access", auth, requireAdmin, adminController.toggleStudentAccess);
+
+  // LOGIN HISTORY ROUTES (Admin only)
+  app.get("/api/admin/login-history/students", auth, requireAdminAccess, loginHistoryController.getStudentsLoginHistory);
+  app.get("/api/admin/login-history/teachers", auth, requireAdminAccess, loginHistoryController.getTeachersLoginHistory);
 
   // TEACHER ROUTES
   app.get("/api/teacher/dashboard", auth, requireTeacher, teacherController.getTeacherDashboard);
@@ -198,7 +203,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/recordings", auth, requireAdmin, recordingController.createRecording);
   app.put("/api/recordings/:id", auth, requireAdmin, recordingController.updateRecording);
   app.delete("/api/recordings/:id", auth, requireAdmin, recordingController.deleteRecording);
-  
+
   // Student recording routes
   app.get("/api/student/recordings", auth, requireStudent, recordingController.getStudentRecordings);
   app.get("/api/student/recordings/course/:courseSlug", auth, requireStudent, recordingController.getStudentRecordingsByCourse);
@@ -209,18 +214,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // FINAL EXAMINATION ROUTES
   const finalExamController = await import("./controllers/finalExamination-controller");
-  
+
   // Admin final exam routes
   app.get("/api/admin/final-exams", auth, requireAdminAccess, finalExamController.getAllFinalExams);
   app.get("/api/admin/final-exams/:courseSlug", auth, requireAdminAccess, finalExamController.getFinalExamByCourse);
   app.post("/api/admin/final-exams", auth, requireAdmin, finalExamController.createOrUpdateFinalExam);
   app.delete("/api/admin/final-exams/:courseSlug", auth, requireAdmin, finalExamController.deleteFinalExam);
-  
+
   // Student final exam routes
   app.get("/api/student/final-exam/:courseSlug", auth, requireStudent, finalExamController.getStudentFinalExam);
   app.post("/api/student/final-exam/submit", auth, requireStudent, finalExamController.submitFinalExamAttempt);
   app.get("/api/student/final-exam/:courseSlug/attempts", auth, requireStudent, finalExamController.getStudentFinalExamAttempts);
-  
+
   // Admin final exam results routes
   app.get("/api/admin/exam-results", auth, requireAdminAccess, finalExamController.getAllStudentExamResults);
   app.post("/api/admin/exam-results/update-score", auth, requireAdmin, finalExamController.updateStudentExamScore);
@@ -230,7 +235,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Student certificate routes
   app.get("/api/student/certificates", auth, requireStudent, certificateController.getStudentCertificates);
   app.get("/api/student/certificates/:courseSlug", auth, requireStudent, certificateController.getCourseCertificates);
-  
+
   // Admin certificate routes
   app.get("/api/admin/certificates", auth, requireAdminAccess, certificateController.getAllIssuedCertificates);
   app.get("/api/admin/certifier/test", auth, requireAdmin, certificateController.testCertifierConnection);
@@ -241,7 +246,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/student/feedback/:courseSlug/data", auth, requireStudent, feedbackController.getCourseFeedbackData);
   app.post("/api/student/feedback/:courseSlug/submit", auth, requireStudent, feedbackController.submitCourseFeedback);
   app.get("/api/student/feedback/:courseSlug/status", auth, requireStudent, feedbackController.checkCourseFeedbackStatus);
-  
+
   // Admin feedback routes
   app.get("/api/admin/feedbacks", auth, requireAdminAccess, feedbackController.getAllFeedbacks);
   app.get("/api/admin/feedback-stats", auth, requireAdminAccess, feedbackController.getFeedbackStats);

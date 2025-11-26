@@ -28,11 +28,32 @@ export const login = async (req: Request, res: Response) => {
 
     // Check if student access is enabled (only block if explicitly set to false)
     if (user.role === 'student' && user.accessEnabled === false) {
-      return res.status(403).json({ 
+      return res.status(403).json({
         message: 'Your access has been temporarily suspended due to pending course fee payment. Please contact support.',
         suspended: true
       });
     }
+
+    // Track login history (keep last 5 logins)
+    const loginEntry = { timestamp: new Date() };
+
+    // Initialize loginHistory if it doesn't exist
+    if (!user.loginHistory) {
+      user.loginHistory = [];
+    }
+
+    // Add new login to the beginning of the array
+    user.loginHistory.unshift(loginEntry);
+
+    // Keep only the last 5 logins (FIFO)
+    if (user.loginHistory.length > 5) {
+      user.loginHistory = user.loginHistory.slice(0, 5);
+    }
+
+    // Also update lastLogin for backwards compatibility
+    user.lastLogin = loginEntry.timestamp;
+
+    await user.save();
 
     // Get student data if role is student
     let studentData = null;
