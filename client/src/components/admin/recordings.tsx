@@ -231,7 +231,7 @@ export function AdminRecordings() {
 
     // Validate Google Drive link
     if (!uploadForm.fileUrl.includes('drive.google.com')) {
-      toast({ title: 'Error', description: 'Please provide a valid Google Drive link', variant: 'destructive' });
+      toast({ title: 'Error', description: 'Please provide a valid link', variant: 'destructive' });
       return;
     }
 
@@ -345,7 +345,7 @@ export function AdminRecordings() {
               <span className="text-xl">Add New Recording</span>
             </CardTitle>
             <CardDescription className="text-base">
-              Upload Google Drive video recordings to make them available for students
+              Upload Drive video recordings to make them available for students
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
@@ -437,7 +437,7 @@ export function AdminRecordings() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="fileUrl">Google Drive Video Link *</Label>
+                <Label htmlFor="fileUrl">Drive Video Link *</Label>
                 <Input
                   id="fileUrl"
                   type="url"
@@ -446,7 +446,7 @@ export function AdminRecordings() {
                   placeholder="https://drive.google.com/file/d/your-file-id/view"
                 />
                 <p className="text-sm text-muted-foreground">
-                  Provide a shareable Google Drive link to your video recording
+                  Provide a shareable Drive link to your video recording
                 </p>
               </div>
 

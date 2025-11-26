@@ -121,7 +121,7 @@ export const createRecording = async (req: Request, res: Response) => {
     // Validate that fileUrl is a Google Drive link
     if (!fileUrl.includes('drive.google.com')) {
       return res.status(400).json({ 
-        message: 'Please provide a valid Google Drive link' 
+        message: 'Please provide a valid Drive link' 
       });
     }
 
