@@ -43,6 +43,7 @@ import AdminExamResults from "@/pages/admin/exam-results";
 import AdminFeedbacks from "@/pages/admin/feedbacks";
 import AdminLastLogins from "@/pages/admin/last-logins";
 import QuizRepositoryPage from "@/pages/admin/quiz-repository";
+import LandingPage from "@/pages/landing";
 
 import AddStudent from "@/pages/admin/AddStudent";
 import AddTeacher from "@/pages/admin/AddTeacher";
@@ -57,6 +58,10 @@ import ScheduleLiveClass from "@/pages/admin/ScheduleLiveClass";
 function Router() {
   return (
     <Switch>
+      {/* Public Routes */}
+      <Route path="/" component={LandingPage} />
+      <Route path="/landing" component={LandingPage} />
+
       {/* Auth Routes */}
       <Route path="/login" component={Login} />
 
@@ -103,11 +108,6 @@ function Router() {
       <Route path="/admin/feedbacks" component={AdminFeedbacks} />
       <Route path="/admin/last-logins" component={AdminLastLogins} />
       <Route path="/admin" component={AdminDashboard} />
-
-      {/* Default Route - Redirect based on user role */}
-      <Route path="/">
-        <RoleBasedRedirect />
-      </Route>
 
       {/* Fallback to 404 */}
       <Route component={NotFound} />
