@@ -325,7 +325,7 @@ function AnimatedLoginPage() {
     return (
         <div className="min-h-screen grid lg:grid-cols-2">
             {/* Left Content Section */}
-            <div className="relative hidden lg:flex flex-col justify-center items-center bg-[#2E7BD4] p-12 text-primary-foreground overflow-hidden">
+            <div className="relative hidden lg:flex flex-col justify-center items-center bg-[#3B5998] p-12 text-primary-foreground overflow-hidden">
 
                 <div className="relative z-20 flex items-center justify-center h-[500px] w-full max-w-[600px]">
                     {/* Cartoon Characters */}
