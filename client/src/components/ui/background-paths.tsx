@@ -5,13 +5,10 @@ import { Button } from "@/components/ui/button";
 function FloatingPaths({ position }: { position: number }) {
   const paths = Array.from({ length: 36 }, (_, i) => ({
     id: i,
-    d: `M-${380 - i * 5 * position} -${189 + i * 6}C-${
-      380 - i * 5 * position
-    } -${189 + i * 6} -${312 - i * 5 * position} ${216 - i * 6} ${
-      152 - i * 5 * position
-    } ${343 - i * 6}C${616 - i * 5 * position} ${470 - i * 6} ${
-      684 - i * 5 * position
-    } ${875 - i * 6} ${684 - i * 5 * position} ${875 - i * 6}`,
+    d: `M-${380 - i * 5 * position} -${189 + i * 6}C-${380 - i * 5 * position
+      } -${189 + i * 6} -${312 - i * 5 * position} ${216 - i * 6} ${152 - i * 5 * position
+      } ${343 - i * 6}C${616 - i * 5 * position} ${470 - i * 6} ${684 - i * 5 * position
+      } ${875 - i * 6} ${684 - i * 5 * position} ${875 - i * 6}`,
     color: `rgba(15,23,42,${0.1 + i * 0.03})`,
     width: 0.5 + i * 0.03,
   }));
@@ -337,12 +334,24 @@ export function BackgroundPaths({
             />
           </motion.div>
 
+          {/* Title */}
+          {title && (
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.8 }}
+              className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 text-[#0C5FB3] dark:text-white/90 px-4"
+            >
+              {title}
+            </motion.h1>
+          )}
+
           {/* Animated Quotes - Word by Word */}
           {defaultQuotes.length > 0 && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.6, duration: 0.8 }}
+              transition={{ delay: 0.8, duration: 0.8 }}
               className="mb-3 sm:mb-4 px-4"
             >
               {defaultQuotes.map((quote, quoteIndex) => (
@@ -350,7 +359,7 @@ export function BackgroundPaths({
                   key={quoteIndex}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 0.8 + quoteIndex * 0.3, duration: 0.6 }}
+                  transition={{ delay: 1.0 + quoteIndex * 0.3, duration: 0.6 }}
                   className="text-xs sm:text-sm md:text-base mb-1.5 sm:mb-2 text-[#2E3A59] dark:text-white/80"
                 >
                   {quote.split(" ").map((word, wordIndex) => (
@@ -359,7 +368,7 @@ export function BackgroundPaths({
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{
-                        delay: 0.8 + quoteIndex * 0.3 + wordIndex * 0.05,
+                        delay: 1.0 + quoteIndex * 0.3 + wordIndex * 0.05,
                         duration: 0.3,
                       }}
                       className="inline-block mr-1.5"

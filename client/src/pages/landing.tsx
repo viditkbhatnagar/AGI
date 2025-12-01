@@ -6,15 +6,15 @@ export default function LandingPage() {
   };
 
   const quotes = [
-    "Transform your career with industry-recognized certifications",
-    "Access comprehensive courses and interactive modules",
-    "Earn digital certificates that validate your expertise worldwide",
+    "Access focused, industry-aligned courses designed to prepare you for professional certifications that validate expertise in your field",
+    "Advance through structured modules that take you from fundamentals to mastery",
   ];
 
   return (
     <BackgroundPaths
-      subtitle="Professional Certification Platform"
-      description="Choose from standalone professional certifications like CHRM, CPPM, CSCP, or comprehensive MBA-integrated programs. Each course is structured with progressive modules, ensuring mastery at every step."
+      title="Build the Skills Employers Actually Want"
+      subtitle="Your Professional Certification Training Platform"
+      description="Choose your path. Explore certifications including CHRM, CPPM, CSCP, and more. Each program is built to validate real expertise and move your career forward."
       quotes={quotes}
       onGetStarted={handleGetStarted}
     />
