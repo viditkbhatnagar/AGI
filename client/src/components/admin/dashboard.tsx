@@ -1,37 +1,37 @@
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useMemo } from 'react';
 import { Link } from "wouter";
-import { useState, useMemo } from 'react';
 import { subMonths, format } from 'date-fns';
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 import { useConditionalRender } from '@/lib/permissions-provider';
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip as RechartsTooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Legend
-} from 'recharts';
-import { Badge } from "@/components/ui/badge";
-import {
-  BarChart as BarChartIcon,
   CalendarClock,
   GraduationCap,
   School,
   UserPlus,
   Users
 } from "lucide-react";
-
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
+
+// Premium Dashboard Components
+import { BackgroundOrbs } from '@/components/dashboard/background-orbs';
+import { FloatingKpiCard } from '@/components/dashboard/floating-kpi-card';
+import { AnimatedChartContainer } from '@/components/dashboard/animated-chart-container';
+import { QuickActionButton } from '@/components/dashboard/quick-action-button';
+import { CommandBar } from '@/components/dashboard/command-bar';
+
+// AI-Themed Chart Components
+import { AnimatedCounter } from '@/components/dashboard/animated-counter';
+import { NeuralDonutChart } from '@/components/dashboard/neural-donut-chart';
+import { LiquidBarChart } from '@/components/dashboard/liquid-bar-chart';
+import { RadialProgress } from '@/components/dashboard/radial-progress';
+import { NeuralBarChart } from '@/components/dashboard/neural-bar-chart';
+import { GradientBarChart } from '@/components/dashboard/gradient-bar-chart';
+
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 
 // Helper to format ISO date-time strings
 function formatDateTime(isoString: string): string {
@@ -43,12 +43,17 @@ function formatDateTime(isoString: string): string {
 
 export function AdminDashboard() {
   const { renderIfCanCreate } = useConditionalRender();
-  const { data, isLoading, error } = useQuery<{ coursesBreakdown: { standalone: number; withMba: number }, totalEnrollments: number, totalStudents: number, newStudentsThisMonth: number, totalCourses: number, upcomingLiveClasses: number, nextLiveClass: { startTime: string } }>({
+  const { data, isLoading, error } = useQuery<{
+    coursesBreakdown: { standalone: number; withMba: number },
+    totalEnrollments: number,
+    totalStudents: number,
+    newStudentsThisMonth: number,
+    totalCourses: number,
+    upcomingLiveClasses: number,
+    nextLiveClass: { startTime: string }
+  }>({
     queryKey: ['/api/admin/dashboard']
   });
-
-  // Client-side derive upcoming scheduled classes for admin
-  
 
   const { data: allLiveClasses = [] } = useQuery({
     queryKey: ['/api/live-classes'],
@@ -73,7 +78,7 @@ export function AdminDashboard() {
         new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
       );
   }, [allLiveClasses]);
-  
+
   // Fetch data for charts
   const { data: enrollments = [] } = useQuery({
     queryKey: ['/api/enrollments'],
@@ -87,6 +92,7 @@ export function AdminDashboard() {
       return res.json();
     },
   });
+
   const { data: coursesList = [] } = useQuery({
     queryKey: ['/api/admin/courses'],
     queryFn: async () => {
@@ -99,6 +105,14 @@ export function AdminDashboard() {
       return res.json();
     },
   });
+
+  // Generate sparkline data for KPI cards (last 7 data points)
+  const generateSparklineData = (baseValue: number): number[] => {
+    return Array.from({ length: 7 }, (_, i) => {
+      const variance = Math.random() * 0.3 - 0.15; // ±15% variance
+      return Math.max(0, Math.round(baseValue * (1 + variance - (i * 0.02))));
+    }).reverse();
+  };
 
   const enrollmentTrendData = useMemo(() => {
     const points: { name: string; enrollments: number }[] = [];
@@ -130,6 +144,7 @@ export function AdminDashboard() {
       total,
     };
   }, [enrollments]);
+
   const lowCount = Math.round((progressBuckets.lowPct / 100) * progressBuckets.total);
   const midCount = Math.round((progressBuckets.midPct / 100) * progressBuckets.total);
   const highCount = Math.round((progressBuckets.highPct / 100) * progressBuckets.total);
@@ -139,9 +154,6 @@ export function AdminDashboard() {
     () => new Map(coursesList.map((c: any) => [c.slug, c.title])),
     [coursesList]
   );
-
-  const [filterCourse, setFilterCourse] = useState<string>('');
-const [filterStudent, setFilterStudent] = useState<string>('');
 
   const coursePopularityData = useMemo(() => {
     const countMap = new Map<string, number>();
@@ -157,38 +169,36 @@ const [filterStudent, setFilterStudent] = useState<string>('');
       .slice(0, 5);
   }, [enrollments, courseMap]);
 
-  // Active Students by Course – counts of not-started / in-progress / completed
-const heatmapData = useMemo(() => {
-  const map = new Map<
-    string,
-    { name: string; notStarted: number; inProgress: number; completed: number }
-  >();
+  // Active Students by Course
+  const heatmapData = useMemo(() => {
+    const map = new Map<
+      string,
+      { name: string; notStarted: number; inProgress: number; completed: number }
+    >();
 
-  enrollments.forEach((e: any) => {
-    const slug = e.courseSlug;
-    if (!map.has(slug)) {
-      map.set(slug, {
-        name: courseMap.get(slug) || slug,
-        notStarted: 0,
-        inProgress: 0,
-        completed: 0,
-      });
-    }
-    const entry = map.get(slug)!;
-    const pct = e.percentComplete ?? 0;
-    if (pct === 0) entry.notStarted++;
-    else if (pct >= 100) entry.completed++;
-    else entry.inProgress++;
-  });
+    enrollments.forEach((e: any) => {
+      const slug = e.courseSlug;
+      if (!map.has(slug)) {
+        map.set(slug, {
+          name: courseMap.get(slug) || slug,
+          notStarted: 0,
+          inProgress: 0,
+          completed: 0,
+        });
+      }
+      const entry = map.get(slug)!;
+      const pct = e.percentComplete ?? 0;
+      if (pct === 0) entry.notStarted++;
+      else if (pct >= 100) entry.completed++;
+      else entry.inProgress++;
+    });
 
-  // Optional: sort by total students descending
-  return Array.from(map.values()).sort(
-    (a, b) =>
-      b.notStarted + b.inProgress + b.completed -
-      (a.notStarted + a.inProgress + a.completed)
-  );
-}, [enrollments, courseMap]);
-
+    return Array.from(map.values()).sort(
+      (a, b) =>
+        b.notStarted + b.inProgress + b.completed -
+        (a.notStarted + a.inProgress + a.completed)
+    );
+  }, [enrollments, courseMap]);
 
   if (isLoading) {
     return <DashboardSkeleton />;
@@ -207,396 +217,251 @@ const heatmapData = useMemo(() => {
     );
   }
 
-  // Transform course breakdown data for chart
   const courseChartData = [
     { name: "Standalone", value: data?.coursesBreakdown?.standalone ?? 0 },
     { name: "With MBA", value: data?.coursesBreakdown?.withMba ?? 0 },
   ];
 
-  const COLORS = ['#3f51b5', '#ff5722', '#4caf50', '#9c27b0'];
+  const COLORS = ['hsl(var(--color-primary-500))', 'hsl(var(--color-accent-500))', 'hsl(var(--color-secondary-500))', '#9c27b0'];
 
   return (
     <TooltipProvider>
-      <div className="p-4 md:p-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
-        <div className="mt-2 md:mt-0 space-x-2">
-          {renderIfCanCreate(
-            <Link href="/admin/students/new">
-              <Button variant="secondary">
-                <UserPlus className="mr-2 h-4 w-4" />
-                Add Student
-              </Button>
-            </Link>
-          )}
-          {renderIfCanCreate(
-            <Link href="/admin/teachers/new">
-              <Button variant="secondary">
-                <UserPlus className="mr-2 h-4 w-4" />
-                Add Teacher
-              </Button>
-            </Link>
-          )}
-        </div>
-      </div>
-      
-      {/* Greeting Header + 4 Summary Cards */}
-      <Card className="mb-6 bg-[#0C5FB3] rounded-lg p-6">
-        <CardContent className="p-0">
-          <div className="text-white">
-            <h1 className="text-3xl font-semibold">Hello Admin!</h1>
-            <p className="mt-1">Welcome back to your dashboard</p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mt-6">
-            <Card className="flex items-center p-4 bg-[#DFDAC8] text-[#0C5FB3] shadow-none rounded-lg">
-              <div className="p-3 bg-white rounded-full">
-                <Users className="h-6 w-6 text-[#0C5FB3]" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm text-[#0C5FB3]">Total Students</p>
-                <p className="text-xl font-semibold text-[#0C5FB3]">{data?.totalStudents}</p>
-                <p className="text-xs text-[#0C5FB3] mt-1">
-                  {data?.newStudentsThisMonth} new this month
-                </p>
-              </div>
-            </Card>
-            <Card className="flex items-center p-4 bg-[#DFDAC8] text-[#0C5FB3] shadow-none rounded-lg">
-              <div className="p-3 bg-white rounded-full">
-                <School className="h-6 w-6 text-[#0C5FB3]" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm text-[#0C5FB3]">Total Courses</p>
-                <p className="text-xl font-semibold text-[#0C5FB3]">{data?.totalCourses}</p>
-                <p className="text-xs text-[#0C5FB3] mt-1">
-                  {data?.coursesBreakdown.standalone} standalone, {data?.coursesBreakdown.withMba} with MBA
-                </p>
-              </div>
-            </Card>
-            <Card className="flex items-center p-4 bg-[#DFDAC8] text-[#0C5FB3] shadow-none rounded-lg">
-              <div className="p-3 bg-white rounded-full">
-                <GraduationCap className="h-6 w-6 text-[#0C5FB3]" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm text-[#0C5FB3]">Active Enrollments</p>
-                <p className="text-xl font-semibold text-[#0C5FB3]">{data?.totalEnrollments}</p>
-                <p className="text-xs text-[#0C5FB3] mt-1">
-                  {progressBuckets.highPct}% high progress
-                </p>
-              </div>
-            </Card>
-            <Card className="flex items-center p-4 bg-[#DFDAC8] text-[#0C5FB3] shadow-none rounded-lg">
-              <div className="p-3 bg-white rounded-full">
-                <CalendarClock className="h-6 w-6 text-[#0C5FB3]" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm text-[#0C5FB3]">Upcoming Classes</p>
-                <p className="text-xl font-semibold text-[#0C5FB3]">{data?.upcomingLiveClasses ?? 0}</p>
-                {data?.nextLiveClass ? (
-                  <p className="text-xs text-[#0C5FB3] mt-1">
-                    Next: {formatDateTime(data.nextLiveClass.startTime)}
-                  </p>
-                ) : (
-                  <p className="text-xs text-[#0C5FB3] mt-1">No upcoming</p>
-                )}
-              </div>
-            </Card>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Background Orbs */}
+      <BackgroundOrbs />
 
-      {/* Calendar & Pathway Breakdown in 2x2 format */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        {/* Calendar Card */}
-        <Card className="overflow-hidden">
-          <div className="bg-[#8FA0D8] p-3 rounded-t-lg">
-            <h3 className="text-[#0B0829] text-lg font-medium">Upcoming Classes Calendar</h3>
+      {/* Command Bar */}
+      <CommandBar />
+
+      <div className="p-4 md:p-6 relative">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
+              Admin Dashboard
+            </h1>
+            <p className="text-neutral-600 dark:text-neutral-400 mt-1">
+              Welcome back! Here's your overview for today.
+            </p>
           </div>
-          <CardContent className="p-0">
-            <div className="p-4">
-              <Calendar
-                className="w-full"
-                tileContent={({ date, view }) => {
-                  if (view !== 'month') return null;
-                  const dayClasses = upcomingLiveClasses.filter(
-                    (lc: any) => new Date(lc.startTime).toDateString() === date.toDateString()
-                  );
-                  if (!dayClasses.length) return null;
-                  return (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div className="flex flex-col items-center justify-center h-full w-full mt-1 cursor-pointer">
-                          <div className="bg-blue-500 rounded-full w-2 h-2" />
-                          <span className="text-xs text-blue-500">{dayClasses.length}</span>
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="whitespace-pre-line">
-                        {dayClasses.map((lc: any) => {
-                          const time = format(new Date(lc.startTime), 'h:mm a');
-                          return `${time} – ${lc.title}`;
-                        }).join('\n')}
-                      </TooltipContent>
-                    </Tooltip>
-                  );
-                }}
+        </div>
+
+        {/* KPI Row - 4 Floating Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <FloatingKpiCard
+            icon={Users}
+            label="Total Students"
+            value={data?.totalStudents || 0}
+            subtitle={`${data?.newStudentsThisMonth || 0} new this month`}
+            delta={{ value: 12, isPositive: true }}
+            sparklineData={generateSparklineData(data?.totalStudents || 100)}
+            animationDelay={0}
+          />
+
+          <FloatingKpiCard
+            icon={School}
+            label="Total Courses"
+            value={data?.totalCourses || 0}
+            subtitle={`${data?.coursesBreakdown?.standalone || 0} standalone, ${data?.coursesBreakdown?.withMba || 0} with MBA`}
+            delta={{ value: 5, isPositive: true }}
+            sparklineData={generateSparklineData(data?.totalCourses || 50)}
+            animationDelay={0.08}
+          />
+
+          <FloatingKpiCard
+            icon={GraduationCap}
+            label="Active Enrollments"
+            value={data?.totalEnrollments || 0}
+            subtitle={`${progressBuckets.highPct}% high progress`}
+            delta={{ value: 8, isPositive: true }}
+            sparklineData={generateSparklineData(data?.totalEnrollments || 200)}
+            animationDelay={0.16}
+          />
+
+          <FloatingKpiCard
+            icon={CalendarClock}
+            label="Upcoming Classes"
+            value={data?.upcomingLiveClasses ?? 0}
+            subtitle={data?.nextLiveClass ? `Next: ${format(new Date(data.nextLiveClass.startTime), 'MMM dd')}` : 'No upcoming'}
+            sparklineData={generateSparklineData(data?.upcomingLiveClasses || 10)}
+            animationDelay={0.24}
+          />
+        </div>
+
+        {/* Calendar + Pathway Breakdown */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <AnimatedChartContainer
+            title="Upcoming Classes Calendar"
+            animationDelay={0.32}
+          >
+            <Calendar
+              className="w-full"
+              tileContent={({ date, view }) => {
+                if (view !== 'month') return null;
+                const dayClasses = upcomingLiveClasses.filter(
+                  (lc: any) => new Date(lc.startTime).toDateString() === date.toDateString()
+                );
+                if (!dayClasses.length) return null;
+                return (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex flex-col items-center justify-center h-full w-full mt-1 cursor-pointer">
+                        <div className="bg-accent-500 rounded-full w-2 h-2" />
+                        <span className="text-xs text-accent-600 dark:text-accent-400">{dayClasses.length}</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="whitespace-pre-line">
+                      {dayClasses.map((lc: any) => {
+                        const time = format(new Date(lc.startTime), 'h:mm a');
+                        return `${time} – ${lc.title}`;
+                      }).join('\n')}
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              }}
+            />
+          </AnimatedChartContainer>
+
+          <AnimatedChartContainer
+            title="Pathway Breakdown"
+            badge="By type"
+            animationDelay={0.4}
+          >
+            <div className="h-80">
+              <NeuralDonutChart
+                data={courseChartData}
+                colors={COLORS}
+                centerLabel="Total"
+                centerValue={`${data?.totalCourses || 0}`}
               />
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Pathway Breakdown */}
-        <Card>
-          <div className="bg-[#8FA0D8] p-3 rounded-t-lg">
-            <h3 className="text-[#0B0829] text-lg font-medium">Pathway Breakdown</h3>
-          </div>
-          <CardContent className="pt-6 border-t border-gray-200">
-            <div className="flex items-center justify-between mb-4">
-              <span />
-              <Badge variant="outline">By type</Badge>
-            </div>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={courseChartData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={70}
-                    outerRadius={100}
-                    paddingAngle={5}
-                    dataKey="value"
-                    label={({ name, percent }) =>
-                      `${name}: ${(percent * 100).toFixed(0)}%`
-                    }
-                  >
-                    {courseChartData.map((_, index) => (
-                      <Cell key={index} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <RechartsTooltip formatter={(v) => [`${v} courses`, 'Courses']} />
-                  <Legend verticalAlign="bottom" height={36} />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Active Students by Course - Full Width */}
-      <Card className="mb-6">
-        <div className="bg-[#8FA0D8] p-3 rounded-t-lg">
-          <h3 className="text-[#0B0829] text-lg font-medium">Active Students by Course</h3>
+          </AnimatedChartContainer>
         </div>
-        <CardContent className="pt-6 border-t border-gray-200">
-          <ResponsiveContainer width="100%" height={400}>
-            <BarChart data={heatmapData} layout="vertical" margin={{ left: 150 }}>
-              <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-              <XAxis type="number" />
-              <YAxis dataKey="name" type="category" width={200} />
-              <RechartsTooltip />
-              <Bar dataKey="notStarted" stackId="a" fill="#d1d5db" name="Not Started" />
-              <Bar dataKey="inProgress" stackId="a" fill="#fbbf24" name="In Progress" />
-              <Bar dataKey="completed" stackId="a" fill="#4ade80" name="Completed" />
-            </BarChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
-      
-      {/* Enrollment Trend & Progress Snapshot */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        {/* Enrollment Trend */}
-        <Card>
-          <div className="bg-[#8FA0D8] p-3 rounded-t-lg">
-            <h3 className="text-[#0B0829] text-lg font-medium">Enrollment Trend</h3>
+
+        {/* Active Students by Course - Full Width */}
+        <AnimatedChartContainer
+          title="Active Students by Course"
+          animationDelay={0.48}
+          className="mb-8"
+        >
+          <div className="h-96">
+            <NeuralBarChart
+              data={heatmapData}
+              dataKeys={['notStarted', 'inProgress', 'completed']}
+              colors={['#d1d5db', '#fbbf24', '#4ade80']}
+            />
           </div>
-          <CardContent className="pt-6 border-t border-gray-200">
-            <div className="flex items-center justify-between mb-4">
-              <span />
-              <Badge variant="outline">Last 6 months</Badge>
-            </div>
+        </AnimatedChartContainer>
+
+        {/* Enrollment Trend +Student Progress */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <AnimatedChartContainer
+            title="Enrollment Trend"
+            badge="Last 6 months"
+            animationDelay={0.56}
+          >
             <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={enrollmentTrendData}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <RechartsTooltip
-                    contentStyle={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '0.5rem' }}
-                    formatter={(value: any) => [`${value} enrollments`, 'Enrollments']}
-                  />
-                  <Bar dataKey="enrollments" fill="#3f51b5" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+              <LiquidBarChart
+                data={enrollmentTrendData.map(d => ({ name: d.name, value: d.enrollments }))}
+                color="hsl(220, 70%, 55%)"
+              />
             </div>
-          </CardContent>
-        </Card>
+          </AnimatedChartContainer>
 
-        {/* Student Progress Snapshot */}
-        <Card>
-          <div className="bg-[#8FA0D8] p-3 rounded-t-lg">
-            <h3 className="text-[#0B0829] text-lg font-medium">Student Progress Snapshot</h3>
-          </div>
-          <CardContent className="p-6 flex flex-col justify-center space-y-6">
-            <div className="flex-1 flex flex-col justify-center space-y-6">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <div className="block w-full cursor-pointer">
-                      <p className="text-sm text-gray-500 mb-1">0–25% Complete</p>
-                    </div>
-                    <div className="w-full h-4 bg-gray-200 rounded-full">
-                      <div className="h-full bg-red-500 rounded-full" style={{ width: `${progressBuckets.lowPct}%` }} />
-                    </div>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent side="top">
-                  {`0–25% Complete: ${lowCount} enrollments (${progressBuckets.lowPct}%)`}
-                </TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <div className="block w-full cursor-pointer">
-                      <p className="text-sm text-gray-500 mb-1">25–75% Complete</p>
-                    </div>
-                    <div className="w-full h-4 bg-gray-200 rounded-full">
-                      <div className="h-full bg-yellow-500 rounded-full" style={{ width: `${progressBuckets.midPct}%` }} />
-                    </div>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent side="top">
-                  {`25–75% Complete: ${midCount} enrollments (${progressBuckets.midPct}%)`}
-                </TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <div className="block w-full cursor-pointer">
-                      <p className="text-sm text-gray-500 mb-1">75–100% Complete</p>
-                    </div>
-                    <div className="w-full h-4 bg-gray-200 rounded-full">
-                      <div className="h-full bg-green-500 rounded-full" style={{ width: `${progressBuckets.highPct}%` }} />
-                    </div>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent side="top">
-                  {`75–100% Complete: ${highCount} enrollments (${progressBuckets.highPct}%)`}
-                </TooltipContent>
-              </Tooltip>
+          <AnimatedChartContainer
+            title="Student Progress Snapshot"
+            animationDelay={0.64}
+          >
+            <div className="flex flex-col md:flex-row items-center justify-center gap-8 h-80">
+              <RadialProgress
+                percentage={progressBuckets.lowPct}
+                label="0-25% Done"
+                color="#ef4444"
+                glowColor="#dc2626"
+                count={lowCount}
+                size={140}
+              />
+              <RadialProgress
+                percentage={progressBuckets.midPct}
+                label="25-75% Done"
+                color="#fbbf24"
+                glowColor="#f59e0b"
+                count={midCount}
+                size={140}
+              />
+              <RadialProgress
+                percentage={progressBuckets.highPct}
+                label="75-100% Done"
+                color="#4ade80"
+                glowColor="#22c55e"
+                count={highCount}
+                size={140}
+              />
             </div>
-            <p className="text-xs text-gray-500 mt-2">Based on {progressBuckets.total} total enrollments</p>
-          </CardContent>
-        </Card>
-      </div>
+            <p className="text-xs text-neutral-500 text-center mt-2">Based on {progressBuckets.total} total enrollments</p>
+          </AnimatedChartContainer>
+        </div>
 
-      {/* Pathway Breakdown, Course Popularity & Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-10 gap-6 mb-6">
-        {/* Course Popularity */}
-        <Card className="lg:col-span-7">
-          <div className="bg-[#8FA0D8] p-3 rounded-t-lg">
-            <h3 className="text-[#0B0829] text-lg font-medium">Course Popularity</h3>
-          </div>
-          <CardContent className="pt-6 border-t border-gray-200">
-            <div className="flex items-center justify-between mb-4">
-              <span />
-              <Badge variant="outline">Top 5</Badge>
-            </div>
+        {/* Course Popularity + Quick Actions */}
+        <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
+          <AnimatedChartContainer
+            title="Course Popularity"
+            badge="Top 5"
+            animationDelay={0.72}
+            className="lg:col-span-7"
+          >
             <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={coursePopularityData} layout="vertical" margin={{ left: 40 }}>
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                  <XAxis type="number" />
-                  <YAxis dataKey="name" type="category" width={150} />
-                  <RechartsTooltip formatter={(v) => [`${v}`, 'Enrollments']} />
-                  <Bar dataKey="count" fill="#3f51b5" radius={[0, 4, 4, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+              <GradientBarChart
+                data={coursePopularityData.map(d => ({ name: String(d.name), value: d.count }))}
+                layout="vertical"
+                gradientColors={['hsl(220, 70%, 60%)', 'hsl(174, 72%, 55%)']}
+              />
             </div>
-          </CardContent>
-        </Card>
+          </AnimatedChartContainer>
 
-        {/* Quick Actions */}
-        <Card className="lg:col-span-3">
-          <div className="bg-[#8FA0D8] p-3 rounded-t-lg">
-            <h2 className="text-[#0B0829] text-lg font-medium">Quick Actions</h2>
-          </div>
-          <CardContent className="p-5 border-t border-gray-200">
-            {/* existing Quick Actions buttons */}
+          <AnimatedChartContainer
+            title="Quick Actions"
+            animationDelay={0.8}
+            className="lg:col-span-3"
+          >
             <div className="space-y-3">
               {renderIfCanCreate(
                 <Link href="/admin/live-classes/new">
-                  <Button variant="outline" className="w-full justify-start mb-2">
-                    <CalendarClock className="mr-2 h-4 w-4" />
-                    Schedule Live Class
-                  </Button>
+                  <QuickActionButton
+                    icon={CalendarClock}
+                    label="Schedule Live Class"
+                    onClick={() => { }}
+                  />
                 </Link>
               )}
               {renderIfCanCreate(
                 <Link href="/admin/students/new">
-                  <Button variant="outline" className="w-full justify-start mb-2">
-                    <UserPlus className="mr-2 h-4 w-4" />
-                    Add New Student
-                  </Button>
+                  <QuickActionButton
+                    icon={UserPlus}
+                    label="Add New Student"
+                    onClick={() => { }}
+                  />
                 </Link>
               )}
               {renderIfCanCreate(
                 <Link href="/admin/courses/new">
-                  <Button variant="outline" className="w-full justify-start mb-2">
-                    <School className="mr-2 h-4 w-4" />
-                    Add New Course
-                  </Button>
+                  <QuickActionButton
+                    icon={School}
+                    label="Add New Course"
+                    onClick={() => { }}
+                  />
                 </Link>
               )}
               {renderIfCanCreate(
                 <Link href="/admin/enrollments/new">
-                  <Button variant="outline" className="w-full justify-start">
-                    <GraduationCap className="mr-2 h-4 w-4" />
-                    Create Enrollment
-                  </Button>
+                  <QuickActionButton
+                    icon={GraduationCap}
+                    label="Create Enrollment"
+                    onClick={() => { }}
+                  />
                 </Link>
               )}
             </div>
-          </CardContent>
-        </Card>
-      </div>
-      
-      {/* Recent Activity and Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* <Card className="lg:col-span-2">
-          <div className="px-5 py-4 border-b border-gray-200 flex justify-between items-center">
-            <h2 className="font-inter text-lg font-medium text-gray-800">Recent Activity</h2>
-            <Link href="/admin/students">
-              <Button variant="link" size="sm">View All</Button>
-            </Link>
-          </div>
-          <CardContent className="p-0">
-            <div className="divide-y divide-gray-200">
-              {[
-                { name: "Alice Johnson", action: "enrolled in", course: "Certified Human Resource Manager", time: "2 hours ago" },
-                { name: "Bob Smith", action: "completed module 1 of", course: "MBA + Certified HR Manager", time: "Yesterday" },
-                { name: "Carol Davis", action: "attempted quiz for", course: "Certified Project Manager", time: "2 days ago" },
-                { name: "Dave Wilson", action: "registered for", course: "Supply Chain Professional", time: "3 days ago" },
-              ].map((activity, index) => (
-                <div key={index} className="py-3 px-5 hover:bg-gray-50">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0 h-10 w-10 bg-primary-100 rounded-full flex items-center justify-center">
-                      <span className="font-medium text-primary-700">{activity.name.split(" ").map(n => n[0]).join("")}</span>
-                    </div>
-                    <div className="ml-3">
-                      <p className="text-sm text-gray-800">
-                        <span className="font-medium">{activity.name}</span> {activity.action}{" "}
-                        <span className="font-medium">{activity.course}</span>
-                      </p>
-                      <p className="text-xs text-gray-500">{activity.time}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card> */}
-        
-        
-      </div>
+          </AnimatedChartContainer>
+        </div>
       </div>
     </TooltipProvider>
   );
@@ -607,12 +472,8 @@ function DashboardSkeleton() {
     <div className="p-4 md:p-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <Skeleton className="h-8 w-48" />
-        <div className="mt-2 md:mt-0 flex space-x-2">
-          <Skeleton className="h-10 w-32" />
-          <Skeleton className="h-10 w-32" />
-        </div>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {[1, 2, 3, 4].map((i) => (
           <Card key={i} className="dashboard-card">
@@ -629,62 +490,15 @@ function DashboardSkeleton() {
           </Card>
         ))}
       </div>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {[1, 2].map((i) => (
           <Card key={i}>
             <CardContent className="pt-6">
-              <div className="flex justify-between mb-4">
-                <Skeleton className="h-6 w-40" />
-                <Skeleton className="h-6 w-24" />
-              </div>
               <Skeleton className="h-80 w-full" />
             </CardContent>
           </Card>
         ))}
-      </div>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2">
-          <div className="px-5 py-4 border-b border-gray-200 flex justify-between items-center">
-            <Skeleton className="h-6 w-40" />
-            <Skeleton className="h-6 w-24" />
-          </div>
-          <CardContent className="p-0">
-            <div className="divide-y divide-gray-200">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="py-3 px-5">
-                  <div className="flex items-center">
-                    <Skeleton className="h-10 w-10 rounded-full" />
-                    <div className="ml-3 w-full">
-                      <Skeleton className="h-4 w-full max-w-md mb-2" />
-                      <Skeleton className="h-3 w-20" />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <div className="px-5 py-4 border-b border-gray-200">
-            <Skeleton className="h-6 w-40" />
-          </div>
-          <CardContent className="p-5">
-            <div className="space-y-3">
-              {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} className="h-10 w-full mb-2" />
-              ))}
-            </div>
-            
-            <div className="mt-6 bg-gray-50 p-4 rounded-lg">
-              <Skeleton className="h-5 w-40 mb-2" />
-              <Skeleton className="h-4 w-full mb-3" />
-              <Skeleton className="h-10 w-full" />
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );

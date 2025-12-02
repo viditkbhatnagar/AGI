@@ -1,3 +1,4 @@
+@import './styles/design-tokens.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,43 +6,43 @@
 :root {
   --background: 0 0% 100%;
   --foreground: 20 14.3% 4.1%;
-  
+
   --muted: 60 4.8% 95.9%;
   --muted-foreground: 25 5.3% 44.7%;
-  
+
   --popover: 0 0% 100%;
   --popover-foreground: 20 14.3% 4.1%;
-  
+
   --card: 0 0% 100%;
   --card-foreground: 20 14.3% 4.1%;
-  
+
   --border: 20 5.9% 90%;
   --input: 20 5.9% 90%;
-  
+
   --primary: 225 90.4% 48.2%;
   --primary-foreground: 210 40% 98%;
-  
+
   --secondary: 60 4.8% 95.9%;
   --secondary-foreground: 24 9.8% 10%;
-  
+
   --accent: 32 94% 44.1%;
   --accent-foreground: 210 40% 98%;
-  
+
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 210 40% 98%;
-  
+
   --success: 142 76.2% 36.3%;
   --success-foreground: 210 40% 98%;
-  
+
   --ring: 20 14.3% 4.1%;
   --radius: 0.5rem;
-  
+
   --chart-1: 225 90.4% 48.2%;
   --chart-2: 32 94% 44.1%;
   --chart-3: 142 76.2% 36.3%;
   --chart-4: 262 83.3% 57.8%;
   --chart-5: 341 90% 51.8%;
-  
+
   --sidebar-background: 225 90.4% 48.2%;
   --sidebar-foreground: 0 0% 100%;
   --sidebar-primary: 0 0% 100%;
@@ -55,42 +56,42 @@
 .dark {
   --background: 240 10% 3.9%;
   --foreground: 0 0% 98%;
-  
+
   --muted: 240 3.7% 15.9%;
   --muted-foreground: 240 5% 64.9%;
-  
+
   --popover: 240 10% 3.9%;
   --popover-foreground: 0 0% 98%;
-  
+
   --card: 240 10% 3.9%;
   --card-foreground: 0 0% 98%;
-  
+
   --border: 240 3.7% 15.9%;
   --input: 240 3.7% 15.9%;
-  
+
   --primary: 225 90.4% 48.2%;
   --primary-foreground: 0 0% 100%;
-  
+
   --secondary: 240 3.7% 15.9%;
   --secondary-foreground: 0 0% 98%;
-  
+
   --accent: 32 94% 44.1%;
   --accent-foreground: 0 0% 100%;
-  
+
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 0 0% 98%;
-  
+
   --success: 142 76.2% 36.3%;
   --success-foreground: 0 0% 98%;
-  
+
   --ring: 240 4.9% 83.9%;
-  
+
   --chart-1: 225 90.4% 48.2%;
   --chart-2: 32 94% 44.1%;
   --chart-3: 142 76.2% 36.3%;
   --chart-4: 262 83.3% 57.8%;
   --chart-5: 341 90% 51.8%;
-  
+
   --sidebar-background: 225 40% 16%;
   --sidebar-foreground: 0 0% 100%;
   --sidebar-primary: 0 0% 100%;
@@ -105,24 +106,25 @@
   * {
     @apply border-border;
   }
-  
+
   body {
     @apply font-sans antialiased bg-background text-foreground;
   }
-  
+
   .dashboard-card {
     @apply transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg;
   }
-  
+
   .sidebar-item.active {
     @apply bg-accent/10 border-l-2 border-primary;
   }
-  
+
   /* Quiz layout stability */
   .quiz-container {
-    @apply transform-gpu; /* Use GPU acceleration for smoother animations */
+    @apply transform-gpu;
+    /* Use GPU acceleration for smoother animations */
   }
-  
+
   /* Prevent scroll jumping when content changes */
   .quiz-container input[type="radio"] {
     @apply transform-gpu transition-all duration-200;
@@ -134,10 +136,12 @@
     opacity: 1;
     transform: translateX(0) scale(1);
   }
+
   70% {
     opacity: 1;
     transform: translateX(0) scale(1);
   }
+
   100% {
     opacity: 0;
     transform: translateX(0.5rem) scale(0.95);
@@ -146,4 +150,274 @@
 
 .animate-fadeOut {
   animation: fadeOutLabel 3s ease-out forwards;
+}
+
+/* ========== Ripple Effect ========== */
+.ripple-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.ripple-effect {
+  position: absolute;
+  border-radius: 50%;
+  background-color: currentColor;
+  opacity: 0.3;
+  transform: scale(0);
+  animation: ripple 600ms ease-out;
+  pointer-events: none;
+}
+
+/* ========== Primary Color Utilities ========== */
+.bg-primary-500 {
+  background-color: hsl(var(--color-primary-500));
+}
+
+.bg-primary-100 {
+  background-color: hsl(var(--color-primary-100));
+}
+
+.bg-primary-700 {
+  background-color: hsl(var(--color-primary-700));
+}
+
+.bg-primary-900 {
+  background-color: hsl(var(--color-primary-900) / 0.3);
+}
+
+.text-primary-600 {
+  color: hsl(var(--color-primary-600));
+}
+
+.text-primary-400 {
+  color: hsl(var(--color-primary-400));
+}
+
+/* ========== Neutral Color Utilities ========== */
+.bg-neutral-50 {
+  background-color: hsl(var(--color-neutral-50));
+}
+
+.bg-neutral-800 {
+  background-color: hsl(var(--color-neutral-800));
+}
+
+.bg-neutral-900 {
+  background-color: hsl(var(--color-neutral-900));
+}
+
+.text-neutral-600 {
+  color: hsl(var(--color-neutral-600));
+}
+
+.text-neutral-400 {
+  color: hsl(var(--color-neutral-400));
+}
+
+.text-neutral-700 {
+  color: hsl(var(--color-neutral-700));
+}
+
+.text-neutral-300 {
+  color: hsl(var(--color-neutral-300));
+}
+
+.text-neutral-900 {
+  color: hsl(var(--color-neutral-900));
+}
+
+.text-neutral-100 {
+  color: hsl(var(--color-neutral-100));
+}
+
+.text-neutral-500 {
+  color: hsl(var(--color-neutral-500));
+}
+
+.border-neutral-200 {
+  border-color: hsl(var(--color-neutral-200));
+}
+
+/* ========== Accent Color Utilities ========== */
+.bg-accent-500 {
+  background-color: hsl(var(--color-accent-500));
+}
+
+.text-accent-600 {
+  color: hsl(var(--color-accent-600));
+}
+
+/* ========== Focus Ring for Accessibility ========== */
+.focus-ring {
+  outline: 3px solid hsl(var(--color-accent-500) / 0.5);
+  outline-offset: 2px;
+}
+
+*:focus-visible {
+  @apply focus-ring;
+}
+
+/* ========== Admin Dashboard Theme ========== */
+
+/* Admin calendar styling - Light Theme */
+.admin-calendar .react-calendar {
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  width: 100%;
+}
+
+.admin-calendar .react-calendar__navigation {
+  margin-bottom: 1rem;
+}
+
+.admin-calendar .react-calendar__navigation button {
+  color: #1a1a2e;
+  font-size: 1rem;
+  font-weight: 600;
+  background: transparent;
+  border-radius: 0.5rem;
+  min-width: 2.5rem;
+  height: 2.5rem;
+}
+
+.admin-calendar .react-calendar__navigation button:hover,
+.admin-calendar .react-calendar__navigation button:focus {
+  background: rgba(55, 91, 190, 0.08);
+}
+
+.admin-calendar .react-calendar__navigation button:disabled {
+  color: #9CA3AF;
+  opacity: 0.5;
+}
+
+.admin-calendar .react-calendar__month-view__weekdays {
+  text-transform: uppercase;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #6B7280;
+  letter-spacing: 0.05em;
+}
+
+.admin-calendar .react-calendar__month-view__weekdays abbr {
+  text-decoration: none;
+}
+
+.admin-calendar .react-calendar__tile {
+  color: #1a1a2e;
+  font-size: 0.875rem;
+  padding: 0.75rem 0.5rem;
+  background: transparent;
+  border-radius: 0.5rem;
+  position: relative;
+}
+
+.admin-calendar .react-calendar__tile:hover {
+  background: rgba(55, 91, 190, 0.08);
+}
+
+.admin-calendar .react-calendar__tile--now {
+  background: rgba(24, 230, 201, 0.15);
+  color: #0D9488;
+  font-weight: 600;
+}
+
+.admin-calendar .react-calendar__tile--now:hover {
+  background: rgba(24, 230, 201, 0.25);
+}
+
+.admin-calendar .react-calendar__tile--active {
+  background: linear-gradient(135deg, #375BBE, #9B5CFF);
+  color: white;
+}
+
+.admin-calendar .react-calendar__tile--active:hover {
+  background: linear-gradient(135deg, #375BBE, #9B5CFF);
+  opacity: 0.9;
+}
+
+.admin-calendar .react-calendar__tile.has-events {
+  font-weight: 600;
+}
+
+.admin-calendar .react-calendar__month-view__days__day--neighboringMonth {
+  color: #9CA3AF;
+  opacity: 0.5;
+}
+
+/* Admin glass scrollbar */
+.admin-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.admin-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 3px;
+}
+
+.admin-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.admin-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Admin shimmer animation */
+@keyframes admin-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.admin-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.08),
+    transparent
+  );
+  animation: admin-shimmer 2s infinite;
+}
+
+/* Admin command menu styling */
+[cmdk-root] {
+  --cmdk-shadow: 0 16px 70px rgb(0 0 0 / 0.35);
+}
+
+[cmdk-input] {
+  font-family: inherit;
+}
+
+[cmdk-item] {
+  cursor: pointer;
+}
+
+[cmdk-item][data-selected='true'] {
+  background: rgba(30, 140, 255, 0.1);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .admin-calendar .react-calendar__tile,
+  .admin-shimmer::after {
+    animation: none;
+    transition: none;
+  }
 }
