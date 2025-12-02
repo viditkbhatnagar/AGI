@@ -107,6 +107,7 @@ function Router() {
       <Route path="/admin/exam-results" component={AdminExamResults} />
       <Route path="/admin/feedbacks" component={AdminFeedbacks} />
       <Route path="/admin/last-logins" component={AdminLastLogins} />
+      <Route path="/admin/dashboard" component={AdminDashboard} />
       <Route path="/admin" component={AdminDashboard} />
 
       {/* Fallback to 404 */}

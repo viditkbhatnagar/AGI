@@ -1,0 +1,363 @@
+/* 
+ * Design Tokens - American Global Institute Admin Dashboard
+ * Premium, modern design system with academic professionalism
+ */
+
+:root {
+  /* ========== Color Palette - Light Mode ========== */
+  
+  /* Primary - Deep Navy/Indigo */
+  --color-primary-50: 220 90% 97%;
+  --color-primary-100: 220 90% 92%;
+  --color-primary-200: 220 85% 82%;
+  --color-primary-300: 220 80% 70%;
+  --color-primary-400: 220 75% 55%;
+  --color-primary-500: 220 70% 42%;  /* Main primary */
+  --color-primary-600: 220 75% 35%;
+  --color-primary-700: 220 80% 28%;
+  --color-primary-800: 220 85% 20%;
+  --color-primary-900: 220 90% 12%;
+  
+  /* Accent - Teal/Emerald */
+  --color-accent-50: 174 72% 96%;
+  --color-accent-100: 174 70% 88%;
+  --color-accent-200: 174 68% 75%;
+  --color-accent-300: 174 66% 62%;
+  --color-accent-400: 174 64% 50%;
+  --color-accent-500: 174 72% 45%;  /* Main accent */
+  --color-accent-600: 174 75% 38%;
+  --color-accent-700: 174 78% 30%;
+  --color-accent-800: 174 80% 22%;
+  --color-accent-900: 174 85% 15%;
+  
+  /* Secondary - Amber */
+  --color-secondary-50: 43 96% 95%;
+  --color-secondary-100: 43 94% 88%;
+  --color-secondary-200: 43 92% 75%;
+  --color-secondary-300: 43 90% 65%;
+  --color-secondary-400: 43 94% 58%;
+  --color-secondary-500: 43 96% 56%;  /* Main secondary */
+  --color-secondary-600: 43 92% 48%;
+  --color-secondary-700: 43 88% 40%;
+  --color-secondary-800: 43 85% 32%;
+  --color-secondary-900: 43 80% 24%;
+  
+  /* Cool Neutrals */
+  --color-neutral-50: 220 20% 98%;
+  --color-neutral-100: 220 18% 95%;
+  --color-neutral-200: 220 16% 88%;
+  --color-neutral-300: 220 14% 75%;
+  --color-neutral-400: 220 12% 60%;
+  --color-neutral-500: 220 10% 45%;
+  --color-neutral-600: 220 12% 35%;
+  --color-neutral-700: 220 14% 25%;
+  --color-neutral-800: 220 16% 15%;
+  --color-neutral-900: 220 20% 8%;
+  
+  /* Semantic Colors */
+  --color-success: 142 76% 36%;
+  --color-success-light: 142 70% 92%;
+  --color-warning: 43 96% 56%;
+  --color-warning-light: 43 90% 92%;
+  --color-error: 0 84% 60%;
+  --color-error-light: 0 80% 95%;
+  --color-info: 220 70% 42%;
+  --color-info-light: 220 85% 95%;
+  
+  /* Progress Indicators */
+  --color-progress-low: 0 84% 60%;     /* 0-25% - Red */
+  --color-progress-mid: 43 96% 56%;    /* 25-75% - Amber */
+  --color-progress-high: 142 76% 36%;  /* 75-100% - Green */
+  
+  /* Surface Colors */
+  --color-background: 220 20% 98%;
+  --color-surface: 0 0% 100%;
+  --color-surface-elevated: 0 0% 100%;
+  --color-surface-overlay: 220 20% 98%;
+  
+  /* Text Colors */
+  --color-text-primary: 220 20% 8%;
+  --color-text-secondary: 220 12% 35%;
+  --color-text-tertiary: 220 10% 45%;
+  --color-text-inverse: 0 0% 100%;
+  
+  /* Border Colors */
+  --color-border-subtle: 220 16% 88%;
+  --color-border-default: 220 14% 75%;
+  --color-border-strong: 220 12% 60%;
+  
+  /* ========== Typography ========== */
+  
+  /* Font Families */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  --font-mono: 'SF Mono', 'Consolas', 'Monaco', monospace;
+  
+  /* Font Sizes */
+  --text-xs: 0.75rem;      /* 12px */
+  --text-sm: 0.875rem;     /* 14px */
+  --text-base: 1rem;       /* 16px */
+  --text-lg: 1.125rem;     /* 18px */
+  --text-xl: 1.25rem;      /* 20px */
+  --text-2xl: 1.5rem;      /* 24px */
+  --text-3xl: 1.875rem;    /* 30px */
+  --text-4xl: 2.25rem;     /* 36px */
+  
+  /* Font Weights */
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  
+  /* Line Heights */
+  --leading-tight: 1.25;
+  --leading-snug: 1.375;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+  --leading-loose: 2;
+  
+  /* ========== Spacing (8px Grid) ========== */
+  
+  --space-0: 0;
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+  --space-20: 5rem;     /* 80px */
+  --space-24: 6rem;     /* 96px */
+  
+  /* ========== Border Radius ========== */
+  
+  --radius-sm: 0.5rem;   /* 8px */
+  --radius-md: 0.75rem;  /* 12px */
+  --radius-lg: 1rem;     /* 16px */
+  --radius-xl: 1.25rem;  /* 20px */
+  --radius-full: 9999px;
+  
+  /* ========== Shadows (5-level elevation system) ========== */
+  
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  
+  /* Colored Shadows for Cards */
+  --shadow-primary: 0 4px 14px 0 rgb(67 56 202 / 0.15);
+  --shadow-accent: 0 4px 14px 0 rgb(20 184 166 / 0.15);
+  
+  /* ========== Animation Tokens ========== */
+  
+  /* Durations */
+  --duration-instant: 0ms;
+  --duration-fast: 120ms;
+  --duration-normal: 240ms;
+  --duration-slow: 320ms;
+  --duration-slower: 500ms;
+  --duration-background: 15000ms;  /* For floating orbs */
+  
+  /* Easing Functions */
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);  /* Premium smooth easing */
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  
+  /* ========== Z-Index Scale ========== */
+  
+  --z-base: 0;
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+  
+  /* ========== Misc ========== */
+  
+  --blur-sm: 4px;
+  --blur-md: 8px;
+  --blur-lg: 16px;
+  --blur-xl: 24px;
+}
+
+/* ========== Dark Mode ========== */
+
+.dark {
+  /* Primary - Adjusted for dark backgrounds */
+  --color-primary-50: 220 90% 12%;
+  --color-primary-100: 220 85% 18%;
+  --color-primary-200: 220 80% 25%;
+  --color-primary-300: 220 75% 32%;
+  --color-primary-400: 220 70% 42%;
+  --color-primary-500: 220 75% 55%;  /* Main primary for dark mode */
+  --color-primary-600: 220 80% 65%;
+  --color-primary-700: 220 85% 75%;
+  --color-primary-800: 220 90% 85%;
+  --color-primary-900: 220 90% 92%;
+  
+  /* Accent - Teal/Emerald */
+  --color-accent-50: 174 85% 15%;
+  --color-accent-100: 174 80% 22%;
+  --color-accent-200: 174 75% 30%;
+  --color-accent-300: 174 70% 38%;
+  --color-accent-400: 174 68% 50%;
+  --color-accent-500: 174 70% 60%;  /* Main accent for dark mode */
+  --color-accent-600: 174 72% 70%;
+  --color-accent-700: 174 74% 78%;
+  --color-accent-800: 174 76% 86%;
+  --color-accent-900: 174 78% 92%;
+  
+  /* Secondary - Amber */
+  --color-secondary-50: 43 80% 24%;
+  --color-secondary-100: 43 85% 32%;
+  --color-secondary-200: 43 88% 40%;
+  --color-secondary-300: 43 90% 48%;
+  --color-secondary-400: 43 92% 58%;
+  --color-secondary-500: 43 94% 68%;  /* Main secondary for dark mode */
+  --color-secondary-600: 43 96% 76%;
+  --color-secondary-700: 43 96% 84%;
+  --color-secondary-800: 43 98% 90%;
+  --color-secondary-900: 43 98% 95%;
+  
+  /* Cool Neutrals */
+  --color-neutral-50: 220 20% 8%;
+  --color-neutral-100: 220 18% 12%;
+  --color-neutral-200: 220 16% 18%;
+  --color-neutral-300: 220 14% 28%;
+  --color-neutral-400: 220 12% 42%;
+  --color-neutral-500: 220 10% 60%;
+  --color-neutral-600: 220 12% 72%;
+  --color-neutral-700: 220 14% 82%;
+  --color-neutral-800: 220 16% 90%;
+  --color-neutral-900: 220 20% 96%;
+  
+  /* Semantic Colors - Adjusted */
+  --color-success: 142 70% 45%;
+  --color-success-light: 142 76% 15%;
+  --color-warning: 43 94% 62%;
+  --color-warning-light: 43 85% 20%;
+  --color-error: 0 80% 65%;
+  --color-error-light: 0 84% 18%;
+  --color-info: 220 75% 55%;
+  --color-info-light: 220 80% 18%;
+  
+  /* Progress Indicators */
+  --color-progress-low: 0 80% 65%;
+  --color-progress-mid: 43 94% 62%;
+  --color-progress-high: 142 70% 45%;
+  
+  /* Surface Colors */
+  --color-background: 220 20% 8%;
+  --color-surface: 220 18% 12%;
+  --color-surface-elevated: 220 16% 16%;
+  --color-surface-overlay: 220 18% 14%;
+  
+  /* Text Colors */
+  --color-text-primary: 220 20% 96%;
+  --color-text-secondary: 220 12% 72%;
+  --color-text-tertiary: 220 10% 60%;
+  --color-text-inverse: 220 20% 8%;
+  
+  /* Border Colors */
+  --color-border-subtle: 220 16% 18%;
+  --color-border-default: 220 14% 28%;
+  --color-border-strong: 220 12% 42%;
+  
+  /* Shadows - Adjusted for dark mode */
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.4), 0 1px 2px -1px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.5);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.5);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.7);
+  
+  --shadow-primary: 0 4px 14px 0 rgb(99 102 241 / 0.3);
+  --shadow-accent: 0 4px 14px 0 rgb(45 212 191 / 0.3);
+}
+
+/* ========== Animation Keyframes ========== */
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+  }
+  33% {
+    transform: translateY(-20px) translateX(10px);
+  }
+  66% {
+    transform: translateY(10px) translateX(-10px);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 hsl(var(--color-primary-500) / 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px hsl(var(--color-primary-500) / 0);
+  }
+}
+
+/* ========== Utility Classes ========== */
+
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.reduce-motion {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* Apply reduced motion globally when user prefers */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
