@@ -1,0 +1,160 @@
+
+> rest-express@1.0.0 check
+> tsc
+
+client/src/components/admin/CopyProgressDialogExample.tsx(41,19): error TS2345: Argument of type '(prev: { total: number; completed: number; current: undefined; results: never[]; }) => { completed: number; current: string | undefined; results: { sandboxSlug: string; success: boolean; newCourseSlug: string | undefined; error: string | undefined; duplicateHandled: boolean; }[]; total: number; }' is not assignable to parameter of type 'SetStateAction<{ total: number; completed: number; current: undefined; results: never[]; }>'.
+  Type '(prev: { total: number; completed: number; current: undefined; results: never[]; }) => { completed: number; current: string | undefined; results: { sandboxSlug: string; success: boolean; newCourseSlug: string | undefined; error: string | undefined; duplicateHandled: boolean; }[]; total: number; }' is not assignable to type '(prevState: { total: number; completed: number; current: undefined; results: never[]; }) => { total: number; completed: number; current: undefined; results: never[]; }'.
+    Call signature return types '{ completed: number; current: string | undefined; results: { sandboxSlug: string; success: boolean; newCourseSlug: string | undefined; error: string | undefined; duplicateHandled: boolean; }[]; total: number; }' and '{ total: number; completed: number; current: undefined; results: never[]; }' are incompatible.
+      The types of 'current' are incompatible between these types.
+        Type 'string | undefined' is not assignable to type 'undefined'.
+          Type 'string' is not assignable to type 'undefined'.
+client/src/components/admin/CourseSelectionDialog.tsx(15,32): error TS2307: Cannot find module '../../../../../server/models/sandboxCourse' or its corresponding type declarations.
+client/src/components/admin/CourseSelectionDialog.tsx(44,28): error TS7006: Parameter 'module' implicitly has an 'any' type.
+client/src/components/admin/CourseSelectionDialog.tsx(96,51): error TS7006: Parameter 'total' implicitly has an 'any' type.
+client/src/components/admin/CourseSelectionDialog.tsx(96,58): error TS7006: Parameter 'module' implicitly has an 'any' type.
+client/src/components/admin/CourseSelectionDialog.tsx(98,48): error TS7006: Parameter 'total' implicitly has an 'any' type.
+client/src/components/admin/CourseSelectionDialog.tsx(98,55): error TS7006: Parameter 'module' implicitly has an 'any' type.
+client/src/components/admin/CourseSelectionDialog.tsx(135,30): error TS2339: Property 'indeterminate' does not exist on type 'HTMLButtonElement'.
+client/src/components/admin/CourseSelectionDialog.tsx(237,66): error TS7006: Parameter 'module' implicitly has an 'any' type.
+client/src/components/admin/CourseSelectionDialog.tsx(237,74): error TS7006: Parameter 'index' implicitly has an 'any' type.
+client/src/components/admin/CourseSelectionDialogExample.tsx(11,9): error TS7034: Variable 'sandboxCourses' implicitly has type 'any[]' in some locations where its type cannot be determined.
+client/src/components/admin/CourseSelectionDialogExample.tsx(30,25): error TS7005: Variable 'sandboxCourses' implicitly has an 'any[]' type.
+client/src/components/admin/enrollments.tsx(62,37): error TS2339: Property 'filter' does not exist on type '{}'.
+client/src/components/admin/enrollments.tsx(62,44): error TS7006: Parameter 'e' implicitly has an 'any' type.
+client/src/components/admin/enrollments.tsx(87,41): error TS7006: Parameter 'e' implicitly has an 'any' type.
+client/src/components/student/dashboard.tsx(460,17): error TS2322: Type '{ total: string; thisWeek: string; }' is not assignable to type 'WatchTime'.
+  Types of property 'thisWeek' are incompatible.
+    Type 'string' is not assignable to type 'number'.
+client/src/components/student/live-classes.tsx(55,18): error TS2339: Property 'length' does not exist on type '{}'.
+client/src/components/student/recordings.tsx(45,30): error TS18046: 'recordings' is of type 'unknown'.
+client/src/components/student/recordings.tsx(70,20): error TS18046: 'courses' is of type 'unknown'.
+client/src/components/student/recordings.tsx(121,20): error TS18046: 'courses' is of type 'unknown'.
+client/src/components/student/recordings.tsx(192,16): error TS18046: 'recordings' is of type 'unknown'.
+client/src/components/student/recordings.tsx(201,51): error TS2345: Argument of type '([courseSlug, courseRecordings]: [string, any[]]) => React.JSX.Element' is not assignable to parameter of type '(value: [string, unknown], index: number, array: [string, unknown][]) => Element'.
+  Types of parameters '__0' and 'value' are incompatible.
+    Type '[string, unknown]' is not assignable to type '[string, any[]]'.
+      Type at position 1 in source is not compatible with type at position 1 in target.
+        Type 'unknown' is not assignable to type 'any[]'.
+client/src/components/teacher/dashboard.tsx(41,5): error TS2339: Property 'courses' does not exist on type '{}'.
+client/src/components/teacher/dashboard.tsx(42,5): error TS2339: Property 'enrollments' does not exist on type '{}'.
+client/src/components/teacher/dashboard.tsx(43,5): error TS2339: Property 'upcomingLiveClasses' does not exist on type '{}'.
+client/src/components/teacher/dashboard.tsx(44,5): error TS2339: Property 'recentRecordings' does not exist on type '{}'.
+client/src/components/teacher/dashboard.tsx(45,5): error TS2339: Property 'stats' does not exist on type '{}'.
+client/src/components/teacher/dashboard.tsx(130,31): error TS7006: Parameter 'course' implicitly has an 'any' type.
+client/src/components/teacher/dashboard.tsx(130,39): error TS7006: Parameter 'index' implicitly has an 'any' type.
+client/src/components/teacher/dashboard.tsx(160,55): error TS7006: Parameter 'liveClass' implicitly has an 'any' type.
+client/src/components/teacher/dashboard.tsx(160,66): error TS7006: Parameter 'index' implicitly has an 'any' type.
+client/src/components/teacher/dashboard.tsx(205,47): error TS7006: Parameter 'enrollment' implicitly has an 'any' type.
+client/src/components/teacher/dashboard.tsx(205,59): error TS7006: Parameter 'index' implicitly has an 'any' type.
+client/src/components/teacher/dashboard.tsx(242,52): error TS7006: Parameter 'recording' implicitly has an 'any' type.
+client/src/components/teacher/dashboard.tsx(242,63): error TS7006: Parameter 'index' implicitly has an 'any' type.
+client/src/components/ui/csv-preview.tsx(64,19): error TS7006: Parameter 'error' implicitly has an 'any' type.
+client/src/components/ui/landing-page.tsx(401,25): error TS2322: Type 'HTMLElement | null' is not assignable to type 'HTMLDivElement | null'.
+  Property 'align' is missing in type 'HTMLElement' but required in type 'HTMLDivElement'.
+client/src/components/ui/pdf-preview.tsx(160,17): error TS18046: 'err' is of type 'unknown'.
+client/src/components/ui/pdf-preview.tsx(161,20): error TS18046: 'err' is of type 'unknown'.
+client/src/components/ui/pdf-preview.tsx(162,18): error TS18046: 'err' is of type 'unknown'.
+client/src/components/ui/pdf-preview.tsx(167,13): error TS18046: 'err' is of type 'unknown'.
+client/src/components/ui/pdf-preview.tsx(167,45): error TS18046: 'err' is of type 'unknown'.
+client/src/components/ui/pdf-preview.tsx(169,20): error TS18046: 'err' is of type 'unknown'.
+client/src/components/ui/pdf-preview.tsx(171,20): error TS18046: 'err' is of type 'unknown'.
+client/src/components/ui/pdf-preview.tsx(295,46): error TS18046: 'testError' is of type 'unknown'.
+client/src/components/ui/theme-provider.tsx(5,41): error TS2307: Cannot find module 'next-themes/dist/types' or its corresponding type declarations.
+client/src/lib/auth-provider.tsx(137,12): error TS18046: 'error' is of type 'unknown'.
+client/src/lib/auth-provider.tsx(137,52): error TS18046: 'error' is of type 'unknown'.
+client/src/pages/admin/course-edit.tsx(144,21): error TS2345: Argument of type '{}' is not assignable to parameter of type 'SetStateAction<Course | null>'.
+client/src/pages/admin/course-edit.tsx(145,25): error TS2339: Property 'modules' does not exist on type '{}'.
+client/src/pages/admin/ScheduleLiveClass.tsx(347,25): error TS2322: Type '{ label: string; name: string; required: true; placeholder: string; value: string; onChange: (e: ChangeEvent<HTMLInputElement>) => void; }' is not assignable to type 'IntrinsicAttributes & Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, "ref"> & RefAttributes<...>'.
+  Property 'label' does not exist on type 'IntrinsicAttributes & Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, "ref"> & RefAttributes<...>'.
+client/src/pages/admin/ScheduleLiveClass.tsx(363,25): error TS2322: Type '{ label: string; name: string; type: "datetime-local"; required: true; value: string; onChange: (e: ChangeEvent<HTMLInputElement>) => void; }' is not assignable to type 'IntrinsicAttributes & Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, "ref"> & RefAttributes<...>'.
+  Property 'label' does not exist on type 'IntrinsicAttributes & Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, "ref"> & RefAttributes<...>'.
+client/src/pages/admin/ScheduleLiveClass.tsx(371,25): error TS2322: Type '{ label: string; name: string; type: "datetime-local"; required: true; value: string; onChange: (e: ChangeEvent<HTMLInputElement>) => void; }' is not assignable to type 'IntrinsicAttributes & Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, "ref"> & RefAttributes<...>'.
+  Property 'label' does not exist on type 'IntrinsicAttributes & Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, "ref"> & RefAttributes<...>'.
+client/src/pages/background-paths-demo.tsx(13,7): error TS2322: Type '{ title: string; subtitle: string; description: string; buttonText: string; onButtonClick: () => void; }' is not assignable to type 'IntrinsicAttributes & { title?: string | undefined; subtitle?: string | undefined; description?: string | undefined; quotes?: string[] | undefined; onGetStarted?: (() => void) | undefined; }'.
+  Property 'buttonText' does not exist on type 'IntrinsicAttributes & { title?: string | undefined; subtitle?: string | undefined; description?: string | undefined; quotes?: string[] | undefined; onGetStarted?: (() => void) | undefined; }'.
+client/src/pages/teacher/courses.tsx(47,14): error TS18046: 'courses' is of type 'unknown'.
+client/src/pages/teacher/courses.tsx(51,10): error TS18046: 'courses' is of type 'unknown'.
+client/src/pages/teacher/courses.tsx(53,14): error TS18046: 'courses' is of type 'unknown'.
+client/src/pages/teacher/courses.tsx(53,27): error TS7006: Parameter 'course' implicitly has an 'any' type.
+client/src/pages/teacher/courses.tsx(53,35): error TS7006: Parameter 'index' implicitly has an 'any' type.
+client/src/pages/teacher/exam-results.tsx(204,42): error TS2339: Property 'feedback' does not exist on type '{ attemptNumber: number; score?: number | undefined; passed?: boolean | undefined; attemptedAt: string; requiresManualGrading: boolean; mcqTotal?: number | undefined; essayTotal?: number | undefined; answers: any[]; gradedBy?: string | undefined; gradedAt?: string | undefined; }'.
+client/src/pages/teacher/exam-results.tsx(260,46): error TS2339: Property 'feedback' does not exist on type '{ attemptNumber: number; score?: number | undefined; passed?: boolean | undefined; attemptedAt: string; requiresManualGrading: boolean; mcqTotal?: number | undefined; essayTotal?: number | undefined; answers: any[]; gradedBy?: string | undefined; gradedAt?: string | undefined; }'.
+client/src/pages/teacher/exam-results.tsx(307,56): error TS2339: Property 'feedback' does not exist on type '{ attemptNumber: number; score?: number | undefined; passed?: boolean | undefined; attemptedAt: string; requiresManualGrading: boolean; mcqTotal?: number | undefined; essayTotal?: number | undefined; answers: any[]; gradedBy?: string | undefined; gradedAt?: string | undefined; }'.
+client/src/pages/teacher/exam-results.tsx(526,50): error TS2339: Property 'feedback' does not exist on type '{ attemptNumber: number; score?: number | undefined; passed?: boolean | undefined; attemptedAt: string; requiresManualGrading: boolean; mcqTotal?: number | undefined; essayTotal?: number | undefined; answers: any[]; gradedBy?: string | undefined; gradedAt?: string | undefined; }'.
+client/src/pages/teacher/exam-results.tsx(529,114): error TS2339: Property 'feedback' does not exist on type '{ attemptNumber: number; score?: number | undefined; passed?: boolean | undefined; attemptedAt: string; requiresManualGrading: boolean; mcqTotal?: number | undefined; essayTotal?: number | undefined; answers: any[]; gradedBy?: string | undefined; gradedAt?: string | undefined; }'.
+client/src/pages/teacher/exam-results.tsx(530,57): error TS2339: Property 'feedback' does not exist on type '{ attemptNumber: number; score?: number | undefined; passed?: boolean | undefined; attemptedAt: string; requiresManualGrading: boolean; mcqTotal?: number | undefined; essayTotal?: number | undefined; answers: any[]; gradedBy?: string | undefined; gradedAt?: string | undefined; }'.
+client/src/pages/teacher/exam-results.tsx(926,52): error TS2339: Property 'feedback' does not exist on type '{ attemptNumber: number; score?: number | undefined; passed?: boolean | undefined; attemptedAt: string; requiresManualGrading: boolean; mcqTotal?: number | undefined; essayTotal?: number | undefined; answers: any[]; gradedBy?: string | undefined; gradedAt?: string | undefined; }'.
+client/src/pages/teacher/exam-results.tsx(941,52): error TS2339: Property 'feedback' does not exist on type '{ attemptNumber: number; score?: number | undefined; passed?: boolean | undefined; attemptedAt: string; requiresManualGrading: boolean; mcqTotal?: number | undefined; essayTotal?: number | undefined; answers: any[]; gradedBy?: string | undefined; gradedAt?: string | undefined; }'.
+client/src/pages/teacher/exam-results.tsx(967,54): error TS2339: Property 'feedback' does not exist on type '{ attemptNumber: number; score?: number | undefined; passed?: boolean | undefined; attemptedAt: string; requiresManualGrading: boolean; mcqTotal?: number | undefined; essayTotal?: number | undefined; answers: any[]; gradedBy?: string | undefined; gradedAt?: string | undefined; }'.
+client/src/pages/teacher/live-classes.tsx(33,27): error TS18046: 'liveClasses' is of type 'unknown'.
+client/src/pages/teacher/live-classes.tsx(33,46): error TS7006: Parameter 'lc' implicitly has an 'any' type.
+client/src/pages/teacher/live-classes.tsx(34,28): error TS18046: 'liveClasses' is of type 'unknown'.
+client/src/pages/teacher/live-classes.tsx(34,47): error TS7006: Parameter 'lc' implicitly has an 'any' type.
+client/src/pages/teacher/live-classes.tsx(35,29): error TS18046: 'liveClasses' is of type 'unknown'.
+client/src/pages/teacher/live-classes.tsx(35,48): error TS7006: Parameter 'lc' implicitly has an 'any' type.
+client/src/pages/teacher/live-classes.tsx(41,27): error TS7006: Parameter 'liveClass' implicitly has an 'any' type.
+client/src/pages/teacher/live-classes.tsx(106,10): error TS18046: 'liveClasses' is of type 'unknown'.
+client/src/pages/teacher/live-classes.tsx(108,14): error TS18046: 'liveClasses' is of type 'unknown'.
+client/src/pages/teacher/live-classes.tsx(109,22): error TS7006: Parameter 'a' implicitly has an 'any' type.
+client/src/pages/teacher/live-classes.tsx(109,25): error TS7006: Parameter 'b' implicitly has an 'any' type.
+client/src/pages/teacher/live-classes.tsx(110,21): error TS7006: Parameter 'liveClass' implicitly has an 'any' type.
+client/src/pages/teacher/live-classes.tsx(110,32): error TS7006: Parameter 'index' implicitly has an 'any' type.
+client/src/pages/teacher/recordings.tsx(46,14): error TS18046: 'recordings' is of type 'unknown'.
+client/src/pages/teacher/recordings.tsx(50,10): error TS18046: 'recordings' is of type 'unknown'.
+client/src/pages/teacher/recordings.tsx(52,14): error TS18046: 'recordings' is of type 'unknown'.
+client/src/pages/teacher/recordings.tsx(53,22): error TS7006: Parameter 'a' implicitly has an 'any' type.
+client/src/pages/teacher/recordings.tsx(53,25): error TS7006: Parameter 'b' implicitly has an 'any' type.
+client/src/pages/teacher/recordings.tsx(54,21): error TS7006: Parameter 'recording' implicitly has an 'any' type.
+client/src/pages/teacher/recordings.tsx(54,32): error TS7006: Parameter 'index' implicitly has an 'any' type.
+client/src/pages/teacher/students.tsx(73,5): error TS2769: No overload matches this call.
+  Overload 1 of 3, '(options: DefinedInitialDataOptions<any, Error, any, string[]>, queryClient?: QueryClient | undefined): DefinedUseQueryResult<any, Error>', gave the following error.
+    Object literal may only specify known properties, and 'cacheTime' does not exist in type 'DefinedInitialDataOptions<any, Error, any, string[]>'.
+  Overload 2 of 3, '(options: UndefinedInitialDataOptions<any, Error, any, string[]>, queryClient?: QueryClient | undefined): UseQueryResult<any, Error>', gave the following error.
+    Object literal may only specify known properties, and 'cacheTime' does not exist in type 'UndefinedInitialDataOptions<any, Error, any, string[]>'.
+  Overload 3 of 3, '(options: UseQueryOptions<any, Error, any, string[]>, queryClient?: QueryClient | undefined): UseQueryResult<any, Error>', gave the following error.
+    Object literal may only specify known properties, and 'cacheTime' does not exist in type 'UseQueryOptions<any, Error, any, string[]>'.
+client/src/pages/teacher/students.tsx(137,28): error TS7006: Parameter 'student' implicitly has an 'any' type.
+client/src/pages/teacher/students.tsx(137,37): error TS7006: Parameter 'index' implicitly has an 'any' type.
+client/src/pages/teacher/students.tsx(168,53): error TS7006: Parameter 'courseSlug' implicitly has an 'any' type.
+client/src/pages/teacher/students.tsx(168,65): error TS7006: Parameter 'idx' implicitly has an 'any' type.
+server/controllers/admin-controller.ts(606,60): error TS18046: 'error' is of type 'unknown'.
+server/controllers/admin-controller.ts(629,38): error TS2339: Property 'phone' does not exist on type 'Document<unknown, {}, IUserDocument, {}> & IUserDocument & Required<{ _id: unknown; }> & { __v: number; }'.
+server/controllers/admin-controller.ts(630,40): error TS2339: Property 'address' does not exist on type 'Document<unknown, {}, IUserDocument, {}> & IUserDocument & Required<{ _id: unknown; }> & { __v: number; }'.
+server/controllers/admin-controller.ts(643,24): error TS2339: Property 'phone' does not exist on type 'Document<unknown, {}, IUserDocument, {}> & IUserDocument & Required<{ _id: unknown; }> & { __v: number; }'.
+server/controllers/admin-controller.ts(644,26): error TS2339: Property 'address' does not exist on type 'Document<unknown, {}, IUserDocument, {}> & IUserDocument & Required<{ _id: unknown; }> & { __v: number; }'.
+server/controllers/admin-controller.ts(646,28): error TS2339: Property 'createdAt' does not exist on type 'Document<unknown, {}, IUserDocument, {}> & IUserDocument & Required<{ _id: unknown; }> & { __v: number; }'.
+server/controllers/auth-controller.ts(66,11): error TS18046: 'user._id' is of type 'unknown'.
+server/controllers/certificate-controller.ts(72,9): error TS2353: Object literal may only specify known properties, and 'supersededAt' does not exist in type '{ templateId?: string | undefined; verificationUrl?: string | undefined; expiresAt?: Date | undefined; }'.
+server/controllers/certificate-controller.ts(192,17): error TS2339: Property 'toObject' does not exist on type 'ICertificate'.
+server/controllers/certificate-controller.ts(193,19): error TS2339: Property '_id' does not exist on type 'ICertificate'.
+server/controllers/certificate-controller.ts(304,19): error TS2339: Property 'toObject' does not exist on type 'ICertificate'.
+server/controllers/enrollment-controller.ts(53,5): error TS2322: Type 'unknown' is not assignable to type 'ObjectId'.
+server/controllers/enrollment-controller.ts(192,7): error TS2322: Type 'undefined' is not assignable to type 'ObjectId'.
+server/controllers/enrollment-controller.ts(314,15): error TS18046: 'quiz._id' is of type 'unknown'.
+server/controllers/enrollment-controller.ts(326,15): error TS18046: 'quiz._id' is of type 'unknown'.
+server/controllers/teacher-controller.ts(491,32): error TS2339: Property 'name' does not exist on type 'Document<unknown, {}, IUserDocument, {}> & IUserDocument & Required<{ _id: unknown; }> & { __v: number; }'.
+server/index.ts(3,18): error TS7016: Could not find a declaration file for module 'cors'. 'C:/codes/AGI/node_modules/cors/lib/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/cors` if it exists or add a new declaration (.d.ts) file containing `declare module 'cors';`
+server/index.ts(44,14): error TS7006: Parameter 'origin' implicitly has an 'any' type.
+server/index.ts(44,22): error TS7006: Parameter 'cb' implicitly has an 'any' type.
+server/middleware/auth.ts(2,17): error TS7016: Could not find a declaration file for module 'jsonwebtoken'. 'C:/codes/AGI/node_modules/jsonwebtoken/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/jsonwebtoken` if it exists or add a new declaration (.d.ts) file containing `declare module 'jsonwebtoken';`
+server/seeds/index.ts(5647,27): error TS18046: 'data.studentId' is of type 'unknown'.
+server/seeds/index.ts(5700,9): error TS7034: Variable 'allLiveClasses' implicitly has type 'any[]' in some locations where its type cannot be determined.
+server/seeds/index.ts(5706,28): error TS7005: Variable 'allLiveClasses' implicitly has an 'any[]' type.
+server/seeds/index.ts(5710,33): error TS7005: Variable 'allLiveClasses' implicitly has an 'any[]' type.
+server/storage.ts(161,11): error TS2739: Type '{ id: number; name: string; pathway: "standalone" | "with-mba"; userId: number; address?: string | null | undefined; phone?: string | null | undefined; dob?: Date | null | undefined; }' is missing the following properties from type '{ address: string | null; id: number; name: string; watchTime: unknown; courseProgress: unknown; phone: string | null; dob: Date | null; pathway: "standalone" | "with-mba"; userId: number; quizSummary: unknown; certificateReady: unknown; }': watchTime, courseProgress, quizSummary, certificateReady
+server/storage.ts(196,11): error TS2322: Type '{ id: number; title: string; type: "standalone" | "with-mba"; slug: string; modules?: Json | undefined; liveClassConfig?: Json | undefined; mbaModules?: Json | undefined; }' is not assignable to type '{ title: string; type: "standalone" | "with-mba"; id: number; modules: unknown; slug: string; liveClassConfig: unknown; mbaModules: unknown; }'.
+  Property 'modules' is optional in type '{ id: number; title: string; type: "standalone" | "with-mba"; slug: string; modules?: Json | undefined; liveClassConfig?: Json | undefined; mbaModules?: Json | undefined; }' but required in type '{ title: string; type: "standalone" | "with-mba"; id: number; modules: unknown; slug: string; liveClassConfig: unknown; mbaModules: unknown; }'.
+server/storage.ts(237,11): error TS2739: Type '{ id: number; courseSlug: string; studentId: number; enrollDate: Date; validUntil: Date; }' is missing the following properties from type '{ id: number; completedModules: unknown; quizAttempts: unknown; courseSlug: string; studentId: number; enrollDate: Date; validUntil: Date; finalExamAttempts: unknown; }': completedModules, quizAttempts, finalExamAttempts
+server/storage.ts(279,11): error TS2322: Type '{ id: number; title: string; status: "scheduled" | "completed" | "cancelled"; courseSlug: string; startTime: Date; endTime: Date; description?: string | null | undefined; meetLink?: string | ... 1 more ... | undefined; }' is not assignable to type '{ title: string; id: number; status: "scheduled" | "completed" | "cancelled"; description: string | null; courseSlug: string; meetLink: string | null; startTime: Date; endTime: Date; }'.
+  Types of property 'description' are incompatible.
+    Type 'string | null | undefined' is not assignable to type 'string | null'.
+      Type 'undefined' is not assignable to type 'string | null'.
+server/storage.ts(325,11): error TS2322: Type '{ id: number; title: string; fileUrl: string; courseSlug: string; classDate: Date; uploadedBy: number; uploadedAt: Date; description?: string | null | undefined; isVisible?: boolean | undefined; }' is not assignable to type '{ title: string; id: number; description: string | null; fileUrl: string; courseSlug: string; classDate: Date; isVisible: boolean; uploadedBy: number; uploadedAt: Date; }'.
+  Types of property 'description' are incompatible.
+    Type 'string | null | undefined' is not assignable to type 'string | null'.
+      Type 'undefined' is not assignable to type 'string | null'.
+server/vite.ts(42,5): error TS2322: Type '{ middlewareMode: boolean; hmr: { server: Server<typeof IncomingMessage, typeof ServerResponse>; }; allowedHosts: boolean; }' is not assignable to type 'ServerOptions'.
+  Types of property 'allowedHosts' are incompatible.
+    Type 'boolean' is not assignable to type 'true | string[] | undefined'.

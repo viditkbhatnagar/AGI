@@ -138,12 +138,12 @@ export function AdminSidebar({
         style={{ paddingTop: isMobile ? 0 : "64px" }}
       >
         {/* Logo at top of sidebar */}
-        <div className="flex-shrink-0 px-4 py-4 border-b border-gray-200">
-          <Link href="/admin" className="flex items-center justify-center">
+        <div className="flex-shrink-0 border-b border-gray-200" style={{ marginTop: isMobile ? 0 : '-64px' }}>
+          <Link href="/admin" className="flex items-center justify-center w-full">
             <motion.img
               src={logo}
               alt="AGI Logo"
-              className="h-10 w-auto"
+              className="h-20 w-full object-contain"
               whileHover={prefersReducedMotion ? {} : { scale: 1.05 }}
               transition={{ duration: 0.2 }}
             />
