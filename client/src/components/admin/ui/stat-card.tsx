@@ -174,12 +174,54 @@ export function StatCard({
   };
 
   return (
-    <GlassCard
-      variant={onClick ? "interactive" : "default"}
-      animationDelay={animationDelay}
-      className={cn("group", className)}
-      onClick={onClick}
+    <motion.div
+      className={cn("group relative", className)}
+      initial="initial"
+      animate="animate"
+      whileHover={prefersReducedMotion ? {} : "hover"}
+      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+      variants={{
+        initial: { y: 0, scale: 1 },
+        animate: {
+          y: [0, -3, 0],
+          transition: {
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut",
+          },
+        },
+        hover: {
+          y: -12,
+          scale: 1.03,
+          transition: {
+            duration: 0.3,
+            ease: [0.22, 1, 0.36, 1],
+          },
+        },
+      }}
     >
+      {/* Glow ring on hover */}
+      <motion.div
+        className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-300"
+        style={{
+          background: "radial-gradient(circle at center, rgba(55, 91, 190, 0.1) 0%, transparent 70%)",
+          filter: "blur(8px)",
+          zIndex: -1,
+        }}
+        variants={prefersReducedMotion ? {} : {
+          hover: {
+            opacity: 1,
+            scale: 1.1,
+          },
+        }}
+      />
+      
+      <GlassCard
+        variant={onClick ? "interactive" : "default"}
+        animationDelay={animationDelay}
+        className="h-full relative z-10 group-hover:shadow-2xl transition-shadow duration-300"
+        onClick={onClick}
+      >
       <div className="flex items-start justify-between gap-4">
         {/* Icon with gradient background */}
         <motion.div
@@ -242,7 +284,8 @@ export function StatCard({
           </span>
         </div>
       )}
-    </GlassCard>
+      </GlassCard>
+    </motion.div>
   );
 }
 

@@ -145,88 +145,137 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
 
   return (
     <CommandDialog open={open} onOpenChange={onOpenChange}>
-      <div className="bg-admin-surface/95 backdrop-blur-xl border border-white/[0.08] rounded-2xl overflow-hidden shadow-2xl">
+      <div className="bg-[#FEFDF7] backdrop-blur-xl border border-gray-200/50 rounded-2xl overflow-hidden shadow-2xl">
         <Command className="bg-transparent">
-          <div className="flex items-center border-b border-white/[0.06] px-4">
-            <Search className="h-4 w-4 text-admin-muted mr-2" />
+          <div className="flex items-center border-b border-gray-200/50 px-4 bg-white/50">
+            <Search className="h-4 w-4 text-gray-500 mr-2" />
             <CommandInput
               placeholder="Search commands, navigate, or type a shortcut..."
-              className="h-14 bg-transparent text-admin-fg placeholder:text-admin-muted border-0 focus:ring-0"
+              className="h-14 bg-transparent text-gray-900 placeholder:text-gray-400 border-0 focus:ring-0"
             />
           </div>
 
-          <CommandList className="max-h-[400px] overflow-y-auto p-2">
-            <CommandEmpty className="py-6 text-center text-sm text-admin-muted">
+          <CommandList className="max-h-[400px] overflow-y-auto p-2 bg-[#FEFDF7]">
+            <CommandEmpty className="py-6 text-center text-sm text-gray-500">
               No results found.
             </CommandEmpty>
 
             {/* Quick Actions */}
-            <CommandGroup heading="Quick Actions" className="text-admin-muted">
-              {quickActions.map((action) => (
-                <CommandItem
+            <CommandGroup heading="Quick Actions" className="text-gray-600">
+              {quickActions.map((action, index) => (
+                <motion.div
                   key={action.id}
-                  onSelect={() => handleSelect(action)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-admin-fg cursor-pointer hover:bg-white/[0.06] aria-selected:bg-admin-brand/10"
+                  initial={prefersReducedMotion ? {} : { opacity: 0, y: -10 }}
+                  animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.03, duration: 0.2 }}
                 >
-                  <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-admin-brand/10">
-                    <action.icon className="h-4 w-4 text-admin-brand" />
-                  </div>
-                  <span className="flex-1">{action.label}</span>
-                  {action.shortcut && (
-                    <CommandShortcut className="px-2 py-1 text-[10px] font-medium bg-white/[0.06] rounded border border-white/[0.08] text-admin-muted">
-                      {action.shortcut}
-                    </CommandShortcut>
-                  )}
-                </CommandItem>
+                  <CommandItem
+                    onSelect={() => handleSelect(action)}
+                    className="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-900 cursor-pointer transition-all duration-300 data-[selected='true']:bg-transparent data-[selected=true]:text-gray-900"
+                  >
+                    <motion.div
+                      className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 opacity-0 group-hover:opacity-100 group-data-[selected='true']:opacity-100 transition-opacity duration-300"
+                      layoutId={`hover-${action.id}`}
+                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                    />
+                    <motion.div
+                      className="flex items-center justify-center h-8 w-8 rounded-lg bg-gradient-to-br from-blue-100 to-indigo-100 group-hover:from-blue-200 group-hover:to-indigo-200 transition-all duration-300 relative z-10"
+                      whileHover={prefersReducedMotion ? {} : { scale: 1.1, rotate: 5 }}
+                      whileTap={prefersReducedMotion ? {} : { scale: 0.95 }}
+                    >
+                      <action.icon className="h-4 w-4 text-[#375BBE] transition-colors duration-300" />
+                    </motion.div>
+                    <span className="flex-1 relative z-10 font-medium transition-colors duration-300">{action.label}</span>
+                    {action.shortcut && (
+                      <CommandShortcut className="px-2 py-1 text-[10px] font-medium bg-gray-100 rounded border border-gray-200 text-gray-600 relative z-10 group-hover:bg-gray-200 transition-colors duration-300">
+                        {action.shortcut}
+                      </CommandShortcut>
+                    )}
+                  </CommandItem>
+                </motion.div>
               ))}
             </CommandGroup>
 
-            <CommandSeparator className="my-2 bg-white/[0.06]" />
+            <CommandSeparator className="my-2 bg-gray-200/50" />
 
             {/* Navigation */}
-            <CommandGroup heading="Navigation" className="text-admin-muted">
-              {navigationItems.map((item) => (
-                <CommandItem
+            <CommandGroup heading="Navigation" className="text-gray-600">
+              {navigationItems.map((item, index) => (
+                <motion.div
                   key={item.id}
-                  onSelect={() => handleSelect(item)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-admin-fg cursor-pointer hover:bg-white/[0.06] aria-selected:bg-admin-brand/10"
+                  initial={prefersReducedMotion ? {} : { opacity: 0, y: -10 }}
+                  animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+                  transition={{ delay: (quickActions.length + index) * 0.03, duration: 0.2 }}
                 >
-                  <item.icon className="h-4 w-4 text-admin-muted" />
-                  <span>{item.label}</span>
-                </CommandItem>
+                  <CommandItem
+                    onSelect={() => handleSelect(item)}
+                    className="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-900 cursor-pointer transition-all duration-300 data-[selected='true']:bg-transparent data-[selected=true]:text-gray-900"
+                  >
+                    <motion.div
+                      className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 opacity-0 group-hover:opacity-100 group-data-[selected='true']:opacity-100 transition-opacity duration-300"
+                      layoutId={`hover-${item.id}`}
+                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                    />
+                    <motion.div
+                      className="relative z-10"
+                      whileHover={prefersReducedMotion ? {} : { x: 4 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                    >
+                      <item.icon className="h-4 w-4 text-gray-500 group-hover:text-[#375BBE] transition-colors duration-300" />
+                    </motion.div>
+                    <span className="relative z-10 font-medium transition-colors duration-300">{item.label}</span>
+                  </CommandItem>
+                </motion.div>
               ))}
             </CommandGroup>
 
-            <CommandSeparator className="my-2 bg-white/[0.06]" />
+            <CommandSeparator className="my-2 bg-gray-200/50" />
 
             {/* Utilities */}
-            <CommandGroup heading="Utilities" className="text-admin-muted">
-              {utilityActions.map((action) => (
-                <CommandItem
+            <CommandGroup heading="Utilities" className="text-gray-600">
+              {utilityActions.map((action, index) => (
+                <motion.div
                   key={action.id}
-                  onSelect={() => handleSelect(action)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-admin-fg cursor-pointer hover:bg-white/[0.06] aria-selected:bg-admin-brand/10"
+                  initial={prefersReducedMotion ? {} : { opacity: 0, y: -10 }}
+                  animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+                  transition={{ delay: (quickActions.length + navigationItems.length + index) * 0.03, duration: 0.2 }}
                 >
-                  <action.icon className="h-4 w-4 text-admin-muted" />
-                  <span>{action.label}</span>
-                </CommandItem>
+                  <CommandItem
+                    onSelect={() => handleSelect(action)}
+                    className="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-900 cursor-pointer transition-all duration-300 data-[selected='true']:bg-transparent data-[selected=true]:text-gray-900"
+                  >
+                    <motion.div
+                      className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 opacity-0 group-hover:opacity-100 group-data-[selected='true']:opacity-100 transition-opacity duration-300"
+                      layoutId={`hover-${action.id}`}
+                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                    />
+                    <motion.div
+                      className="relative z-10"
+                      whileHover={prefersReducedMotion ? {} : { x: 4 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                    >
+                      <action.icon className="h-4 w-4 text-gray-500 group-hover:text-[#375BBE] transition-colors duration-300" />
+                    </motion.div>
+                    <span className="relative z-10 font-medium transition-colors duration-300">{action.label}</span>
+                  </CommandItem>
+                </motion.div>
               ))}
             </CommandGroup>
           </CommandList>
 
           {/* Footer with keyboard hints */}
-          <div className="flex items-center justify-between px-4 py-3 border-t border-white/[0.06] text-[11px] text-admin-muted">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200/50 text-[11px] text-gray-500 bg-white/50">
             <div className="flex items-center gap-4">
               <span className="flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 bg-white/[0.06] rounded border border-white/[0.08]">↑↓</kbd>
+                <kbd className="px-1.5 py-0.5 bg-gray-100 rounded border border-gray-200 text-gray-600">↑↓</kbd>
                 navigate
               </span>
               <span className="flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 bg-white/[0.06] rounded border border-white/[0.08]">↵</kbd>
+                <kbd className="px-1.5 py-0.5 bg-gray-100 rounded border border-gray-200 text-gray-600">↵</kbd>
                 select
               </span>
               <span className="flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 bg-white/[0.06] rounded border border-white/[0.08]">esc</kbd>
+                <kbd className="px-1.5 py-0.5 bg-gray-100 rounded border border-gray-200 text-gray-600">esc</kbd>
                 close
               </span>
             </div>
