@@ -1,10 +1,10 @@
-import DashboardLayout from "@/components/layout/dashboard-layout";
+import { AdminLayout } from "@/components/admin/layout/admin-layout";
 import { SandboxCourses } from "@/components/admin/sandbox-courses";
 
 export default function SandboxCoursesPage() {
   return (
-    <DashboardLayout>
+    <AdminLayout>
       <SandboxCourses />
-    </DashboardLayout>
+    </AdminLayout>
   );
 }

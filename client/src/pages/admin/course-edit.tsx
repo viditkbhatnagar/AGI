@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams, useLocation } from "wouter";
-import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import { AdminLayout } from "@/components/admin/layout/admin-layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,11 +8,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState, useEffect } from "react";
-import { 
-  ArrowLeft, 
-  Save, 
-  GripVertical, 
-  ArrowUp, 
+import {
+  ArrowLeft,
+  Save,
+  GripVertical,
+  ArrowUp,
   ArrowDown,
   FileText,
   Video
@@ -69,7 +69,7 @@ function SortableModuleItem({ module, index, isDisabled = false }: { module: Mod
     transform,
     transition,
     isDragging,
-  } = useSortable({ 
+  } = useSortable({
     id: module._id || `module-${index}`,
     disabled: isDisabled
   });
@@ -95,7 +95,7 @@ function SortableModuleItem({ module, index, isDisabled = false }: { module: Mod
           >
             <GripVertical className="h-5 w-5 text-gray-400" />
           </div>
-          
+
           <div className="flex-1">
             <div className="flex items-center space-x-2 mb-2">
               <Badge variant="outline" className="text-xs">
@@ -103,7 +103,7 @@ function SortableModuleItem({ module, index, isDisabled = false }: { module: Mod
               </Badge>
               <h3 className="font-semibold text-gray-900">{module.title}</h3>
             </div>
-            
+
             <div className="flex items-center space-x-4 text-sm text-gray-600">
               <div className="flex items-center space-x-1">
                 <Video className="h-4 w-4" />
@@ -116,7 +116,7 @@ function SortableModuleItem({ module, index, isDisabled = false }: { module: Mod
             </div>
           </div>
         </div>
-        
+
 
       </div>
     </div>
@@ -128,7 +128,7 @@ export default function CourseEditPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  
+
   const [courseData, setCourseData] = useState<Course | null>(null);
   const [modules, setModules] = useState<Module[]>([]);
   const [hasChanges, setHasChanges] = useState(false);
@@ -157,12 +157,12 @@ export default function CourseEditPage() {
         },
         body: JSON.stringify({ modules: newModules }),
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to update module order');
       }
-      
+
       return response.json();
     },
     onSuccess: (data) => {
@@ -171,14 +171,14 @@ export default function CourseEditPage() {
         setCourseData(data.course);
         setModules(data.course.modules || []);
       }
-      
+
       // Clear unsaved changes flag
       setHasChanges(false);
-      
+
       // Invalidate and refetch queries to ensure data consistency
       queryClient.invalidateQueries({ queryKey: [`/api/courses/${slug}`] });
       queryClient.invalidateQueries({ queryKey: ['/api/courses'] });
-      
+
       toast({
         title: "Success",
         description: "Module order updated successfully",
@@ -240,7 +240,7 @@ export default function CourseEditPage() {
 
   if (isLoading) {
     return (
-      <DashboardLayout>
+      <AdminLayout>
         <div className="p-6">
           <div className="flex items-center mb-6">
             <Skeleton className="h-6 w-6 mr-3" />
@@ -252,13 +252,13 @@ export default function CourseEditPage() {
             ))}
           </div>
         </div>
-      </DashboardLayout>
+      </AdminLayout>
     );
   }
 
   if (error || !courseData) {
     return (
-      <DashboardLayout>
+      <AdminLayout>
         <div className="p-6">
           <Card>
             <CardContent className="p-6">
@@ -266,17 +266,17 @@ export default function CourseEditPage() {
             </CardContent>
           </Card>
         </div>
-      </DashboardLayout>
+      </AdminLayout>
     );
   }
 
   return (
-    <DashboardLayout>
+    <AdminLayout>
       <Helmet>
         <title>Edit Course: {courseData.title} | AGI.online</title>
         <meta name="description" content={`Edit course modules and content for ${courseData.title}`} />
       </Helmet>
-      
+
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center">
@@ -293,7 +293,7 @@ export default function CourseEditPage() {
               Edit Course: {courseData.title}
             </h1>
           </div>
-          
+
           <div className="flex items-center space-x-2">
             {updateModuleOrderMutation.isPending ? (
               <Badge variant="outline" className="bg-blue-50 text-blue-800">
@@ -395,12 +395,12 @@ export default function CourseEditPage() {
                     >
                       {modules.map((module, index) => (
                         <div key={module._id || `module-${index}`} className="relative">
-                          <SortableModuleItem 
-                            module={module} 
-                            index={index} 
+                          <SortableModuleItem
+                            module={module}
+                            index={index}
                             isDisabled={updateModuleOrderMutation.isPending}
                           />
-                          
+
                           {/* Alternative Up/Down buttons */}
                           <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex flex-col space-y-1 opacity-0 group-hover:opacity-100 transition-opacity">
                             <Button
@@ -432,6 +432,6 @@ export default function CourseEditPage() {
           </div>
         </div>
       </div>
-    </DashboardLayout>
+    </AdminLayout>
   );
 } 

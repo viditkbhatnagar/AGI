@@ -1,10 +1,10 @@
-import DashboardLayout from "@/components/layout/dashboard-layout";
+import { AdminLayout } from "@/components/admin/layout/admin-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText } from "lucide-react";
 
 export default function SandboxCourseEditPage() {
   return (
-    <DashboardLayout>
+    <AdminLayout>
       <div className="p-6">
         <Card>
           <CardHeader>
@@ -18,12 +18,12 @@ export default function SandboxCourseEditPage() {
           </CardHeader>
           <CardContent>
             <p className="text-gray-600">
-              This feature will allow you to reorder modules in sandbox courses. 
+              This feature will allow you to reorder modules in sandbox courses.
               For now, you can edit the course to modify the module order.
             </p>
           </CardContent>
         </Card>
       </div>
-    </DashboardLayout>
+    </AdminLayout>
   );
 }

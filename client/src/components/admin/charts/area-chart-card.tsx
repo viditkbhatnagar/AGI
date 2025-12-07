@@ -9,9 +9,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { GlassCard } from "../ui/glass-card";
-import { FilterChips, timeframeOptions } from "../ui/filter-chips";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
-import { useState } from "react";
 
 interface DataPoint {
   name: string;
@@ -25,7 +23,6 @@ interface AreaChartCardProps {
   data: DataPoint[];
   dataKey?: string;
   gradientColors?: [string, string];
-  showFilter?: boolean;
   animationDelay?: number;
   className?: string;
 }
@@ -40,12 +37,10 @@ export function AreaChartCard({
   data,
   dataKey = "value",
   gradientColors = ["#1E8CFF", "#9B5CFF"],
-  showFilter = false,
   animationDelay = 0,
   className,
 }: AreaChartCardProps) {
   const prefersReducedMotion = useReducedMotion();
-  const [timeframe, setTimeframe] = useState("30d");
   const gradientId = `area-gradient-${title.replace(/\s+/g, "-")}`;
 
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -74,13 +69,6 @@ export function AreaChartCard({
             </span>
           )}
         </div>
-        {showFilter && (
-          <FilterChips
-            options={timeframeOptions}
-            value={timeframe}
-            onChange={setTimeframe}
-          />
-        )}
       </div>
 
       {/* Chart */}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import DashboardLayout from "@/components/layout/dashboard-layout";
+import { AdminLayout } from "@/components/admin/layout/admin-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -92,18 +92,18 @@ function AddSandboxCourseForm() {
       const token = localStorage.getItem('token');
       const response = await fetch('/api/sandbox-courses', {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {})
         },
         body: JSON.stringify(courseData),
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to create sandbox course');
       }
-      
+
       return response.json();
     },
     onSuccess: () => {
@@ -124,9 +124,9 @@ function AddSandboxCourseForm() {
   });
 
   const handleFileUpload = async (
-    moduleIndex: number, 
-    documentIndex: number, 
-    file: File, 
+    moduleIndex: number,
+    documentIndex: number,
+    file: File,
     isStandalone: boolean = true
   ) => {
     const validation = validateFile(file, {
@@ -148,7 +148,7 @@ function AddSandboxCourseForm() {
 
     try {
       const result = await uploadToCloudinary(file, 'question-documents');
-      
+
       const documentData: DocumentForm = {
         title: file.name.split('.')[0],
         file: null,
@@ -163,7 +163,7 @@ function AddSandboxCourseForm() {
         const newForm = { ...prev };
         const modules = isStandalone ? newForm.modules : newForm.mbaModules;
         modules[moduleIndex].documents[documentIndex] = documentData;
-        
+
         console.log('📁 Document added to form:', {
           moduleIndex,
           documentIndex,
@@ -171,7 +171,7 @@ function AddSandboxCourseForm() {
           totalDocsInModule: modules[moduleIndex].documents.length,
           allDocsInModule: modules[moduleIndex].documents
         });
-        
+
         return newForm;
       });
 
@@ -204,7 +204,7 @@ function AddSandboxCourseForm() {
     setCourseForm(prev => {
       const modules = isStandalone ? prev.modules : prev.mbaModules;
       if (modules.length === 1) return prev;
-      
+
       return {
         ...prev,
         [isStandalone ? 'modules' : 'mbaModules']: modules.filter((_, i) => i !== index)
@@ -269,9 +269,9 @@ function AddSandboxCourseForm() {
     setCourseForm(prev => {
       const newForm = { ...prev };
       const modules = isStandalone ? newForm.modules : newForm.mbaModules;
-      modules[moduleIndex].videos[videoIndex] = { 
-        ...modules[moduleIndex].videos[videoIndex], 
-        [field]: value 
+      modules[moduleIndex].videos[videoIndex] = {
+        ...modules[moduleIndex].videos[videoIndex],
+        [field]: value
       };
       return newForm;
     });
@@ -281,9 +281,9 @@ function AddSandboxCourseForm() {
     setCourseForm(prev => {
       const newForm = { ...prev };
       const modules = isStandalone ? newForm.modules : newForm.mbaModules;
-      modules[moduleIndex].documents[documentIndex] = { 
-        ...modules[moduleIndex].documents[documentIndex], 
-        [field]: value 
+      modules[moduleIndex].documents[documentIndex] = {
+        ...modules[moduleIndex].documents[documentIndex],
+        [field]: value
       };
       return newForm;
     });
@@ -349,7 +349,7 @@ function AddSandboxCourseForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate required fields
     if (!courseForm.slug || !courseForm.title) {
       toast({
@@ -362,17 +362,17 @@ function AddSandboxCourseForm() {
 
     // Filter out empty documents and videos before submission
     console.log('🔍 Frontend filtering - Original courseForm.modules:', courseForm.modules);
-    
+
     const cleanedCourseForm = {
       ...courseForm,
       modules: courseForm.modules.map((module, moduleIndex) => {
         console.log(`📋 Module ${moduleIndex}:`, module.title);
         console.log(`📄 Raw documents:`, module.documents);
-        
+
         const filteredDocs = module.documents.filter(doc => {
-          const isValid = doc.title && doc.title.trim() && doc.fileUrl && doc.fileUrl.trim() && 
+          const isValid = doc.title && doc.title.trim() && doc.fileUrl && doc.fileUrl.trim() &&
             doc.fileName && doc.publicId && doc.fileType && doc.fileSize;
-          
+
           console.log(`🔎 Document "${doc.title}" validation:`, {
             hasTitle: !!doc.title,
             hasTitleTrimmed: !!(doc.title && doc.title.trim()),
@@ -387,15 +387,15 @@ function AddSandboxCourseForm() {
             isValid,
             fullDoc: doc
           });
-          
+
           return isValid;
         });
-        
+
         console.log(`✅ Module "${module.title}" filtered documents:`, filteredDocs.length, filteredDocs);
-        
+
         return {
           ...module,
-          videos: module.videos.filter(video => 
+          videos: module.videos.filter(video =>
             video.title && video.title.trim() && video.url && video.url.trim()
           ),
           documents: filteredDocs,
@@ -404,11 +404,11 @@ function AddSandboxCourseForm() {
       }),
       mbaModules: courseForm.mbaModules.map(module => ({
         ...module,
-        videos: module.videos.filter(video => 
+        videos: module.videos.filter(video =>
           video.title && video.title.trim() && video.url && video.url.trim()
         ),
-        documents: module.documents.filter(doc => 
-          doc.title && doc.title.trim() && doc.fileUrl && doc.fileUrl.trim() && 
+        documents: module.documents.filter(doc =>
+          doc.title && doc.title.trim() && doc.fileUrl && doc.fileUrl.trim() &&
           doc.fileName && doc.publicId && doc.fileType && doc.fileSize
         ),
         quiz: module.quiz || { questions: [] } // Preserve quiz data
@@ -456,7 +456,7 @@ function AddSandboxCourseForm() {
 
           <div>
             <Label htmlFor="type">Course Type</Label>
-            <Select value={courseForm.type} onValueChange={(value: "standalone" | "with-mba") => 
+            <Select value={courseForm.type} onValueChange={(value: "standalone" | "with-mba") =>
               setCourseForm(prev => ({ ...prev, type: value }))
             }>
               <SelectTrigger>
@@ -488,8 +488,8 @@ function AddSandboxCourseForm() {
               <div className="grid grid-cols-3 gap-4 pl-6">
                 <div>
                   <Label>Frequency</Label>
-                  <Select 
-                    value={courseForm.liveClassConfig.frequency} 
+                  <Select
+                    value={courseForm.liveClassConfig.frequency}
                     onValueChange={(value: "weekly" | "biweekly" | "monthly") =>
                       setCourseForm(prev => ({
                         ...prev,
@@ -509,8 +509,8 @@ function AddSandboxCourseForm() {
                 </div>
                 <div>
                   <Label>Day of Week</Label>
-                  <Select 
-                    value={courseForm.liveClassConfig.dayOfWeek} 
+                  <Select
+                    value={courseForm.liveClassConfig.dayOfWeek}
                     onValueChange={(value) =>
                       setCourseForm(prev => ({
                         ...prev,
@@ -647,7 +647,7 @@ function AddSandboxCourseForm() {
                   {module.documents.map((document, documentIndex) => {
                     const uploadKey = `modules-${moduleIndex}-${documentIndex}`;
                     const isUploading = uploading[uploadKey];
-                    
+
                     return (
                       <div key={documentIndex} className="space-y-2 mt-2 p-3 border rounded">
                         <div className="grid grid-cols-12 gap-2">
@@ -748,10 +748,10 @@ function AddSandboxCourseForm() {
                             newForm.modules[moduleIndex].quiz = { questions: transformedQuestions };
                             return newForm;
                           });
-                          
+
                           // Invalidate quiz repository queries since this will save to repository
                           queryClient.invalidateQueries({ queryKey: ['quizRepository'] });
-                          
+
                           toast({
                             title: 'Quiz Uploaded',
                             description: `Added ${questions.length} questions to ${module.title || `Module ${moduleIndex + 1}`}`,
@@ -798,7 +798,7 @@ function AddSandboxCourseForm() {
                           </Button>
                         )}
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label className="text-xs text-purple-700 font-medium">Question Text</Label>
                         <Textarea
@@ -838,7 +838,7 @@ function AddSandboxCourseForm() {
               </CardContent>
             </Card>
           ))}
-          
+
           <Button
             type="button"
             variant="outline"
@@ -852,15 +852,15 @@ function AddSandboxCourseForm() {
       </Card>
 
       <div className="flex justify-between">
-        <Button 
-          type="button" 
-          variant="outline" 
+        <Button
+          type="button"
+          variant="outline"
           onClick={() => setLocation('/admin/sandbox-courses')}
         >
           Cancel
         </Button>
-        <Button 
-          type="submit" 
+        <Button
+          type="submit"
           disabled={createSandboxCourseMutation.isPending}
         >
           {createSandboxCourseMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
@@ -882,13 +882,13 @@ function AddSandboxCourseForm() {
                 </div>
                 {previewDocument.fileType === 'application/pdf' ? (
                   // Use PDF.js for PDF preview
-                  <PDFPreview 
+                  <PDFPreview
                     fileUrl={previewDocument.fileUrl}
                     fileName={previewDocument.fileName}
                   />
                 ) : previewDocument.fileType === 'text/csv' ? (
                   // Use Papa Parse for CSV preview
-                  <CSVPreview 
+                  <CSVPreview
                     fileUrl={previewDocument.fileUrl}
                     fileName={previewDocument.fileName}
                   />
@@ -934,13 +934,13 @@ function AddSandboxCourseForm() {
             )}
           </div>
           <div className="flex justify-end space-x-2">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setPreviewDocument(null)}
             >
               Close
             </Button>
-            <Button 
+            <Button
               onClick={() => {
                 if (previewDocument?.fileUrl) {
                   window.open(previewDocument.fileUrl, '_blank');
@@ -958,10 +958,10 @@ function AddSandboxCourseForm() {
 
 export default function AddSandboxCoursePage() {
   return (
-    <DashboardLayout>
+    <AdminLayout>
       <div className="p-6">
         <AddSandboxCourseForm />
       </div>
-    </DashboardLayout>
+    </AdminLayout>
   );
 }

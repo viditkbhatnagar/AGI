@@ -3,7 +3,7 @@ import { useLocation } from 'wouter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import { AdminLayout } from "@/components/admin/layout/admin-layout";
 import { Helmet } from "react-helmet-async";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -67,12 +67,12 @@ function AddTeacherPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [courseSearch, setCourseSearch] = useState('');
-  
+
   // Teacher list state
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [teacherAssignments, setTeacherAssignments] = useState<TeacherAssignment[]>([]);
   const [loadingTeachers, setLoadingTeachers] = useState(true);
-  
+
   // Edit teacher state
   const [editingTeacher, setEditingTeacher] = useState<Teacher | null>(null);
   const [editForm, setEditForm] = useState<{
@@ -119,32 +119,32 @@ function AddTeacherPage() {
     const fetchTeachersData = async () => {
       try {
         const token = localStorage.getItem('token');
-        
+
         // Fetch all teachers with enhanced data
         const teachersRes = await fetch('/api/admin/teachers', {
           headers: token
             ? { Authorization: `Bearer ${token}` }
             : undefined
         });
-        
+
         if (!teachersRes.ok) {
           throw new Error(`Error ${teachersRes.status}: ${teachersRes.statusText}`);
         }
-        
+
         const teachersData: Teacher[] = await teachersRes.json();
         setTeachers(teachersData);
-        
+
         // Fetch all teacher assignments (for backward compatibility)
         const assignmentsRes = await fetch('/api/admin/teacher-assignments', {
           headers: token
             ? { Authorization: `Bearer ${token}` }
             : undefined
         });
-        
+
         if (!assignmentsRes.ok) {
           throw new Error(`Error ${assignmentsRes.status}: ${assignmentsRes.statusText}`);
         }
-        
+
         const assignmentsData: TeacherAssignment[] = await assignmentsRes.json();
         setTeacherAssignments(assignmentsData);
       } catch (err) {
@@ -154,7 +154,7 @@ function AddTeacherPage() {
         setLoadingTeachers(false);
       }
     };
-    
+
     fetchTeachersData();
   }, []);
 
@@ -174,12 +174,12 @@ function AddTeacherPage() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    
+
     if (form.courseSlugs.length === 0) {
       setError('Please assign at least one course to the teacher');
       return;
     }
-    
+
     setSaving(true);
     setError(null);
     try {
@@ -196,22 +196,22 @@ function AddTeacherPage() {
         const err = await res.json();
         throw new Error(err.message || `Error ${res.status}`);
       }
-      
+
       // Refresh the teacher list after successful creation
       const tokenRefresh = localStorage.getItem('token');
-      
+
       // Fetch all teachers
       const teachersRes = await fetch('/api/admin/teachers', {
         headers: tokenRefresh
           ? { Authorization: `Bearer ${tokenRefresh}` }
           : undefined
       });
-      
+
       if (teachersRes.ok) {
         const teachersData: Teacher[] = await teachersRes.json();
         setTeachers(teachersData);
       }
-      
+
       // Reset form
       setForm({
         email: '',
@@ -221,7 +221,7 @@ function AddTeacherPage() {
         address: '',
         courseSlugs: []
       });
-      
+
       toast({
         title: "Success",
         description: "Teacher created successfully",
@@ -283,26 +283,26 @@ function AddTeacherPage() {
 
   const handleEditSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    
+
     if (!editingTeacher) return;
-    
+
     if (editForm.courseSlugs.length === 0) {
       setEditError('Please assign at least one course to the teacher');
       return;
     }
-    
+
     setEditSaving(true);
     setEditError(null);
     try {
       const token = localStorage.getItem('token');
-      
+
       // Update teacher details (name, phone, address)
       const updateData = {
         username: editForm.name,
         phone: editForm.phone,
         address: editForm.address
       };
-      
+
       const updateRes = await fetch(`/api/admin/teachers/${editingTeacher._id}`, {
         method: 'PUT',
         headers: {
@@ -311,18 +311,18 @@ function AddTeacherPage() {
         },
         body: JSON.stringify(updateData)
       });
-      
+
       if (!updateRes.ok) {
         const err = await updateRes.json();
         throw new Error(err.message || `Error ${updateRes.status}`);
       }
-      
+
       // Update course assignments
       // First, remove all current assignments for this teacher
       const currentAssignments = teacherAssignments.filter(
         assignment => assignment.teacherId._id === editingTeacher._id
       );
-      
+
       // Delete current assignments
       for (const assignment of currentAssignments) {
         await fetch(`/api/admin/teacher-assignments`, {
@@ -337,7 +337,7 @@ function AddTeacherPage() {
           })
         });
       }
-      
+
       // Add new assignments
       for (const courseSlug of editForm.courseSlugs) {
         await fetch(`/api/admin/teacher-assignments`, {
@@ -352,34 +352,34 @@ function AddTeacherPage() {
           })
         });
       }
-      
+
       // Refresh the teacher list
       const tokenRefresh = localStorage.getItem('token');
-      
+
       // Fetch all teachers
       const teachersRes = await fetch('/api/admin/teachers', {
         headers: tokenRefresh
           ? { Authorization: `Bearer ${tokenRefresh}` }
           : undefined
       });
-      
+
       if (teachersRes.ok) {
         const teachersData: Teacher[] = await teachersRes.json();
         setTeachers(teachersData);
       }
-      
+
       // Fetch all teacher assignments
       const assignmentsRes = await fetch('/api/admin/teacher-assignments', {
         headers: tokenRefresh
           ? { Authorization: `Bearer ${tokenRefresh}` }
           : undefined
       });
-      
+
       if (assignmentsRes.ok) {
         const assignmentsData: TeacherAssignment[] = await assignmentsRes.json();
         setTeacherAssignments(assignmentsData);
       }
-      
+
       setEditingTeacher(null);
       toast({
         title: "Success",
@@ -402,7 +402,7 @@ function AddTeacherPage() {
     if (!window.confirm(`Are you sure you want to delete teacher ${teacherName}? This action cannot be undone.`)) {
       return;
     }
-    
+
     try {
       const token = localStorage.getItem('token');
       const res = await fetch(`/api/admin/teachers/${teacherId}`, {
@@ -411,27 +411,27 @@ function AddTeacherPage() {
           ? { Authorization: `Bearer ${token}` }
           : undefined
       });
-      
+
       if (!res.ok) {
         const err = await res.json();
         throw new Error(err.message || `Error ${res.status}`);
       }
-      
+
       // Refresh the teacher list
       const tokenRefresh = localStorage.getItem('token');
-      
+
       // Fetch all teachers
       const teachersRes = await fetch('/api/admin/teachers', {
         headers: tokenRefresh
           ? { Authorization: `Bearer ${tokenRefresh}` }
           : undefined
       });
-      
+
       if (teachersRes.ok) {
         const teachersData: Teacher[] = await teachersRes.json();
         setTeachers(teachersData);
       }
-      
+
       toast({
         title: "Success",
         description: "Teacher deleted successfully",
@@ -448,134 +448,134 @@ function AddTeacherPage() {
 
   return (
     <div className="p-6 space-y-8">
-      <h1 className="text-2xl font-bold">{isSuperAdmin ? 'Teachers Management' : 'Add New Teacher'}</h1>
+      <h1 className="text-2xl font-bold text-gray-900">{isSuperAdmin ? 'Teachers Management' : 'Add New Teacher'}</h1>
 
       {canCreate && (
         <Card>
-        <CardHeader>
-          <CardTitle>Teacher Information</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {error && (
-            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
-              <p className="text-red-600">{error}</p>
-            </div>
-          )}
+          <CardHeader>
+            <CardTitle>Teacher Information</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {error && (
+              <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-red-600">{error}</p>
+              </div>
+            )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">Full Name *</label>
-                <Input
-                  name="name"
-                  required
-                  value={form.name}
-                  onChange={handleChange}
-                  placeholder="Enter teacher's full name"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Email *</label>
-                <Input
-                  name="email"
-                  type="email"
-                  required
-                  value={form.email}
-                  onChange={handleChange}
-                  placeholder="Enter teacher's email address"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Phone</label>
-                <Input
-                  name="phone"
-                  value={form.phone}
-                  onChange={handleChange}
-                  placeholder="Enter phone number"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Address</label>
-                <Input
-                  name="address"
-                  value={form.address}
-                  onChange={handleChange}
-                  placeholder="Enter address"
-                />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium mb-2">Password *</label>
-                <div className="flex space-x-2 items-center">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Full Name *</label>
                   <Input
-                    name="password"
-                    type="text"
+                    name="name"
                     required
-                    value={form.password}
+                    value={form.name}
                     onChange={handleChange}
-                    placeholder="Enter password or generate one"
+                    placeholder="Enter teacher's full name"
                   />
-                  <Button type="button" onClick={handleGeneratePassword} variant="outline">
-                    Generate
-                  </Button>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Email *</label>
+                  <Input
+                    name="email"
+                    type="email"
+                    required
+                    value={form.email}
+                    onChange={handleChange}
+                    placeholder="Enter teacher's email address"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Phone</label>
+                  <Input
+                    name="phone"
+                    value={form.phone}
+                    onChange={handleChange}
+                    placeholder="Enter phone number"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Address</label>
+                  <Input
+                    name="address"
+                    value={form.address}
+                    onChange={handleChange}
+                    placeholder="Enter address"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium mb-2">Password *</label>
+                  <div className="flex space-x-2 items-center">
+                    <Input
+                      name="password"
+                      type="text"
+                      required
+                      value={form.password}
+                      onChange={handleChange}
+                      placeholder="Enter password or generate one"
+                    />
+                    <Button type="button" onClick={handleGeneratePassword} variant="outline">
+                      Generate
+                    </Button>
+                  </div>
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium mb-2">Assign Courses *</label>
+                  {loadingCourses ? (
+                    <p className="text-gray-500">Loading courses…</p>
+                  ) : (
+                    <>
+                      <Input
+                        type="text"
+                        placeholder="Search courses to assign"
+                        value={courseSearch}
+                        onChange={e => setCourseSearch(e.target.value)}
+                        className="mb-3"
+                      />
+                      <div className="max-h-40 overflow-y-auto border rounded-md p-3 bg-gray-50">
+                        {courses
+                          .filter(c =>
+                            c.title.toLowerCase().includes(courseSearch.toLowerCase())
+                          )
+                          .map(c => (
+                            <label key={c.slug} className="flex items-center mb-2 last:mb-0">
+                              <input
+                                type="checkbox"
+                                name="courseSlugs"
+                                value={c.slug}
+                                checked={form.courseSlugs.includes(c.slug)}
+                                onChange={handleCourseCheckboxChange}
+                                className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                              />
+                              <span className="text-sm">{c.title}</span>
+                            </label>
+                          ))}
+                      </div>
+                      {form.courseSlugs.length > 0 && (
+                        <p className="text-sm text-green-600 mt-2">
+                          Selected {form.courseSlugs.length} course(s)
+                        </p>
+                      )}
+                    </>
+                  )}
                 </div>
               </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium mb-2">Assign Courses *</label>
-                {loadingCourses ? (
-                  <p className="text-gray-500">Loading courses…</p>
-                ) : (
-                  <>
-                    <Input
-                      type="text"
-                      placeholder="Search courses to assign"
-                      value={courseSearch}
-                      onChange={e => setCourseSearch(e.target.value)}
-                      className="mb-3"
-                    />
-                    <div className="max-h-40 overflow-y-auto border rounded-md p-3 bg-gray-50">
-                      {courses
-                        .filter(c =>
-                          c.title.toLowerCase().includes(courseSearch.toLowerCase())
-                        )
-                        .map(c => (
-                          <label key={c.slug} className="flex items-center mb-2 last:mb-0">
-                            <input
-                              type="checkbox"
-                              name="courseSlugs"
-                              value={c.slug}
-                              checked={form.courseSlugs.includes(c.slug)}
-                              onChange={handleCourseCheckboxChange}
-                              className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                            />
-                            <span className="text-sm">{c.title}</span>
-                          </label>
-                        ))}
-                    </div>
-                    {form.courseSlugs.length > 0 && (
-                      <p className="text-sm text-green-600 mt-2">
-                        Selected {form.courseSlugs.length} course(s)
-                      </p>
-                    )}
-                  </>
-                )}
-              </div>
-            </div>
 
-            <div className="flex space-x-3">
-              <Button type="submit" disabled={saving || loadingCourses}>
-                {saving ? 'Creating Teacher…' : 'Create Teacher'}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setLocation('/admin/students')}
-              >
-                Cancel
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+              <div className="flex space-x-3">
+                <Button type="submit" disabled={saving || loadingCourses}>
+                  {saving ? 'Creating Teacher…' : 'Create Teacher'}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setLocation('/admin/students')}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
       )}
 
       {/* Teacher List Table */}
@@ -664,7 +664,7 @@ function AddTeacherPage() {
           <DialogHeader>
             <DialogTitle>Edit Teacher</DialogTitle>
           </DialogHeader>
-          
+
           {editingTeacher && (
             <form onSubmit={handleEditSubmit} className="space-y-6">
               {editError && (
@@ -672,7 +672,7 @@ function AddTeacherPage() {
                   <p className="text-red-600">{editError}</p>
                 </div>
               )}
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">Full Name *</label>
@@ -748,7 +748,7 @@ function AddTeacherPage() {
                   )}
                 </div>
               </div>
-              
+
               <div className="flex justify-end space-x-3">
                 <Button
                   type="button"
@@ -772,12 +772,12 @@ function AddTeacherPage() {
 
 export default function AddTeacher() {
   return (
-    <DashboardLayout>
+    <AdminLayout>
       <Helmet>
         <title>Add Teacher | AGI.online</title>
         <meta name="description" content="Create a new teacher account and assign courses." />
       </Helmet>
       <AddTeacherPage />
-    </DashboardLayout>
+    </AdminLayout>
   );
 }

@@ -61,7 +61,7 @@ export function AdminRecordings() {
     fileUrl: '',
     isVisible: true
   });
-  
+
   // State for modules
   const [modules, setModules] = useState<ModuleOption[]>([]);
 
@@ -75,7 +75,7 @@ export function AdminRecordings() {
   };
   const [editingRecording, setEditingRecording] = useState<Recording | null>(null);
   const [isViewOnlyMode, setIsViewOnlyMode] = useState(false);
-  
+
   // Filter and pagination state
   const [filters, setFilters] = useState<FilterState>({
     courseSlug: 'all',
@@ -86,7 +86,7 @@ export function AdminRecordings() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
   const recordsPerPage = 5;
-  
+
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -106,7 +106,7 @@ export function AdminRecordings() {
       setModules([]);
       return;
     }
-    
+
     (async () => {
       try {
         const token = localStorage.getItem('token');
@@ -184,26 +184,26 @@ export function AdminRecordings() {
       if (filters.courseSlug && filters.courseSlug !== 'all' && recording.courseSlug !== filters.courseSlug) {
         return false;
       }
-      
+
       // Title search
       if (filters.titleSearch && !recording.title.toLowerCase().includes(filters.titleSearch.toLowerCase())) {
         return false;
       }
-      
+
       // Date added filter
       if (filters.dateAdded) {
         const recordingDate = new Date(recording.uploadedAt).toDateString();
         const filterDate = new Date(filters.dateAdded).toDateString();
         if (recordingDate !== filterDate) return false;
       }
-      
+
       // Class date filter
       if (filters.classDate) {
         const classDate = new Date(recording.classDate).toDateString();
         const filterDate = new Date(filters.classDate).toDateString();
         if (classDate !== filterDate) return false;
       }
-      
+
       return true;
     })
     .sort((a: Recording, b: Recording) => {
@@ -298,14 +298,14 @@ export function AdminRecordings() {
                   <FileVideo className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold tracking-tight">Recordings Management</h1>
+                  <h1 className="text-3xl font-bold tracking-tight text-gray-900">Recordings Management</h1>
                   <p className="text-lg text-muted-foreground">
                     Upload and manage course recordings for students
                   </p>
                 </div>
               </div>
             </div>
-            
+
             {/* Quick Stats */}
             <div className="hidden md:flex items-center gap-6">
               <div className="text-center">
@@ -326,7 +326,7 @@ export function AdminRecordings() {
               </div>
             </div>
           </div>
-          
+
           {/* Background Decoration */}
           <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 opacity-10">
             <FileVideo className="w-full h-full" />
@@ -353,8 +353,8 @@ export function AdminRecordings() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="course">Course *</Label>
-                  <Select 
-                    value={uploadForm.courseSlug} 
+                  <Select
+                    value={uploadForm.courseSlug}
                     onValueChange={(value) => setUploadForm(prev => ({ ...prev, courseSlug: value, moduleIndex: -1 }))}
                   >
                     <SelectTrigger>
@@ -372,8 +372,8 @@ export function AdminRecordings() {
 
                 <div className="space-y-2">
                   <Label htmlFor="module">Module *</Label>
-                  <Select 
-                    value={uploadForm.moduleIndex.toString()} 
+                  <Select
+                    value={uploadForm.moduleIndex.toString()}
                     onValueChange={(value) => setUploadForm(prev => ({ ...prev, moduleIndex: parseInt(value) }))}
                     disabled={!uploadForm.courseSlug || modules.length === 0}
                   >
@@ -495,28 +495,28 @@ export function AdminRecordings() {
             </div>
           </CardTitle>
         </CardHeader>
-        
+
         {showFilters && (
           <CardContent className="pt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {/* Course Filter */}
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Course</Label>
-                <Select 
-                  value={filters.courseSlug} 
+                <Select
+                  value={filters.courseSlug}
                   onValueChange={(value) => setFilters(prev => ({ ...prev, courseSlug: value }))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="All courses" />
                   </SelectTrigger>
-                                     <SelectContent>
-                     <SelectItem value="all">All courses</SelectItem>
-                     {courses.map((course: Course) => (
-                       <SelectItem key={course.slug} value={course.slug}>
-                         {course.title}
-                       </SelectItem>
-                     ))}
-                   </SelectContent>
+                  <SelectContent>
+                    <SelectItem value="all">All courses</SelectItem>
+                    {courses.map((course: Course) => (
+                      <SelectItem key={course.slug} value={course.slug}>
+                        {course.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               </div>
 
@@ -534,27 +534,27 @@ export function AdminRecordings() {
                 </div>
               </div>
 
-                             {/* Date Added */}
-               <div className="space-y-2">
-                 <Label className="text-sm font-medium">Date Added</Label>
-                 <Input
-                   type="date"
-                   value={filters.dateAdded}
-                   onChange={(e) => setFilters(prev => ({ ...prev, dateAdded: e.target.value }))}
-                   className="h-10"
-                 />
-               </div>
+              {/* Date Added */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Date Added</Label>
+                <Input
+                  type="date"
+                  value={filters.dateAdded}
+                  onChange={(e) => setFilters(prev => ({ ...prev, dateAdded: e.target.value }))}
+                  className="h-10"
+                />
+              </div>
 
-               {/* Class Date */}
-               <div className="space-y-2">
-                 <Label className="text-sm font-medium">Class Date</Label>
-                 <Input
-                   type="date"
-                   value={filters.classDate}
-                   onChange={(e) => setFilters(prev => ({ ...prev, classDate: e.target.value }))}
-                   className="h-10"
-                 />
-               </div>
+              {/* Class Date */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Class Date</Label>
+                <Input
+                  type="date"
+                  value={filters.classDate}
+                  onChange={(e) => setFilters(prev => ({ ...prev, classDate: e.target.value }))}
+                  className="h-10"
+                />
+              </div>
             </div>
           </CardContent>
         )}
@@ -720,7 +720,7 @@ export function AdminRecordings() {
                       <ChevronLeft className="h-4 w-4" />
                       Previous
                     </Button>
-                    
+
                     {/* Page numbers */}
                     <div className="flex gap-1">
                       {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
