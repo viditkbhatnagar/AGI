@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import { AdminLayout } from "@/components/admin/layout/admin-layout";
 import { Helmet } from "react-helmet-async";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,14 +13,14 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { createDownloadLink } from '@/lib/cloudinary';
 import { useConditionalRender } from '@/lib/permissions-provider';
-import { 
-  Eye, 
-  Download, 
-  Filter, 
-  Search, 
-  FileText, 
-  CheckCircle, 
-  XCircle, 
+import {
+  Eye,
+  Download,
+  Filter,
+  Search,
+  FileText,
+  CheckCircle,
+  XCircle,
   Clock,
   Edit,
   ChevronDown
@@ -101,7 +101,7 @@ const CertificateIssuanceCell = ({ result, onUpdate }: CertificateIssuanceCellPr
         title: "Success",
         description: "Certificate issuance status updated successfully",
       });
-      
+
       onUpdate();
     } catch (error) {
       toast({
@@ -131,7 +131,7 @@ const CertificateIssuanceCell = ({ result, onUpdate }: CertificateIssuanceCellPr
           onCheckedChange={handleOnlineChange}
           disabled={isUpdating}
         />
-        <label 
+        <label
           htmlFor={`online-${result.studentId}-${result.courseSlug}`}
           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
         >
@@ -145,7 +145,7 @@ const CertificateIssuanceCell = ({ result, onUpdate }: CertificateIssuanceCellPr
           onCheckedChange={handleOfflineChange}
           disabled={isUpdating}
         />
-        <label 
+        <label
           htmlFor={`offline-${result.studentId}-${result.courseSlug}`}
           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
         >
@@ -254,7 +254,7 @@ export default function ExamResults() {
     // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(result => 
+      filtered = filtered.filter(result =>
         result.studentName.toLowerCase().includes(query) ||
         result.courseSlug.toLowerCase().includes(query) ||
         result.examTitle?.toLowerCase().includes(query)
@@ -365,7 +365,7 @@ export default function ExamResults() {
   const openScoreDialogForAttempt = (result: StudentExamResult, attemptNumber: number) => {
     const attempt = result.allAttempts.find(a => a.attemptNumber === attemptNumber);
     if (!attempt) return;
-    
+
     setSelectedResult({
       ...result,
       latestAttempt: {
@@ -395,7 +395,7 @@ export default function ExamResults() {
 
   if (isLoading) {
     return (
-      <DashboardLayout>
+      <AdminLayout>
         <Helmet>
           <title>Exam Results | AGI.online</title>
         </Helmet>
@@ -405,19 +405,19 @@ export default function ExamResults() {
             <div className="h-64 bg-gray-200 rounded"></div>
           </div>
         </div>
-      </DashboardLayout>
+      </AdminLayout>
     );
   }
 
   return (
-    <DashboardLayout>
+    <AdminLayout>
       <Helmet>
         <title>Exam Results | AGI.online</title>
       </Helmet>
-      
+
       <div className="p-6 space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Final Exam Results</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Final Exam Results</h1>
         </div>
 
         {/* Filters */}
@@ -433,7 +433,7 @@ export default function ExamResults() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-              
+
               <Select value={courseFilter} onValueChange={setCourseFilter}>
                 <SelectTrigger className="w-full md:w-48">
                   <SelectValue placeholder="Filter by course" />
@@ -505,8 +505,8 @@ export default function ExamResults() {
                           <div>
                             <div className="font-medium">{result.examTitle}</div>
                             <Badge variant="outline" className="text-xs mt-1">
-                              {result.finalExamType === 'mcq' ? 'MCQ Only' : 
-                               result.finalExamType === 'essay' ? 'Essay Only' : 'Mixed'}
+                              {result.finalExamType === 'mcq' ? 'MCQ Only' :
+                                result.finalExamType === 'essay' ? 'Essay Only' : 'Mixed'}
                             </Badge>
                           </div>
                         ) : (
@@ -552,8 +552,8 @@ export default function ExamResults() {
                           <div>
                             <div className="font-medium">{result.latestAttempt.essayTotal} essay(s)</div>
                             <div className="text-sm text-gray-500">
-                              {result.latestAttempt.requiresManualGrading && !result.latestAttempt.gradedBy 
-                                ? 'Submitted' 
+                              {result.latestAttempt.requiresManualGrading && !result.latestAttempt.gradedBy
+                                ? 'Submitted'
                                 : 'Reviewed'}
                             </div>
                           </div>
@@ -564,9 +564,8 @@ export default function ExamResults() {
                       <TableCell>
                         {result.latestAttempt?.score !== undefined ? (
                           <div>
-                            <div className={`font-medium ${
-                              result.latestAttempt.passed ? 'text-green-600' : 'text-red-600'
-                            }`}>
+                            <div className={`font-medium ${result.latestAttempt.passed ? 'text-green-600' : 'text-red-600'
+                              }`}>
                               {result.latestAttempt.score}%
                             </div>
                             <div className="text-xs text-gray-500">
@@ -598,9 +597,8 @@ export default function ExamResults() {
                                     </div>
                                     <div className="flex flex-col items-end">
                                       {attempt.score !== undefined ? (
-                                        <span className={`font-medium ${
-                                          attempt.passed ? 'text-green-600' : 'text-red-600'
-                                        }`}>
+                                        <span className={`font-medium ${attempt.passed ? 'text-green-600' : 'text-red-600'
+                                          }`}>
                                           {attempt.score}%
                                         </span>
                                       ) : (
@@ -651,7 +649,7 @@ export default function ExamResults() {
                         )}
                       </TableCell>
                       <TableCell>
-                        <CertificateIssuanceCell 
+                        <CertificateIssuanceCell
                           result={result}
                           onUpdate={() => fetchExamResults()}
                         />
@@ -703,7 +701,7 @@ export default function ExamResults() {
             <DialogHeader>
               <DialogTitle>Exam Submission Details</DialogTitle>
             </DialogHeader>
-            
+
             {selectedSubmission && (
               <div className="space-y-6">
                 <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
@@ -745,13 +743,12 @@ export default function ExamResults() {
                             <div className="font-medium mb-2">{qa.questionText}</div>
                             <div className="space-y-2">
                               {qa.choices?.map((choice, idx) => (
-                                <div 
+                                <div
                                   key={idx}
-                                  className={`p-2 rounded border ${
-                                    idx === qa.correctIndex ? 'bg-green-50 border-green-200' :
+                                  className={`p-2 rounded border ${idx === qa.correctIndex ? 'bg-green-50 border-green-200' :
                                     idx === qa.studentAnswer ? 'bg-red-50 border-red-200' :
-                                    'bg-gray-50 border-gray-200'
-                                  }`}
+                                      'bg-gray-50 border-gray-200'
+                                    }`}
                                 >
                                   <div className="flex items-center space-x-2">
                                     <span className="font-medium">{String.fromCharCode(65 + idx)}.</span>
@@ -796,7 +793,7 @@ export default function ExamResults() {
                                 )}
                               </div>
                             )}
-                            
+
                             <div className="p-4 bg-gray-50 rounded-lg">
                               <div className="flex items-center justify-between mb-2">
                                 <span className="font-medium">Student Answer</span>
@@ -811,7 +808,7 @@ export default function ExamResults() {
                                   </Button>
                                 )}
                               </div>
-                              
+
                               {typeof qa.studentAnswer === 'object' && qa.studentAnswer.type === 'file' ? (
                                 <div className="text-sm text-gray-600">
                                   File: {qa.studentAnswer.fileName}
@@ -843,7 +840,7 @@ export default function ExamResults() {
                 Update Score - Attempt #{selectedResult?.latestAttempt?.attemptNumber}
               </DialogTitle>
             </DialogHeader>
-            
+
             {selectedResult && (
               <div className="space-y-4">
                 <div className="p-4 bg-gray-50 rounded-lg">
@@ -892,6 +889,6 @@ export default function ExamResults() {
           </DialogContent>
         </Dialog>
       </div>
-    </DashboardLayout>
+    </AdminLayout>
   );
 }

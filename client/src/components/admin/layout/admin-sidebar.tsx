@@ -221,7 +221,7 @@ export function AdminSidebar({
                         {active && (
                           <motion.div
                             layoutId="sidebar-active"
-                            className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full bg-gradient-to-b from-[#375BBE] to-[#9B5CFF]"
+                            className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#375BBE]/10 to-[#9B5CFF]/10 border-l-2 border-[#375BBE]"
                             initial={false}
                             transition={
                               prefersReducedMotion

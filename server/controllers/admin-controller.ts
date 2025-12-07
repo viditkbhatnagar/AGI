@@ -41,16 +41,16 @@ export const getAllStudents = async (req: Request, res: Response) => {
 export const getStudent = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    
+
     const student = await Student.findById(id).populate({
       path: 'enrollment',
       select: 'courseSlug enrollDate validUntil completedModules'
     });
-    
+
     if (!student) {
       return res.status(404).json({ message: 'Student not found' });
     }
-    
+
     res.status(200).json(student);
   } catch (error) {
     console.error('Get student error:', error);
@@ -115,13 +115,13 @@ export const createStudent = async (req: Request, res: Response) => {
           throw new Error(`Course not found: ${slug}`);
         }
         const enrollment = new Enrollment({
-          studentId:       student._id,
-          courseSlug:      slug,
+          studentId: student._id,
+          courseSlug: slug,
           enrollDate,
           validUntil,
           completedModules: [],
-          quizAttempts:     [],
-          watchTime:        []
+          quizAttempts: [],
+          watchTime: []
         });
         await enrollment.save();
       })
@@ -175,17 +175,17 @@ AGI.online Team
         }
       ]
     })
-    .then(info => console.log('Welcome email sent:', info.messageId))
-    .catch(err => console.error('Error sending welcome email:', err));
+      .then(info => console.log('Welcome email sent:', info.messageId))
+      .catch(err => console.error('Error sending welcome email:', err));
 
     // 4) Return the newly created student record
     res.status(201).json({
       message: 'Student created and enrolled successfully',
       student: {
-        id:       student._id,
-        userId:   user._id,
-        name:     student.name,
-        pathway:  student.pathway,
+        id: student._id,
+        userId: user._id,
+        name: student.name,
+        pathway: student.pathway,
         courseSlugs
       }
     });
@@ -199,7 +199,7 @@ AGI.online Team
 export const createTeacher = async (req: Request, res: Response) => {
   const session = await mongoose.startSession();
   session.startTransaction();
-  
+
   try {
     const {
       email,
@@ -218,7 +218,7 @@ export const createTeacher = async (req: Request, res: Response) => {
     if (existingUser) {
       return res.status(400).json({ message: 'Email already in use' });
     }
-    
+
     const user = new User({
       username,
       email,
@@ -262,7 +262,7 @@ export const createTeacher = async (req: Request, res: Response) => {
     });
 
     const courseNames = courses.map(c => c.title).join(', ');
-    
+
     const text = `Hello ${name},\n\nWelcome ${name} onboard! You have been assigned to teach the following courses: ${courseNames}\n\nHere are your credentials:\n• Email: ${email}\n• Temporary password: ${password}\n\nPlease sign in at ${process.env.APP_URL}/login and change your password.\n\nWelcome to the team!\nAGI.online Team`;
 
     const html = `<!DOCTYPE html>
@@ -325,8 +325,8 @@ export const createTeacher = async (req: Request, res: Response) => {
         }
       ]
     })
-    .then((info: any) => console.log('Teacher welcome email sent:', info.messageId))
-    .catch((err: any) => console.error('Error sending teacher welcome email:', err));
+      .then((info: any) => console.log('Teacher welcome email sent:', info.messageId))
+      .catch((err: any) => console.error('Error sending teacher welcome email:', err));
 
     await session.commitTransaction();
     session.endSession();
@@ -344,7 +344,7 @@ export const createTeacher = async (req: Request, res: Response) => {
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
-    
+
     console.error('Error creating teacher:', error);
     res.status(500).json({ message: 'Server error' });
   }
@@ -355,22 +355,22 @@ export const updateStudent = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { name, phone, address, dob, pathway } = req.body;
-    
+
     const student = await Student.findById(id);
-    
+
     if (!student) {
       return res.status(404).json({ message: 'Student not found' });
     }
-    
+
     // Update fields
     if (name) student.name = name;
     if (phone) student.phone = phone;
     if (address) student.address = address;
     if (dob) student.dob = new Date(dob);
     if (pathway) student.pathway = pathway;
-    
+
     await student.save();
-    
+
     res.status(200).json({
       message: 'Student updated successfully',
       student
@@ -385,37 +385,37 @@ export const updateStudent = async (req: Request, res: Response) => {
 export const deleteStudent = async (req: Request, res: Response) => {
   const session = await mongoose.startSession();
   session.startTransaction();
-  
+
   try {
     const { id } = req.params;
-    
+
     const student = await Student.findById(id);
-    
+
     if (!student) {
       return res.status(404).json({ message: 'Student not found' });
     }
-    
+
     // Find and delete associated user
     const user = await User.findOne({ _id: student.userId });
-    
+
     if (user) {
       await User.deleteOne({ _id: user._id }, { session });
     }
-    
+
     // Delete enrollments
     await Enrollment.deleteMany({ studentId: student._id }, { session });
-    
+
     // Delete student
     await Student.deleteOne({ _id: student._id }, { session });
-    
+
     await session.commitTransaction();
     session.endSession();
-    
+
     res.status(200).json({ message: 'Student deleted successfully' });
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
-    
+
     console.error('Delete student error:', error);
     res.status(500).json({ message: 'Server error' });
   }
@@ -427,30 +427,74 @@ export const getDashboardStats = async (req: Request, res: Response) => {
     const totalStudents = await Student.countDocuments();
     const totalCourses = await Course.countDocuments();
     const totalEnrollments = await Enrollment.countDocuments();
-    const upcomingLiveClasses = await LiveClass.countDocuments({ 
+    const upcomingLiveClasses = await LiveClass.countDocuments({
       startTime: { $gte: new Date() },
       status: 'scheduled'
     });
-    
+
     // Get new students this month
     const firstDayOfMonth = new Date();
     firstDayOfMonth.setDate(1);
     firstDayOfMonth.setHours(0, 0, 0, 0);
-    
+
     const newStudentsThisMonth = await Student.countDocuments({
       createdAt: { $gte: firstDayOfMonth }
     });
-    
+
     // Get course types breakdown
     const standaloneCourses = await Course.countDocuments({ type: 'standalone' });
     const mbaCourses = await Course.countDocuments({ type: 'with-mba' });
-    
+
     // Get next upcoming live class
     const nextLiveClass = await LiveClass.findOne({
       startTime: { $gte: new Date() },
       status: 'scheduled'
     }).sort({ startTime: 1 });
-    
+
+    // Calculate 7-day trends for sparkline charts
+    const now = new Date();
+    const trends = {
+      students: [] as number[],
+      courses: [] as number[],
+      enrollments: [] as number[],
+      liveClasses: [] as number[]
+    };
+
+    // Generate trend data for the last 7 days
+    for (let i = 6; i >= 0; i--) {
+      const dayStart = new Date(now);
+      dayStart.setDate(dayStart.getDate() - i);
+      dayStart.setHours(0, 0, 0, 0);
+
+      const dayEnd = new Date(dayStart);
+      dayEnd.setHours(23, 59, 59, 999);
+
+      // Count students created on this day
+      const studentsCount = await Student.countDocuments({
+        createdAt: { $gte: dayStart, $lte: dayEnd }
+      });
+
+      // Count courses created on this day
+      const coursesCount = await Course.countDocuments({
+        createdAt: { $gte: dayStart, $lte: dayEnd }
+      });
+
+      // Count enrollments created on this day
+      const enrollmentsCount = await Enrollment.countDocuments({
+        enrollDate: { $gte: dayStart, $lte: dayEnd }
+      });
+
+      // Count live classes scheduled for this day
+      const liveClassesCount = await LiveClass.countDocuments({
+        createdAt: { $gte: dayStart, $lte: dayEnd }
+      });
+
+      trends.students.push(studentsCount);
+      trends.courses.push(coursesCount);
+      trends.enrollments.push(enrollmentsCount);
+      trends.liveClasses.push(liveClassesCount);
+    }
+
     res.status(200).json({
       totalStudents,
       totalCourses,
@@ -461,7 +505,8 @@ export const getDashboardStats = async (req: Request, res: Response) => {
         standalone: standaloneCourses,
         withMba: mbaCourses
       },
-      nextLiveClass
+      nextLiveClass,
+      trends
     });
   } catch (error) {
     console.error('Get dashboard stats error:', error);
@@ -473,7 +518,7 @@ export const getDashboardStats = async (req: Request, res: Response) => {
 export const getAllStudentsQuizScores = async (req: Request, res: Response) => {
   try {
     const { courseSlug, studentId } = req.query;
-    
+
     // Build query
     const enrollmentQuery: any = {};
     if (courseSlug) {
@@ -482,25 +527,25 @@ export const getAllStudentsQuizScores = async (req: Request, res: Response) => {
     if (studentId) {
       enrollmentQuery.studentId = studentId;
     }
-    
+
     // Get enrollments with quiz attempts
     const enrollments = await Enrollment.find(enrollmentQuery)
       .populate('studentId', 'name')
       .sort({ enrollDate: -1 });
-    
+
     // Process and format the data
     const quizScoresData = await Promise.all(
       enrollments.map(async (enrollment) => {
         const course = await Course.findOne({ slug: enrollment.courseSlug });
         if (!course) return null;
-        
+
         // Get module-wise quiz scores
         const moduleScores = await Promise.all(
           course.modules.map(async (module, moduleIndex) => {
             const moduleAttempts = enrollment.quizAttempts.filter(
               (attempt: any) => attempt.moduleIndex === moduleIndex
             );
-            
+
             if (moduleAttempts.length === 0) {
               return {
                 moduleIndex,
@@ -511,13 +556,13 @@ export const getAllStudentsQuizScores = async (req: Request, res: Response) => {
                 lastAttempt: null
               };
             }
-            
+
             const scores = moduleAttempts.map((a: any) => a.score);
             const bestScore = Math.max(...scores);
             const averageScore = scores.reduce((sum, score) => sum + score, 0) / scores.length;
             const lastAttempt = moduleAttempts
               .sort((a: any, b: any) => new Date(b.attemptedAt).getTime() - new Date(a.attemptedAt).getTime())[0];
-            
+
             return {
               moduleIndex,
               moduleTitle: module.title,
@@ -532,13 +577,13 @@ export const getAllStudentsQuizScores = async (req: Request, res: Response) => {
             };
           })
         );
-        
+
         // Calculate overall performance
         const allScores = enrollment.quizAttempts.map((a: any) => a.score);
         const overallAverage = allScores.length > 0
           ? Math.round(allScores.reduce((sum, score) => sum + score, 0) / allScores.length)
           : null;
-        
+
         return {
           studentId: enrollment.studentId._id,
           studentName: (enrollment.studentId as any).name,
@@ -553,10 +598,10 @@ export const getAllStudentsQuizScores = async (req: Request, res: Response) => {
         };
       })
     );
-    
+
     // Filter out null values
     const validQuizScores = quizScoresData.filter(data => data !== null);
-    
+
     res.status(200).json(validQuizScores);
   } catch (error) {
     console.error('Get all students quiz scores error:', error);
@@ -611,29 +656,29 @@ export const toggleStudentAccess = async (req: Request, res: Response) => {
 export const updateTeacher = async (req: Request, res: Response) => {
   const session = await mongoose.startSession();
   session.startTransaction();
-  
+
   try {
     const { id } = req.params;
     const { username, phone, address } = req.body;
 
     // Find the teacher user
     const teacher = await User.findById(id);
-    
+
     if (!teacher || teacher.role !== 'teacher') {
       return res.status(404).json({ message: 'Teacher not found' });
     }
-    
+
     // Update teacher details
     if (username) teacher.username = username;
     // Note: Email is not updated as per requirements
     if (phone !== undefined) teacher.phone = phone;
     if (address !== undefined) teacher.address = address;
-    
+
     await teacher.save({ session });
-    
+
     await session.commitTransaction();
     session.endSession();
-    
+
     res.status(200).json({
       message: 'Teacher updated successfully',
       teacher: {
@@ -649,7 +694,7 @@ export const updateTeacher = async (req: Request, res: Response) => {
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
-    
+
     console.error('Update teacher error:', error);
     res.status(500).json({ message: 'Server error' });
   }
@@ -659,31 +704,31 @@ export const updateTeacher = async (req: Request, res: Response) => {
 export const deleteTeacher = async (req: Request, res: Response) => {
   const session = await mongoose.startSession();
   session.startTransaction();
-  
+
   try {
     const { id } = req.params;
-    
+
     // Find the teacher
     const teacher = await User.findById(id);
-    
+
     if (!teacher || teacher.role !== 'teacher') {
       return res.status(404).json({ message: 'Teacher not found' });
     }
-    
+
     // Delete teacher assignments
     await TeacherAssignment.deleteMany({ teacherId: teacher._id }, { session });
-    
+
     // Delete the teacher user
     await User.deleteOne({ _id: teacher._id }, { session });
-    
+
     await session.commitTransaction();
     session.endSession();
-    
+
     res.status(200).json({ message: 'Teacher deleted successfully' });
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
-    
+
     console.error('Delete teacher error:', error);
     res.status(500).json({ message: 'Server error' });
   }

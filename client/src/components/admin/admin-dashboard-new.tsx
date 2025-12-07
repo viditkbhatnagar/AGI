@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Link } from "wouter";
 import { subMonths, format } from "date-fns";
 import { motion } from "framer-motion";
@@ -14,11 +14,18 @@ import { useConditionalRender } from "@/lib/permissions-provider";
 
 // New admin UI components
 import { StatCard } from "./ui/stat-card";
-import { FilterChips, timeframeOptions } from "./ui/filter-chips";
 import { GlassCard } from "./ui/glass-card";
 import { CalendarCard } from "./calendar-card";
 import { QuickActions } from "./quick-actions";
 import { DashboardSkeleton } from "./skeleton-loaders";
+
+// Custom hooks for real-time data
+import {
+  useStudentTrend,
+  useCourseTrend,
+  useEnrollmentTrend,
+  useLiveClassTrend,
+} from "@/hooks/use-dashboard-trends";
 
 // Chart components
 import { AreaChartCard } from "./charts/area-chart-card";
@@ -33,7 +40,12 @@ import { HorizontalBars } from "./charts/horizontal-bars";
  */
 export function AdminDashboardNew() {
   const { renderIfCanCreate } = useConditionalRender();
-  const [timeframe, setTimeframe] = useState("30d");
+
+  // Fetch real-time trend data for sparklines
+  const studentSparkline = useStudentTrend();
+  const courseSparkline = useCourseTrend();
+  const enrollmentSparkline = useEnrollmentTrend();
+  const liveClassSparkline = useLiveClassTrend();
 
   // Fetch dashboard data
   const { data, isLoading, error } = useQuery<{
@@ -104,13 +116,7 @@ export function AdminDashboardNew() {
       );
   }, [allLiveClasses]);
 
-  // Generate sparkline data
-  const generateSparklineData = (baseValue: number): number[] => {
-    return Array.from({ length: 7 }, (_, i) => {
-      const variance = Math.random() * 0.3 - 0.15;
-      return Math.max(0, Math.round(baseValue * (1 + variance - i * 0.02)));
-    }).reverse();
-  };
+
 
   // Enrollment trend data
   const enrollmentTrendData = useMemo(() => {
@@ -255,15 +261,6 @@ export function AdminDashboardNew() {
             Overview and controls • Welcome back!
           </p>
         </div>
-
-        {/* Filters */}
-        <div className="flex items-center gap-3">
-          <FilterChips
-            options={timeframeOptions}
-            value={timeframe}
-            onChange={setTimeframe}
-          />
-        </div>
       </motion.div>
 
       {/* KPI Grid */}
@@ -274,7 +271,7 @@ export function AdminDashboardNew() {
           value={data?.totalStudents || 0}
           subtitle={`${data?.newStudentsThisMonth || 0} new this month`}
           delta={{ value: 12, isPositive: true }}
-          sparklineData={generateSparklineData(data?.totalStudents || 100)}
+          sparklineData={studentSparkline}
           animationDelay={0}
         />
 
@@ -282,11 +279,10 @@ export function AdminDashboardNew() {
           icon={School}
           label="Total Courses"
           value={data?.totalCourses || 0}
-          subtitle={`${data?.coursesBreakdown?.standalone || 0} standalone, ${
-            data?.coursesBreakdown?.withMba || 0
-          } with MBA`}
+          subtitle={`${data?.coursesBreakdown?.standalone || 0} standalone, ${data?.coursesBreakdown?.withMba || 0
+            } with MBA`}
           delta={{ value: 5, isPositive: true }}
-          sparklineData={generateSparklineData(data?.totalCourses || 50)}
+          sparklineData={courseSparkline}
           animationDelay={0.08}
         />
 
@@ -296,7 +292,7 @@ export function AdminDashboardNew() {
           value={data?.totalEnrollments || 0}
           subtitle={`${progressBuckets.highPct}% high progress`}
           delta={{ value: 8, isPositive: true }}
-          sparklineData={generateSparklineData(data?.totalEnrollments || 200)}
+          sparklineData={enrollmentSparkline}
           animationDelay={0.16}
         />
 
@@ -309,7 +305,7 @@ export function AdminDashboardNew() {
               ? `Next: ${format(new Date(data.nextLiveClass.startTime), "MMM dd")}`
               : "No upcoming"
           }
-          sparklineData={generateSparklineData(data?.upcomingLiveClasses || 10)}
+          sparklineData={liveClassSparkline}
           animationDelay={0.24}
         />
       </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useParams } from "wouter";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import DashboardLayout from "@/components/layout/dashboard-layout";
+import { AdminLayout } from "@/components/admin/layout/admin-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -98,24 +98,24 @@ function EditSandboxCourseForm() {
   useEffect(() => {
     if (courseData) {
       console.log('🔄 Loading course data for editing:', courseData);
-      
+
       const processedModules = (courseData.modules || [{ title: "", description: "", videos: [], documents: [], quiz: { questions: [] } }]).map(module => {
         const processedModule = {
           ...module,
           description: module.description || "",
           quiz: module.quiz || { questions: [] }
         };
-        
+
         console.log('📚 Processing module:', {
           title: module.title,
           hasQuiz: !!module.quiz,
           questionsCount: module.quiz?.questions?.length || 0,
           rawQuiz: module.quiz
         });
-        
+
         return processedModule;
       });
-      
+
       setCourseForm({
         slug: courseData.slug,
         title: courseData.title,
@@ -129,7 +129,7 @@ function EditSandboxCourseForm() {
         modules: processedModules,
         mbaModules: courseData.mbaModules || []
       });
-      
+
       console.log('✅ Course form set with modules:', processedModules);
     }
   }, [courseData]);
@@ -139,18 +139,18 @@ function EditSandboxCourseForm() {
       const token = localStorage.getItem('token');
       const response = await fetch(`/api/sandbox-courses/${slug}`, {
         method: 'PUT',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {})
         },
         body: JSON.stringify(courseData),
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to update sandbox course');
       }
-      
+
       return response.json();
     },
     onSuccess: () => {
@@ -172,9 +172,9 @@ function EditSandboxCourseForm() {
   });
 
   const handleFileUpload = async (
-    moduleIndex: number, 
-    documentIndex: number, 
-    file: File, 
+    moduleIndex: number,
+    documentIndex: number,
+    file: File,
     isStandalone: boolean = true
   ) => {
     const validation = validateFile(file, {
@@ -196,7 +196,7 @@ function EditSandboxCourseForm() {
 
     try {
       const result = await uploadToCloudinary(file, 'question-documents');
-      
+
       const documentData: DocumentForm = {
         title: file.name.split('.')[0],
         file: null,
@@ -243,7 +243,7 @@ function EditSandboxCourseForm() {
     setCourseForm(prev => {
       const modules = isStandalone ? prev.modules : prev.mbaModules;
       if (modules.length === 1) return prev;
-      
+
       return {
         ...prev,
         [isStandalone ? 'modules' : 'mbaModules']: modules.filter((_, i) => i !== index)
@@ -308,9 +308,9 @@ function EditSandboxCourseForm() {
     setCourseForm(prev => {
       const newForm = { ...prev };
       const modules = isStandalone ? newForm.modules : newForm.mbaModules;
-      modules[moduleIndex].videos[videoIndex] = { 
-        ...modules[moduleIndex].videos[videoIndex], 
-        [field]: value 
+      modules[moduleIndex].videos[videoIndex] = {
+        ...modules[moduleIndex].videos[videoIndex],
+        [field]: value
       };
       return newForm;
     });
@@ -320,9 +320,9 @@ function EditSandboxCourseForm() {
     setCourseForm(prev => {
       const newForm = { ...prev };
       const modules = isStandalone ? newForm.modules : newForm.mbaModules;
-      modules[moduleIndex].documents[documentIndex] = { 
-        ...modules[moduleIndex].documents[documentIndex], 
-        [field]: value 
+      modules[moduleIndex].documents[documentIndex] = {
+        ...modules[moduleIndex].documents[documentIndex],
+        [field]: value
       };
       return newForm;
     });
@@ -333,12 +333,12 @@ function EditSandboxCourseForm() {
     setCourseForm(prev => {
       const newForm = { ...prev };
       const modules = isStandalone ? newForm.modules : newForm.mbaModules;
-      
+
       // Ensure quiz object exists
       if (!modules[moduleIndex].quiz) {
         modules[moduleIndex].quiz = { questions: [] };
       }
-      
+
       modules[moduleIndex].quiz.questions.push({
         text: '',
         choices: ['', '', '', ''],
@@ -352,13 +352,13 @@ function EditSandboxCourseForm() {
     setCourseForm(prev => {
       const newForm = { ...prev };
       const modules = isStandalone ? newForm.modules : newForm.mbaModules;
-      
+
       // Ensure quiz object exists
       if (!modules[moduleIndex].quiz) {
         modules[moduleIndex].quiz = { questions: [] };
         return newForm;
       }
-      
+
       modules[moduleIndex].quiz.questions = modules[moduleIndex].quiz.questions.filter((_, i) => i !== questionIndex);
       return newForm;
     });
@@ -368,13 +368,13 @@ function EditSandboxCourseForm() {
     setCourseForm(prev => {
       const newForm = { ...prev };
       const modules = isStandalone ? newForm.modules : newForm.mbaModules;
-      
+
       // Ensure quiz object exists
       if (!modules[moduleIndex].quiz) {
         modules[moduleIndex].quiz = { questions: [] };
         return newForm;
       }
-      
+
       modules[moduleIndex].quiz.questions[questionIndex] = {
         ...modules[moduleIndex].quiz.questions[questionIndex],
         [field]: value
@@ -387,13 +387,13 @@ function EditSandboxCourseForm() {
     setCourseForm(prev => {
       const newForm = { ...prev };
       const modules = isStandalone ? newForm.modules : newForm.mbaModules;
-      
+
       // Ensure quiz object exists
       if (!modules[moduleIndex].quiz) {
         modules[moduleIndex].quiz = { questions: [] };
         return newForm;
       }
-      
+
       const choices = [...modules[moduleIndex].quiz.questions[questionIndex].choices];
       choices[choiceIndex] = value;
       modules[moduleIndex].quiz.questions[questionIndex].choices = choices;
@@ -415,7 +415,7 @@ function EditSandboxCourseForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate required fields
     if (!courseForm.slug || !courseForm.title) {
       toast({
@@ -434,14 +434,14 @@ function EditSandboxCourseForm() {
           questionsCount: module.quiz?.questions?.length || 0,
           quizData: module.quiz
         });
-        
+
         return {
           ...module,
-          videos: module.videos.filter(video => 
+          videos: module.videos.filter(video =>
             video.title && video.title.trim() && video.url && video.url.trim()
           ),
-          documents: module.documents.filter(doc => 
-            doc.title && doc.title.trim() && doc.fileUrl && doc.fileUrl.trim() && 
+          documents: module.documents.filter(doc =>
+            doc.title && doc.title.trim() && doc.fileUrl && doc.fileUrl.trim() &&
             doc.fileName && doc.publicId && doc.fileType && doc.fileSize
           ),
           quiz: module.quiz || { questions: [] } // Preserve quiz data
@@ -449,17 +449,17 @@ function EditSandboxCourseForm() {
       }),
       mbaModules: courseForm.mbaModules.map(module => ({
         ...module,
-        videos: module.videos.filter(video => 
+        videos: module.videos.filter(video =>
           video.title && video.title.trim() && video.url && video.url.trim()
         ),
-        documents: module.documents.filter(doc => 
-          doc.title && doc.title.trim() && doc.fileUrl && doc.fileUrl.trim() && 
+        documents: module.documents.filter(doc =>
+          doc.title && doc.title.trim() && doc.fileUrl && doc.fileUrl.trim() &&
           doc.fileName && doc.publicId && doc.fileType && doc.fileSize
         ),
         quiz: module.quiz || { questions: [] } // Preserve quiz data
       }))
     };
-    
+
     console.log('📤 Submitting course form with quiz data:', cleanedCourseForm);
 
     updateSandboxCourseMutation.mutate(cleanedCourseForm);
@@ -467,11 +467,11 @@ function EditSandboxCourseForm() {
 
   if (isLoading) {
     return (
-      <DashboardLayout>
+      <AdminLayout>
         <div className="p-6 flex items-center justify-center">
           <Loader2 className="h-8 w-8 animate-spin" />
         </div>
-      </DashboardLayout>
+      </AdminLayout>
     );
   }
 
@@ -514,7 +514,7 @@ function EditSandboxCourseForm() {
 
           <div>
             <Label htmlFor="type">Course Type</Label>
-            <Select value={courseForm.type} onValueChange={(value: "standalone" | "with-mba") => 
+            <Select value={courseForm.type} onValueChange={(value: "standalone" | "with-mba") =>
               setCourseForm(prev => ({ ...prev, type: value }))
             }>
               <SelectTrigger>
@@ -546,8 +546,8 @@ function EditSandboxCourseForm() {
               <div className="grid grid-cols-3 gap-4 pl-6">
                 <div>
                   <Label>Frequency</Label>
-                  <Select 
-                    value={courseForm.liveClassConfig.frequency} 
+                  <Select
+                    value={courseForm.liveClassConfig.frequency}
                     onValueChange={(value: "weekly" | "biweekly" | "monthly") =>
                       setCourseForm(prev => ({
                         ...prev,
@@ -567,8 +567,8 @@ function EditSandboxCourseForm() {
                 </div>
                 <div>
                   <Label>Day of Week</Label>
-                  <Select 
-                    value={courseForm.liveClassConfig.dayOfWeek} 
+                  <Select
+                    value={courseForm.liveClassConfig.dayOfWeek}
                     onValueChange={(value) =>
                       setCourseForm(prev => ({
                         ...prev,
@@ -705,7 +705,7 @@ function EditSandboxCourseForm() {
                   {module.documents.map((document, documentIndex) => {
                     const uploadKey = `modules-${moduleIndex}-${documentIndex}`;
                     const isUploading = uploading[uploadKey];
-                    
+
                     return (
                       <div key={documentIndex} className="space-y-2 mt-2 p-3 border rounded">
                         <div className="grid grid-cols-12 gap-2">
@@ -852,7 +852,7 @@ function EditSandboxCourseForm() {
                           </Button>
                         )}
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label className="text-xs text-purple-700 font-medium">Question Text</Label>
                         <Textarea
@@ -892,7 +892,7 @@ function EditSandboxCourseForm() {
               </CardContent>
             </Card>
           ))}
-          
+
           <Button
             type="button"
             variant="outline"
@@ -906,15 +906,15 @@ function EditSandboxCourseForm() {
       </Card>
 
       <div className="flex justify-between">
-        <Button 
-          type="button" 
-          variant="outline" 
+        <Button
+          type="button"
+          variant="outline"
           onClick={() => setLocation('/admin/sandbox-courses')}
         >
           Cancel
         </Button>
-        <Button 
-          type="submit" 
+        <Button
+          type="submit"
           disabled={updateSandboxCourseMutation.isPending}
         >
           {updateSandboxCourseMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
@@ -936,13 +936,13 @@ function EditSandboxCourseForm() {
                 </div>
                 {previewDocument.fileType === 'application/pdf' ? (
                   // Use PDF.js for PDF preview
-                  <PDFPreview 
+                  <PDFPreview
                     fileUrl={previewDocument.fileUrl}
                     fileName={previewDocument.fileName}
                   />
                 ) : previewDocument.fileType === 'text/csv' ? (
                   // Use Papa Parse for CSV preview
-                  <CSVPreview 
+                  <CSVPreview
                     fileUrl={previewDocument.fileUrl}
                     fileName={previewDocument.fileName}
                   />
@@ -988,13 +988,13 @@ function EditSandboxCourseForm() {
             )}
           </div>
           <div className="flex justify-end space-x-2">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setPreviewDocument(null)}
             >
               Close
             </Button>
-            <Button 
+            <Button
               onClick={() => {
                 if (previewDocument?.fileUrl) {
                   window.open(previewDocument.fileUrl, '_blank');
@@ -1012,10 +1012,10 @@ function EditSandboxCourseForm() {
 
 export default function EditSandboxCoursePage() {
   return (
-    <DashboardLayout>
+    <AdminLayout>
       <div className="p-6">
         <EditSandboxCourseForm />
       </div>
-    </DashboardLayout>
+    </AdminLayout>
   );
 }

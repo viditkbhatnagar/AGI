@@ -64,14 +64,7 @@ export function FilterChips({
   );
 }
 
-// Preset filter options
-export const timeframeOptions: FilterOption[] = [
-  { label: "Today", value: "today" },
-  { label: "7d", value: "7d" },
-  { label: "30d", value: "30d" },
-  { label: "90d", value: "90d" },
-];
-
+// Preset filter options (for other views that may use this component)
 export const periodOptions: FilterOption[] = [
   { label: "Week", value: "week" },
   { label: "Month", value: "month" },
