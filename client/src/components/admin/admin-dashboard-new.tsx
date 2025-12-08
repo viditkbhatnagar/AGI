@@ -16,7 +16,6 @@ import { useConditionalRender } from "@/lib/permissions-provider";
 import { StatCard } from "./ui/stat-card";
 import { GlassCard } from "./ui/glass-card";
 import { CalendarCard } from "./calendar-card";
-import { QuickActions } from "./quick-actions";
 import BarLoader from "@/components/ui/bar-loader";
 
 // Custom hooks for real-time data
@@ -379,22 +378,14 @@ export function AdminDashboardNew() {
         />
       </div>
 
-      {/* Course Popularity + Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-10 gap-4 md:gap-6">
-        <div className="lg:col-span-7">
-          <HorizontalBars
-            title="Course Popularity"
-            badge="Top 5"
-            data={coursePopularityData}
-            gradientColors={["#1E8CFF", "#18E6C9"]}
-            animationDelay={0.72}
-          />
-        </div>
-
-        <div className="lg:col-span-3">
-          <QuickActions animationDelay={0.8} />
-        </div>
-      </div>
+      {/* Course Popularity */}
+      <HorizontalBars
+        title="Course Popularity"
+        badge="Top 5"
+        data={coursePopularityData}
+        gradientColors={["#1E8CFF", "#18E6C9"]}
+        animationDelay={0.72}
+      />
     </div>
   );
 }
