@@ -143,7 +143,7 @@ export function AdminSidebar({
             <motion.img
               src={logo}
               alt="AGI Logo"
-              className="h-20 w-full object-contain"
+              className="h-24 w-full max-w-[240px] object-contain"
               whileHover={prefersReducedMotion ? {} : { scale: 1.05 }}
               transition={{ duration: 0.2 }}
             />

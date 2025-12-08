@@ -3,13 +3,7 @@ import { useMemo } from 'react';
 import { Link } from "wouter";
 import { subMonths, format } from 'date-fns';
 import { useConditionalRender } from '@/lib/permissions-provider';
-import {
-  CalendarClock,
-  GraduationCap,
-  School,
-  UserPlus,
-  Users
-} from "lucide-react";
+import { Users, School, GraduationCap, CalendarClock } from "lucide-react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 
@@ -17,7 +11,6 @@ import "react-calendar/dist/Calendar.css";
 import { BackgroundOrbs } from '@/components/dashboard/background-orbs';
 import { FloatingKpiCard } from '@/components/dashboard/floating-kpi-card';
 import { AnimatedChartContainer } from '@/components/dashboard/animated-chart-container';
-import { QuickActionButton } from '@/components/dashboard/quick-action-button';
 import { CommandBar } from '@/components/dashboard/command-bar';
 
 // AI-Themed Chart Components
@@ -400,68 +393,20 @@ export function AdminDashboard() {
           </AnimatedChartContainer>
         </div>
 
-        {/* Course Popularity + Quick Actions */}
-        <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
-          <AnimatedChartContainer
-            title="Course Popularity"
-            badge="Top 5"
-            animationDelay={0.72}
-            className="lg:col-span-7"
-          >
-            <div className="h-80">
-              <GradientBarChart
-                data={coursePopularityData.map(d => ({ name: String(d.name), value: d.count }))}
-                layout="vertical"
-                gradientColors={['hsl(220, 70%, 60%)', 'hsl(174, 72%, 55%)']}
-              />
-            </div>
-          </AnimatedChartContainer>
-
-          <AnimatedChartContainer
-            title="Quick Actions"
-            animationDelay={0.8}
-            className="lg:col-span-3"
-          >
-            <div className="space-y-3">
-              {renderIfCanCreate(
-                <Link href="/admin/live-classes/new">
-                  <QuickActionButton
-                    icon={CalendarClock}
-                    label="Schedule Live Class"
-                    onClick={() => { }}
-                  />
-                </Link>
-              )}
-              {renderIfCanCreate(
-                <Link href="/admin/students/new">
-                  <QuickActionButton
-                    icon={UserPlus}
-                    label="Add New Student"
-                    onClick={() => { }}
-                  />
-                </Link>
-              )}
-              {renderIfCanCreate(
-                <Link href="/admin/courses/new">
-                  <QuickActionButton
-                    icon={School}
-                    label="Add New Course"
-                    onClick={() => { }}
-                  />
-                </Link>
-              )}
-              {renderIfCanCreate(
-                <Link href="/admin/enrollments/new">
-                  <QuickActionButton
-                    icon={GraduationCap}
-                    label="Create Enrollment"
-                    onClick={() => { }}
-                  />
-                </Link>
-              )}
-            </div>
-          </AnimatedChartContainer>
-        </div>
+        {/* Course Popularity */}
+        <AnimatedChartContainer
+          title="Course Popularity"
+          badge="Top 5"
+          animationDelay={0.72}
+        >
+          <div className="h-80">
+            <GradientBarChart
+              data={coursePopularityData.map(d => ({ name: String(d.name), value: d.count }))}
+              layout="vertical"
+              gradientColors={['hsl(220, 70%, 60%)', 'hsl(174, 72%, 55%)']}
+            />
+          </div>
+        </AnimatedChartContainer>
       </div>
     </TooltipProvider>
   );
