@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation, Redirect } from "wouter";
-import { Loader2 } from "lucide-react";
+import BarLoader from "@/components/ui/bar-loader";
 import { useAuth } from "@/lib/auth-provider";
 import { AnimatedBg } from "../ui/animated-bg";
 import { AdminTopbar } from "./admin-topbar";
@@ -44,9 +44,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   if (isLoading) {
     return (
       <div className="h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-8 w-8 animate-spin text-admin-brand" />
-          <span className="text-white/70">Loading...</span>
+        <div className="flex flex-col items-center gap-6">
+          <BarLoader bars={8} barWidth={10} barHeight={70} color="bg-admin-brand" speed={1.2} />
+          <span className="text-white/70">Loading dashboard...</span>
         </div>
       </div>
     );
