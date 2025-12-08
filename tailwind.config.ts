@@ -111,15 +111,15 @@ export default {
           to: { height: "0" },
         },
         "aurora-shift": {
-          "0%, 100%": { 
+          "0%, 100%": {
             transform: "translate(0, 0) scale(1)",
             opacity: "0.6",
           },
-          "33%": { 
+          "33%": {
             transform: "translate(30px, -30px) scale(1.1)",
             opacity: "0.8",
           },
-          "66%": { 
+          "66%": {
             transform: "translate(-20px, 20px) scale(0.95)",
             opacity: "0.5",
           },
@@ -131,11 +131,11 @@ export default {
           "75%": { transform: "translateY(-15px) translateX(3px)" },
         },
         "orb-pulse": {
-          "0%, 100%": { 
+          "0%, 100%": {
             transform: "scale(1)",
             opacity: "0.4",
           },
-          "50%": { 
+          "50%": {
             transform: "scale(1.2)",
             opacity: "0.6",
           },
@@ -176,6 +176,10 @@ export default {
           "0%": { strokeDashoffset: "283" },
           "100%": { strokeDashoffset: "var(--progress-offset)" },
         },
+        barLoader: {
+          "0%, 100%": { transform: "scaleY(0.1)", opacity: "0.2" },
+          "50%": { transform: "scaleY(1)", opacity: "1" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -191,6 +195,7 @@ export default {
         "glow-pulse": "glow-pulse 2s ease-in-out infinite",
         "count-up": "count-up 0.7s cubic-bezier(0.22, 1, 0.36, 1)",
         "bar-grow": "bar-grow 0.7s cubic-bezier(0.22, 1, 0.36, 1)",
+        barLoader: "barLoader 1.2s ease-in-out infinite",
       },
       transitionTimingFunction: {
         premium: "cubic-bezier(0.22, 1, 0.36, 1)",

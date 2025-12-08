@@ -17,7 +17,7 @@ import { StatCard } from "./ui/stat-card";
 import { GlassCard } from "./ui/glass-card";
 import { CalendarCard } from "./calendar-card";
 import { QuickActions } from "./quick-actions";
-import { DashboardSkeleton } from "./skeleton-loaders";
+import BarLoader from "@/components/ui/bar-loader";
 
 // Custom hooks for real-time data
 import {
@@ -220,7 +220,12 @@ export function AdminDashboardNew() {
   );
 
   if (isLoading) {
-    return <DashboardSkeleton />;
+    return (
+      <div className="h-[calc(100vh-80px)] w-full flex flex-col items-center justify-center">
+        <BarLoader bars={10} barWidth={12} barHeight={80} color="bg-[#375BBE]" speed={1.2} />
+        <span className="text-gray-500 mt-6 text-lg">Loading dashboard data...</span>
+      </div>
+    );
   }
 
   if (error) {
