@@ -1,6 +1,6 @@
 # Cloud Migration Analysis: AWS vs Azure
 ## E-Learning Platform with HeyGen AI Avatar Integration
-#vb
+#vb2
 **Document Version:** 1.0  
 **Date:** October 31, 2025  
 **Current Stack:** Render + MongoDB Atlas  
