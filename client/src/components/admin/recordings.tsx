@@ -229,9 +229,9 @@ export function AdminRecordings() {
       return;
     }
 
-    // Validate Google Drive link
-    if (!uploadForm.fileUrl.includes('drive.google.com')) {
-      toast({ title: 'Error', description: 'Please provide a valid link', variant: 'destructive' });
+    const linkPattern = /^https?:\/\//i;
+    if (!linkPattern.test(uploadForm.fileUrl.trim())) {
+      toast({ title: 'Error', description: 'Please provide a valid shareable link (http/https)', variant: 'destructive' });
       return;
     }
 
@@ -437,16 +437,16 @@ export function AdminRecordings() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="fileUrl">Drive Video Link *</Label>
+                <Label htmlFor="fileUrl">Recording Link *</Label>
                 <Input
                   id="fileUrl"
                   type="url"
                   value={uploadForm.fileUrl}
                   onChange={(e) => setUploadForm(prev => ({ ...prev, fileUrl: e.target.value }))}
-                  placeholder="https://drive.google.com/file/d/your-file-id/view"
+                  placeholder="https://onedrive.live.com/...? or https://drive.google.com/file/d/your-file-id/view"
                 />
                 <p className="text-sm text-muted-foreground">
-                  Provide a shareable Drive link to your video recording
+                  Provide a shareable link to your recording (Google Drive, OneDrive, etc.)
                 </p>
               </div>
 
@@ -797,14 +797,14 @@ export function AdminRecordings() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit-fileUrl">Google Drive Link</Label>
+                <Label htmlFor="edit-fileUrl">Recording Link</Label>
                 <div className="flex gap-2">
                   <Input
                     id="edit-fileUrl"
                     type="url"
                     defaultValue={editingRecording.fileUrl}
                     onChange={(e) => setEditingRecording(prev => prev ? { ...prev, fileUrl: e.target.value } : null)}
-                    placeholder="https://drive.google.com/file/d/your-file-id/view"
+                    placeholder="https://your-shareable-link"
                     readOnly={isViewOnlyMode}
                     className={`flex-1 ${isViewOnlyMode ? 'bg-gray-50' : ''}`}
                   />

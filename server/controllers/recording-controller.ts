@@ -118,10 +118,10 @@ export const createRecording = async (req: Request, res: Response) => {
       });
     }
 
-    // Validate that fileUrl is a Google Drive link
-    if (!fileUrl.includes('drive.google.com')) {
+    // Basic URL validation (allow any provider such as Google Drive or OneDrive)
+    if (!/^https?:\/\//i.test(fileUrl)) {
       return res.status(400).json({ 
-        message: 'Please provide a valid Drive link' 
+        message: 'Please provide a valid shareable link (http or https)' 
       });
     }
 
