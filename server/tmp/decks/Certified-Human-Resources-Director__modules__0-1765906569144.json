@@ -1,0 +1,493 @@
+{
+  "course_id": "Certified-Human-Resources-Director",
+  "module_id": "Certified-Human-Resources-Director::modules::0",
+  "module_title": "Unit 1: Strategic HR Leadership",
+  "cards": [
+    {
+      "card_id": "card_1",
+      "q": "What is Strategic HRM and how does the alignment chain work?",
+      "a": "Strategic HRM aligns HR to business strategy via an alignment chain: strategy → required behaviors/skills → HR policies/practices (staffing, L&D, rewards). HR is valued by outcomes it delivers—capabilities and results—not activities.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "ulrich_quote",
+          "source_file": "Unit 1: Strategic HR Leadership",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "HR should be defined not by what it does, but by what it delivers."
+        },
+        {
+          "chunk_id": "hrm_definition",
+          "source_file": "Unit 1: Strategic HR Leadership",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Human Resource (HR) management deals with the design of formal systems in an organization to ensure the effective and efficient use of human talent to accomplish organizational goals."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 1: Strategic HR Leadership",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.93,
+      "rationale": "Interviewers test whether candidates can succinctly link HR practices to strategy and outcomes.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_2",
+      "q": "What are Ulrich’s core HR roles/competencies?",
+      "a": "Strategic positioner, credible activist, capability builder, change champion, HR innovator/integrator, and technology proponent—enabling HR to shape strategy, build talent/organization, lead change, integrate practices, and leverage technology.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "ulrich_quote",
+          "source_file": "Unit 1: Strategic HR Leadership",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "HR should be defined not by what it does, but by what it delivers."
+        },
+        {
+          "chunk_id": "strategic_participation",
+          "source_file": "Unit 1: Strategic HR Leadership",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "HR managers participate in developing business strategies and ensure that human resource dimensions are considered."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 1: Strategic HR Leadership",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.88,
+      "rationale": "Employers expect fluency in Ulrich’s model to assess strategic HR credibility.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_3",
+      "q": "What is a High-Performance Work System (HPWS)?",
+      "a": "An integrated bundle of practices—selective hiring, training, teams, employee involvement, performance-based pay, and continuous improvement—that jointly raise productivity, quality, and service.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "ge_fanuc_change_results",
+          "source_file": "Unit 1: Strategic HR Leadership",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Over 40 work teams meet regularly to discuss work goals... Employee turnover is also extremely low... promised profit sharing... significantly increasing training."
+        },
+        {
+          "chunk_id": "bom_performance_measures",
+          "source_file": "Unit 1: Strategic HR Leadership",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "To focus on performance, each department and every employee have performance targets and measures... compiled into one figure to measure overall bank performance."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 1: Strategic HR Leadership",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "HPWS is a staple concept; interviewers check understanding of integrated people systems driving performance.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_4",
+      "q": "Explain the difference between disparate treatment and disparate impact.",
+      "a": "Disparate treatment is intentional unequal treatment based on protected status. Disparate impact is a neutral practice causing adverse effects; employer must prove job-relatedness/validity and business necessity, and prefer less-impactful alternatives when available.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "seven_hr_categories_objective",
+          "source_file": "Unit 1: Strategic HR Leadership",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "List and define each of the seven major categories of HR activities."
+        },
+        {
+          "chunk_id": "ethics_professionalism_objective",
+          "source_file": "Unit 1: Strategic HR Leadership",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Discuss why ethical issues and professionalism affect HR management as a career field."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 1: Strategic HR Leadership",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.82,
+      "rationale": "Legal literacy is routinely tested to ensure compliant, risk-aware HR decisions.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_5",
+      "q": "Explain HR’s three roles and how effective HR shifts right without dropping earlier roles.",
+      "a": "Administrative (transactions/compliance), operational (day-to-day people services), strategic (business partner shaping capability). Mature HR automates admin, streamlines operations, and shifts to strategic work—without abandoning earlier roles—to deliver business results.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "three_roles_objective",
+          "source_file": "Unit 1: Strategic HR Leadership",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Identify the three different roles of HR management."
+        },
+        {
+          "chunk_id": "strategic_contributor_dimension",
+          "source_file": "Unit 1: Strategic HR Leadership",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Discuss the three dimensions associated with HR management as a strategic business contributor."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 1: Strategic HR Leadership",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.89,
+      "rationale": "Interviewers gauge whether candidates can prioritize strategic impact while ensuring operational and administrative excellence.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_6",
+      "q": "Explain the line vs. staff HR interface during hiring.",
+      "a": "Line managers own workforce needs, interviewing, performance, and morale. HR designs compliant processes, tools, and training; ensures consistency and metrics. Success requires clear decision rights and shared accountability for quality-of-hire, time-to-fill, and cost.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "hr_interface_objective",
+          "source_file": "Unit 1: Strategic HR Leadership",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Explain why HR professionals and operating managers must view HR management as an interface."
+        },
+        {
+          "chunk_id": "ge_fanuc_embedded_hr",
+          "source_file": "Unit 1: Strategic HR Leadership",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "each functional area of the company has an HR manager assigned to it... HR managers participate in developing business strategies..."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 1: Strategic HR Leadership",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Hiring effectiveness depends on clear line–HR roles; interviewers probe for practical governance and accountability.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_7",
+      "q": "How would you handle an ADA accommodation request for a role with physical demands?",
+      "a": "Verify essential functions via job analysis; confirm the employee is qualified; engage in interactive dialogue; identify reasonable accommodations (equipment, schedule, reassignment); assess undue hardship; implement, document, and review effectiveness.",
+      "difficulty": "hard",
+      "bloom_level": "Apply",
+      "evidence": [
+        {
+          "chunk_id": "hrm_definition",
+          "source_file": "Unit 1: Strategic HR Leadership",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "design of formal systems... to ensure the effective and efficient use of human talent to accomplish organizational goals."
+        },
+        {
+          "chunk_id": "ethics_professionalism_objective",
+          "source_file": "Unit 1: Strategic HR Leadership",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Discuss why ethical issues and professionalism affect HR management as a career field."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 1: Strategic HR Leadership",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.84,
+      "rationale": "ADA scenarios test legal application, documentation rigor, and balanced decision-making.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_8",
+      "q": "How would you manage HR due diligence and workforce transition in an M&A?",
+      "a": "Assess culture fit, org structure, liabilities, and key-talent risk; align total rewards; craft comms and retention plans; map roles, reskill, and onboard; set change governance and metrics (regrettable turnover, productivity) to steer integration.",
+      "difficulty": "hard",
+      "bloom_level": "Evaluate",
+      "evidence": [
+        {
+          "chunk_id": "restructuring_challenge_list",
+          "source_file": "Unit 1: Strategic HR Leadership",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "the most prevalent challenges facing HR management are as follows: Economic and technological change... Demographics and diversity issues... Organizational restructuring"
+        },
+        {
+          "chunk_id": "ge_fanuc_restructuring_actions",
+          "source_file": "Unit 1: Strategic HR Leadership",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "going from seven to three levels of management, greatly expanding the use of cross-functional work teams, and significantly increasing training."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 1: Strategic HR Leadership",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.87,
+      "rationale": "M&A readiness is a hallmark of strategic HR leadership; interviews use scenarios to gauge integration capability.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_9",
+      "q": "How would you use workforce planning and analytics to close a 12-month skills gap?",
+      "a": "Forecast demand/supply; inventory skills; size the gap; deploy a buy–build–borrow mix (sourcing, validated selection, accelerated L&D, mobility, contractors); track pipeline and time-to-skill; link to productivity; iterate via HRIS dashboards.",
+      "difficulty": "hard",
+      "bloom_level": "Create",
+      "evidence": [
+        {
+          "chunk_id": "bom_performance_measures",
+          "source_file": "Unit 1: Strategic HR Leadership",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "each department and every employee have performance targets and measures... scores... compiled into one figure to measure overall bank performance."
+        },
+        {
+          "chunk_id": "workforce_challenges_intro",
+          "source_file": "Unit 1: Strategic HR Leadership",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Workforce availability and quality concerns"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 1: Strategic HR Leadership",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Employers value evidence-based workforce planning tied to business metrics and time-bound outcomes.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_10",
+      "q": "What are the key components of an effective pay-for-performance plan?",
+      "a": "Define value drivers; set line-of-sight metrics; calibrate targets/funding; balance individual, team, and enterprise weights; ensure fairness/EEO compliance; communicate rules; integrate with performance management; model cost/ROI; audit for adverse impact.",
+      "difficulty": "medium",
+      "bloom_level": "Apply",
+      "evidence": [
+        {
+          "chunk_id": "ge_fanuc_profit_sharing",
+          "source_file": "Unit 1: Strategic HR Leadership",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "employees were promised profit sharing, which has resulted in up to three weeks additional pay in profit sharing bonuses in some years."
+        },
+        {
+          "chunk_id": "ulrich_quote",
+          "source_file": "Unit 1: Strategic HR Leadership",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "HR should be defined not by what it does, but by what it delivers."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 1: Strategic HR Leadership",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.88,
+      "rationale": "Variable pay design is frequently probed to assess strategic reward alignment and compliance awareness.",
+      "review_required": false
+    }
+  ],
+  "stage_a_output": {
+    "module_summary": [
+      {
+        "point": "Strategic HRM: Align people practices to business strategy to produce required competencies and behaviors; HR is valued by what it delivers, not what it does (Ulrich)",
+        "supports": []
+      },
+      {
+        "point": "Three HR roles: Administrative (process/compliance), Operational (tactical service delivery), Strategic (long-term business partner); effective HR shifts right without dropping earlier roles",
+        "supports": []
+      },
+      {
+        "point": "HR value proposition and metrics: quantify HR’s impact (e.g., turnover cost, time-to-fill, productivity, engagement) and link to financial outcomes (ROI)",
+        "supports": []
+      },
+      {
+        "point": "Core HR activity categories: Planning/Analysis, EEO/Compliance, Staffing, Development, Compensation/Benefits, Health–Safety–Security, Employee/Labor Relations",
+        "supports": []
+      },
+      {
+        "point": "Talent management lifecycle: workforce planning → recruiting/selection → onboarding → learning & development → performance management → rewards → succession/retention",
+        "supports": []
+      },
+      {
+        "point": "Human capital focus: identify competencies, close capability gaps, and build high-performance work systems (teams, incentives, continuous improvement)",
+        "supports": []
+      },
+      {
+        "point": "Workforce trends: tech disruption, service economy, tight skills markets, demographics (aging, diversity, Gen Y), nontraditional/contingent work, globalization and restructuring",
+        "supports": []
+      },
+      {
+        "point": "EEO/Compliance essentials: Title VII, EEOC, CRA 1991, ADEA, ADA, PDA, Voc Rehab; disparate impact vs treatment; Uniform Guidelines validation requirements",
+        "supports": []
+      },
+      {
+        "point": "ADA application: essential functions, qualified individual, reasonable accommodation vs undue hardship; document job analysis and engage in interactive process",
+        "supports": []
+      },
+      {
+        "point": "Delivery models: HRIS/self-service, shared services, centers of expertise, embedded HR business partners; selective outsourcing with SLAs and governance",
+        "supports": []
+      },
+      {
+        "point": "Organizational change: restructuring, flattening, M&A; HR’s role in culture, workforce redeployment, reskilling, and change management",
+        "supports": []
+      },
+      {
+        "point": "Compensation & benefits strategy: market-based pay, variable pay (gainsharing, team/org incentives), cost-effective, equitable, and performance-linked rewards",
+        "supports": []
+      },
+      {
+        "point": "Line–staff interface: line managers own people leadership; HR advises, builds capability, ensures compliance; clear division of responsibilities (e.g., selection interviews)",
+        "supports": []
+      },
+      {
+        "point": "Ethics and professionalism: SHRM Code; build ethical systems, train leaders, protect privacy, ensure fairness; understand extended consequences of decisions",
+        "supports": []
+      }
+    ],
+    "key_topics": [
+      {
+        "topic": "Define Strategic HRM and explain the alignment chain (business strategy → required behaviors/skills → HR policies/practices)",
+        "supports": []
+      },
+      {
+        "topic": "Ulrich’s HR roles and competencies (strategic positioner, credible activist, capability builder, change champion, HR innovator/integrator, technology proponent)",
+        "supports": []
+      },
+      {
+        "topic": "High-Performance Work Systems (HPWS): integrated practices that raise productivity, quality, and service",
+        "supports": []
+      },
+      {
+        "topic": "Talent management: workforce planning, sourcing, selection validity, onboarding, L&D, performance management, succession, retention",
+        "supports": []
+      },
+      {
+        "topic": "Workforce planning & analytics: forecasting supply/demand, skills gap analysis, HRIS dashboards, evidence-based HR decisions",
+        "supports": []
+      },
+      {
+        "topic": "EEO legal framework: Title VII/EEOC process, CRA 1991 burden of proof/damages, Griggs (disparate impact), Albemarle (test validation), disparate treatment vs impact",
+        "supports": []
+      },
+      {
+        "topic": "ADA essentials: qualified individual, essential functions (via job analysis), reasonable accommodation vs undue hardship; examples and documentation",
+        "supports": []
+      },
+      {
+        "topic": "Other key laws: Equal Pay Act, ADEA, Pregnancy Discrimination Act, Vocational Rehabilitation Act; OFCCP and affirmative action for federal contractors",
+        "supports": []
+      },
+      {
+        "topic": "Diversity, equity, inclusion: demographic shifts, family-friendly policies, managing contingent/global workforces; bias-free recruiting and promotion",
+        "supports": []
+      },
+      {
+        "topic": "Restructuring/M&A: HR due diligence (culture fit, retention risk), workforce transition, communications, and change management",
+        "supports": []
+      },
+      {
+        "topic": "Compensation strategy: job valuation, market pricing, pay-for-performance, variable pay design, benefits cost control, total rewards",
+        "supports": []
+      },
+      {
+        "topic": "Engagement and performance: goal alignment, coaching, feedback, metrics (e.g., engagement scores linked to outcomes), reward linkage",
+        "supports": []
+      },
+      {
+        "topic": "HR delivery models & technology: shared services, CoEs, embedded HRBPs; self-service portals; when/how to outsource; data privacy/security",
+        "supports": []
+      },
+      {
+        "topic": "Line vs staff responsibilities: hiring interface, policy deployment, supervisor HR duties (staffing, training, morale, labor cost control)",
+        "supports": []
+      },
+      {
+        "topic": "Ethical decision-making in HR: frameworks, training, and managing risks (harassment, privacy, retaliation) with compliant policies",
+        "supports": []
+      }
+    ],
+    "coverage_map": []
+  },
+  "warnings": [],
+  "generation_metadata": {
+    "model": "gpt-5",
+    "temperature": 0.1,
+    "timestamp": "2025-12-16T17:34:29.895Z"
+  },
+  "created_at": "2025-12-16T17:36:09.142Z",
+  "updated_at": "2025-12-16T17:36:09.143Z",
+  "reviewed_by": null,
+  "review_status": "pending",
+  "id": "deck_Certified-Human-Resources-Director::modules::0_1765906569144",
+  "saved_at": "2025-12-16T17:36:09.144Z",
+  "file_path": "/Users/viditkbhatnagar/codes/AgiOnlineDashboard/server/tmp/decks/Certified-Human-Resources-Director__modules__0-1765906569144.json"
+}

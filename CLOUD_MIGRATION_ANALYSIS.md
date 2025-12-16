@@ -9,7 +9,7 @@
 ---
 
 ## Executive Summary
-
+#vb
 This document provides a comprehensive analysis for migrating your e-learning platform from Render to either AWS or Azure, with considerations for upcoming HeyGen AI avatar integration for real-time interactive teaching.
 
 ### Current Architecture Overview
