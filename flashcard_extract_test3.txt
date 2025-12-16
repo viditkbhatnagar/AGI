@@ -1,0 +1,146 @@
+
+> rest-express@1.0.0 flashcard:extract
+> tsx scripts/test-flashcards.ts --extract
+
+============================================================
+Flashcard Generation Test
+============================================================
+Mode: MOCK
+Extract Content: YES
+GEMINI_API_KEY: Set
+
+[1] Connecting to MongoDB...
+MongoDB connected successfully
+    Γ£ô Connected
+
+[2] Fetching available courses...
+    Γ£ô Found 22 courses
+
+    Available courses:
+    1. certified-supply-chain-professional - "Certified Supply Chain Professional" (9 modules)
+    2. Accounting-and-Finance - "Accounting and Finance" (11 modules)
+    3. Certified-Logistics-Manager - "Certified Logistics Manager" (10 modules)
+    4. Certified-Human-Resource-Professional - "Certified Human Resource Professional" (11 modules)
+    5. Certified-Sustainability-And-Leadership - "Certified Sustainability Leadership And Management" (12 modules)
+    ... and 17 more
+
+[3] Selected course: certified-supply-chain-professional
+    Γ£ô Found 9 modules
+
+    Modules:
+    - Module 0: "Supply Chain Strategy and Design" (3 docs, 2 videos)
+    - Module 1: "Demand Planning and Sales & Operations Planning (S&OP)" (2 docs, 2 videos)
+    - Module 2: "Strategic Sourcing and Procurement" (2 docs, 1 videos)
+    - Module 3: "Manufacturing, Operations, and Flow Management" (2 docs, 1 videos)
+    - Module 4: " Inventory Optimization and Control" (2 docs, 2 videos)
+    - Module 5: "Supply Chain Technology and Digital Transformation" (3 docs, 1 videos)
+    - Module 6: "Sustainable and Ethical Supply Chains" (2 docs, 1 videos)
+    - Module 7: "Supply Chain Performance Measurement and Analytics" (2 docs, 1 videos)
+    - Module 8: "Artificial Intelligence in Supply Chain Management" (2 docs, 1 videos)
+
+[4] Fetching content for module 0...
+[ContentFetcher] Fetching content for certified-supply-chain-professional/module-0
+[ContentFetcher] Found 3 documents, 2 videos, 0 recordings
+    Γ£ô Module: Supply Chain Strategy and Design
+    Γ£ô Documents: 3
+    Γ£ô Videos: 2
+    Γ£ô Recordings: 0
+
+    Documents:
+    1. [google_drive] Supply-Chain-Management Page 1-34
+    2. [google_drive] strategy-report-short
+    3. [google_drive] Supply Chain Strategy and Design
+
+[5] Preparing chunks for generation...
+    Using document content extraction...
+[ContentFetcher] Extracting content from 3 documents, 2 videos, 0 recordings
+[DocExtractor] Extracting from 3 documents, 2 videos, 0 recordings
+[DocExtractor] Extracting: Supply-Chain-Management Page 1-34 (google_drive)
+[DocExtractor] PDF parsing failed: TypeError: pdfParse is not a function
+    at extractTextFromPDF (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:97:28)
+    at async fetchGoogleDriveContent (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:173:30)
+    at async extractDocumentContent (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:328:28)
+    at async extractAllContent (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:495:31)
+    at async prepareChunksWithExtraction (C:\codes\AGI\server\services\flashcard\contentFetcher.ts:330:31)
+    at async main (C:\codes\AGI\scripts\test-flashcards.ts:112:24)
+[DocExtractor] Using fallback for: Supply-Chain-Management Page 1-34
+[DocExtractor] Extracting: strategy-report-short (google_drive)
+[DocExtractor] PDF parsing failed: TypeError: pdfParse is not a function
+[DocExtractor] Using fallback for: strategy-report-short
+    at extractTextFromPDF (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:97:28)
+    at async fetchGoogleDriveContent (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:173:30)
+    at async extractDocumentContent (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:328:28)
+    at async extractAllContent (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:495:31)
+    at async prepareChunksWithExtraction (C:\codes\AGI\server\services\flashcard\contentFetcher.ts:330:31)
+    at async main (C:\codes\AGI\scripts\test-flashcards.ts:112:24)
+[DocExtractor] Extracting: Supply Chain Strategy and Design (google_drive)
+[DocExtractor] PDF parsing failed: TypeError: pdfParse is not a function
+    at extractTextFromPDF (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:97:28)
+    at async fetchGoogleDriveContent (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:173:30)
+    at async extractDocumentContent (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:328:28)
+    at async extractAllContent (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:495:31)
+    at async prepareChunksWithExtraction (C:\codes\AGI\server\services\flashcard\contentFetcher.ts:330:31)
+    at async main (C:\codes\AGI\scripts\test-flashcards.ts:112:24)
+[DocExtractor] Using fallback for: Supply Chain Strategy and Design
+[DocExtractor] Extraction complete: 0/5 successful
+[ContentFetcher] Prepared 5 chunks with extracted content
+    Γ£ô Created 5 chunks
+
+[6] Running StageA (content analysis)...
+    Γ£ô Learning objectives: 4
+    Γ£ô Key terms: 10
+    Γ£ô Difficulty: intermediate
+    Γ£ô Processing time: 0ms
+
+[7] Running StageB (flashcard generation)...
+    Γ£ô Cards generated: 10
+    Γ£ô Warnings: 0
+    Γ£ô Processing time: 1ms
+
+[8] Verifying cards...
+[Verifier] Verifying 10 cards in heuristic mode
+[Verifier] Completed: 10 verified, 0 failed
+    Γ£ô Verified: 10/10
+    Γ£ô Verification rate: 100.0%
+
+[9] Sample generated cards:
+------------------------------------------------------------
+
+Card 1: [Remember] [easy]
+Q: What is the key concept discussed in: "# Supply-Chain-Management Page 1-34
+
+This document..."?
+A: # Supply-Chain-Management Page 1-34
+
+This document is part of the course curriculum and contains important educational material.
+Verified: Γ£ô
+
+Card 2: [Understand] [medium]
+Q: What is the key concept discussed in: "# strategy-report-short
+
+This document is part of ..."?
+A: # strategy-report-short
+
+This document is part of the course curriculum and contains important educational material.
+Verified: Γ£ô
+
+Card 3: [Apply] [hard]
+Q: What is the key concept discussed in: "# Supply Chain Strategy and Design
+
+This document ..."?
+A: # Supply Chain Strategy and Design
+
+This document is part of the course curriculum and contains important educational material.
+Verified: Γ£ô
+
+============================================================
+TEST COMPLETE
+============================================================
+
+Summary:
+  Course: Certified Supply Chain Professional
+  Module: Supply Chain Strategy and Design
+  Cards Generated: 10
+  Cards Verified: 10
+  Total Time: 1ms
+MongoDB disconnected

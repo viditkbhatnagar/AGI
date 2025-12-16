@@ -1,0 +1,17 @@
+[E2E] ============================================================
+[E2E] E2E Pipeline Harness
+[E2E] ============================================================
+[E2E] Mode: mock
+[E2E] Module: e2e-test-module
+[E2E] Mock LLM: true
+[E2E] Mock Embeddings: true
+[E2E] 
+[E2E] Starting E2E pipeline run: d4dfe625-6294-4794-9ead-f0c397910037
+[E2E] Module: e2e-test-module, Mode: mock
+[E2E] Fatal error: ReferenceError: __dirname is not defined
+    at runPipeline (C:\codes\AGI\scripts\e2e\run_e2e_module.ts:354:36)
+    at main (C:\codes\AGI\scripts\e2e\run_e2e_module.ts:680:30)
+    at <anonymous> (C:\codes\AGI\scripts\e2e\run_e2e_module.ts:743:1)
+    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)

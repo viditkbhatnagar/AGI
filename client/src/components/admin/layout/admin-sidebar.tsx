@@ -18,6 +18,7 @@ import {
   MessageSquare,
   Award,
   Clock,
+  Activity,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
@@ -69,6 +70,12 @@ const navSections: NavSection[] = [
       { label: "Quiz Scores", href: "/admin/quiz-scores", icon: Award },
       { label: "Exam Results", href: "/admin/exam-results", icon: BarChart3 },
       { label: "Last Logins", href: "/admin/last-logins", icon: Clock },
+    ],
+  },
+  {
+    title: "System",
+    items: [
+      { label: "API Usage", href: "/admin/api-usage", icon: Activity },
     ],
   },
 ];

@@ -1,0 +1,417 @@
+{
+  "course_id": "Positive-Psychology-Leadership-and-Mindfulness",
+  "module_id": "Positive-Psychology-Leadership-and-Mindfulness::modules::7",
+  "module_title": "The Ego",
+  "cards": [
+    {
+      "card_id": "card_1",
+      "q": "What is the ego as a mental construct?",
+      "a": "The ego is a mental construct that represents our self-concept, a narrative identity we create to define who we are.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "The Ego",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "The ego is a mental construct of our 'self'."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "The Ego",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Understanding the ego is fundamental to self-awareness, a key trait in personal and professional development.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_2",
+      "q": "Explain the identification process in ego development.",
+      "a": "Identification involves associating oneself with certain attributes, roles, or possessions, making them integral to one's self-concept.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "The Ego",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Identification = making the same; identify with something = making it the same as me."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "The Ego",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Employers value candidates who understand how personal identity influences behavior and decision-making.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_3",
+      "q": "How does culture influence the ego?",
+      "a": "Culture influences the ego by providing norms and standards that shape our self-concept and behaviors.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "The Ego",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Culture provides standards: habits, norms for 'normal' and 'moral behavior'."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "The Ego",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Understanding cultural influences is crucial for roles requiring cross-cultural communication and teamwork.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_4",
+      "q": "What is the 'outside-in' focus of the ego?",
+      "a": "The 'outside-in' focus refers to defining oneself based on external comparisons and societal norms.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "The Ego",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Ego = outside-in focus: how do I do compared to other people?"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "The Ego",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Recognizing external influences on self-perception is important for personal development and leadership roles.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_5",
+      "q": "How can mindfulness help manage the ego?",
+      "a": "Mindfulness helps manage the ego by promoting self-awareness and reducing attachment to ego-driven thoughts.",
+      "difficulty": "medium",
+      "bloom_level": "Apply",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "The Ego",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Mindfulness practices."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "The Ego",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Mindfulness is a valuable skill for stress management and emotional intelligence in the workplace.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_6",
+      "q": "Why is fear a significant factor in ego dynamics?",
+      "a": "Fear arises from the ego's attachment to identity aspects, leading to anxiety over potential loss or failure.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "The Ego",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Fear: strong identification with X; realization X can disappear."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "The Ego",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Understanding fear's role in ego dynamics is crucial for managing stress and decision-making under pressure.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_7",
+      "q": "How does jealousy manifest in professional settings?",
+      "a": "Jealousy in professional settings occurs when one's self-definition is threatened by others' achievements.",
+      "difficulty": "hard",
+      "bloom_level": "Apply",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "The Ego",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Jealousy occurs when the object of jealousy concerns our self-definition."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "The Ego",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Managing jealousy is important for maintaining healthy workplace relationships and team dynamics.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_8",
+      "q": "What are the implications of defensive behavior in the workplace?",
+      "a": "Defensive behavior can hinder feedback acceptance and personal growth, impacting team collaboration and performance.",
+      "difficulty": "hard",
+      "bloom_level": "Apply",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "The Ego",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Ego = very sensitive to criticism; difficult distinguishing feedback about aspect from self."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "The Ego",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Understanding defensive behavior is crucial for effective communication and conflict resolution.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_9",
+      "q": "How does judgment reflect personal identifications?",
+      "a": "Judgment often reflects personal identifications by labeling things based on what they say about 'me'.",
+      "difficulty": "hard",
+      "bloom_level": "Apply",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "The Ego",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Many judgments reflect personal identifications."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "The Ego",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Recognizing judgment biases is important for fair decision-making and leadership.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_10",
+      "q": "Why is self-awareness important for personal and professional growth?",
+      "a": "Self-awareness allows individuals to understand their strengths and weaknesses, facilitating personal development and effective leadership.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "The Ego",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "The importance of self-awareness in personal and professional growth."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "The Ego",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Self-awareness is a key trait for adaptability and continuous improvement in any career.",
+      "review_required": false
+    }
+  ],
+  "stage_a_output": {
+    "module_summary": [
+      {
+        "point": "Understanding the ego as a mental construct of self",
+        "supports": [
+          "Employers may ask about self-awareness and personal development."
+        ]
+      },
+      {
+        "point": "Identification and its role in ego development",
+        "supports": [
+          "Understanding how personal and professional identities are formed is crucial for roles requiring self-reflection."
+        ]
+      },
+      {
+        "point": "The impact of culture, media, and parenting on ego",
+        "supports": [
+          "Recognizing external influences on personal development is important for roles in HR and leadership."
+        ]
+      },
+      {
+        "point": "The concept of 'outside-in' versus 'inside-out' focus",
+        "supports": [
+          "Employers value candidates who can differentiate between external validation and internal motivation."
+        ]
+      },
+      {
+        "point": "Mindfulness as a tool for ego management",
+        "supports": [
+          "Mindfulness practices are increasingly valued in workplace wellness programs."
+        ]
+      },
+      {
+        "point": "The role of fear and control in ego dynamics",
+        "supports": [
+          "Understanding these concepts can help in stress management and decision-making roles."
+        ]
+      },
+      {
+        "point": "Jealousy and its impact on professional relationships",
+        "supports": [
+          "Managing emotions like jealousy is key in team dynamics and leadership."
+        ]
+      },
+      {
+        "point": "Defensive behavior and its implications",
+        "supports": [
+          "Recognizing and managing defensiveness is important for conflict resolution."
+        ]
+      },
+      {
+        "point": "Judgment and personal identifications",
+        "supports": [
+          "Awareness of biases and judgments is crucial in roles requiring impartiality."
+        ]
+      },
+      {
+        "point": "The importance of self-awareness in personal and professional growth",
+        "supports": [
+          "Employers look for candidates who demonstrate self-awareness and continuous improvement."
+        ]
+      }
+    ],
+    "key_topics": [
+      {
+        "topic": "Ego as a mental construct",
+        "supports": [
+          "Understanding self-concept is important for personal development roles."
+        ]
+      },
+      {
+        "topic": "Narrative identity",
+        "supports": [
+          "Employers may ask about how candidates perceive their own life stories."
+        ]
+      },
+      {
+        "topic": "Identification process",
+        "supports": [
+          "Key for roles that require understanding of personal and professional identity formation."
+        ]
+      },
+      {
+        "topic": "Influence of culture and media on self",
+        "supports": [
+          "Relevant for marketing and communication roles."
+        ]
+      },
+      {
+        "topic": "Mindfulness practices",
+        "supports": [
+          "Increasingly valued in roles focused on mental health and wellness."
+        ]
+      },
+      {
+        "topic": "Fear and control mechanisms",
+        "supports": [
+          "Understanding these can aid in stress management roles."
+        ]
+      },
+      {
+        "topic": "Jealousy in professional settings",
+        "supports": [
+          "Important for managing team dynamics."
+        ]
+      },
+      {
+        "topic": "Defensive behavior",
+        "supports": [
+          "Critical for conflict resolution and feedback acceptance."
+        ]
+      },
+      {
+        "topic": "Judgment and bias",
+        "supports": [
+          "Essential for roles requiring impartial decision-making."
+        ]
+      },
+      {
+        "topic": "Self-awareness and growth",
+        "supports": [
+          "Highly valued in leadership and personal development roles."
+        ]
+      }
+    ],
+    "coverage_map": []
+  },
+  "warnings": [],
+  "generation_metadata": {
+    "model": "gpt-4o",
+    "temperature": 0.1,
+    "timestamp": "2025-12-16T15:37:54.077Z"
+  },
+  "created_at": "2025-12-16T15:38:16.141Z",
+  "updated_at": "2025-12-16T15:38:16.141Z",
+  "reviewed_by": null,
+  "review_status": "pending",
+  "id": "deck_Positive-Psychology-Leadership-and-Mindfulness::modules::7_1765899496145",
+  "saved_at": "2025-12-16T15:38:16.145Z",
+  "file_path": "C:\\codes\\AGI\\server\\tmp\\decks\\Positive-Psychology-Leadership-and-Mindfulness__modules__7-1765899496145.json"
+}

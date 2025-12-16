@@ -1,0 +1,389 @@
+{
+  "course_id": "Certified-Training-and-Development-Professional",
+  "module_id": "Certified-Training-and-Development-Professional::modules::7",
+  "module_title": "Unit 8",
+  "cards": [
+    {
+      "card_id": "card_1",
+      "q": "What is Andragogy?",
+      "a": "Andragogy is the method and practice of teaching adult learners, emphasizing self-direction, experience-based learning, and problem-solving.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src1",
+          "source_file": "Unit 8",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "What is Adult Learning Theory?"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 8",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Understanding andragogy is crucial for roles in training and development as it informs how adults learn best.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_2",
+      "q": "Explain the difference between employee engagement and motivation.",
+      "a": "Employee engagement is the emotional commitment to the organization, while motivation is the drive to achieve goals. Engagement leads to discretionary effort, whereas motivation is about fulfilling personal needs.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src2",
+          "source_file": "Unit 8",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "The Difference Between Employee Engagement & Motivation"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 8",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Employers seek candidates who can distinguish between these concepts to effectively manage and improve workforce performance.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_3",
+      "q": "How would you conduct a Training Needs Analysis?",
+      "a": "Identify organizational goals, assess current skills, determine gaps, prioritize needs, and propose solutions. Engage stakeholders throughout for alignment.",
+      "difficulty": "hard",
+      "bloom_level": "Apply",
+      "evidence": [
+        {
+          "chunk_id": "src3",
+          "source_file": "Unit 8",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Needs Analysis Process"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 8",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "This process is fundamental for designing effective training programs, a key responsibility in L&D roles.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_4",
+      "q": "What are the key components of a Training Program Evaluation?",
+      "a": "Key components include setting objectives, selecting evaluation methods, collecting data, analyzing results, and making recommendations for improvement.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src4",
+          "source_file": "Unit 8",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Purpose of Training Program Evaluation"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 8",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Evaluating training programs ensures they meet objectives and provide ROI, a critical skill for L&D professionals.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_5",
+      "q": "Why is the Transfer of Learning important in training programs?",
+      "a": "It ensures that skills and knowledge acquired during training are effectively applied in the workplace, enhancing performance and achieving organizational goals.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src5",
+          "source_file": "Unit 8",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "What is the Transfer of Learning?"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 8",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Employers value candidates who can ensure training investments translate into practical workplace improvements.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_6",
+      "q": "What is the Cultural Dimensions Framework?",
+      "a": "A model that describes how the values of a society affect behaviors, used to understand cross-cultural interactions in global organizations.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src6",
+          "source_file": "Unit 8",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Cultural Dimensions Frameworks"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 8",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Understanding cultural dimensions is crucial for designing effective cross-cultural training programs.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_7",
+      "q": "How would you enhance employee engagement in a remote work environment?",
+      "a": "Foster communication, recognize achievements, provide development opportunities, and ensure work-life balance to maintain engagement remotely.",
+      "difficulty": "hard",
+      "bloom_level": "Apply",
+      "evidence": [
+        {
+          "chunk_id": "src7",
+          "source_file": "Unit 8",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "How to Engage Employees in the Workplace"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 8",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Remote work is prevalent, and employers need strategies to keep remote teams engaged.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_8",
+      "q": "What is the strategic role of Training and Development in organizations?",
+      "a": "It aligns employee skills with organizational goals, enhances performance, and supports career development, driving competitive advantage.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src8",
+          "source_file": "Unit 8",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Strategic Role of Training and Development"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 8",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Understanding this role is essential for aligning L&D initiatives with business strategy.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_9",
+      "q": "What are some evaluation tools for training programs?",
+      "a": "Common tools include surveys, interviews, observation, and performance metrics to assess training effectiveness.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src9",
+          "source_file": "Unit 8",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Tools to Evaluate Training Programs"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 8",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Employers expect candidates to be familiar with tools that measure training success.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_10",
+      "q": "How can experiential learning be applied in corporate training?",
+      "a": "Use simulations, role-playing, and real-world problem-solving to provide hands-on experience and enhance learning retention.",
+      "difficulty": "hard",
+      "bloom_level": "Apply",
+      "evidence": [
+        {
+          "chunk_id": "src10",
+          "source_file": "Unit 8",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Experiential Learning"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 8",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Experiential learning is effective in developing practical skills, a key focus in corporate training.",
+      "review_required": false
+    }
+  ],
+  "stage_a_output": {
+    "module_summary": [
+      {
+        "point": "Strategic Role of Training and Development",
+        "supports": [
+          "Training and development initiatives can significantly impact organizational success.",
+          "Investing in workforce development creates a competitive advantage."
+        ]
+      },
+      {
+        "point": "Adult Learning Theory",
+        "supports": [
+          "Understanding adult learning principles is crucial for effective training program design.",
+          "Adult learning theories include andragogy, transformative learning, and experiential learning."
+        ]
+      },
+      {
+        "point": "Employee Motivation and Engagement",
+        "supports": [
+          "Motivation and engagement are key drivers of employee performance.",
+          "Understanding what drives motivation can help in designing effective engagement strategies."
+        ]
+      },
+      {
+        "point": "Training Needs Analysis",
+        "supports": [
+          "Identifying training needs is essential for developing effective training programs.",
+          "Different types of training needs analysis can be applied depending on organizational goals."
+        ]
+      },
+      {
+        "point": "Training Program Evaluation",
+        "supports": [
+          "Evaluating training programs ensures they meet organizational objectives.",
+          "Key metrics include cost of training, operational efficiency, and employee feedback."
+        ]
+      },
+      {
+        "point": "Transfer of Learning",
+        "supports": [
+          "Facilitating the transfer of learning is crucial for applying new skills in the workplace.",
+          "Strategies include integrating learning transfer into program planning."
+        ]
+      },
+      {
+        "point": "Cross-Cultural Training",
+        "supports": [
+          "Understanding cultural dimensions is essential for effective cross-cultural training.",
+          "Strategies include localization of content and inclusive facilitation."
+        ]
+      }
+    ],
+    "key_topics": [
+      {
+        "topic": "Learning and Development Metrics",
+        "supports": [
+          "Metrics help evaluate the effectiveness of training programs.",
+          "Key metrics include training investment per employee and operational efficiency."
+        ]
+      },
+      {
+        "topic": "Andragogy",
+        "supports": [
+          "Andragogy focuses on adult learning principles such as self-direction and relevance."
+        ]
+      },
+      {
+        "topic": "Employee Engagement Strategies",
+        "supports": [
+          "Engagement strategies can include recognition programs and career development opportunities."
+        ]
+      },
+      {
+        "topic": "Training Needs Analysis Process",
+        "supports": [
+          "The process involves identifying gaps between current and desired performance."
+        ]
+      },
+      {
+        "topic": "Evaluation Tools for Training Programs",
+        "supports": [
+          "Tools include surveys, feedback forms, and performance metrics."
+        ]
+      },
+      {
+        "topic": "Cultural Dimensions Frameworks",
+        "supports": [
+          "Frameworks like Hofstede’s Dimensions help understand cultural differences in training."
+        ]
+      },
+      {
+        "topic": "Experiential Learning",
+        "supports": [
+          "Experiential learning involves learning through hands-on experiences."
+        ]
+      }
+    ],
+    "coverage_map": []
+  },
+  "warnings": [],
+  "generation_metadata": {
+    "model": "gpt-4o",
+    "temperature": 0.1,
+    "timestamp": "2025-12-16T15:48:56.301Z"
+  },
+  "created_at": "2025-12-16T15:49:26.806Z",
+  "updated_at": "2025-12-16T15:49:26.806Z",
+  "reviewed_by": null,
+  "review_status": "pending",
+  "id": "deck_Certified-Training-and-Development-Professional::modules::7_1765900166808",
+  "saved_at": "2025-12-16T15:49:26.808Z",
+  "file_path": "C:\\codes\\AGI\\server\\tmp\\decks\\Certified-Training-and-Development-Professional__modules__7-1765900166808.json"
+}

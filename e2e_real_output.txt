@@ -1,0 +1,109 @@
+[E2E] ============================================================
+[E2E] E2E Pipeline Harness
+[E2E] ============================================================
+[E2E] Mode: real
+[E2E] Module: e2e-test-module
+[E2E] Mock LLM: false
+[E2E] Mock Embeddings: false
+[E2E] 
+[E2E] Starting E2E pipeline run: 2bfb3208-31b9-4903-8c20-572635e3ff16
+[E2E] Module: e2e-test-module, Mode: real
+[E2E] Starting stage: ingest
+[E2E] Stage ingest completed in 0ms
+[E2E] Loaded 10 local chunks
+[E2E] Processing 10 chunks
+[E2E] Starting stage: embed
+[Embeddings] Embedding 10 texts with gemini/embedding-001
+[Embeddings] Processing batch 1/1 (10 texts)
+[Embeddings] Attempt 1 failed, retrying in 1000ms...
+[Embeddings] Attempt 2 failed, retrying in 2000ms...
+[Embeddings] Failed after 3 attempts: Gemini embedding failed: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1/models/embedding-001:embedContent: [429 Too Many Requests] You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/embed_content_free_tier_requests, limit: 0
+* Quota exceeded for metric: generativelanguage.googleapis.com/embed_content_free_tier_requests, limit: 0
+* Quota exceeded for metric: generativelanguage.googleapis.com/embed_content_free_tier_requests, limit: 0
+* Quota exceeded for metric: generativelanguage.googleapis.com/embed_content_free_tier_requests, limit: 0 [{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Learn more about Gemini API quotas","url":"https://ai.google.dev/gemini-api/docs/rate-limits"}]},{"@type":"type.googleapis.com/google.rpc.QuotaFailure","violations":[{"quotaMetric":"generativelanguage.googleapis.com/embed_content_free_tier_requests","quotaId":"EmbedContentRequestsPerDayPerUserPerProjectPerModel-FreeTier"},{"quotaMetric":"generativelanguage.googleapis.com/embed_content_free_tier_requests","quotaId":"EmbedContentRequestsPerMinutePerUserPerProjectPerModel-FreeTier"},{"quotaMetric":"generativelanguage.googleapis.com/embed_content_free_tier_requests","quotaId":"EmbedContentRequestsPerMinutePerProjectPerModel-FreeTier"},{"quotaMetric":"generativelanguage.googleapis.com/embed_content_free_tier_requests","quotaId":"EmbedContentRequestsPerDayPerProjectPerModel-FreeTier"}]}]
+[E2E] Stage embed failed: Gemini embedding failed: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1/models/embedding-001:embedContent: [429 Too Many Requests] You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/embed_content_free_tier_requests, limit: 0
+* Quota exceeded for metric: generativelanguage.googleapis.com/embed_content_free_tier_requests, limit: 0
+* Quota exceeded for metric: generativelanguage.googleapis.com/embed_content_free_tier_requests, limit: 0
+[E2E] Starting stage: upsert
+* Quota exceeded for metric: generativelanguage.googleapis.com/embed_content_free_tier_requests, limit: 0 [{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Learn more about Gemini API quotas","url":"https://ai.google.dev/gemini-api/docs/rate-limits"}]},{"@type":"type.googleapis.com/google.rpc.QuotaFailure","violations":[{"quotaMetric":"generativelanguage.googleapis.com/embed_content_free_tier_requests","quotaId":"EmbedContentRequestsPerDayPerUserPerProjectPerModel-FreeTier"},{"quotaMetric":"generativelanguage.googleapis.com/embed_content_free_tier_requests","quotaId":"EmbedContentRequestsPerMinutePerUserPerProjectPerModel-FreeTier"},{"quotaMetric":"generativelanguage.googleapis.com/embed_content_free_tier_requests","quotaId":"EmbedContentRequestsPerMinutePerProjectPerModel-FreeTier"},{"quotaMetric":"generativelanguage.googleapis.com/embed_content_free_tier_requests","quotaId":"EmbedContentRequestsPerDayPerProjectPerModel-FreeTier"}]}]
+[VectorDB] Upserting 10 chunks for module e2e-test-module to qdrant
+[VectorDB] Generating embeddings for 10 chunks
+[E2E] Stage upsert completed in 1326ms
+[E2E] Starting stage: stageA
+[StageA] Starting for module e2e-test-module with 10 chunks
+[StageA] Sending request to LLM (est. 995 input tokens)
+[StageA] Error: GoogleGenerativeAIError: [400 Bad Request] Invalid JSON payload received. Unknown name "role" at 'contents[0].parts[0]': Cannot find field.
+Invalid JSON payload received. Unknown name "parts" at 'contents[0].parts[0]': Cannot find field.
+Invalid JSON payload received. Unknown name "role" at 'contents[0].parts[1]': Cannot find field.
+Invalid JSON payload received. Unknown name "parts" at 'contents[0].parts[1]': Cannot find field.
+Invalid JSON payload received. Unknown name "role" at 'contents[0].parts[2]': Cannot find field.
+[E2E] Starting stage: stageB
+Invalid JSON payload received. Unknown name "parts" at 'contents[0].parts[2]': Cannot find field. [{"@type":"type.googleapis.com/google.rpc.BadRequest","fieldViolations":[{"field":"contents[0].parts[0]","description":"Invalid JSON payload received. Unknown name \"role\" at 'contents[0].parts[0]': Cannot find field."},{"field":"contents[0].parts[0]","description":"Invalid JSON payload received. Unknown name \"parts\" at 'contents[0].parts[0]': Cannot find field."},{"field":"contents[0].parts[1]","description":"Invalid JSON payload received. Unknown name \"role\" at 'contents[0].parts[1]': Cannot find field."},{"field":"contents[0].parts[1]","description":"Invalid JSON payload received. Unknown name \"parts\" at 'contents[0].parts[1]': Cannot find field."},{"field":"contents[0].parts[2]","description":"Invalid JSON payload received. Unknown name \"role\" at 'contents[0].parts[2]': Cannot find field."},{"field":"contents[0].parts[2]","description":"Invalid JSON payload received. Unknown name \"parts\" at 'contents[0].parts[2]': Cannot find field."}]}]
+    at makeRequest (file:///C:/codes/AGI/node_modules/@google/generative-ai/dist/index.mjs:210:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async generateContent (file:///C:/codes/AGI/node_modules/@google/generative-ai/dist/index.mjs:534:22)
+    at async runStageA (C:\codes\AGI\server\services\flashcard\orchestrator\stageA.ts:173:24)
+    at async <anonymous> (C:\codes\AGI\scripts\e2e\run_e2e_module.ts:505:20)
+    at async runStage (C:\codes\AGI\scripts\e2e\run_e2e_module.ts:290:24)
+    at async runPipeline (C:\codes\AGI\scripts\e2e\run_e2e_module.ts:500:26)
+    at async main (C:\codes\AGI\scripts\e2e\run_e2e_module.ts:686:24)
+[E2E] Stage stageA failed: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent: [400 Bad Request] Invalid JSON payload received. Unknown name "role" at 'contents[0].parts[0]': Cannot find field.
+Invalid JSON payload received. Unknown name "parts" at 'contents[0].parts[0]': Cannot find field.
+Invalid JSON payload received. Unknown name "role" at 'contents[0].parts[1]': Cannot find field.
+Invalid JSON payload received. Unknown name "parts" at 'contents[0].parts[1]': Cannot find field.
+Invalid JSON payload received. Unknown name "role" at 'contents[0].parts[2]': Cannot find field.
+Invalid JSON payload received. Unknown name "parts" at 'contents[0].parts[2]': Cannot find field. [{"@type":"type.googleapis.com/google.rpc.BadRequest","fieldViolations":[{"field":"contents[0].parts[0]","description":"Invalid JSON payload received. Unknown name \"role\" at 'contents[0].parts[0]': Cannot find field."},{"field":"contents[0].parts[0]","description":"Invalid JSON payload received. Unknown name \"parts\" at 'contents[0].parts[0]': Cannot find field."},{"field":"contents[0].parts[1]","description":"Invalid JSON payload received. Unknown name \"role\" at 'contents[0].parts[1]': Cannot find field."},{"field":"contents[0].parts[1]","description":"Invalid JSON payload received. Unknown name \"parts\" at 'contents[0].parts[1]': Cannot find field."},{"field":"contents[0].parts[2]","description":"Invalid JSON payload received. Unknown name \"role\" at 'contents[0].parts[2]': Cannot find field."},{"field":"contents[0].parts[2]","description":"Invalid JSON payload received. Unknown name \"parts\" at 'contents[0].parts[2]': Cannot find field."}]}]
+[StageB] Starting for module e2e-test-module with 10 chunks
+[StageB] Target: 10 cards, 0 learning objectives
+[StageB] Sending request to LLM (est. 1080 input tokens)
+[StageB] Error: GoogleGenerativeAIError: [400 Bad Request] Invalid JSON payload received. Unknown name "role" at 'contents[0].parts[0]': Cannot find field.
+Invalid JSON payload received. Unknown name "parts" at 'contents[0].parts[0]': Cannot find field.
+Invalid JSON payload received. Unknown name "role" at 'contents[0].parts[1]': Cannot find field.
+Invalid JSON payload received. Unknown name "parts" at 'contents[0].parts[1]': Cannot find field.
+Invalid JSON payload received. Unknown name "role" at 'contents[0].parts[2]': Cannot find field.
+Invalid JSON payload received. Unknown name "parts" at 'contents[0].parts[2]': Cannot find field. [{"@type":"type.googleapis.com/google.rpc.BadRequest","fieldViolations":[{"field":"contents[0].parts[0]","description":"Invalid JSON payload received. Unknown name \"role\" at 'contents[0].parts[0]': Cannot find field."},{"field":"contents[0].parts[0]","description":"Invalid JSON payload received. Unknown name \"parts\" at 'contents[0].parts[0]': Cannot find field."},{"field":"contents[0].parts[1]","description":"Invalid JSON payload received. Unknown name \"role\" at 'contents[0].parts[1]': Cannot find field."},{"field":"contents[0].parts[1]","description":"Invalid JSON payload received. Unknown name \"parts\" at 'contents[0].parts[1]': Cannot find field."},{"field":"contents[0].parts[2]","description":"Invalid JSON payload received. Unknown name \"role\" at 'contents[0].parts[2]': Cannot find field."},{"field":"contents[0].parts[2]","description":"Invalid JSON payload received. Unknown name \"parts\" at 'contents[0].parts[2]': Cannot find field."}]}]
+    at makeRequest (file:///C:/codes/AGI/node_modules/@google/generative-ai/dist/index.mjs:210:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async generateContent (file:///C:/codes/AGI/node_modules/@google/generative-ai/dist/index.mjs:534:22)
+    at async runStageB (C:\codes\AGI\server\services\flashcard\orchestrator\stageB.ts:305:24)
+    at async <anonymous> (C:\codes\AGI\scripts\e2e\run_e2e_module.ts:529:20)
+    at async runStage (C:\codes\AGI\scripts\e2e\run_e2e_module.ts:290:24)
+    at async runPipeline (C:\codes\AGI\scripts\e2e\run_e2e_module.ts:524:26)
+    at async main (C:\codes\AGI\scripts\e2e\run_e2e_module.ts:686:24)
+[E2E] Stage stageB failed: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent: [400 Bad Request] Invalid JSON payload received. Unknown name "role" at 'contents[0].parts[0]': Cannot find field.
+Invalid JSON payload received. Unknown name "parts" at 'contents[0].parts[0]': Cannot find field.
+Invalid JSON payload received. Unknown name "role" at 'contents[0].parts[1]': Cannot find field.
+Invalid JSON payload received. Unknown name "parts" at 'contents[0].parts[1]': Cannot find field.
+Invalid JSON payload received. Unknown name "role" at 'contents[0].parts[2]': Cannot find field.
+Invalid JSON payload received. Unknown name "parts" at 'contents[0].parts[2]': Cannot find field. [{"@type":"type.googleapis.com/google.rpc.BadRequest","fieldViolations":[{"field":"contents[0].parts[0]","description":"Invalid JSON payload received. Unknown name \"role\" at 'contents[0].parts[0]': Cannot find field."},{"field":"contents[0].parts[0]","description":"Invalid JSON payload received. Unknown name \"parts\" at 'contents[0].parts[0]': Cannot find field."},{"field":"contents[0].parts[1]","description":"Invalid JSON payload received. Unknown name \"role\" at 'contents[0].parts[1]': Cannot find field."},{"field":"contents[0].parts[1]","description":"Invalid JSON payload received. Unknown name \"parts\" at 'contents[0].parts[1]': Cannot find field."},{"field":"contents[0].parts[2]","description":"Invalid JSON payload received. Unknown name \"role\" at 'contents[0].parts[2]': Cannot find field."},{"field":"contents[0].parts[2]","description":"Invalid JSON payload received. Unknown name \"parts\" at 'contents[0].parts[2]': Cannot find field."}]}]
+[E2E] Report saved to: ./e2e_report.json
+[E2E] 
+[E2E] ============================================================
+[E2E] SUMMARY
+[E2E] ============================================================
+[E2E] Status: FAILED
+[E2E] Duration: 6117ms
+[E2E] Cards Generated: 0
+[E2E] Cards Verified: 0
+[E2E] 
+[E2E] Warnings:
+[E2E]   ΓÜá Vector DB upsert failed: TypeError: fetch failed
+[E2E] 
+[E2E] Errors:
+[E2E]   Γ£ù No cards generated
+[E2E] 
+[E2E] Stage Results:
+[E2E]   Γ£ô ingest: success (0ms)
+[E2E]   Γùï transcribe: skipped (0ms)
+[E2E]   Γùï chunk: skipped (0ms)
+[E2E]   Γ£ù embed: failed (3985ms)
+[E2E]   Γ£ô upsert: success (1326ms)
+[E2E]   Γ£ù stageA: failed (302ms)
+[E2E]   Γ£ù stageB: failed (502ms)
+[E2E]   Γùï verify: skipped (0ms)
+[E2E]   Γùï save: skipped (0ms)
+[E2E] 
+[E2E] REMEDIATION:
+[E2E]   - Verify LLM is responding correctly in real mode

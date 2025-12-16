@@ -1,0 +1,73 @@
+{
+  "course_id": "certified-digital-marketing-professional",
+  "module_id": "certified-digital-marketing-professional::modules::3",
+  "module_title": "DM - 104 SEO ",
+  "cards": [
+    {
+      "card_id": "card_1",
+      "q": "Question could not be parsed",
+      "a": "Answer could not be parsed",
+      "difficulty": "medium",
+      "bloom_level": "Remember",
+      "evidence": [],
+      "sources": [],
+      "confidence_score": 0.5,
+      "rationale": "Parsing error",
+      "review_required": true
+    },
+    {
+      "card_id": "card_2",
+      "q": "Question could not be parsed",
+      "a": "Answer could not be parsed",
+      "difficulty": "medium",
+      "bloom_level": "Remember",
+      "evidence": [],
+      "sources": [],
+      "confidence_score": 0.5,
+      "rationale": "Parsing error",
+      "review_required": true
+    },
+    {
+      "card_id": "card_3",
+      "q": "Question could not be parsed",
+      "a": "Answer could not be parsed",
+      "difficulty": "medium",
+      "bloom_level": "Remember",
+      "evidence": [],
+      "sources": [],
+      "confidence_score": 0.5,
+      "rationale": "Parsing error",
+      "review_required": true
+    }
+  ],
+  "stage_a_output": {
+    "module_summary": [
+      {
+        "point": "Key concepts from DM - 104 SEO ",
+        "supports": []
+      }
+    ],
+    "key_topics": [
+      {
+        "topic": "DM - 104 SEO ",
+        "supports": []
+      }
+    ],
+    "coverage_map": []
+  },
+  "warnings": [
+    "Response was severely truncated - cards extracted manually"
+  ],
+  "generation_metadata": {
+    "model": "meta-llama/llama-3.3-70b-instruct:free",
+    "temperature": 0.1,
+    "timestamp": "2025-12-16T02:10:31.972Z"
+  },
+  "created_at": "2025-12-16T02:10:31.972Z",
+  "updated_at": "2025-12-16T02:10:31.972Z",
+  "reviewed_by": null,
+  "review_status": "pending",
+  "id": "deck_certified-digital-marketing-professional::modules::3_1765851031973",
+  "saved_at": "2025-12-16T02:10:31.973Z",
+  "file_path": "C:\\codes\\AGI\\server\\tmp\\decks\\certified-digital-marketing-professional__modules__3-1765851031973.json"
+}

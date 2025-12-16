@@ -1,0 +1,110 @@
+{
+    "module_id": "e2e-test-module",
+    "module_title": "Introduction to Human Resources Management",
+    "course_id": "course-hr-fundamentals",
+    "description": "Sample module for E2E testing of the flashcard generation pipeline",
+    "files": [
+        {
+            "file_id": "slides-hr-101",
+            "name": "HR_Fundamentals_Slides.pptx",
+            "type": "slides",
+            "path": "test/fixtures/e2e/sample_slides.pptx",
+            "provider": "local"
+        },
+        {
+            "file_id": "reading-hr-culture",
+            "name": "Organizational_Culture_Reading.pdf",
+            "type": "pdf",
+            "path": "test/fixtures/e2e/sample_reading.pdf",
+            "provider": "local"
+        },
+        {
+            "file_id": "lecture-hr-intro",
+            "name": "HR_Introduction_Lecture.mp4",
+            "type": "video",
+            "path": "test/fixtures/e2e/sample_lecture.mp4",
+            "provider": "local"
+        }
+    ],
+    "chunks": [
+        {
+            "chunk_id": "e2e-test-module_chunk_0",
+            "text": "Human Resources Management (HRM) is the strategic approach to the effective management of people in an organization. It involves recruiting, training, and developing employees while ensuring compliance with labor laws and regulations. HR professionals play a crucial role in shaping organizational culture and driving employee engagement.",
+            "source_file": "HR_Fundamentals_Slides.pptx",
+            "slide_or_page": "1-2"
+        },
+        {
+            "chunk_id": "e2e-test-module_chunk_1",
+            "text": "Organizational culture refers to the shared values, beliefs, attitudes, and behaviors that characterize an organization. It influences how employees interact with each other and with external stakeholders. A strong, positive culture can improve employee satisfaction, retention, and overall organizational performance.",
+            "source_file": "Organizational_Culture_Reading.pdf",
+            "slide_or_page": "1-3"
+        },
+        {
+            "chunk_id": "e2e-test-module_chunk_2",
+            "text": "Talent acquisition is a strategic approach to identifying, attracting, and hiring qualified candidates. Unlike traditional recruitment, talent acquisition takes a long-term view and focuses on building a pipeline of future talent. It involves employer branding, candidate experience optimization, and data-driven hiring decisions.",
+            "source_file": "HR_Introduction_Lecture.mp4",
+            "start_sec": 0,
+            "end_sec": 45
+        },
+        {
+            "chunk_id": "e2e-test-module_chunk_3",
+            "text": "Performance management is an ongoing process of communication between managers and employees. It includes setting clear expectations, providing regular feedback, conducting performance reviews, and supporting professional development. Effective performance management aligns individual goals with organizational objectives.",
+            "source_file": "HR_Introduction_Lecture.mp4",
+            "start_sec": 45,
+            "end_sec": 90
+        },
+        {
+            "chunk_id": "e2e-test-module_chunk_4",
+            "text": "Employee engagement measures the emotional commitment employees have toward their organization. Engaged employees are more productive, provide better customer service, and are less likely to leave. Key drivers of engagement include meaningful work, growth opportunities, recognition, and supportive leadership.",
+            "source_file": "HR_Introduction_Lecture.mp4",
+            "start_sec": 90,
+            "end_sec": 135
+        },
+        {
+            "chunk_id": "e2e-test-module_chunk_5",
+            "text": "Compensation and benefits are critical components of the employee value proposition. Total rewards include base salary, bonuses, health insurance, retirement plans, and non-monetary benefits like flexible work arrangements. Competitive compensation helps attract and retain top talent in a competitive job market.",
+            "source_file": "HR_Fundamentals_Slides.pptx",
+            "slide_or_page": "8-10"
+        },
+        {
+            "chunk_id": "e2e-test-module_chunk_6",
+            "text": "Learning and development (L&D) focuses on improving employee skills and knowledge. Effective L&D programs support career growth, improve job performance, and help organizations adapt to changing business needs. Modern approaches include e-learning, mentoring programs, and experiential learning opportunities.",
+            "source_file": "Organizational_Culture_Reading.pdf",
+            "slide_or_page": "15-18"
+        },
+        {
+            "chunk_id": "e2e-test-module_chunk_7",
+            "text": "Diversity, equity, and inclusion (DEI) initiatives aim to create workplaces where all employees feel valued and respected. DEI goes beyond compliance to actively promote diverse perspectives and equal opportunities. Research shows that diverse teams are more innovative and make better decisions.",
+            "source_file": "HR_Introduction_Lecture.mp4",
+            "start_sec": 180,
+            "end_sec": 225
+        },
+        {
+            "chunk_id": "e2e-test-module_chunk_8",
+            "text": "Employee relations involves managing the relationship between employers and employees. It includes handling grievances, resolving conflicts, ensuring fair treatment, and maintaining positive workplace relationships. Strong employee relations contribute to a harmonious and productive work environment.",
+            "source_file": "HR_Fundamentals_Slides.pptx",
+            "slide_or_page": "12-14"
+        },
+        {
+            "chunk_id": "e2e-test-module_chunk_9",
+            "text": "HR analytics uses data to make evidence-based decisions about people. It involves collecting and analyzing workforce data to identify trends, predict outcomes, and measure the impact of HR initiatives. Data-driven HR enables more strategic workforce planning and improved business outcomes.",
+            "source_file": "Organizational_Culture_Reading.pdf",
+            "slide_or_page": "22-25"
+        }
+    ],
+    "expected_outcomes": {
+        "min_cards": 10,
+        "min_verified_rate": 0.8,
+        "bloom_levels": [
+            "remember",
+            "understand",
+            "apply",
+            "analyze"
+        ]
+    },
+    "metadata": {
+        "created_at": "2024-01-15T10:00:00.000Z",
+        "version": "1.0.0",
+        "author": "E2E Test Fixture"
+    }
+}

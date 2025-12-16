@@ -1,0 +1,305 @@
+{
+  "course_id": "certified-digital-marketing-professional",
+  "module_id": "certified-digital-marketing-professional::modules::3",
+  "module_title": "DM - 104 SEO ",
+  "cards": [
+    {
+      "card_id": "card_1",
+      "q": "What does SEO stand for?",
+      "a": "Search Engine Optimization",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Introduction-to-seo-ebook",
+          "loc": "page 5",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Search engine optimization (SEO) refers to techniques that help your website rank higher in organic (or “natural”) search results"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Introduction-to-seo-ebook",
+          "loc": "page 5"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Definition of SEO",
+      "review_required": false
+    },
+    {
+      "card_id": "card_2",
+      "q": "What is the difference between organic and paid search listings?",
+      "a": "Organic listings are free, while paid listings require payment",
+      "difficulty": "easy",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Introduction-to-seo-ebook",
+          "loc": "page 5",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Organic and paid listings both appear on the search engine, but they are displayed in different locations on the page"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Introduction-to-seo-ebook",
+          "loc": "page 5"
+        }
+      ],
+      "confidence_score": 0.8,
+      "rationale": "Difference between organic and paid search",
+      "review_required": false
+    },
+    {
+      "card_id": "card_3",
+      "q": "Why is it important for a business to be listed on search engines?",
+      "a": "To increase visibility and potential customers",
+      "difficulty": "easy",
+      "bloom_level": "Apply",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Introduction-to-seo-ebook",
+          "loc": "page 5",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "On Google alone, there are over 694,000 searches conducted every second"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Introduction-to-seo-ebook",
+          "loc": "page 5"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Importance of search engine listing",
+      "review_required": false
+    },
+    {
+      "card_id": "card_4",
+      "q": "What is the concept of long-tail keywords?",
+      "a": "Targeting specific phrases with lower search volume",
+      "difficulty": "medium",
+      "bloom_level": "Analyze",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Introduction-to-seo-ebook",
+          "loc": "page 11",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Long-Tail Concept & Theory"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Introduction-to-seo-ebook",
+          "loc": "page 11"
+        }
+      ],
+      "confidence_score": 0.8,
+      "rationale": "Long-tail keyword concept",
+      "review_required": false
+    },
+    {
+      "card_id": "card_5",
+      "q": "What is the role of content in SEO?",
+      "a": "High-quality content is essential for ranking",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Introduction-to-seo-ebook",
+          "loc": "page 13",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Content is King"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Introduction-to-seo-ebook",
+          "loc": "page 13"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Importance of content in SEO",
+      "review_required": false
+    },
+    {
+      "card_id": "card_6",
+      "q": "How do search engines work?",
+      "a": "They provide relevant and useful information to users",
+      "difficulty": "medium",
+      "bloom_level": "Apply",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Introduction-to-seo-ebook",
+          "loc": "page 6",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "The sole purpose of a search engine is to provide you with relevant and useful information"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Introduction-to-seo-ebook",
+          "loc": "page 6"
+        }
+      ],
+      "confidence_score": 0.8,
+      "rationale": "How search engines work",
+      "review_required": false
+    },
+    {
+      "card_id": "card_7",
+      "q": "What is the purpose of on-page SEO?",
+      "a": "To optimize website elements for search engines",
+      "difficulty": "medium",
+      "bloom_level": "Analyze",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Introduction-to-seo-ebook",
+          "loc": "page 16",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "On-Page SEO"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Introduction-to-seo-ebook",
+          "loc": "page 16"
+        }
+      ],
+      "confidence_score": 0.8,
+      "rationale": "Purpose of on-page SEO",
+      "review_required": false
+    },
+    {
+      "card_id": "card_8",
+      "q": "What is the difference between on-page and off-page SEO?",
+      "a": "On-page focuses on website elements, off-page focuses on external factors",
+      "difficulty": "hard",
+      "bloom_level": "Evaluate",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Introduction-to-seo-ebook",
+          "loc": "page 16",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "On-Page SEO"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Introduction-to-seo-ebook",
+          "loc": "page 16"
+        }
+      ],
+      "confidence_score": 0.7,
+      "rationale": "Difference between on-page and off-page SEO",
+      "review_required": false
+    },
+    {
+      "card_id": "card_9",
+      "q": "How can social media be used to spread content?",
+      "a": "By sharing content on social media platforms",
+      "difficulty": "hard",
+      "bloom_level": "Create",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Introduction-to-seo-ebook",
+          "loc": "page 24",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Using Social Media to Spread Content"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Introduction-to-seo-ebook",
+          "loc": "page 24"
+        }
+      ],
+      "confidence_score": 0.8,
+      "rationale": "Using social media to spread content",
+      "review_required": false
+    },
+    {
+      "card_id": "card_10",
+      "q": "What is the purpose of measuring success in SEO?",
+      "a": "To track progress and adjust strategies",
+      "difficulty": "hard",
+      "bloom_level": "Evaluate",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Introduction-to-seo-ebook",
+          "loc": "page 32",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Measuring Success"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Introduction-to-seo-ebook",
+          "loc": "page 32"
+        }
+      ],
+      "confidence_score": 0.8,
+      "rationale": "Purpose of measuring success in SEO",
+      "review_required": false
+    }
+  ],
+  "stage_a_output": {
+    "module_summary": [
+      {
+        "point": "Key concepts from DM - 104 SEO ",
+        "supports": []
+      }
+    ],
+    "key_topics": [
+      {
+        "topic": "DM - 104 SEO ",
+        "supports": []
+      }
+    ],
+    "coverage_map": []
+  },
+  "warnings": [],
+  "generation_metadata": {
+    "model": "meta-llama/llama-3.3-70b-instruct:free",
+    "temperature": 0.1,
+    "timestamp": "2025-12-16T02:10:47.824Z"
+  },
+  "created_at": "2025-12-16T02:11:46.761Z",
+  "updated_at": "2025-12-16T02:11:46.761Z",
+  "reviewed_by": null,
+  "review_status": "pending",
+  "id": "deck_certified-digital-marketing-professional::modules::3_1765851106763",
+  "saved_at": "2025-12-16T02:11:46.763Z",
+  "file_path": "C:\\codes\\AGI\\server\\tmp\\decks\\certified-digital-marketing-professional__modules__3-1765851106763.json"
+}

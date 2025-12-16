@@ -42,6 +42,7 @@ import AdminQuizScores from "@/pages/admin/quiz-scores";
 import AdminExamResults from "@/pages/admin/exam-results";
 import AdminFeedbacks from "@/pages/admin/feedbacks";
 import AdminLastLogins from "@/pages/admin/last-logins";
+import AdminAPIUsage from "@/pages/admin/api-usage";
 import QuizRepositoryPage from "@/pages/admin/quiz-repository";
 import LandingPage from "@/pages/landing";
 
@@ -107,6 +108,7 @@ function Router() {
       <Route path="/admin/exam-results" component={AdminExamResults} />
       <Route path="/admin/feedbacks" component={AdminFeedbacks} />
       <Route path="/admin/last-logins" component={AdminLastLogins} />
+      <Route path="/admin/api-usage" component={AdminAPIUsage} />
       <Route path="/admin/dashboard" component={AdminDashboard} />
       <Route path="/admin" component={AdminDashboard} />
 

@@ -1,0 +1,372 @@
+{
+  "course_id": "certified-investment-management-professional",
+  "module_id": "certified-investment-management-professional::modules::3",
+  "module_title": "Basics of Insurance and Annuities",
+  "cards": [
+    {
+      "card_id": "card_1",
+      "q": "What is the primary purpose of life insurance?",
+      "a": "To provide financial protection to dependents in the event of the policyholder's death.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Life Insurance",
+          "loc": "Page 88",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "People buy life insurance to protect their dependents against financial hardship when the insured person, the policyholder, dies."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Life Insurance",
+          "loc": "Page 88"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Understanding the primary purpose of life insurance is essential for making informed decisions about insurance products.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_2",
+      "q": "What are the three main types of life insurance?",
+      "a": "Individual, group, and credit life insurance.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Life Insurance",
+          "loc": "Page 88",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Three types of life insurance policies predominate the market. Individual insurance is underwritten separately for each individual who seeks insurance protection. Group insurance is underwritten on a group as a whole, such as the employees of a company or the members of an organization. Credit insurance guarantees payment of some debt, such as a mortgage or other loan, in the event the insured person dies, and can be bought on either an individual or a group basis."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Life Insurance",
+          "loc": "Page 88"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Identifying the main types of life insurance is crucial for understanding the different options available.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_3",
+      "q": "What is the difference between term life insurance and permanent life insurance?",
+      "a": "Term life insurance provides coverage for a specified period, while permanent life insurance provides protection for as long as the insured lives.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Life Insurance",
+          "loc": "Page 89",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Term insurance policies provide life insurance coverage for a specified period, usually greater than one year. Permanent life (or whole life ) insurance provides protection for as long as the insured lives."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Life Insurance",
+          "loc": "Page 89"
+        }
+      ],
+      "confidence_score": 0.8,
+      "rationale": "Understanding the difference between term life and permanent life insurance is essential for choosing the right type of insurance.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_4",
+      "q": "What is the purpose of annuities?",
+      "a": "To provide a steady stream of income for a fixed period or for life.",
+      "difficulty": "medium",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Life Insurance",
+          "loc": "Page 88",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Annuities provide a steady stream of income for a fixed period or for life, and can be used to protect against outliving one's financial resources"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Life Insurance",
+          "loc": "Page 88"
+        }
+      ],
+      "confidence_score": 0.8,
+      "rationale": "Understanding the purpose of annuities is important for retirement planning and financial security.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_5",
+      "q": "What is the average life expectancy of a 25-year-old in 2021?",
+      "a": "52.5 additional years.",
+      "difficulty": "medium",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Life Insurance",
+          "loc": "Page 88",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Life expectancy has increased significantly over the past century, with a 25-year-old in 2021 expecting to live 52.5 additional years on average"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Life Insurance",
+          "loc": "Page 88"
+        }
+      ],
+      "confidence_score": 0.8,
+      "rationale": "Understanding life expectancy is important for planning insurance and retirement needs.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_6",
+      "q": "What is the voluntary termination rate of individual life insurance policies in 2023?",
+      "a": "5.4 percent.",
+      "difficulty": "hard",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Life Insurance",
+          "loc": "Page 90",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "The voluntary termination rate of individual life insurance policies reached 5.4 percent by 2023"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Life Insurance",
+          "loc": "Page 90"
+        }
+      ],
+      "confidence_score": 0.7,
+      "rationale": "Understanding the voluntary termination rate is important for insurance companies to minimize policy lapses.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_7",
+      "q": "What is the purpose of waiver of premium in life insurance policies?",
+      "a": "To cover financial losses due to sickness or injury.",
+      "difficulty": "hard",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Life Insurance",
+          "loc": "Page 90",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Besides the benefit payable upon death of the insured, many life insurance policies or policy riders provide disability benefits to cover financial losses that result from a sickness or injury. The most common supplementary benefit is waiver of premium."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Life Insurance",
+          "loc": "Page 90"
+        }
+      ],
+      "confidence_score": 0.7,
+      "rationale": "Understanding the purpose of waiver of premium is important for choosing the right insurance policy.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_8",
+      "q": "What is the difference between participating and nonparticipating life insurance policies?",
+      "a": "Participating policies allow policyholders to share in the insurance company's surplus.",
+      "difficulty": "hard",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Life Insurance",
+          "loc": "Page 89",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "A participating policy allows the policyholder to share in the insurance company’s surplus."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Life Insurance",
+          "loc": "Page 89"
+        }
+      ],
+      "confidence_score": 0.7,
+      "rationale": "Understanding the difference between participating and nonparticipating policies is important for choosing the right type of insurance.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_9",
+      "q": "What is credit life insurance?",
+      "a": "Insurance that guarantees payment of debt in the event of the insured person's death.",
+      "difficulty": "medium",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Life Insurance",
+          "loc": "Page 88",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Credit insurance guarantees payment of some debt, such as a mortgage or other loan, in the event the insured person dies, and can be bought on either an individual or a group basis."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Life Insurance",
+          "loc": "Page 88"
+        }
+      ],
+      "confidence_score": 0.8,
+      "rationale": "Understanding credit life insurance is important for managing debt and financial risk.",
+      "review_required": false
+    }
+  ],
+  "stage_a_output": {
+    "module_summary": [
+      {
+        "point": "Life insurance provides financial protection to dependents in the event of the policyholder's death",
+        "supports": []
+      },
+      {
+        "point": "There are three main types of life insurance: individual, group, and credit life insurance",
+        "supports": []
+      },
+      {
+        "point": "Individual life insurance can be further categorized into term life insurance and permanent life insurance",
+        "supports": []
+      },
+      {
+        "point": "Annuities provide a steady stream of income for a fixed period or for life, and can be used to protect against outliving one's financial resources",
+        "supports": []
+      },
+      {
+        "point": "Life expectancy has increased significantly over the past century, with a 25-year-old in 2021 expecting to live 52.5 additional years on average",
+        "supports": []
+      },
+      {
+        "point": "Demographic changes, such as an aging population, can impact the demand for life insurance and annuity products",
+        "supports": []
+      },
+      {
+        "point": "Group life insurance is often provided through employer-sponsored plans, while individual life insurance can be purchased directly from an insurer",
+        "supports": []
+      },
+      {
+        "point": "Annuity contracts can be either immediate or deferred, and can provide a guaranteed income stream for life",
+        "supports": []
+      },
+      {
+        "point": "Life insurance policies can have various features, such as waiver of premium and disability income, to provide additional protection",
+        "supports": []
+      },
+      {
+        "point": "The life insurance industry is regulated, and insurers must comply with laws and regulations to ensure fair treatment of policyholders",
+        "supports": []
+      },
+      {
+        "point": "Life insurance and annuity products can be used to achieve various financial goals, such as retirement planning and estate planning",
+        "supports": []
+      },
+      {
+        "point": "The types of life insurance policies include term life, whole life, universal life, variable life, and variable-universal life",
+        "supports": []
+      },
+      {
+        "point": "Credit life insurance pays the balance on loans of 10 years' or less duration if the borrower dies before repaying the amount due",
+        "supports": []
+      }
+    ],
+    "key_topics": [
+      {
+        "topic": "Life Insurance Basics",
+        "supports": []
+      },
+      {
+        "topic": "Types of Life Insurance",
+        "supports": []
+      },
+      {
+        "topic": "Annuities",
+        "supports": []
+      },
+      {
+        "topic": "Life Expectancy and Demographics",
+        "supports": []
+      },
+      {
+        "topic": "Group Life Insurance",
+        "supports": []
+      },
+      {
+        "topic": "Individual Life Insurance",
+        "supports": []
+      },
+      {
+        "topic": "Life Insurance Policy Features",
+        "supports": []
+      },
+      {
+        "topic": "Regulation of the Life Insurance Industry",
+        "supports": []
+      },
+      {
+        "topic": "Financial Planning with Life Insurance and Annuities",
+        "supports": []
+      },
+      {
+        "topic": "Credit Life Insurance",
+        "supports": []
+      },
+      {
+        "topic": "Policy Claims and Disputes",
+        "supports": []
+      },
+      {
+        "topic": "Voluntary Termination Rates for Life Insurance Policies",
+        "supports": []
+      }
+    ],
+    "coverage_map": []
+  },
+  "warnings": [
+    "Some cards may need review - response was truncated"
+  ],
+  "generation_metadata": {
+    "model": "openai/gpt-4o",
+    "temperature": 0.1,
+    "timestamp": "2025-12-16T01:42:11.875Z"
+  },
+  "created_at": "2025-12-16T01:42:11.875Z",
+  "updated_at": "2025-12-16T01:42:11.875Z",
+  "reviewed_by": null,
+  "review_status": "pending",
+  "id": "deck_certified-investment-management-professional::modules::3_1765849331878",
+  "saved_at": "2025-12-16T01:42:11.878Z",
+  "file_path": "C:\\codes\\AGI\\server\\tmp\\decks\\certified-investment-management-professional__modules__3-1765849331878.json"
+}

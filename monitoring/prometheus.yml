@@ -1,0 +1,75 @@
+# Prometheus Configuration
+#
+# Main configuration for Prometheus metrics collection.
+#
+# Usage:
+#   Referenced by docker-compose.prod.yml prometheus service.
+#   Place in monitoring/prometheus.yml
+#
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'flashcard-monitor'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093
+
+# Load rules once and periodically evaluate them
+rule_files:
+  - "rules.yml"
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Flashcard API
+  - job_name: 'flashcard-api'
+    static_configs:
+      - targets: ['api:5000']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # Orchestrator Worker
+  - job_name: 'flashcard-orchestrator-worker'
+    static_configs:
+      - targets: ['orchestrator_worker:9090']
+    scrape_interval: 10s
+
+  # Transcription Worker
+  - job_name: 'flashcard-transcription-worker'
+    static_configs:
+      - targets: ['transcription_worker:9090']
+    scrape_interval: 30s
+
+  # Redis (requires redis_exporter)
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    # Uncomment if using redis_exporter
+    # metrics_path: '/metrics'
+
+  # Qdrant
+  - job_name: 'qdrant'
+    static_configs:
+      - targets: ['qdrant:6333']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  # Node Exporter (if available)
+  # - job_name: 'node'
+  #   static_configs:
+  #     - targets: ['node-exporter:9100']
+
+  # Docker containers using cadvisor (if available)
+  # - job_name: 'cadvisor'
+  #   static_configs:
+  #     - targets: ['cadvisor:8080']

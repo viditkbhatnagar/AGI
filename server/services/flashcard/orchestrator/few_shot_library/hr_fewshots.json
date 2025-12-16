@@ -1,0 +1,228 @@
+{
+    "domain": "hr",
+    "version": "1.0.0",
+    "description": "Few-shot examples for Human Resources content flashcard generation",
+    "updated_at": "2024-01-15",
+    "examples": [
+        {
+            "id": "hr-stageA-001",
+            "stage": "stageA",
+            "description": "Summarization example for organizational culture content",
+            "input": {
+                "chunks": [
+                    "Organizational culture refers to the shared values, beliefs, attitudes, and behaviors that characterize an organization. It influences how employees interact with each other and with external stakeholders. A strong, positive culture can improve employee satisfaction, retention, and overall organizational performance.",
+                    "Culture is often described as 'the way we do things around here.' It encompasses both visible elements like dress codes and office layouts, and invisible elements like unspoken norms and assumptions."
+                ],
+                "module_title": "Introduction to HR Management"
+            },
+            "output": {
+                "summary": "This module section introduces organizational culture as the shared values, beliefs, and behaviors that define an organization. It distinguishes between visible cultural elements (dress codes, layouts) and invisible ones (norms, assumptions), and explains how culture impacts employee satisfaction and retention.",
+                "learning_objectives": [
+                    "Define organizational culture and its key components",
+                    "Distinguish between visible and invisible cultural elements",
+                    "Explain how culture affects employee satisfaction and retention"
+                ],
+                "key_terms": [
+                    "organizational culture",
+                    "values",
+                    "norms",
+                    "employee retention"
+                ]
+            },
+            "notes": "Shows how to synthesize multiple chunks into coherent summary with clear learning objectives",
+            "approved_by": "hr-sme@example.com",
+            "approved_at": "2024-01-15"
+        },
+        {
+            "id": "hr-stageB-001",
+            "stage": "stageB",
+            "description": "Definition-style flashcard (Bloom: Remember)",
+            "input": {
+                "chunk_text": "Talent acquisition is a strategic approach to identifying, attracting, and hiring qualified candidates. Unlike traditional recruitment, talent acquisition takes a long-term view and focuses on building a pipeline of future talent.",
+                "learning_objective": "Define talent acquisition and differentiate it from recruitment"
+            },
+            "output": {
+                "question": "What is talent acquisition?",
+                "answer": "Talent acquisition is a strategic approach to identifying, attracting, and hiring qualified candidates that takes a long-term view and focuses on building a pipeline of future talent, unlike traditional reactive recruitment.",
+                "evidence_quote": "Talent acquisition is a strategic approach to identifying, attracting, and hiring qualified candidates",
+                "bloom_level": "remember",
+                "difficulty": "easy"
+            },
+            "notes": "Basic definition question with key differentiator included in answer",
+            "approved_by": "hr-sme@example.com",
+            "approved_at": "2024-01-15"
+        },
+        {
+            "id": "hr-stageB-002",
+            "stage": "stageB",
+            "description": "Explanation-style flashcard (Bloom: Understand)",
+            "input": {
+                "chunk_text": "Performance management is an ongoing process of communication between managers and employees. It includes setting clear expectations, providing regular feedback, conducting performance reviews, and supporting professional development. Effective performance management aligns individual goals with organizational objectives.",
+                "learning_objective": "Explain the components and purpose of performance management"
+            },
+            "output": {
+                "question": "What are the key components of performance management, and why is it important?",
+                "answer": "Performance management includes: (1) setting clear expectations, (2) providing regular feedback, (3) conducting performance reviews, and (4) supporting professional development. It is important because it aligns individual goals with organizational objectives through ongoing manager-employee communication.",
+                "evidence_quote": "includes setting clear expectations, providing regular feedback, conducting performance reviews, and supporting professional development",
+                "bloom_level": "understand",
+                "difficulty": "medium"
+            },
+            "notes": "Uses numbered list for multiple components; explains 'why' for deeper understanding",
+            "approved_by": "hr-sme@example.com",
+            "approved_at": "2024-01-15"
+        },
+        {
+            "id": "hr-stageB-003",
+            "stage": "stageB",
+            "description": "Comparison-style flashcard (Bloom: Analyze)",
+            "input": {
+                "chunk_text": "Unlike traditional recruitment, which is often reactive and focused on filling immediate vacancies, talent acquisition takes a proactive, strategic approach. Talent acquisition involves employer branding, building candidate pipelines, and workforce planning to meet long-term organizational needs.",
+                "learning_objective": "Compare and contrast talent acquisition with traditional recruitment"
+            },
+            "output": {
+                "question": "How does talent acquisition differ from traditional recruitment?",
+                "answer": "Traditional recruitment is reactive and focused on filling immediate vacancies, while talent acquisition is proactive and strategic. Talent acquisition includes employer branding, building candidate pipelines, and workforce planning to meet long-term organizational needs.",
+                "evidence_quote": "traditional recruitment, which is often reactive and focused on filling immediate vacancies, talent acquisition takes a proactive, strategic approach",
+                "bloom_level": "analyze",
+                "difficulty": "medium"
+            },
+            "notes": "Direct comparison highlighting key differences; uses transitional language",
+            "approved_by": "hr-sme@example.com",
+            "approved_at": "2024-01-15"
+        },
+        {
+            "id": "hr-stageB-004",
+            "stage": "stageB",
+            "description": "Application-style flashcard (Bloom: Apply)",
+            "input": {
+                "chunk_text": "Employee engagement measures the emotional commitment employees have toward their organization. Key drivers of engagement include meaningful work, growth opportunities, recognition, and supportive leadership. Engaged employees are more productive, provide better customer service, and are less likely to leave.",
+                "learning_objective": "Apply knowledge of engagement drivers to improve employee retention"
+            },
+            "output": {
+                "question": "What strategies can managers use to improve employee engagement?",
+                "answer": "Managers can improve employee engagement by: (1) providing meaningful work assignments, (2) offering growth and development opportunities, (3) recognizing employee contributions regularly, and (4) demonstrating supportive leadership. These strategies address the key drivers of engagement and can reduce turnover.",
+                "evidence_quote": "Key drivers of engagement include meaningful work, growth opportunities, recognition, and supportive leadership",
+                "bloom_level": "apply",
+                "difficulty": "medium"
+            },
+            "notes": "Transforms theoretical drivers into actionable strategies; tests practical application",
+            "approved_by": "hr-sme@example.com",
+            "approved_at": "2024-01-15"
+        },
+        {
+            "id": "hr-stageB-005",
+            "stage": "stageB",
+            "description": "Cause-effect flashcard (Bloom: Analyze)",
+            "input": {
+                "chunk_text": "A strong, positive culture can improve employee satisfaction, retention, and overall organizational performance. Research shows that organizations with engaged cultures experience 21% higher profitability and 41% lower absenteeism.",
+                "learning_objective": "Analyze the impact of organizational culture on business outcomes"
+            },
+            "output": {
+                "question": "How does a positive organizational culture impact business outcomes?",
+                "answer": "A positive organizational culture improves employee satisfaction, retention, and overall performance. Research shows engaged cultures lead to 21% higher profitability and 41% lower absenteeism, demonstrating a direct link between culture and business success.",
+                "evidence_quote": "organizations with engaged cultures experience 21% higher profitability and 41% lower absenteeism",
+                "bloom_level": "analyze",
+                "difficulty": "medium"
+            },
+            "notes": "Includes specific statistics from source; connects cause (culture) to effects (metrics)",
+            "approved_by": "hr-sme@example.com",
+            "approved_at": "2024-01-15"
+        },
+        {
+            "id": "hr-stageB-006",
+            "stage": "stageB",
+            "description": "Process-style flashcard (Bloom: Understand)",
+            "input": {
+                "chunk_text": "The onboarding process typically includes four phases: pre-boarding (before day one), orientation (first week), training (first month), and integration (first 90 days). Effective onboarding can improve new hire retention by up to 82%.",
+                "learning_objective": "Describe the phases of employee onboarding"
+            },
+            "output": {
+                "question": "What are the four phases of the employee onboarding process?",
+                "answer": "The four phases of onboarding are: (1) Pre-boarding - activities before day one, (2) Orientation - first week introduction, (3) Training - first month skill development, and (4) Integration - first 90 days of full team membership. Effective onboarding can improve retention by 82%.",
+                "evidence_quote": "four phases: pre-boarding (before day one), orientation (first week), training (first month), and integration (first 90 days)",
+                "bloom_level": "understand",
+                "difficulty": "easy"
+            },
+            "notes": "Sequential process with clear phases; includes business impact statistic",
+            "approved_by": "hr-sme@example.com",
+            "approved_at": "2024-01-15"
+        },
+        {
+            "id": "hr-stageB-007",
+            "stage": "stageB",
+            "description": "Evaluation-style flashcard (Bloom: Evaluate)",
+            "input": {
+                "chunk_text": "360-degree feedback gathers performance input from multiple sources: supervisors, peers, direct reports, and sometimes customers. While it provides comprehensive perspectives, critics argue it can be time-consuming and may introduce bias from interpersonal relationships.",
+                "learning_objective": "Evaluate the advantages and disadvantages of 360-degree feedback"
+            },
+            "output": {
+                "question": "What are the advantages and disadvantages of 360-degree feedback?",
+                "answer": "Advantages: 360-degree feedback provides comprehensive perspectives by gathering input from supervisors, peers, direct reports, and customers. Disadvantages: It can be time-consuming to administer and may introduce bias from interpersonal relationships affecting objectivity.",
+                "evidence_quote": "provides comprehensive perspectives... can be time-consuming and may introduce bias from interpersonal relationships",
+                "bloom_level": "evaluate",
+                "difficulty": "hard"
+            },
+            "notes": "Balanced evaluation of pros/cons; requires critical thinking about trade-offs",
+            "approved_by": "hr-sme@example.com",
+            "approved_at": "2024-01-15"
+        },
+        {
+            "id": "hr-stageB-008",
+            "stage": "stageB",
+            "description": "Concept application with scenario (Bloom: Apply)",
+            "input": {
+                "chunk_text": "Diversity, equity, and inclusion (DEI) initiatives aim to create workplaces where all employees feel valued and respected. DEI goes beyond compliance to actively promote diverse perspectives. Research shows that diverse teams are more innovative and make better decisions.",
+                "learning_objective": "Apply DEI principles to workplace scenarios"
+            },
+            "output": {
+                "question": "Why should organizations invest in DEI initiatives beyond legal compliance?",
+                "answer": "Organizations should invest in DEI because: (1) it creates workplaces where all employees feel valued and respected, (2) it actively promotes diverse perspectives, and (3) research shows diverse teams are more innovative and make better decisions. DEI provides competitive advantages beyond meeting compliance requirements.",
+                "evidence_quote": "DEI goes beyond compliance to actively promote diverse perspectives... diverse teams are more innovative and make better decisions",
+                "bloom_level": "apply",
+                "difficulty": "medium"
+            },
+            "notes": "Addresses 'why' beyond the obvious; connects to business value",
+            "approved_by": "hr-sme@example.com",
+            "approved_at": "2024-01-15"
+        },
+        {
+            "id": "hr-stageB-009",
+            "stage": "stageB",
+            "description": "Multi-part concept flashcard (Bloom: Remember/Understand)",
+            "input": {
+                "chunk_text": "Compensation packages typically include base salary, variable pay (bonuses and commissions), benefits (health insurance, retirement plans), and non-monetary rewards (flexible work, recognition programs). Total rewards strategies align compensation with organizational goals and employee needs.",
+                "learning_objective": "Identify the components of total compensation"
+            },
+            "output": {
+                "question": "What are the four main components of a total compensation package?",
+                "answer": "The four main components are: (1) Base salary - fixed regular pay, (2) Variable pay - bonuses and commissions based on performance, (3) Benefits - health insurance, retirement plans, and similar offerings, and (4) Non-monetary rewards - flexible work arrangements and recognition programs.",
+                "evidence_quote": "base salary, variable pay (bonuses and commissions), benefits (health insurance, retirement plans), and non-monetary rewards",
+                "bloom_level": "remember",
+                "difficulty": "easy"
+            },
+            "notes": "Clear enumeration of components with brief explanations; foundational knowledge",
+            "approved_by": "hr-sme@example.com",
+            "approved_at": "2024-01-15"
+        },
+        {
+            "id": "hr-stageB-010",
+            "stage": "stageB",
+            "description": "Edge case: Content with limited evidence",
+            "input": {
+                "chunk_text": "HR analytics is becoming increasingly important. Many organizations now use data to make workforce decisions.",
+                "learning_objective": "Understand the role of HR analytics"
+            },
+            "output": {
+                "question": "What is the growing role of HR analytics in organizations?",
+                "answer": "HR analytics is becoming increasingly important as many organizations now use data to make workforce decisions, enabling more evidence-based HR practices.",
+                "evidence_quote": "HR analytics is becoming increasingly important. Many organizations now use data",
+                "bloom_level": "understand",
+                "difficulty": "easy",
+                "confidence_note": "Limited detail in source; answer stays close to evidence"
+            },
+            "notes": "Example of handling sparse content - keeps answer conservative and close to source",
+            "approved_by": "hr-sme@example.com",
+            "approved_at": "2024-01-15"
+        }
+    ]
+}

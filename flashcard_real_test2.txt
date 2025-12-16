@@ -1,0 +1,136 @@
+
+> rest-express@1.0.0 flashcard:test:real
+> tsx scripts/test-flashcards.ts --real
+
+============================================================
+Flashcard Generation Test
+============================================================
+Mode: REAL
+GEMINI_API_KEY: Set
+
+[1] Connecting to MongoDB...
+MongoDB connected successfully
+    Γ£ô Connected
+
+[2] Fetching available courses...
+    Γ£ô Found 22 courses
+
+    Available courses:
+    1. certified-supply-chain-professional - "Certified Supply Chain Professional" (9 modules)
+    2. Accounting-and-Finance - "Accounting and Finance" (11 modules)
+    3. Certified-Logistics-Manager - "Certified Logistics Manager" (10 modules)
+    4. Certified-Human-Resource-Professional - "Certified Human Resource Professional" (11 modules)
+    5. Certified-Sustainability-And-Leadership - "Certified Sustainability Leadership And Management" (12 modules)
+    ... and 17 more
+
+[3] Selected course: certified-supply-chain-professional
+    Γ£ô Found 9 modules
+
+    Modules:
+    - Module 0: "Supply Chain Strategy and Design" (3 docs, 2 videos)
+    - Module 1: "Demand Planning and Sales & Operations Planning (S&OP)" (2 docs, 2 videos)
+    - Module 2: "Strategic Sourcing and Procurement" (2 docs, 1 videos)
+    - Module 3: "Manufacturing, Operations, and Flow Management" (2 docs, 1 videos)
+    - Module 4: " Inventory Optimization and Control" (2 docs, 2 videos)
+    - Module 5: "Supply Chain Technology and Digital Transformation" (3 docs, 1 videos)
+    - Module 6: "Sustainable and Ethical Supply Chains" (2 docs, 1 videos)
+    - Module 7: "Supply Chain Performance Measurement and Analytics" (2 docs, 1 videos)
+    - Module 8: "Artificial Intelligence in Supply Chain Management" (2 docs, 1 videos)
+
+[4] Fetching content for module 0...
+[ContentFetcher] Fetching content for certified-supply-chain-professional/module-0
+[ContentFetcher] Found 3 documents, 2 videos, 0 recordings
+    Γ£ô Module: Supply Chain Strategy and Design
+    Γ£ô Documents: 3
+    Γ£ô Videos: 2
+    Γ£ô Recordings: 0
+
+    Documents:
+    1. [google_drive] Supply-Chain-Management Page 1-34
+    2. [google_drive] strategy-report-short
+    3. [google_drive] Supply Chain Strategy and Design
+
+[5] Preparing chunks for generation...
+[ContentFetcher] Prepared 5 chunks from module content
+    Γ£ô Created 5 chunks
+
+[6] Running StageA (content analysis)...
+[StageA] Starting for module certified-supply-chain-professional::modules::0 with 5 chunks
+[StageA] Sending request to LLM (est. 647 input tokens)
+[StageA] Error: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent: [429 Too Many Requests] You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash
+Please retry in 9.628208244s. [{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Learn more about Gemini API quotas","url":"https://ai.google.dev/gemini-api/docs/rate-limits"}]},{"@type":"type.googleapis.com/google.rpc.QuotaFailure","violations":[{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_requests","quotaId":"GenerateRequestsPerDayPerProjectPerModel-FreeTier","quotaDimensions":{"location":"global","model":"gemini-2.0-flash"}},{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_requests","quotaId":"GenerateRequestsPerMinutePerProjectPerModel-FreeTier","quotaDimensions":{"model":"gemini-2.0-flash","location":"global"}},{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count","quotaId":"GenerateContentInputTokensPerModelPerMinute-FreeTier","quotaDimensions":{"location":"global","model":"gemini-2.0-flash"}}]},{"@type":"type.googleapis.com/google.rpc.RetryInfo","retryDelay":"9s"}]
+    at handleResponseNotOk (file:///C:/codes/AGI/node_modules/@google/generative-ai/dist/index.mjs:432:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (file:///C:/codes/AGI/node_modules/@google/generative-ai/dist/index.mjs:401:9)
+    at async generateContent (file:///C:/codes/AGI/node_modules/@google/generative-ai/dist/index.mjs:865:22)
+    at async runStageA (C:\codes\AGI\server\services\flashcard\orchestrator\stageA.ts:174:24)
+    at async main (C:\codes\AGI\scripts\test-flashcards.ts:120:15) {
+  status: 429,
+  statusText: 'Too Many Requests',
+  errorDetails: [
+    { '@type': 'type.googleapis.com/google.rpc.Help', links: [Array] },
+    {
+      '@type': 'type.googleapis.com/google.rpc.QuotaFailure',
+      violations: [Array]
+    },
+    {
+      '@type': 'type.googleapis.com/google.rpc.RetryInfo',
+      retryDelay: '9s'
+    }
+  ]
+}
+
+Γ£ù Error: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent: [429 Too Many Requests] You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash
+Please retry in 9.628208244s. [{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Learn more about Gemini API quotas","url":"https://ai.google.dev/gemini-api/docs/rate-limits"}]},{"@type":"type.googleapis.com/google.rpc.QuotaFailure","violations":[{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_requests","quotaId":"GenerateRequestsPerDayPerProjectPerModel-FreeTier","quotaDimensions":{"location":"global","model":"gemini-2.0-flash"}},{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_requests","quotaId":"GenerateRequestsPerMinutePerProjectPerModel-FreeTier","quotaDimensions":{"model":"gemini-2.0-flash","location":"global"}},{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count","quotaId":"GenerateContentInputTokensPerModelPerMinute-FreeTier","quotaDimensions":{"location":"global","model":"gemini-2.0-flash"}}]},{"@type":"type.googleapis.com/google.rpc.RetryInfo","retryDelay":"9s"}]
+    at handleResponseNotOk (file:///C:/codes/AGI/node_modules/@google/generative-ai/dist/index.mjs:432:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (file:///C:/codes/AGI/node_modules/@google/generative-ai/dist/index.mjs:401:9)
+    at async generateContent (file:///C:/codes/AGI/node_modules/@google/generative-ai/dist/index.mjs:865:22)
+    at async runStageA (C:\codes\AGI\server\services\flashcard\orchestrator\stageA.ts:174:24)
+    at async main (C:\codes\AGI\scripts\test-flashcards.ts:120:15) {
+  status: 429,
+  statusText: 'Too Many Requests',
+  errorDetails: [
+    { '@type': 'type.googleapis.com/google.rpc.Help', links: [Array] },
+    {
+      '@type': 'type.googleapis.com/google.rpc.QuotaFailure',
+      violations: [Array]
+    },
+    {
+      '@type': 'type.googleapis.com/google.rpc.RetryInfo',
+      retryDelay: '9s'
+    }
+  ]
+}
+Fatal error: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent: [429 Too Many Requests] You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash
+Please retry in 9.628208244s. [{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Learn more about Gemini API quotas","url":"https://ai.google.dev/gemini-api/docs/rate-limits"}]},{"@type":"type.googleapis.com/google.rpc.QuotaFailure","violations":[{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_requests","quotaId":"GenerateRequestsPerDayPerProjectPerModel-FreeTier","quotaDimensions":{"location":"global","model":"gemini-2.0-flash"}},{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_requests","quotaId":"GenerateRequestsPerMinutePerProjectPerModel-FreeTier","quotaDimensions":{"model":"gemini-2.0-flash","location":"global"}},{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count","quotaId":"GenerateContentInputTokensPerModelPerMinute-FreeTier","quotaDimensions":{"location":"global","model":"gemini-2.0-flash"}}]},{"@type":"type.googleapis.com/google.rpc.RetryInfo","retryDelay":"9s"}]
+    at handleResponseNotOk (file:///C:/codes/AGI/node_modules/@google/generative-ai/dist/index.mjs:432:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (file:///C:/codes/AGI/node_modules/@google/generative-ai/dist/index.mjs:401:9)
+    at async generateContent (file:///C:/codes/AGI/node_modules/@google/generative-ai/dist/index.mjs:865:22)
+    at async runStageA (C:\codes\AGI\server\services\flashcard\orchestrator\stageA.ts:174:24)
+    at async main (C:\codes\AGI\scripts\test-flashcards.ts:120:15) {
+  status: 429,
+  statusText: 'Too Many Requests',
+  errorDetails: [
+    { '@type': 'type.googleapis.com/google.rpc.Help', links: [Array] },
+    {
+      '@type': 'type.googleapis.com/google.rpc.QuotaFailure',
+      violations: [Array]
+    },
+    {
+      '@type': 'type.googleapis.com/google.rpc.RetryInfo',
+      retryDelay: '9s'
+    }
+  ]
+}
+MongoDB disconnected

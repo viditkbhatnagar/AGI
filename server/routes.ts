@@ -21,6 +21,14 @@ import * as feedbackController from "./controllers/feedback-controller";
 import * as certificateController from "./controllers/certificate-controller";
 import * as loginHistoryController from "./controllers/loginHistory-controller";
 import quizRepositoryRoutes from "./routes/quizRepository";
+import flashcardRoutes, {
+  moduleFlashcardsRoute,
+  moduleFlashcardStatsRoute
+} from "./services/flashcard/flashcardRoutes";
+import { generateFlashcardsFromModule } from "./services/flashcard/flashcardController";
+import orchestratorRoutes from "./services/flashcard/orchestratorRoutes";
+import productionFlashcardRoutes from "./services/flashcard/productionRoutes";
+import apiUsageRoutes from "./services/apiUsage/routes";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // AUTH ROUTES
@@ -250,6 +258,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin feedback routes
   app.get("/api/admin/feedbacks", auth, requireAdminAccess, feedbackController.getAllFeedbacks);
   app.get("/api/admin/feedback-stats", auth, requireAdminAccess, feedbackController.getFeedbackStats);
+
+  // FLASHCARD GENERATION ROUTES
+  // Student-accessible endpoint for generating flashcards
+  app.post("/api/flashcards/generate-from-module", auth, generateFlashcardsFromModule);
+  // Admin-only flashcard management routes
+  app.use("/api/flashcards", auth, requireAdminAccess, flashcardRoutes);
+  // Student-accessible endpoint for viewing flashcards
+  app.get(moduleFlashcardsRoute.path, auth, moduleFlashcardsRoute.handler);
+  app.get(moduleFlashcardStatsRoute.path, auth, requireAdminAccess, moduleFlashcardStatsRoute.handler);
+
+  // FLASHCARD ORCHESTRATOR ROUTES (batch generation)
+  app.use("/api/flashcards/orchestrator", auth, requireAdminAccess, orchestratorRoutes);
+
+  // PRODUCTION FLASHCARD ROUTES (v2 - with Google Drive & OneDrive support)
+  app.use("/api/v2/flashcards", auth, requireAdminAccess, productionFlashcardRoutes);
+
+  // API USAGE TRACKING ROUTES
+  app.use("/api/admin/api-usage", auth, requireAdminAccess, apiUsageRoutes);
 
   const httpServer = createServer(app);
 

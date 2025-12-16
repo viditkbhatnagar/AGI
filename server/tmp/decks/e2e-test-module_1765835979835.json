@@ -1,0 +1,180 @@
+{
+  "deck_id": "e2e-test-module::deck-1765835979835",
+  "module_id": "e2e-test-module",
+  "module_title": "Introduction to Human Resources Management",
+  "cards": [
+    {
+      "card_id": "e2e-test-module_chunk_0_card_0",
+      "question": "What is organizational culture?",
+      "answer": "Organizational culture refers to the shared values, beliefs, and practices that characterize an organization and guide employee behavior.",
+      "rationale": "",
+      "evidence": [
+        {
+          "chunk_id": "e2e-test-module_chunk_0",
+          "text": "Human Resources Management (HRM) is the strategic approach to the effective management of people in an organization. It involves recruiting, training, and developing employees while ensuring compliance with labor laws and regulations. HR professionals play a crucial role in shaping organizational culture and driving employee engagement."
+        }
+      ],
+      "bloom_level": "understand",
+      "difficulty": "medium",
+      "verified": true,
+      "confidence": 0.891684729621889,
+      "review_required": false
+    },
+    {
+      "card_id": "e2e-test-module_chunk_0_card_1",
+      "question": "Define talent acquisition.",
+      "answer": "Talent acquisition is the strategic process of identifying, attracting, and hiring qualified candidates to meet organizational needs.",
+      "rationale": "",
+      "evidence": [
+        {
+          "chunk_id": "e2e-test-module_chunk_1",
+          "text": "Organizational culture refers to the shared values, beliefs, attitudes, and behaviors that characterize an organization. It influences how employees interact with each other and with external stakeholders. A strong, positive culture can improve employee satisfaction, retention, and overall organizational performance."
+        }
+      ],
+      "bloom_level": "understand",
+      "difficulty": "medium",
+      "verified": true,
+      "confidence": 0.8742552550683338,
+      "review_required": false
+    },
+    {
+      "card_id": "e2e-test-module_chunk_0_card_2",
+      "question": "What are the key components of performance management?",
+      "answer": "Key components include goal setting, regular feedback, performance appraisals, and development planning.",
+      "rationale": "",
+      "evidence": [
+        {
+          "chunk_id": "e2e-test-module_chunk_2",
+          "text": "Talent acquisition is a strategic approach to identifying, attracting, and hiring qualified candidates. Unlike traditional recruitment, talent acquisition takes a long-term view and focuses on building a pipeline of future talent. It involves employer branding, candidate experience optimization, and data-driven hiring decisions."
+        }
+      ],
+      "bloom_level": "understand",
+      "difficulty": "medium",
+      "verified": true,
+      "confidence": 0.8639863308255962,
+      "review_required": false
+    },
+    {
+      "card_id": "e2e-test-module_chunk_0_card_3",
+      "question": "Why is employee engagement important?",
+      "answer": "Employee engagement is important because engaged employees are more productive, have lower turnover, and contribute to positive workplace culture.",
+      "rationale": "",
+      "evidence": [
+        {
+          "chunk_id": "e2e-test-module_chunk_3",
+          "text": "Performance management is an ongoing process of communication between managers and employees. It includes setting clear expectations, providing regular feedback, conducting performance reviews, and supporting professional development. Effective performance management aligns individual goals with organizational objectives."
+        }
+      ],
+      "bloom_level": "understand",
+      "difficulty": "medium",
+      "verified": true,
+      "confidence": 0.8905536708437853,
+      "review_required": false
+    },
+    {
+      "card_id": "e2e-test-module_chunk_0_card_4",
+      "question": "How does culture affect employee retention?",
+      "answer": "A positive organizational culture increases job satisfaction and loyalty, leading to higher retention rates.",
+      "rationale": "",
+      "evidence": [
+        {
+          "chunk_id": "e2e-test-module_chunk_4",
+          "text": "Employee engagement measures the emotional commitment employees have toward their organization. Engaged employees are more productive, provide better customer service, and are less likely to leave. Key drivers of engagement include meaningful work, growth opportunities, recognition, and supportive leadership."
+        }
+      ],
+      "bloom_level": "understand",
+      "difficulty": "medium",
+      "verified": true,
+      "confidence": 0.8917079470518375,
+      "review_required": false
+    },
+    {
+      "card_id": "e2e-test-module_chunk_0_card_5",
+      "question": "What is the difference between recruitment and talent acquisition?",
+      "answer": "Recruitment is a reactive, immediate hiring process, while talent acquisition is a proactive, strategic approach to building a talent pipeline.",
+      "rationale": "",
+      "evidence": [
+        {
+          "chunk_id": "e2e-test-module_chunk_5",
+          "text": "Compensation and benefits are critical components of the employee value proposition. Total rewards include base salary, bonuses, health insurance, retirement plans, and non-monetary benefits like flexible work arrangements. Competitive compensation helps attract and retain top talent in a competitive job market."
+        }
+      ],
+      "bloom_level": "understand",
+      "difficulty": "medium",
+      "verified": true,
+      "confidence": 0.9166202504000022,
+      "review_required": false
+    },
+    {
+      "card_id": "e2e-test-module_chunk_0_card_6",
+      "question": "Describe effective feedback techniques.",
+      "answer": "Effective feedback is specific, timely, balanced, and focused on behaviors rather than personality traits.",
+      "rationale": "",
+      "evidence": [
+        {
+          "chunk_id": "e2e-test-module_chunk_6",
+          "text": "Learning and development (L&D) focuses on improving employee skills and knowledge. Effective L&D programs support career growth, improve job performance, and help organizations adapt to changing business needs. Modern approaches include e-learning, mentoring programs, and experiential learning opportunities."
+        }
+      ],
+      "bloom_level": "understand",
+      "difficulty": "medium",
+      "verified": true,
+      "confidence": 0.9202948147310166,
+      "review_required": false
+    },
+    {
+      "card_id": "e2e-test-module_chunk_0_card_7",
+      "question": "What factors influence employee engagement?",
+      "answer": "Factors include leadership quality, career development opportunities, recognition, work-life balance, and workplace relationships.",
+      "rationale": "",
+      "evidence": [
+        {
+          "chunk_id": "e2e-test-module_chunk_7",
+          "text": "Diversity, equity, and inclusion (DEI) initiatives aim to create workplaces where all employees feel valued and respected. DEI goes beyond compliance to actively promote diverse perspectives and equal opportunities. Research shows that diverse teams are more innovative and make better decisions."
+        }
+      ],
+      "bloom_level": "understand",
+      "difficulty": "medium",
+      "verified": true,
+      "confidence": 0.8871030244749915,
+      "review_required": false
+    },
+    {
+      "card_id": "e2e-test-module_chunk_0_card_8",
+      "question": "How can organizations measure culture?",
+      "answer": "Culture can be measured through employee surveys, focus groups, turnover rates, and observation of daily behaviors and norms.",
+      "rationale": "",
+      "evidence": [
+        {
+          "chunk_id": "e2e-test-module_chunk_8",
+          "text": "Employee relations involves managing the relationship between employers and employees. It includes handling grievances, resolving conflicts, ensuring fair treatment, and maintaining positive workplace relationships. Strong employee relations contribute to a harmonious and productive work environment."
+        }
+      ],
+      "bloom_level": "understand",
+      "difficulty": "medium",
+      "verified": true,
+      "confidence": 0.9356018926096614,
+      "review_required": false
+    },
+    {
+      "card_id": "e2e-test-module_chunk_0_card_9",
+      "question": "What is the role of HR in performance management?",
+      "answer": "HR designs performance management systems, trains managers, ensures consistency, and connects performance to compensation and development.",
+      "rationale": "",
+      "evidence": [
+        {
+          "chunk_id": "e2e-test-module_chunk_9",
+          "text": "HR analytics uses data to make evidence-based decisions about people. It involves collecting and analyzing workforce data to identify trends, predict outcomes, and measure the impact of HR initiatives. Data-driven HR enables more strategic workforce planning and improved business outcomes."
+        }
+      ],
+      "bloom_level": "understand",
+      "difficulty": "medium",
+      "verified": true,
+      "confidence": 0.9145868197330888,
+      "review_required": false
+    }
+  ],
+  "verification_rate": 1,
+  "generated_at": "2025-12-15T21:59:39.835Z",
+  "warnings": []
+}

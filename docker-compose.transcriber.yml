@@ -1,0 +1,81 @@
+# =============================================================================
+# Docker Compose for WhisperX Transcription
+# 
+# Provides a containerized WhisperX environment for local/production use.
+# =============================================================================
+
+version: "3.9"
+
+services:
+  # ===========================================================================
+  # WhisperX Transcription Container
+  # ===========================================================================
+  whisperx:
+    image: ghcr.io/m-bain/whisperx:latest
+    container_name: flashcard-whisperx
+    
+    # GPU support (requires nvidia-docker)
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    
+    # Mount points
+    volumes:
+      # Input audio/video files
+      - ./server/tmp/media:/input:ro
+      # Output transcriptions (JSON)
+      - ./server/tmp/transcripts:/output
+      # Pre-downloaded models (optional, speeds up startup)
+      - whisperx-models:/root/.cache/huggingface
+    
+    # Environment
+    environment:
+      - WHISPER_MODEL=${WHISPER_MODEL:-base}
+      - WHISPER_LANGUAGE=${WHISPER_LANGUAGE:-en}
+      - CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-0}
+    
+    # Keep container running for CLI access
+    command: tail -f /dev/null
+    
+    # Restart policy
+    restart: unless-stopped
+
+  # ===========================================================================
+  # WhisperX CPU-only (for systems without GPU)
+  # ===========================================================================
+  whisperx-cpu:
+    image: python:3.10-slim
+    container_name: flashcard-whisperx-cpu
+    
+    volumes:
+      - ./server/tmp/media:/input:ro
+      - ./server/tmp/transcripts:/output
+      - whisperx-models:/root/.cache/huggingface
+    
+    # Install whisperx on startup
+    command: >
+      sh -c "
+        pip install whisperx torch --quiet &&
+        echo 'WhisperX installed. Ready for transcription.' &&
+        tail -f /dev/null
+      "
+    
+    environment:
+      - WHISPER_MODEL=${WHISPER_MODEL:-base}
+      - WHISPER_LANGUAGE=${WHISPER_LANGUAGE:-en}
+    
+    profiles:
+      - cpu  # Only start with: docker compose --profile cpu up
+    
+    restart: unless-stopped
+
+# =============================================================================
+# Volumes
+# =============================================================================
+volumes:
+  whisperx-models:
+    name: flashcard-whisperx-models
