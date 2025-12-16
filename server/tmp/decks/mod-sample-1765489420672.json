@@ -1,0 +1,234 @@
+{
+  "module_id": "mod-sample",
+  "module_title": "HR Fundamentals - Module 1",
+  "generated_count": 8,
+  "cards": [
+    {
+      "card_id": "Mmod-sample_C1",
+      "q": "What is definition of organizational culture?",
+      "a": "Organizational culture is a system of shared assumptions, values, and beliefs which governs how people behave in organizations.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "c1",
+          "source_file": "hr_fundamentals_slides.pptx",
+          "loc": "slide 2",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Organizational culture is a system of shared assumptions, values, and beliefs which governs how people behave in organizations"
+        }
+      ],
+      "sources": [
+        {
+          "type": "slides",
+          "file": "hr_fundamentals_slides.pptx",
+          "loc": "slide 2"
+        }
+      ],
+      "confidence_score": 0.95,
+      "rationale": "Tests understanding of Definition of Organizational Culture from hr_fundamentals_slides.pptx.",
+      "review_required": false
+    },
+    {
+      "card_id": "Mmod-sample_C2",
+      "q": "What is types of organizational culture?",
+      "a": "There are four main types of organizational culture: Clan Culture (collaborative), Adhocracy Culture (creative), Market Culture (competitive), and Hierarchy Culture (controlled).",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "c2",
+          "source_file": "hr_fundamentals_slides.pptx",
+          "loc": "slide 5",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "There are four main types of organizational culture: Clan Culture (collaborative), Adhocracy Culture (creative), Market Culture (competitive), and Hierarchy Culture (controlled)"
+        }
+      ],
+      "sources": [
+        {
+          "type": "slides",
+          "file": "hr_fundamentals_slides.pptx",
+          "loc": "slide 5"
+        }
+      ],
+      "confidence_score": 0.95,
+      "rationale": "Tests understanding of Types of Organizational Culture from hr_fundamentals_slides.pptx.",
+      "review_required": false
+    },
+    {
+      "card_id": "Mmod-sample_C3",
+      "q": "What is recruitment process overview?",
+      "a": "Recruitment refers to the overall process of attracting, shortlisting, selecting and appointing suitable candidates for jobs within an organization.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "c3",
+          "source_file": "recruitment_reading.pdf",
+          "loc": "p.12",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Recruitment refers to the overall process of attracting, shortlisting, selecting and appointing suitable candidates for jobs within an organization"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "recruitment_reading.pdf",
+          "loc": "p.12"
+        }
+      ],
+      "confidence_score": 0.95,
+      "rationale": "Tests understanding of Recruitment Process Overview from recruitment_reading.pdf.",
+      "review_required": false
+    },
+    {
+      "card_id": "Mmod-sample_C4",
+      "q": "Explain the key aspects of internal vs external recruitment.",
+      "a": "Internal recruitment involves filling vacancies with existing employees through promotions or transfers.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "c4",
+          "source_file": "recruitment_reading.pdf",
+          "loc": "p.15",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Internal recruitment involves filling vacancies with existing employees through promotions or transfers"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "recruitment_reading.pdf",
+          "loc": "p.15"
+        }
+      ],
+      "confidence_score": 0.95,
+      "rationale": "Tests understanding of Internal vs External Recruitment from recruitment_reading.pdf.",
+      "review_required": false
+    },
+    {
+      "card_id": "Mmod-sample_C5",
+      "q": "Explain the key aspects of employee training and development.",
+      "a": "Employee training is essential for developing skills and improving performance in the workplace.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "c5",
+          "source_file": "hr_lecture_recording.mp4",
+          "loc": "05:30-06:45",
+          "start_sec": 330,
+          "end_sec": 405,
+          "excerpt": "Employee training is essential for developing skills and improving performance in the workplace"
+        }
+      ],
+      "sources": [
+        {
+          "type": "video",
+          "file": "hr_lecture_recording.mp4",
+          "loc": "05:30-06:45"
+        }
+      ],
+      "confidence_score": 0.95,
+      "rationale": "Tests understanding of Employee Training and Development from hr_lecture_recording.mp4.",
+      "review_required": false
+    },
+    {
+      "card_id": "Mmod-sample_C6",
+      "q": "Explain the key aspects of performance management.",
+      "a": "Performance management is a continuous process of identifying, measuring, and developing the performance of individuals and teams.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "c6",
+          "source_file": "hr_lecture_recording.mp4",
+          "loc": "12:15-13:30",
+          "start_sec": 735,
+          "end_sec": 810,
+          "excerpt": "Performance management is a continuous process of identifying, measuring, and developing the performance of individuals and teams"
+        }
+      ],
+      "sources": [
+        {
+          "type": "video",
+          "file": "hr_lecture_recording.mp4",
+          "loc": "12:15-13:30"
+        }
+      ],
+      "confidence_score": 0.95,
+      "rationale": "Tests understanding of Performance Management from hr_lecture_recording.mp4.",
+      "review_required": false
+    },
+    {
+      "card_id": "Mmod-sample_C7",
+      "q": "Explain the key aspects of compensation and benefits.",
+      "a": "Compensation includes all forms of pay and rewards received by employees for their work.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "c7",
+          "source_file": "compensation_slides.pptx",
+          "loc": "slide 8",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Compensation includes all forms of pay and rewards received by employees for their work"
+        }
+      ],
+      "sources": [
+        {
+          "type": "slides",
+          "file": "compensation_slides.pptx",
+          "loc": "slide 8"
+        }
+      ],
+      "confidence_score": 0.95,
+      "rationale": "Tests understanding of Compensation and Benefits from compensation_slides.pptx.",
+      "review_required": false
+    },
+    {
+      "card_id": "Mmod-sample_C8",
+      "q": "How does employee relations and engagement impact organizational effectiveness?",
+      "a": "Employee relations focuses on maintaining positive relationships between employers and employees.",
+      "difficulty": "hard",
+      "bloom_level": "Analyze",
+      "evidence": [
+        {
+          "chunk_id": "c8",
+          "source_file": "employee_relations.pdf",
+          "loc": "p.23",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Employee relations focuses on maintaining positive relationships between employers and employees"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "employee_relations.pdf",
+          "loc": "p.23"
+        }
+      ],
+      "confidence_score": 0.95,
+      "rationale": "Tests understanding of Employee Relations and Engagement from employee_relations.pdf.",
+      "review_required": false
+    }
+  ],
+  "warnings": [
+    "Generated 8 cards (target: 10)"
+  ],
+  "generation_metadata": {
+    "model": "mock-model",
+    "temperature": 0.1,
+    "timestamp": "2025-12-11T21:43:40.669Z"
+  },
+  "id": "deck_mod-sample_1765489420672",
+  "saved_at": "2025-12-11T21:43:40.672Z",
+  "file_path": "C:\\codes\\AGI\\server\\tmp\\decks\\mod-sample-1765489420672.json"
+}

@@ -1,0 +1,481 @@
+{
+  "course_id": "Certified-Logistics-Manager",
+  "module_id": "Certified-Logistics-Manager::modules::7",
+  "module_title": "Senior Strategic Quality Management (CLM-108)",
+  "cards": [
+    {
+      "card_id": "card_1",
+      "q": "What is a Quality Management System (QMS) in logistics?",
+      "a": "A formal system to capture, control, and report process performance to meet management objectives and customer requirements. It aligns policies, procedures, objectives, and data across inbound, warehousing, outbound, and returns to ensure consistent, compliant, and efficient delivery.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src_1",
+          "source_file": "Senior Strategic Quality Management (CLM-108)",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Objectives ... Terminology ... Organizing for Quality ... Quality management : theory and application"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Senior Strategic Quality Management (CLM-108)",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.78,
+      "rationale": "Interviewers probe QMS understanding to assess if you can structure logistics processes and data to meet customer and management objectives.",
+      "review_required": true
+    },
+    {
+      "card_id": "card_2",
+      "q": "What is Authority–Responsibility–Accountability (ARA) and why does it matter for quality?",
+      "a": "Authority is the right to allocate resources; responsibility is the assigned duty; accountability is answerability for outcomes. Use a responsibility matrix to assign one accountable owner per KPI (e.g., OTIF), define authorities, and delegate responsibilities to prevent gaps and overlap.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src_2",
+          "source_file": "Senior Strategic Quality Management (CLM-108)",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Authority, Accountability, and Responsibility ... Authority Principles"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Senior Strategic Quality Management (CLM-108)",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.86,
+      "rationale": "Hiring managers expect clear understanding of who owns quality outcomes and how to prevent blurred accountability in cross-functional logistics.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_3",
+      "q": "What is Cost of Quality (CoQ)?",
+      "a": "Total cost of conformance plus nonconformance: prevention, appraisal, internal failure, external failure. Managing CoQ exposes hidden waste and justifies shifting spend to prevention/appraisal to reduce failures and total cost.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src_3",
+          "source_file": "Senior Strategic Quality Management (CLM-108)",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Quality control ... Total quality management"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Senior Strategic Quality Management (CLM-108)",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.8,
+      "rationale": "CoQ is a staple interview topic to test whether candidates can quantify quality trade-offs and build ROI cases.",
+      "review_required": true
+    },
+    {
+      "card_id": "card_4",
+      "q": "Explain the difference between product/service realization and support functions—and the risk of mixing them.",
+      "a": "Realization (sales, engineering, operations) produce the service; support (quality, finance, HR) govern and enable. Mixing (e.g., QC reporting to operations) weakens independence and blurs accountability. Keep quality as support: set standards, audit, escalate; operations owns results.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src_4",
+          "source_file": "Senior Strategic Quality Management (CLM-108)",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Categorizing Duties ... Product or Service Producing ... Support ... Incongruence ... Quality Function Considerations"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Senior Strategic Quality Management (CLM-108)",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Interviewers check organizational design judgment to avoid conflicts of interest and ensure effective quality governance.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_5",
+      "q": "How would you map ISO 9001 clauses 4–10 to logistics and evidence performance?",
+      "a": "4 Context: stakeholders/processes; 5 Leadership: policy/roles; 6 Planning: risks (capacity, lead-time, routes); 7 Support: people/infrastructure; 8 Operation: SOPs for inbound/warehouse/outbound/returns; 9 Performance evaluation: audits, OTIF, damage rate, inventory accuracy; 10 Improvement: CAPA and CI.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src_5",
+          "source_file": "Senior Strategic Quality Management (CLM-108)",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Leadership ... Planning ... Support ... Operation ... Performance Evaluation ... Improvement"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Senior Strategic Quality Management (CLM-108)",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.77,
+      "rationale": "Shows you can operationalize ISO 9001 in logistics and select meaningful KPIs to demonstrate conformity and effectiveness.",
+      "review_required": true
+    },
+    {
+      "card_id": "card_6",
+      "q": "What are the key components of a logistics quality audit and effective follow-up?",
+      "a": "Plan scope/criteria/sampling; collect objective evidence (records, observation, interviews); document nonconformities; report with risk and facts; require CAPA with root cause, owners, deadlines; verify effectiveness via re-audit and sustained KPI improvement.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src_6",
+          "source_file": "Senior Strategic Quality Management (CLM-108)",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Basic Functional Structure ... Quality Function Considerations ... Revise and Adjust"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Senior Strategic Quality Management (CLM-108)",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.76,
+      "rationale": "Audit design and CAPA rigor are core competencies for senior quality roles in logistics.",
+      "review_required": true
+    },
+    {
+      "card_id": "card_7",
+      "q": "Explain the difference between PDCA and DMAIC and when to use each in logistics.",
+      "a": "PDCA stabilizes and standardizes daily work; use for recurring, local problems (e.g., labeling, picking). DMAIC is data-intensive variation reduction; use for chronic gaps (e.g., late deliveries). Both finish with control/standardization and visual management.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src_7",
+          "source_file": "Senior Strategic Quality Management (CLM-108)",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Leadership ... Authority Principles ... Management by exception (span, delegation) concepts implied by control cycles"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Senior Strategic Quality Management (CLM-108)",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.74,
+      "rationale": "Employers expect you to appropriately select improvement methods to balance speed and rigor.",
+      "review_required": true
+    },
+    {
+      "card_id": "card_8",
+      "q": "How would you lead a Six Sigma DMAIC project to reduce late deliveries?",
+      "a": "Define: VOC/CTQ, baseline OTIF. Measure: map process, MSA on timestamps, collect cycle-time/queue data. Analyze: Pareto, fishbone, 5 Whys, regression. Improve: wave picking, slotting, route optimization, buffers, barcode scans. Control: SPC charts, layered audits, dashboards, owners, SOP updates.",
+      "difficulty": "hard",
+      "bloom_level": "Apply",
+      "evidence": [
+        {
+          "chunk_id": "src_8",
+          "source_file": "Senior Strategic Quality Management (CLM-108)",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Quality control tools ... Organizing for Quality ... Authority, Accountability, and Responsibility"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Senior Strategic Quality Management (CLM-108)",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.82,
+      "rationale": "Scenario tests end-to-end mastery of DMAIC, data integrity, root-cause analysis, and sustainable control.",
+      "review_required": true
+    },
+    {
+      "card_id": "card_9",
+      "q": "How would you implement SPC in logistics and act on special causes?",
+      "a": "Use X-bar/R for pick/pack cycle time; p-chart for shipment defect proportion; u-chart for damages per 1,000 units. Form rational subgroups, set control limits, investigate special causes, remove assignable variation, and lock controls via SOPs, training, and visual boards.",
+      "difficulty": "hard",
+      "bloom_level": "Apply",
+      "evidence": [
+        {
+          "chunk_id": "src_9",
+          "source_file": "Senior Strategic Quality Management (CLM-108)",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Quality control ... Quality control tools (SPC concepts referenced)"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Senior Strategic Quality Management (CLM-108)",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.79,
+      "rationale": "SPC application to service/logistics processes is a common advanced interview probe.",
+      "review_required": true
+    },
+    {
+      "card_id": "card_10",
+      "q": "How would you build a CoQ/ROI case for barcode automation in a warehouse?",
+      "a": "Quantify internal/external failure costs from mis-picks, rework, returns, claims. Estimate automation cost and expected defect reduction. ROI = (annual savings − cost)/cost; target payback <12–18 months. Track CoQ and KPIs (OTIF, accuracy) pre/post to verify benefits.",
+      "difficulty": "hard",
+      "bloom_level": "Analyze",
+      "evidence": [
+        {
+          "chunk_id": "src_10",
+          "source_file": "Senior Strategic Quality Management (CLM-108)",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Total quality management ... Quality control ... Objectives (management objectives linkage)"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Senior Strategic Quality Management (CLM-108)",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.81,
+      "rationale": "Demonstrates financial acumen and ability to justify quality investments with measurable outcomes.",
+      "review_required": true
+    }
+  ],
+  "stage_a_output": {
+    "module_summary": [
+      {
+        "point": "QMS purpose and definition: a formal system to accumulate and report performance data to achieve management objectives; quality = meeting customer needs",
+        "supports": [
+          "QM Preface",
+          "QM Ch.1 Terminology",
+          "CLM: ISO 9001 Overview"
+        ]
+      },
+      {
+        "point": "Authority–Responsibility–Accountability: use a responsibility matrix to assign who has the right to command resources and who is accountable for outcomes",
+        "supports": [
+          "QM Ch.1: Authority, Accountability, Responsibility; Table 1.1"
+        ]
+      },
+      {
+        "point": "Organizational design for quality: distinguish product/service realization (sales, engineering, operations) from support (quality, finance, HR) and avoid mixing to prevent dysfunction",
+        "supports": [
+          "QM Ch.1: Product- or Service-Producing vs Support; Incongruence; Fig. 1.1, 1.2, 1.3"
+        ]
+      },
+      {
+        "point": "Leadership and control principles: span of control (≈1:5–1:7), unity of command, delegation, scalar chain, and management by exception",
+        "supports": [
+          "QM Ch.1: Leadership Classifications; Authority Principles"
+        ]
+      },
+      {
+        "point": "Formal planning vs informal: cascade objectives and create Business, Process, and Product Quality Plans tied to policies and procedures",
+        "supports": [
+          "QM Ch.2: Formal vs Informal Planning (Table 2.1); Business/Process/Product Quality Plans (Tables 2.3, 2.4, 2.9); Fig. 2.1–2.2"
+        ]
+      },
+      {
+        "point": "Policies, procedures, and objectives: policies guide action, procedures define steps, objectives set direction—ensure alignment and document control",
+        "supports": [
+          "QM Ch.2: Policies, Procedures, Objectives; Fig. 2.1"
+        ]
+      },
+      {
+        "point": "Process flowcharting and standard symbols to visualize and optimize quality-critical logistics processes",
+        "supports": [
+          "QM Ch.2: Process Flowcharting; Tables 2.10–2.11"
+        ]
+      },
+      {
+        "point": "ISO 9001 in logistics: apply clauses 4–10 (context, leadership, planning, support, operation, performance evaluation, improvement) with risk-based thinking",
+        "supports": [
+          "CLM: Key ISO 9001 Clauses in a Logistics Context; DB Schenker example"
+        ]
+      },
+      {
+        "point": "PDCA and Six Sigma DMAIC as core improvement cycles for stability (PDCA) and variation reduction (DMAIC)",
+        "supports": [
+          "CLM: PDCA in Logistics",
+          "CLM: Six Sigma in Logistics"
+        ]
+      },
+      {
+        "point": "Quality audits: plan, scope, sample, verify, report, and follow up to ensure compliance to SOPs, SLAs, and standards",
+        "supports": [
+          "CLM: Quality Audits in Logistics; Audit Template",
+          "QM Ch.6: Auditing (planning, working papers, reporting)"
+        ]
+      },
+      {
+        "point": "Quality control tools: check sheets, Pareto, fishbone/5 Whys, SPC (X-bar/R, histograms, scatter) with UCL/LCL to monitor process stability",
+        "supports": [
+          "CLM: Quality Control Tools",
+          "QM Ch.6: Overview of SPC; SPC constants"
+        ]
+      },
+      {
+        "point": "Cost of Quality (CoQ): prevention, appraisal, internal and external failure; CoQ = conformance + nonconformance; target reductions with ROI justification",
+        "supports": [
+          "CLM: CoQ and example",
+          "CLM: ROI of Quality Programs; Hidden Costs"
+        ]
+      },
+      {
+        "point": "Quality culture and change: embed CI (Kaizen, quality circles, Gemba, 5S, dashboards) and manage change via Kotter’s 8 steps",
+        "supports": [
+          "CLM: Quality Culture; Kotter’s 8 Steps; Embed CI; Tools to Support Quality Culture"
+        ]
+      },
+      {
+        "point": "EFQM excellence model for logistics benchmarking and transformation (criteria, scoring, gap analysis, internal/external benchmarking)",
+        "supports": [
+          "CLM: EFQM; Applying EFQM; Benchmarking; Scoring Snapshot"
+        ]
+      }
+    ],
+    "key_topics": [
+      {
+        "topic": "Map ISO 9001 clauses to logistics processes (clauses 4–10) and cite KPIs (e.g., OTIF, damage rate, inventory accuracy) to evidence performance",
+        "supports": [
+          "CLM: ISO 9001 Clauses in a Logistics Context; Key KPIs"
+        ]
+      },
+      {
+        "topic": "Lead a Six Sigma DMAIC project to reduce late deliveries (problem definition, MSA/data collection, root-cause analysis, improvements, control dashboards)",
+        "supports": [
+          "CLM: Six Sigma in Logistics (late deliveries case)"
+        ]
+      },
+      {
+        "topic": "Run PDCA for recurring warehouse errors (e.g., labeling/picking): plan countermeasures, pilot, audit results, standardize",
+        "supports": [
+          "CLM: PDCA in Logistics"
+        ]
+      },
+      {
+        "topic": "Design and execute a logistics quality audit (inbound, warehouse, outbound, returns), including sampling, evidence collection, reporting, and follow-up CAPA",
+        "supports": [
+          "CLM: Quality Audits in Logistics; Audit Steps/Template",
+          "QM Ch.6: Auditing"
+        ]
+      },
+      {
+        "topic": "Apply QC tools end-to-end: build a check sheet, convert to Pareto, conduct 5 Whys/fishbone, and set SPC control limits for key metrics",
+        "supports": [
+          "CLM: QC Tools (Check Sheets, Pareto, SPC, Ishikawa, 5 Whys)",
+          "QM Ch.6: SPC Overview"
+        ]
+      },
+      {
+        "topic": "Calculate and interpret Cost of Quality and ROI for quality investments (e.g., barcode automation), including hidden cost identification",
+        "supports": [
+          "CLM: CoQ Example; ROI Formula; Hidden Costs"
+        ]
+      },
+      {
+        "topic": "Build a responsibility matrix and explain authority-responsibility-accountability for quality outcomes across sales, engineering, operations, and support",
+        "supports": [
+          "QM Ch.1: Responsibility Matrix (Table 1.1); Line and Staff Org"
+        ]
+      },
+      {
+        "topic": "Develop Business, Process, and Product Quality Plans with a cascade of objectives, policies, procedures, and controls",
+        "supports": [
+          "QM Ch.2: Planning; Tables 2.3–2.7, 2.9; Fig. 2.1–2.2"
+        ]
+      },
+      {
+        "topic": "Risk-based planning for logistics (capacity shortfalls, lead-time accuracy, route reliability) aligned to ISO 9001 clause 6",
+        "supports": [
+          "CLM: ISO 9001 Clause 6 (Planning) example"
+        ]
+      },
+      {
+        "topic": "Implement SPC in logistics: choose appropriate charts (X-bar/R for cycle time, p/u-charts for defects), diagnose special causes, and institutionalize controls",
+        "supports": [
+          "CLM: SPC Tools",
+          "QM Ch.6: SPC Methods and Constants"
+        ]
+      },
+      {
+        "topic": "Drive quality culture: deploy CI systems (daily Kaizen, quality circles), use visual management, and align incentives to quality KPIs",
+        "supports": [
+          "CLM: Embed CI; Tools to Support Quality Culture; Quality Circles"
+        ]
+      },
+      {
+        "topic": "Manage change with Kotter’s 8 steps to achieve ‘zero-defect delivery’ and scale wins across sites",
+        "supports": [
+          "CLM: Kotter’s 8 Steps (logistics examples)"
+        ]
+      },
+      {
+        "topic": "Use EFQM to benchmark logistics operations, score maturity, identify gaps (e.g., sustainable value creation), and prioritize improvements",
+        "supports": [
+          "CLM: EFQM Criteria; Benchmarking; Scoring Snapshot"
+        ]
+      },
+      {
+        "topic": "Explain and apply CAPA in logistics: immediate containment, root-cause analysis, corrective actions, and verification of effectiveness",
+        "supports": [
+          "CLM: ISO 9001 Clause 10 (Improvement)",
+          "QM Ch.3: CAPA Methodology"
+        ]
+      },
+      {
+        "topic": "Structure the quality function properly (support vs product realization) to avoid organizational incongruence and ensure effective reporting",
+        "supports": [
+          "QM Ch.1: Support vs Product Realization; Incongruence; Quality Function Considerations"
+        ]
+      }
+    ],
+    "coverage_map": []
+  },
+  "warnings": [],
+  "generation_metadata": {
+    "model": "gpt-5",
+    "temperature": 0.1,
+    "timestamp": "2025-12-16T16:38:02.747Z"
+  },
+  "created_at": "2025-12-16T16:39:48.650Z",
+  "updated_at": "2025-12-16T16:39:48.650Z",
+  "reviewed_by": null,
+  "review_status": "pending",
+  "id": "deck_Certified-Logistics-Manager::modules::7_1765903188654",
+  "saved_at": "2025-12-16T16:39:48.654Z",
+  "file_path": "C:\\codes\\AGI\\server\\tmp\\decks\\Certified-Logistics-Manager__modules__7-1765903188654.json"
+}

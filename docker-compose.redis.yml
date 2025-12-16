@@ -1,0 +1,29 @@
+# Docker Compose for Redis (BullMQ local development)
+# 
+# Usage:
+#   Start:  docker compose -f docker-compose.redis.yml up -d
+#   Stop:   docker compose -f docker-compose.redis.yml down
+#   Logs:   docker compose -f docker-compose.redis.yml logs -f
+#   Reset:  docker compose -f docker-compose.redis.yml down -v
+
+version: "3.8"
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: flashcard-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+    name: flashcard-redis-data

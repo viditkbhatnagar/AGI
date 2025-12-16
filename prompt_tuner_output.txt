@@ -1,0 +1,33 @@
+============================================================
+Few-Shot Prompt Tuner
+============================================================
+
+Loading examples from: C:\codes\AGI\server\services\flashcard\orchestrator\few_shot_library\hr_fewshots.json
+Mode: mock
+Loaded 11 examples from domain: hr
+
+Testing 1 example(s)...
+
+============================================================
+Testing: hr-stageB-001
+Stage: stageB
+Description: Definition-style flashcard (Bloom: Remember)
+============================================================
+
+Input chunk (230 chars):
+Talent acquisition is a strategic approach to identifying, attracting, and hiring qualified candidates. Unlike traditional recruitment, talent acquisition takes a long-term view and focuses on buildin...
+
+Learning objective: Define talent acquisition and differentiate it from recruitment
+
+--- Output ---
+{
+  "question": "What does the content say about talent acquisition is a strategic approach to iden?",
+  "answer": "Talent acquisition is a strategic approach to identifying, attracting, and hiring qualified candidates.",
+  "evidence_quote": "Talent acquisition is a strategic approach to iden",
+  "bloom_level": "understand",
+  "difficulty": "medium"
+}
+
+============================================================
+Done!
+============================================================

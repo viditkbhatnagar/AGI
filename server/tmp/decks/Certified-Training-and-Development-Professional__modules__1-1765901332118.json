@@ -1,0 +1,367 @@
+{
+  "course_id": "Certified-Training-and-Development-Professional",
+  "module_id": "Certified-Training-and-Development-Professional::modules::1",
+  "module_title": "Unit 2",
+  "cards": [
+    {
+      "card_id": "card_1",
+      "q": "What is the strategic role of training and development in organizations?",
+      "a": "Training and development enhance employee skills, improve performance, and align workforce capabilities with organizational goals, driving competitive advantage.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src1",
+          "source_file": "Unit 2",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "The Impact of Implementing Learning & Development"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 2",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Understanding the strategic role is fundamental for aligning training initiatives with business objectives.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_2",
+      "q": "Explain the difference between employee engagement and motivation.",
+      "a": "Engagement refers to an employee's emotional commitment to the organization, while motivation is the drive to achieve work-related goals.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src2",
+          "source_file": "Unit 2",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "The Difference Between Employee Engagement & Motivation"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 2",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.85,
+      "rationale": "Differentiating these concepts helps in designing effective employee development programs.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_3",
+      "q": "How would you conduct a training needs analysis?",
+      "a": "Identify organizational goals, assess current skills, determine gaps, and prioritize training needs based on impact and feasibility.",
+      "difficulty": "hard",
+      "bloom_level": "Apply",
+      "evidence": [
+        {
+          "chunk_id": "src3",
+          "source_file": "Unit 2",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Needs Analysis Process"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 2",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.88,
+      "rationale": "Employers seek candidates who can effectively identify and address skill gaps.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_4",
+      "q": "What are the key components of adult learning theory?",
+      "a": "Key components include self-direction, life experiences, readiness to learn, and problem-centered learning.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src4",
+          "source_file": "Unit 2",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "What is Adult Learning Theory?"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 2",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Understanding adult learning principles is crucial for designing effective training programs.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_5",
+      "q": "Why is employee motivation important in performance management?",
+      "a": "Motivation drives productivity, enhances job satisfaction, and reduces turnover, directly impacting organizational performance.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src5",
+          "source_file": "Unit 2",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "The Importance of Employee Motivation & Engagement"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 2",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.87,
+      "rationale": "Motivation is a key driver of employee performance and organizational success.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_6",
+      "q": "What is the transfer of learning, and why is it important?",
+      "a": "Transfer of learning is applying skills learned in training to the job. It's crucial for ensuring training effectiveness and ROI.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src6",
+          "source_file": "Unit 2",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "What is the Transfer of Learning?"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 2",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Employers value candidates who can ensure training translates into workplace performance.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_7",
+      "q": "How would you integrate digital learning tools into a training program?",
+      "a": "Assess learner needs, select appropriate tools, ensure accessibility, and provide support for effective integration.",
+      "difficulty": "hard",
+      "bloom_level": "Apply",
+      "evidence": [
+        {
+          "chunk_id": "src7",
+          "source_file": "Unit 2",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Digital Learning Tools & Platforms"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 2",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.86,
+      "rationale": "Digital proficiency is essential for modern training environments.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_8",
+      "q": "Explain the importance of evaluating training programs.",
+      "a": "Evaluation ensures training effectiveness, identifies improvement areas, and justifies training investments.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src8",
+          "source_file": "Unit 2",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Purpose of Training Program Evaluation"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 2",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.89,
+      "rationale": "Evaluation is critical for continuous improvement and accountability in training programs.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_9",
+      "q": "What are some strategies to enhance the transfer of learning?",
+      "a": "Use real-world scenarios, provide feedback, and encourage reflection to reinforce learning application.",
+      "difficulty": "medium",
+      "bloom_level": "Apply",
+      "evidence": [
+        {
+          "chunk_id": "src9",
+          "source_file": "Unit 2",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Facilitation & Strategies to Enhance the Transfer of Learning"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 2",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.88,
+      "rationale": "Effective transfer strategies maximize training impact and performance improvement.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_10",
+      "q": "How can coaching improve employee performance?",
+      "a": "Coaching provides personalized feedback, develops skills, and fosters a growth mindset, leading to enhanced performance.",
+      "difficulty": "hard",
+      "bloom_level": "Apply",
+      "evidence": [
+        {
+          "chunk_id": "src10",
+          "source_file": "Unit 2",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Coaching for Performance"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 2",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.87,
+      "rationale": "Coaching is a key tool for developing talent and improving organizational outcomes.",
+      "review_required": false
+    }
+  ],
+  "stage_a_output": {
+    "module_summary": [
+      {
+        "point": "Strategic Role of Training and Development",
+        "supports": [
+          "Training and development initiatives can significantly impact organizational success.",
+          "Investing in workforce development creates a competitive advantage."
+        ]
+      },
+      {
+        "point": "Adult Learning Theory",
+        "supports": [
+          "Understanding adult learning principles is crucial for designing effective training programs.",
+          "Adult learners are self-directed and benefit from experiential learning."
+        ]
+      },
+      {
+        "point": "Employee Motivation and Engagement",
+        "supports": [
+          "Motivated employees are more productive and engaged.",
+          "Understanding what drives motivation can help in designing better engagement strategies."
+        ]
+      },
+      {
+        "point": "Training Needs Analysis",
+        "supports": [
+          "Identifying training needs is essential for effective workforce development.",
+          "Different types of analysis help tailor training programs to organizational goals."
+        ]
+      },
+      {
+        "point": "Digital Learning",
+        "supports": [
+          "Digital learning solutions offer flexibility and scalability.",
+          "E-learning, microlearning, and mobile learning are key components."
+        ]
+      }
+    ],
+    "key_topics": [
+      {
+        "topic": "Learning & Development Metrics",
+        "supports": [
+          "Metrics help evaluate the effectiveness of training programs.",
+          "Key metrics include training costs, operational efficiency, and employee feedback."
+        ]
+      },
+      {
+        "topic": "Transfer of Learning",
+        "supports": [
+          "Ensuring skills learned are applied in the workplace is critical.",
+          "Strategies to enhance learning transfer include facilitation and program planning."
+        ]
+      },
+      {
+        "topic": "Performance Management",
+        "supports": [
+          "Regular performance reviews and feedback are essential for employee development.",
+          "Performance management aligns employee goals with organizational objectives."
+        ]
+      },
+      {
+        "topic": "Coaching for Performance",
+        "supports": [
+          "Coaching methods like the GROW model help improve employee performance.",
+          "Open-ended questions facilitate deeper understanding and problem-solving."
+        ]
+      },
+      {
+        "topic": "Digital Learning Tools & Platforms",
+        "supports": [
+          "LMS, virtual classrooms, and social learning platforms are essential tools.",
+          "Choosing the right platform depends on organizational needs and learner preferences."
+        ]
+      }
+    ],
+    "coverage_map": []
+  },
+  "warnings": [],
+  "generation_metadata": {
+    "model": "gpt-4o",
+    "temperature": 0.1,
+    "timestamp": "2025-12-16T16:08:26.201Z"
+  },
+  "created_at": "2025-12-16T16:08:52.114Z",
+  "updated_at": "2025-12-16T16:08:52.114Z",
+  "reviewed_by": null,
+  "review_status": "pending",
+  "id": "deck_Certified-Training-and-Development-Professional::modules::1_1765901332118",
+  "saved_at": "2025-12-16T16:08:52.118Z",
+  "file_path": "C:\\codes\\AGI\\server\\tmp\\decks\\Certified-Training-and-Development-Professional__modules__1-1765901332118.json"
+}

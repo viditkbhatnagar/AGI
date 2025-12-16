@@ -14,15 +14,15 @@ function toGooglePreviewUrl(url: string, page: number = 1) {
     }
     // Spreadsheet (Sheets) - support sheet navigation
     if (url.includes('/spreadsheets/')) {
-      return `https://docs.google.com/spreadsheets/d/${id}/preview?rm=minimal&gid=${page-1}`;
+      return `https://docs.google.com/spreadsheets/d/${id}/preview?rm=minimal&gid=${page - 1}`;
     }
   }
-  
+
   // For PDFs and other document types, try to add page parameter
   if (url.toLowerCase().includes('.pdf')) {
     return url + (url.includes('?') ? '&' : '?') + `page=${page}`;
   }
-  
+
   return url;
 }
 
@@ -34,7 +34,7 @@ function toGoogleVideoEmbedUrl(url: string) {
     /\/d\/([a-zA-Z0-9-_]+)/,           // /d/ID  
     /id=([a-zA-Z0-9-_]+)/              // ?id=ID
   ];
-  
+
   for (const pattern of patterns) {
     const match = url.match(pattern);
     if (match) {
@@ -43,7 +43,7 @@ function toGoogleVideoEmbedUrl(url: string) {
       return `https://drive.google.com/file/d/${fileId}/preview`;
     }
   }
-  
+
   return url; // Return original if no match
 }
 
@@ -52,43 +52,43 @@ function getDocumentTypeAndPages(url: string | undefined): { type: 'slides' | 'd
   if (!url) {
     return { type: 'pdf', estimatedPages: 5 }; // Default for undefined URLs
   }
-  
+
   console.log('🔍 Detecting document type for URL:', url);
-  
+
   // Check file extension first
   const extension = url.toLowerCase().split('.').pop() || '';
-  
+
   // PDF files
   if (extension === 'pdf' || url.toLowerCase().includes('.pdf')) {
     console.log('📄 Detected: PDF document');
     return { type: 'pdf', estimatedPages: 10 };
   }
-  
+
   // PowerPoint files
   if (['ppt', 'pptx'].includes(extension) || url.includes('/presentation/')) {
     console.log('📊 Detected: PowerPoint presentation');
     return { type: 'slides', estimatedPages: 20 };
   }
-  
+
   // Excel files
   if (['xls', 'xlsx', 'csv'].includes(extension) || url.includes('/spreadsheets/')) {
     console.log('📉 Detected: Excel spreadsheet');
     return { type: 'spreadsheet', estimatedPages: 5 };
   }
-  
+
   // Word files
   if (['doc', 'docx'].includes(extension) || url.includes('/document/')) {
     console.log('📄 Detected: Word document');
     return { type: 'document', estimatedPages: 10 };
   }
-  
+
   // Handle Cloudinary documents - limit page navigation since Office Online doesn't support it well
   if (url.includes('res.cloudinary.com')) {
     console.log('🌤️ Detected: Cloudinary document (generic)');
     // For Office documents on Cloudinary, disable page navigation
     return { type: 'document', estimatedPages: 1 };
   }
-  
+
   // Default fallback
   console.log('📁 Detected: Generic document');
   return { type: 'document', estimatedPages: 5 };
@@ -142,53 +142,54 @@ import QuizForm from "@/components/student/QuizForm";
 import FinalExamForm from "@/components/student/FinalExamForm";
 import FinalExamResults from "@/components/student/FinalExamResults";
 import { DocumentViewer } from "@/components/student/DocumentViewers";
+import { FlashcardViewer } from "@/components/student/FlashcardViewer";
 
 // Function to get appropriate icon based on file type
 function getDocumentIcon(document: any): React.ComponentType<any> {
   const fileName = document.fileName || document.title || '';
   const fileType = document.fileType || '';
   const url = document.fileUrl || document.url || '';
-  
+
   // Check file extension from fileName or URL
-  const extension = fileName.toLowerCase().split('.').pop() || 
-                   url.toLowerCase().split('.').pop() || '';
-  
+  const extension = fileName.toLowerCase().split('.').pop() ||
+    url.toLowerCase().split('.').pop() || '';
+
   // Check MIME type if available
   const mimeType = fileType.toLowerCase();
-  
+
   // PDF files
   if (extension === 'pdf' || mimeType.includes('pdf')) {
     return File; // PDF icon
   }
-  
+
   // PowerPoint files
-  if (['ppt', 'pptx'].includes(extension) || 
-      mimeType.includes('presentation') || 
-      mimeType.includes('powerpoint')) {
+  if (['ppt', 'pptx'].includes(extension) ||
+    mimeType.includes('presentation') ||
+    mimeType.includes('powerpoint')) {
     return Presentation; // PowerPoint icon
   }
-  
+
   // Excel files  
-  if (['xls', 'xlsx', 'csv'].includes(extension) || 
-      mimeType.includes('spreadsheet') || 
-      mimeType.includes('excel') ||
-      mimeType.includes('csv')) {
+  if (['xls', 'xlsx', 'csv'].includes(extension) ||
+    mimeType.includes('spreadsheet') ||
+    mimeType.includes('excel') ||
+    mimeType.includes('csv')) {
     return FileSpreadsheet; // Excel icon
   }
-  
+
   // Word files
-  if (['doc', 'docx'].includes(extension) || 
-      mimeType.includes('document') || 
-      mimeType.includes('word')) {
+  if (['doc', 'docx'].includes(extension) ||
+    mimeType.includes('document') ||
+    mimeType.includes('word')) {
     return FileText; // Word icon
   }
-  
+
   // Image files
-  if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(extension) || 
-      mimeType.includes('image')) {
+  if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(extension) ||
+    mimeType.includes('image')) {
     return FileImage; // Image icon
   }
-  
+
   // Default to generic file icon
   return FileText;
 }
@@ -198,44 +199,44 @@ function getDocumentIconColor(document: any): string {
   const fileName = document.fileName || document.title || '';
   const fileType = document.fileType || '';
   const url = document.fileUrl || document.url || '';
-  
-  const extension = fileName.toLowerCase().split('.').pop() || 
-                   url.toLowerCase().split('.').pop() || '';
+
+  const extension = fileName.toLowerCase().split('.').pop() ||
+    url.toLowerCase().split('.').pop() || '';
   const mimeType = fileType.toLowerCase();
-  
+
   // PDF files - red
   if (extension === 'pdf' || mimeType.includes('pdf')) {
     return 'text-red-600';
   }
-  
+
   // PowerPoint files - orange
-  if (['ppt', 'pptx'].includes(extension) || 
-      mimeType.includes('presentation') || 
-      mimeType.includes('powerpoint')) {
+  if (['ppt', 'pptx'].includes(extension) ||
+    mimeType.includes('presentation') ||
+    mimeType.includes('powerpoint')) {
     return 'text-orange-600';
   }
-  
+
   // Excel files - green
-  if (['xls', 'xlsx', 'csv'].includes(extension) || 
-      mimeType.includes('spreadsheet') || 
-      mimeType.includes('excel') ||
-      mimeType.includes('csv')) {
+  if (['xls', 'xlsx', 'csv'].includes(extension) ||
+    mimeType.includes('spreadsheet') ||
+    mimeType.includes('excel') ||
+    mimeType.includes('csv')) {
     return 'text-green-600';
   }
-  
+
   // Word files - blue
-  if (['doc', 'docx'].includes(extension) || 
-      mimeType.includes('document') || 
-      mimeType.includes('word')) {
+  if (['doc', 'docx'].includes(extension) ||
+    mimeType.includes('document') ||
+    mimeType.includes('word')) {
     return 'text-blue-600';
   }
-  
+
   // Image files - purple
-  if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(extension) || 
-      mimeType.includes('image')) {
+  if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(extension) ||
+    mimeType.includes('image')) {
     return 'text-purple-600';
   }
-  
+
   // Default - gray
   return 'text-gray-600';
 }
@@ -309,7 +310,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
   const [selectedDocUrl, setSelectedDocUrl] = useState<string | null>(null);
   const [selectedVideoIndex, setSelectedVideoIndex] = useState<number>(0);
   const lastSentRef = useRef<number>(0);
-  
+
   // Document navigation state
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
@@ -325,6 +326,9 @@ export function CourseDetail({ slug }: CourseDetailProps) {
   // Quiz state and handlers
   const [quizModuleIndex, setQuizModuleIndex] = useState<number | null>(null);
   const [quizQuestions, setQuizQuestions] = useState<any[]>([]);
+
+  // Flashcard state
+  const [selectedFlashcardModule, setSelectedFlashcardModule] = useState<{ index: number, title: string } | null>(null);
 
   // Final Exam state and handlers
   const [showFinalExam, setShowFinalExam] = useState(false);
@@ -368,7 +372,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
     // Clear video and document content when opening quiz modal
     clearVideoContent();
     clearDocumentContent();
-    
+
     const token = localStorage.getItem("token");
     if (!token) return;
     const res = await fetch(`/api/student/quiz/${courseSlug}/${moduleIndex}`, {
@@ -424,21 +428,21 @@ export function CourseDetail({ slug }: CourseDetailProps) {
     clearDocumentContent();
     setQuizModuleIndex(null);
     setQuizQuestions([]);
-    
+
     const token = localStorage.getItem("token");
     if (!token) return;
-    
+
     try {
       const res = await fetch(`/api/student/final-exam/${courseSlug}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
+
       if (!res.ok) {
         const errorData = await res.json();
         alert(errorData.message || "Failed to load final examination");
         return;
       }
-      
+
       const examData = await res.json();
       setFinalExamData(examData);
       setShowFinalExam(true);
@@ -451,7 +455,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
   const handleFinalExamSubmit = async (answers: (number | { type: 'file' | 'text'; content: string; fileName?: string })[]) => {
     const token = localStorage.getItem("token");
     if (!token) return;
-    
+
     try {
       const res = await fetch("/api/student/final-exam/submit", {
         method: "POST",
@@ -464,13 +468,13 @@ export function CourseDetail({ slug }: CourseDetailProps) {
           answers,
         }),
       });
-      
+
       if (!res.ok) {
         const errorData = await res.json();
         alert(errorData.message || "Failed to submit final examination");
         return;
       }
-      
+
       const results = await res.json();
       setFinalExamResults(results);
       setShowFinalExam(false);
@@ -559,11 +563,11 @@ export function CourseDetail({ slug }: CourseDetailProps) {
     };
   }, [selectedDocUrl, currentPage, totalPages]);
 
-  
+
   if (isLoading) {
     return <CourseDetailSkeleton />;
   }
-  
+
   if (error || !data) {
     return (
       <div className="p-6">
@@ -583,7 +587,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
       </div>
     );
   }
-  
+
   // Helper to open the next unwatched video (or first video) in a new tab
   const openNextVideo = (videos: Array<{ url: string; watched?: boolean }>) => {
     if (!videos || !videos.length) return;
@@ -591,7 +595,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
     const nextVideo = videos.find(v => !v.watched) ?? videos[0];
     setSelectedVideoUrl(nextVideo.url);
   };
-  
+
   // Record watch time to backend (throttled)
   const recordWatchTime = async (secondsDelta: number) => {
     const token = localStorage.getItem("token");
@@ -624,12 +628,12 @@ export function CourseDetail({ slug }: CourseDetailProps) {
   const handleDocPreview = async (docUrl: string | undefined, document?: any) => {
     const token = localStorage.getItem("token");
     if (!token || !docUrl) return;
-    
+
     console.log('📄 Document preview requested:', { docUrl, document, timestamp: new Date().toISOString() });
-    
+
     // Store document metadata for the viewer
     setSelectedDocument(document);
-    
+
     // Detect document type and set up navigation
     const { type, estimatedPages } = getDocumentTypeAndPages(docUrl);
     setCurrentDocType(type);
@@ -638,10 +642,10 @@ export function CourseDetail({ slug }: CourseDetailProps) {
     setBaseDocUrl(docUrl);
     setDocLoadFailed(false);
     setIsDocLoading(true);
-    
+
     // Add a small delay to ensure the component has time to initialize loading state
     await new Promise(resolve => setTimeout(resolve, 100));
-    
+
     // send original URL to backend
     await fetch("/api/student/view-document", {
       method: "POST",
@@ -657,10 +661,10 @@ export function CourseDetail({ slug }: CourseDetailProps) {
     });
     queryClient.invalidateQueries({ queryKey: ['studentDashboard'] });
     queryClient.invalidateQueries({ queryKey: ['courseDetail', slug] });
-    
+
     // Use the original URL without modifications to avoid 400 errors
     console.log('🌤️ Using original Cloudinary URL without transformations');
-    
+
     // Set document URL with a small delay to ensure loading state is visible
     setTimeout(() => {
       setSelectedDocUrl(docUrl);
@@ -669,7 +673,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
         setIsDocLoading(false);
       }, 300);
     }, 200);
-    
+
     console.log('✅ Document preview URL set:', { finalUrl: docUrl, type });
   };
 
@@ -678,22 +682,22 @@ export function CourseDetail({ slug }: CourseDetailProps) {
     if (page < 1 || page > totalPages || !baseDocUrl) return;
     setCurrentPage(page);
     setIsDocLoading(true);
-    
+
     // Clear the URL first to force iframe reload
     setSelectedDocUrl('');
-    
+
     // Use a small delay to ensure the iframe is cleared before setting new URL
     setTimeout(() => {
       let embedUrl;
-      
+
       // Check if it's a Cloudinary document
       if (baseDocUrl.includes('res.cloudinary.com')) {
         console.log('🔄 Navigating Cloudinary document to page:', page);
-        
+
         // Determine file type from URL
         const isPDF = baseDocUrl.toLowerCase().includes('.pdf');
         const isOfficeDoc = baseDocUrl.toLowerCase().match(/\.(doc|docx|xls|xlsx|ppt|pptx)$/);
-        
+
         if (isPDF) {
           // For PDFs, use direct Cloudinary URL with inline flag (page navigation may not work)
           let pdfUrl = baseDocUrl;
@@ -716,12 +720,12 @@ export function CourseDetail({ slug }: CourseDetailProps) {
         // For Google Drive documents, use the existing Google preview logic with page navigation
         embedUrl = toGooglePreviewUrl(baseDocUrl, page);
       }
-      
+
       // Force refresh the iframe by adding a timestamp parameter
       const urlWithTimestamp = embedUrl + (embedUrl.includes('?') ? '&' : '?') + `t=${Date.now()}`;
       setSelectedDocUrl(urlWithTimestamp);
       console.log('✅ Page navigation URL set:', { page, finalUrl: urlWithTimestamp });
-      
+
       // Remove loading state after a delay
       setTimeout(() => setIsDocLoading(false), 1000);
     }, 100);
@@ -756,6 +760,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
     setIsDocLoading(false);
     setQuizModuleIndex(null);
     setQuizQuestions([]);
+    setSelectedFlashcardModule(null);
   };
 
   // Helper function to clear document content only
@@ -783,7 +788,12 @@ export function CourseDetail({ slug }: CourseDetailProps) {
     setQuizModuleIndex(null);
     setQuizQuestions([]);
   };
-  
+
+  // Helper function to clear flashcard content only
+  const clearFlashcardContent = () => {
+    setSelectedFlashcardModule(null);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -811,13 +821,13 @@ export function CourseDetail({ slug }: CourseDetailProps) {
               <span className="text-sm font-semibold text-blue-600">{(course?.progress ?? 0) ? Math.round(course.progress) : 0}%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
+              <div
                 className="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-in-out"
                 style={{ width: `${course?.progress ?? 0}%` }}
               ></div>
             </div>
           </div>
-          
+
           {/* Data Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
             {/* Modules Completed */}
@@ -830,7 +840,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                 {(course?.progress ?? 0) < 100 ? "In Progress" : "Completed"}
               </p>
             </div>
-            
+
             {/* Overall Progress */}
             <div className="text-center">
               <p className="text-sm font-medium text-gray-500 mb-1">Content Watched</p>
@@ -841,7 +851,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                 Total Progress
               </p>
             </div>
-            
+
             {/* Quiz Performance */}
             <div className="text-center">
               <p className="text-sm font-medium text-gray-500 mb-1">Quiz Average</p>
@@ -865,23 +875,23 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                 </>
               )}
             </div>
-            
+
             {/* Course Valid Until */}
             <div className="text-center">
               <p className="text-sm font-medium text-gray-500 mb-1">Valid Until</p>
               <p className="text-lg font-bold text-gray-800">
-                {new Date(course?.enrollment?.validUntil || '').toLocaleDateString('en-US', { 
-                  month: 'short', 
-                  day: 'numeric', 
-                  year: 'numeric' 
+                {new Date(course?.enrollment?.validUntil || '').toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric'
                 })}
               </p>
               <p className="text-xs text-gray-600">
                 {course?.enrollment?.validUntil
                   ? `${Math.ceil(
-                      (new Date(course.enrollment.validUntil).getTime() - new Date().getTime()) /
-                      (1000 * 60 * 60 * 24 * 30)
-                    )} months left`
+                    (new Date(course.enrollment.validUntil).getTime() - new Date().getTime()) /
+                    (1000 * 60 * 60 * 24 * 30)
+                  )} months left`
                   : "No expiry"}
               </p>
             </div>
@@ -896,11 +906,11 @@ export function CourseDetail({ slug }: CourseDetailProps) {
           <div className="p-4 border-b border-gray-200 flex-shrink-0">
             <h2 className="text-lg font-semibold text-gray-800">Content Navigator</h2>
           </div>
-          
+
           <div className="flex-1 overflow-y-auto overflow-x-hidden">
             {course?.modules.map((module: any, moduleIndex: number) => {
               // Progress percentages are intentionally not shown in the navigator.
-              
+
               // DEBUG: Log module data to console
               console.log(`Module ${moduleIndex}:`, {
                 title: module.title,
@@ -911,7 +921,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                 keysList: Object.keys(module).join(', '),
                 courseSlug: window.location.pathname.split('/').pop()
               });
-              
+
               // Show all properties for first module
               if (moduleIndex === 0) {
                 console.log('🔍 FULL MODULE 0 DATA:', module);
@@ -921,19 +931,19 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                 <div key={moduleIndex} className="border-b border-gray-100">
                   <div className="p-4">
                     <div className="flex items-center justify-between">
-                      <div 
+                      <div
                         className="flex items-center cursor-pointer flex-1"
                         onClick={() => {
                           // Clear any open content when switching modules
                           clearAllContent();
-                          
+
                           // Set selected module for description display
                           setSelectedModule({
                             index: moduleIndex,
                             title: module.title,
                             description: module.description
                           });
-                          
+
                           setExpanded(prev => {
                             const next = [...prev];
                             next[moduleIndex] = !next[moduleIndex];
@@ -948,9 +958,9 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                         )}
                         <h3 className="font-medium text-gray-800">{module.title}</h3>
                       </div>
-                      
+
                     </div>
-                    
+
                     {expanded[moduleIndex] && (
                       <div className="mt-3 ml-6 space-y-2">
                         {/* Presentations Section - Only PPTX files */}
@@ -963,16 +973,16 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                                   const fileName = doc.fileName || doc.title || '';
                                   const fileType = doc.fileType || '';
                                   const url = doc.fileUrl || doc.url || '';
-                                  
-                                  const extension = fileName.toLowerCase().split('.').pop() || 
-                                                   url.toLowerCase().split('.').pop() || '';
+
+                                  const extension = fileName.toLowerCase().split('.').pop() ||
+                                    url.toLowerCase().split('.').pop() || '';
                                   const mimeType = fileType.toLowerCase();
-                                  
-                                  return ['ppt', 'pptx'].includes(extension) || 
-                                         mimeType.includes('presentation') || 
-                                         mimeType.includes('powerpoint');
+
+                                  return ['ppt', 'pptx'].includes(extension) ||
+                                    mimeType.includes('presentation') ||
+                                    mimeType.includes('powerpoint');
                                 }) || [];
-                                
+
                                 if (presentations.length === 0) {
                                   e.preventDefault();
                                   e.stopPropagation();
@@ -993,16 +1003,16 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                                 const fileName = doc.fileName || doc.title || '';
                                 const fileType = doc.fileType || '';
                                 const url = doc.fileUrl || doc.url || '';
-                                
-                                const extension = fileName.toLowerCase().split('.').pop() || 
-                                                 url.toLowerCase().split('.').pop() || '';
+
+                                const extension = fileName.toLowerCase().split('.').pop() ||
+                                  url.toLowerCase().split('.').pop() || '';
                                 const mimeType = fileType.toLowerCase();
-                                
-                                return ['ppt', 'pptx'].includes(extension) || 
-                                       mimeType.includes('presentation') || 
-                                       mimeType.includes('powerpoint');
+
+                                return ['ppt', 'pptx'].includes(extension) ||
+                                  mimeType.includes('presentation') ||
+                                  mimeType.includes('powerpoint');
                               }) || [];
-                              
+
                               return presentations.length > 0 ? (
                                 presentations.map((doc: any, docIdx: number) => (
                                   <DropdownMenuItem
@@ -1012,7 +1022,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                                       // Clear video and quiz when opening document
                                       clearVideoContent();
                                       clearQuizContent();
-                                      
+
                                       // Open document - handle both upload and link types properly
                                       let documentUrl;
                                       if (doc.type === 'upload') {
@@ -1022,9 +1032,9 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                                         // For link documents, use url
                                         documentUrl = doc.url;
                                       }
-                                      
+
                                       console.log('Presentation type:', doc.type, 'URL:', documentUrl, 'Full doc:', doc);
-                                      
+
                                       if (documentUrl) {
                                         handleDocPreview(documentUrl, doc);
                                       } else {
@@ -1051,7 +1061,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                             })()}
                           </DropdownMenuContent>
                         </DropdownMenu>
-                        
+
                         {/* Reading Materials Section - Excluding PPTX files */}
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -1062,17 +1072,17 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                                   const fileName = doc.fileName || doc.title || '';
                                   const fileType = doc.fileType || '';
                                   const url = doc.fileUrl || doc.url || '';
-                                  
-                                  const extension = fileName.toLowerCase().split('.').pop() || 
-                                                   url.toLowerCase().split('.').pop() || '';
+
+                                  const extension = fileName.toLowerCase().split('.').pop() ||
+                                    url.toLowerCase().split('.').pop() || '';
                                   const mimeType = fileType.toLowerCase();
-                                  
+
                                   // Exclude presentations (PPTX) from reading materials
-                                  return !(['ppt', 'pptx'].includes(extension) || 
-                                          mimeType.includes('presentation') || 
-                                          mimeType.includes('powerpoint'));
+                                  return !(['ppt', 'pptx'].includes(extension) ||
+                                    mimeType.includes('presentation') ||
+                                    mimeType.includes('powerpoint'));
                                 }) || [];
-                                
+
                                 if (readingMaterials.length === 0) {
                                   e.preventDefault();
                                   e.stopPropagation();
@@ -1093,17 +1103,17 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                                 const fileName = doc.fileName || doc.title || '';
                                 const fileType = doc.fileType || '';
                                 const url = doc.fileUrl || doc.url || '';
-                                
-                                const extension = fileName.toLowerCase().split('.').pop() || 
-                                                 url.toLowerCase().split('.').pop() || '';
+
+                                const extension = fileName.toLowerCase().split('.').pop() ||
+                                  url.toLowerCase().split('.').pop() || '';
                                 const mimeType = fileType.toLowerCase();
-                                
+
                                 // Exclude presentations (PPTX) from reading materials
-                                return !(['ppt', 'pptx'].includes(extension) || 
-                                        mimeType.includes('presentation') || 
-                                        mimeType.includes('powerpoint'));
+                                return !(['ppt', 'pptx'].includes(extension) ||
+                                  mimeType.includes('presentation') ||
+                                  mimeType.includes('powerpoint'));
                               }) || [];
-                              
+
                               return readingMaterials.length > 0 ? (
                                 readingMaterials.map((doc: any, docIdx: number) => (
                                   <DropdownMenuItem
@@ -1113,7 +1123,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                                       // Clear video and quiz when opening document
                                       clearVideoContent();
                                       clearQuizContent();
-                                      
+
                                       // Open document - handle both upload and link types properly
                                       let documentUrl;
                                       if (doc.type === 'upload') {
@@ -1123,9 +1133,9 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                                         // For link documents, use url
                                         documentUrl = doc.url;
                                       }
-                                      
+
                                       console.log('Reading material type:', doc.type, 'URL:', documentUrl, 'Full doc:', doc);
-                                      
+
                                       if (documentUrl) {
                                         handleDocPreview(documentUrl, doc);
                                       } else {
@@ -1156,7 +1166,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                             })()}
                           </DropdownMenuContent>
                         </DropdownMenu>
-                        
+
                         {/* Video Section */}
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -1187,7 +1197,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                                     // Clear document and quiz when playing video
                                     clearDocumentContent();
                                     clearQuizContent();
-                                    
+
                                     // Set video
                                     setSelectedVideoUrl(video.url);
                                     setSelectedVideoIndex(vidIdx);
@@ -1212,9 +1222,9 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                             )}
                           </DropdownMenuContent>
                         </DropdownMenu>
-                        
+
                         {/* Quizzes Section */}
-                        <div 
+                        <div
                           className="flex items-center justify-between py-2 cursor-pointer hover:bg-gray-50 rounded px-2"
                           onClick={() => {
                             const hasQuizConfigured =
@@ -1230,7 +1240,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                               // Clear video and document when opening quiz
                               clearVideoContent();
                               clearDocumentContent();
-                              
+
                               setSelectedContent({
                                 type: 'quiz',
                                 moduleIndex,
@@ -1245,18 +1255,40 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                           </div>
                         </div>
 
+                        {/* Flashcards Section */}
+                        <div
+                          className="flex items-center justify-between py-2 cursor-pointer hover:bg-gray-50 rounded px-2"
+                          onClick={() => {
+                            // Clear other content
+                            clearVideoContent();
+                            clearDocumentContent();
+                            clearQuizContent();
+
+                            // Set flashcard mode
+                            setSelectedFlashcardModule({
+                              index: moduleIndex,
+                              title: module.title
+                            });
+                          }}
+                        >
+                          <div className="flex items-center">
+                            <BookOpen className="h-4 w-4 mr-2 text-indigo-600" />
+                            <span className="text-sm text-gray-700">FLASHCARDS</span>
+                          </div>
+                        </div>
+
                         {/* Live Classes Section */}
                         <LiveClassesForModule courseSlug={courseSlug} moduleIndex={moduleIndex} />
-                        
+
                         {/* Recordings Section */}
-                        <RecordingsForModule 
-                          courseSlug={courseSlug} 
+                        <RecordingsForModule
+                          courseSlug={courseSlug}
                           moduleIndex={moduleIndex}
                           onRecordingClick={(recordingUrl: string) => {
                             // Clear other content when playing recording
                             clearVideoContent();
                             clearQuizContent();
-                            
+
                             // Convert Google Drive URL to embeddable format and set as document
                             const embedUrl = toGoogleVideoEmbedUrl(recordingUrl);
                             setSelectedDocUrl(embedUrl);
@@ -1269,7 +1301,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                 </div>
               );
             })}
-            
+
             {/* Final Examination Section - Always available for enrolled students */}
             <div className="border-b border-gray-100">
               <div className="p-4">
@@ -1282,7 +1314,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                     Final Examination
                   </h3>
                 </div>
-                
+
                 <div className="mt-3 ml-6">
                   <div className="flex items-center justify-between py-2 px-2 bg-yellow-50 rounded border border-yellow-200">
                     <div className="flex items-center">
@@ -1337,7 +1369,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                 />
               </div>
             )}
-            
+
             {selectedDocUrl && (
               <div ref={mediaRef} className="mb-6">
                 {/* Document Header */}
@@ -1375,7 +1407,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                     ✕
                   </Button>
                 </div>
-                
+
                 {/* Document Setup Loading */}
                 {isDocLoading && (
                   <div className="border-l border-r border-b border-gray-200 rounded-b-lg bg-white">
@@ -1391,7 +1423,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                     </div>
                   </div>
                 )}
-                
+
                 {/* Document Viewer */}
                 {!isDocLoading && (
                   <div className="border-l border-r border-b border-gray-200 rounded-b-lg">
@@ -1406,6 +1438,17 @@ export function CourseDetail({ slug }: CourseDetailProps) {
             )}
 
 
+
+
+            {selectedFlashcardModule && (
+              <div className="mb-6 h-[700px] bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+                <FlashcardViewer
+                  moduleIndex={selectedFlashcardModule.index}
+                  courseSlug={courseSlug}
+                  onClose={() => clearFlashcardContent()}
+                />
+              </div>
+            )}
 
             {selectedContent.type === 'quiz' && selectedContent.content && (
               <Card className="mb-6">
@@ -1425,9 +1468,9 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                         {selectedContent.content.lastQuizScore !== null ? 'Retake Quiz' : 'Take Quiz'}
                       </Button>
                     </div>
-                    
+
                   </div>
-                  
+
                   {/* Quiz Scores Table */}
                   {(() => {
                     const moduleIndex = selectedContent.moduleIndex || 0;
@@ -1438,12 +1481,12 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                       .sort((a: any, b: any) =>
                         new Date(b.attemptedAt).getTime() - new Date(a.attemptedAt).getTime()
                       );
-                    
+
                     // Sort attempts freshest first
                     const descendingAttempts = moduleAttempts.slice().sort(
                       (a: any, b: any) => new Date(b.attemptedAt).getTime() - new Date(a.attemptedAt).getTime()
                     );
-                    
+
                     // Reverse so oldest attempt is first, newest last
                     const orderedAttempts = moduleAttempts.slice().reverse();
 
@@ -1591,7 +1634,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                     }
                     return null;
                   })()}
-                  
+
                   {/* Inline Quiz Display */}
                   {quizModuleIndex !== null && quizQuestions.length > 0 && (
                     <div className="mt-6 border-t border-gray-200 pt-6">
@@ -1730,7 +1773,7 @@ function CourseDetailSkeleton() {
           <Skeleton className="h-8 w-64" />
         </div>
       </div>
-      
+
       <Card className="mb-6">
         <div className="px-5 py-4 border-b border-gray-200">
           <Skeleton className="h-6 w-40" />
@@ -1745,7 +1788,7 @@ function CourseDetailSkeleton() {
               </div>
               <Skeleton className="w-full h-2 rounded-full" />
             </div>
-            
+
             {/* Data Grid Skeleton */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
               {[1, 2, 3, 4].map((i) => (
@@ -1759,7 +1802,7 @@ function CourseDetailSkeleton() {
           </div>
         </CardContent>
       </Card>
-      
+
       <Card>
         <div className="px-5 py-4 border-b border-gray-200">
           <Skeleton className="h-6 w-40" />
@@ -1805,15 +1848,15 @@ function LiveClassesForModule({ courseSlug, moduleIndex }: LiveClassesForModuleP
     queryFn: async () => {
       const token = localStorage.getItem("token");
       const url = `/api/live-classes/course/${courseSlug}/module/${moduleIndex}`;
-      
+
       const res = await fetch(url, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
+
       if (!res.ok) {
         return [];
       }
-      
+
       const data = await res.json();
       return data;
     },
@@ -1824,12 +1867,12 @@ function LiveClassesForModule({ courseSlug, moduleIndex }: LiveClassesForModuleP
     const now = Date.now();
     const startTime = new Date(liveClass.startTime).getTime();
     const endTime = new Date(liveClass.endTime).getTime();
-    
+
     // Enable 30 minutes before start time
     const enableTime = startTime - (30 * 60 * 1000);
     // Disable 15 minutes after end time
     const disableTime = endTime + (15 * 60 * 1000);
-    
+
     return now >= enableTime && now <= disableTime;
   };
 
@@ -1838,7 +1881,7 @@ function LiveClassesForModule({ courseSlug, moduleIndex }: LiveClassesForModuleP
     const now = Date.now();
     const startTime = new Date(liveClass.startTime).getTime();
     const endTime = new Date(liveClass.endTime).getTime();
-    
+
     if (now < startTime) {
       const timeUntilStart = startTime - now;
       if (timeUntilStart <= 30 * 60 * 1000) { // 30 minutes or less
@@ -1871,7 +1914,7 @@ function LiveClassesForModule({ courseSlug, moduleIndex }: LiveClassesForModuleP
         {liveClasses.map((liveClass: any, idx: number) => {
           const isEnabled = isLiveClassEnabled(liveClass);
           const buttonText = getLiveClassButtonText(liveClass);
-          
+
           return (
             <DropdownMenuItem key={idx} className="cursor-pointer p-3">
               <div className="flex items-center justify-between w-full">
@@ -1893,15 +1936,14 @@ function LiveClassesForModule({ courseSlug, moduleIndex }: LiveClassesForModuleP
                   size="sm"
                   variant={isEnabled ? "default" : "outline"}
                   disabled={!isEnabled}
-                  className={`${
-                    isEnabled 
-                      ? buttonText === 'Join Now' 
-                        ? 'bg-green-600 hover:bg-green-700' 
-                        : buttonText === 'Join Soon'
-                          ? 'bg-orange-600 hover:bg-orange-700'
-                          : 'bg-blue-600 hover:bg-blue-700'
-                      : 'bg-gray-400 text-gray-700 cursor-not-allowed'
-                  } ${isEnabled ? 'text-white' : ''}`}
+                  className={`${isEnabled
+                    ? buttonText === 'Join Now'
+                      ? 'bg-green-600 hover:bg-green-700'
+                      : buttonText === 'Join Soon'
+                        ? 'bg-orange-600 hover:bg-orange-700'
+                        : 'bg-blue-600 hover:bg-blue-700'
+                    : 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                    } ${isEnabled ? 'text-white' : ''}`}
                   onClick={(e) => {
                     e.stopPropagation();
                     if (isEnabled && liveClass.meetLink) {
@@ -1934,15 +1976,15 @@ function RecordingsForModule({ courseSlug, moduleIndex, onRecordingClick }: Reco
     queryFn: async () => {
       const token = localStorage.getItem("token");
       const url = `/api/recordings/course/${courseSlug}/module/${moduleIndex}`;
-      
+
       const res = await fetch(url, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
+
       if (!res.ok) {
         return [];
       }
-      
+
       const data = await res.json();
       return data;
     },

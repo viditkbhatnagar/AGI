@@ -1,0 +1,467 @@
+{
+  "course_id": "Certified-Training-and-Development-Professional",
+  "module_id": "Certified-Training-and-Development-Professional::modules::3",
+  "module_title": "Unit 4",
+  "cards": [
+    {
+      "card_id": "card_1",
+      "q": "What is strategic training and development in organizations?",
+      "a": "Strategic training and development aligns with organizational goals, enhancing performance and competitiveness.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Unit 4",
+          "loc": "Chapter 1",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "The Impact of Implementing Learning & Development"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 4",
+          "loc": "Chapter 1"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Understanding the strategic role of training and development is crucial for organizational success.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_2",
+      "q": "Explain the difference between on-the-job and off-the-job training.",
+      "a": "On-the-job training occurs at the workplace, while off-the-job training takes place outside, often in a classroom or online setting.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Unit 4",
+          "loc": "Chapter 7 and 8",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Types of On-the-job Training and On-the-job Training vs. Off-the-job Training"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 4",
+          "loc": "Chapter 7 and 8"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Both types of training are essential for employee development, and understanding their differences is vital for effective training design.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_3",
+      "q": "What is adult learning theory?",
+      "a": "Adult learning theory refers to the principles that guide how adults learn, including self-directed learning, experience, and relevance to their lives.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Unit 4",
+          "loc": "Chapter 2",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "What is Adult Learning Theory?"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 4",
+          "loc": "Chapter 2"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Understanding adult learning theory is essential for designing effective training programs for adults.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_4",
+      "q": "How would you conduct a training needs analysis?",
+      "a": "I would identify performance gaps, gather data through surveys or interviews, and prioritize training needs based on organizational objectives.",
+      "difficulty": "medium",
+      "bloom_level": "Apply",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Unit 4",
+          "loc": "Chapter 4",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Needs Analysis Process"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 4",
+          "loc": "Chapter 4"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Conducting a thorough training needs analysis ensures that training programs address actual performance gaps and support organizational goals.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_5",
+      "q": "What are the key components of a training evaluation?",
+      "a": "Key components include setting clear objectives, using relevant metrics, and assessing the impact of training on job performance and organizational outcomes.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Unit 4",
+          "loc": "Chapter 9",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Purpose of Training Program Evaluation"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 4",
+          "loc": "Chapter 9"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Evaluating training programs is crucial to ensure they are effective and provide a return on investment.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_6",
+      "q": "Why is employee motivation and engagement important in training?",
+      "a": "Employee motivation and engagement are crucial as they directly impact learning outcomes, job satisfaction, and overall organizational performance.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Unit 4",
+          "loc": "Chapter 3",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "The Importance of Employee Motivation & Engagement"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 4",
+          "loc": "Chapter 3"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Motivated and engaged employees are more likely to apply learned skills and contribute to organizational success.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_7",
+      "q": "What is the transfer of learning, and why is it important?",
+      "a": "The transfer of learning refers to the application of learned skills and knowledge back on the job. It's important because it ensures that training has a lasting impact on performance.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Unit 4",
+          "loc": "Chapter 10",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "What is the Transfer of Learning?"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 4",
+          "loc": "Chapter 10"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "The ultimate goal of training is to improve job performance, making the transfer of learning a critical aspect of training effectiveness.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_8",
+      "q": "How would you design a training program to enhance employee motivation and engagement?",
+      "a": "I would focus on relevance, interactivity, feedback, and recognition, ensuring the training aligns with employees' needs and interests.",
+      "difficulty": "hard",
+      "bloom_level": "Apply",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Unit 4",
+          "loc": "Chapter 3 and 5",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "How to Engage Employees in the Workplace and Training Methods"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 4",
+          "loc": "Chapter 3 and 5"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "A well-designed training program can significantly boost employee motivation and engagement, leading to improved job performance and retention.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_9",
+      "q": "Explain the role of technology in employee training.",
+      "a": "Technology, such as e-learning platforms and AI, enhances accessibility, personalization, and efficiency of training, making it more effective and convenient.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Unit 4",
+          "loc": "Chapter 11",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "e-Learning"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 4",
+          "loc": "Chapter 11"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Technology has revolutionized the way training is delivered, offering flexible and engaging learning experiences that cater to diverse learning styles.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_10",
+      "q": "How would you evaluate the effectiveness of a training program in terms of transfer of learning?",
+      "a": "I would assess job performance changes, gather feedback, and measure the application of learned skills and knowledge on the job over time.",
+      "difficulty": "hard",
+      "bloom_level": "Apply",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Unit 4",
+          "loc": "Chapter 9 and 10",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "The Process of Training Program Evaluation and What is the Transfer of Learning?"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 4",
+          "loc": "Chapter 9 and 10"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Evaluating the transfer of learning is essential to ensure that training programs have a lasting impact on employee performance and organizational outcomes.",
+      "review_required": false
+    }
+  ],
+  "stage_a_output": {
+    "module_summary": [
+      {
+        "point": "Understanding the strategic role of training and development in organizations",
+        "supports": [
+          "Importance of investing in workforce",
+          "Analyzing learning and development metrics",
+          "Impact of COVID-19 on learning and development"
+        ]
+      },
+      {
+        "point": "Adult learning theory and its application",
+        "supports": [
+          "Andragogy",
+          "Transformative learning",
+          "Self-directed learning",
+          "Experiential learning",
+          "Project-based learning"
+        ]
+      },
+      {
+        "point": "Employee motivation and engagement",
+        "supports": [
+          "Difference between motivation and engagement",
+          "Importance of motivation and engagement",
+          "What drives employee motivation",
+          "How to engage employees"
+        ]
+      },
+      {
+        "point": "Training needs analysis and design",
+        "supports": [
+          "Needs analysis process",
+          "Types of training needs analysis",
+          "Training plan",
+          "Learning outcomes and training objectives"
+        ]
+      },
+      {
+        "point": "Training delivery and evaluation",
+        "supports": [
+          "Lesson plans",
+          "Issues with training delivery",
+          "Evaluating training programs",
+          "Indicators of effective training programs"
+        ]
+      },
+      {
+        "point": "On-the-job and off-the-job training",
+        "supports": [
+          "Types of on-the-job training",
+          "Methods of on-the-job training",
+          "On-the-job training vs. off-the-job training",
+          "Effectiveness of off-the-job training"
+        ]
+      },
+      {
+        "point": "Transfer of learning and performance management",
+        "supports": [
+          "What is transfer of learning",
+          "Integrating learning transfer into program planning",
+          "Facilitation and strategies to enhance transfer of learning",
+          "Performance management and coaching"
+        ]
+      },
+      {
+        "point": "Employee training and technology",
+        "supports": [
+          "E-learning",
+          "Impact of AI on training",
+          "Demographics and AI",
+          "Future of learning and development"
+        ]
+      },
+      {
+        "point": "Coaching for performance and future of learning",
+        "supports": [
+          "Coaching methods and GROW model",
+          "Open-ended questions",
+          "Types of employee training required by organizations",
+          "Learning management systems and learning on-demand"
+        ]
+      }
+    ],
+    "key_topics": [
+      {
+        "topic": "Strategic training and development",
+        "supports": [
+          "Investing in workforce",
+          "Analyzing learning and development metrics",
+          "Impact of COVID-19 on learning and development"
+        ]
+      },
+      {
+        "topic": "Adult learning theory",
+        "supports": [
+          "Andragogy",
+          "Transformative learning",
+          "Self-directed learning",
+          "Experiential learning",
+          "Project-based learning"
+        ]
+      },
+      {
+        "topic": "Employee motivation and engagement",
+        "supports": [
+          "Difference between motivation and engagement",
+          "Importance of motivation and engagement",
+          "What drives employee motivation",
+          "How to engage employees"
+        ]
+      },
+      {
+        "topic": "Training needs analysis and design",
+        "supports": [
+          "Needs analysis process",
+          "Types of training needs analysis",
+          "Training plan",
+          "Learning outcomes and training objectives"
+        ]
+      },
+      {
+        "topic": "Training delivery and evaluation",
+        "supports": [
+          "Lesson plans",
+          "Issues with training delivery",
+          "Evaluating training programs",
+          "Indicators of effective training programs"
+        ]
+      },
+      {
+        "topic": "On-the-job and off-the-job training",
+        "supports": [
+          "Types of on-the-job training",
+          "Methods of on-the-job training",
+          "On-the-job training vs. off-the-job training",
+          "Effectiveness of off-the-job training"
+        ]
+      },
+      {
+        "topic": "Transfer of learning and performance management",
+        "supports": [
+          "What is transfer of learning",
+          "Integrating learning transfer into program planning",
+          "Facilitation and strategies to enhance transfer of learning",
+          "Performance management and coaching"
+        ]
+      },
+      {
+        "topic": "Employee training and technology",
+        "supports": [
+          "E-learning",
+          "Impact of AI on training",
+          "Demographics and AI",
+          "Future of learning and development"
+        ]
+      },
+      {
+        "topic": "Coaching for performance",
+        "supports": [
+          "Coaching methods and GROW model",
+          "Open-ended questions",
+          "Types of employee training required by organizations",
+          "Learning management systems and learning on-demand"
+        ]
+      },
+      {
+        "topic": "Future of learning and development",
+        "supports": [
+          "Types of employee training required by organizations",
+          "Learning management systems and learning on-demand",
+          "Future of learning and development"
+        ]
+      }
+    ],
+    "coverage_map": []
+  },
+  "warnings": [],
+  "generation_metadata": {
+    "model": "meta-llama/llama-3.3-70b-instruct:free",
+    "temperature": 0.1,
+    "timestamp": "2025-12-16T02:26:48.518Z"
+  },
+  "created_at": "2025-12-16T02:28:59.515Z",
+  "updated_at": "2025-12-16T02:28:59.515Z",
+  "reviewed_by": null,
+  "review_status": "pending",
+  "id": "deck_Certified-Training-and-Development-Professional::modules::3_1765852139516",
+  "saved_at": "2025-12-16T02:28:59.516Z",
+  "file_path": "C:\\codes\\AGI\\server\\tmp\\decks\\Certified-Training-and-Development-Professional__modules__3-1765852139516.json"
+}

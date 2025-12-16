@@ -1,0 +1,298 @@
+# Prometheus Alerting Rules
+#
+# Defines alerts for the Flashcard Orchestrator system.
+#
+# Categories:
+# - Job Processing: failure rate, queue depth, stuck jobs
+# - Quality: verification rate, LLM errors
+# - Cost: embedding usage, budget thresholds
+# - Infrastructure: worker health, memory usage
+#
+# Usage:
+#   Place this file in your Prometheus config directory and reference it in prometheus.yml:
+#   rule_files:
+#     - "rules.yml"
+#
+# Environment Variables for Thresholds:
+#   EMBEDDING_COST_PER_CALL: Cost per embedding API call (default: 0.0001)
+#   DAILY_COST_BUDGET: Daily budget in USD (default: 100)
+
+groups:
+  # ===========================================================================
+  # Job Processing Alerts
+  # ===========================================================================
+  - name: flashcard_jobs
+    interval: 30s
+    rules:
+      # High job failure rate
+      - alert: HighJobFailureRate
+        expr: |
+          (
+            sum(rate(flashcard_jobs_failed_total[10m])) /
+            sum(rate(flashcard_jobs_completed_total[10m]) + rate(flashcard_jobs_failed_total[10m]))
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          team: flashcard
+        annotations:
+          summary: "High flashcard job failure rate"
+          description: "Job failure rate is {{ $value | humanizePercentage }} over the last 10 minutes. Threshold: 5%"
+          runbook_url: "https://docs.example.com/runbooks/flashcard-job-failures"
+          dashboard_url: "http://grafana:3000/d/flashcard-overview"
+
+      # Critical job failure rate
+      - alert: CriticalJobFailureRate
+        expr: |
+          (
+            sum(rate(flashcard_jobs_failed_total[5m])) /
+            sum(rate(flashcard_jobs_completed_total[5m]) + rate(flashcard_jobs_failed_total[5m]))
+          ) > 0.20
+        for: 2m
+        labels:
+          severity: critical
+          team: flashcard
+        annotations:
+          summary: "Critical flashcard job failure rate"
+          description: "Job failure rate is {{ $value | humanizePercentage }}. Immediate action required."
+
+      # Queue backlog too high
+      - alert: QueueBacklogHigh
+        expr: flashcard_queue_depth > 100
+        for: 10m
+        labels:
+          severity: warning
+          team: flashcard
+        annotations:
+          summary: "Flashcard job queue backlog is high"
+          description: "Queue depth is {{ $value }} jobs. Consider scaling workers."
+
+      # Queue backlog critical
+      - alert: QueueBacklogCritical
+        expr: flashcard_queue_depth > 500
+        for: 5m
+        labels:
+          severity: critical
+          team: flashcard
+        annotations:
+          summary: "Flashcard job queue backlog is critical"
+          description: "Queue depth is {{ $value }} jobs. Workers may be stuck or overwhelmed."
+
+      # Jobs stuck in active state
+      - alert: StuckActiveJobs
+        expr: flashcard_jobs_active > 0 and changes(flashcard_jobs_completed_total[30m]) == 0
+        for: 30m
+        labels:
+          severity: warning
+          team: flashcard
+        annotations:
+          summary: "Flashcard jobs appear stuck"
+          description: "{{ $value }} active jobs with no completions in 30 minutes."
+
+  # ===========================================================================
+  # Quality Alerts
+  # ===========================================================================
+  - name: flashcard_quality
+    interval: 1m
+    rules:
+      # Low verification rate
+      - alert: LowVerificationRate
+        expr: |
+          (
+            sum(rate(flashcard_cards_verified_total[1h])) /
+            sum(rate(flashcard_cards_generated_total[1h]))
+          ) < 0.80
+        for: 30m
+        labels:
+          severity: warning
+          team: flashcard
+        annotations:
+          summary: "Low flashcard verification rate"
+          description: "Verification rate is {{ $value | humanizePercentage }} over the last hour. Expected: >80%"
+
+      # Very low verification rate
+      - alert: CriticalVerificationRate
+        expr: |
+          (
+            sum(rate(flashcard_cards_verified_total[30m])) /
+            sum(rate(flashcard_cards_generated_total[30m]))
+          ) < 0.50
+        for: 15m
+        labels:
+          severity: critical
+          team: flashcard
+        annotations:
+          summary: "Critical verification rate"
+          description: "Verification rate is {{ $value | humanizePercentage }}. Check LLM outputs and evidence quality."
+
+      # High LLM invalid JSON rate
+      - alert: HighLLMInvalidJsonRate
+        expr: |
+          (
+            sum(rate(flashcard_llm_parse_errors_total[10m])) /
+            sum(rate(flashcard_llm_calls_total[10m]))
+          ) > 0.10
+        for: 5m
+        labels:
+          severity: warning
+          team: flashcard
+        annotations:
+          summary: "High LLM invalid JSON rate"
+          description: "{{ $value | humanizePercentage }} of LLM responses are failing to parse. Check prompts and model behavior."
+
+      # LLM timeout rate
+      - alert: HighLLMTimeoutRate
+        expr: |
+          sum(rate(flashcard_llm_timeouts_total[10m])) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          team: flashcard
+        annotations:
+          summary: "High LLM timeout rate"
+          description: "LLM timeouts at {{ $value }} per minute. Check API availability."
+
+  # ===========================================================================
+  # Cost Control Alerts
+  # ===========================================================================
+  - name: flashcard_cost
+    interval: 1m
+    rules:
+      # Embedding cost estimate per hour
+      # Assumes EMBEDDING_COST_PER_CALL = 0.0001 (adjust based on provider)
+      - alert: HighEmbeddingCostPerHour
+        expr: |
+          (sum(rate(flashcard_embedding_calls_total[1h])) * 3600 * 0.0001) > 10
+        for: 15m
+        labels:
+          severity: warning
+          team: flashcard
+        annotations:
+          summary: "High embedding cost estimate"
+          description: "Estimated embedding cost is ${{ $value | printf \"%.2f\" }}/hour. Daily projection: ${{ $value | mul 24 | printf \"%.2f\" }}"
+
+      # Daily cost budget exceeded
+      - alert: DailyCostBudgetExceeded
+        expr: |
+          (sum(increase(flashcard_embedding_calls_total[24h])) * 0.0001) > 100
+        for: 5m
+        labels:
+          severity: critical
+          team: flashcard
+        annotations:
+          summary: "Daily embedding cost budget exceeded"
+          description: "Estimated daily embedding cost is ${{ $value | printf \"%.2f\" }}. Budget: $100. Consider enabling cost-control mode."
+
+      # Embedding calls spike
+      - alert: EmbeddingCallsSpike
+        expr: |
+          rate(flashcard_embedding_calls_total[5m]) > 100
+        for: 5m
+        labels:
+          severity: warning
+          team: flashcard
+        annotations:
+          summary: "Embedding API calls spike detected"
+          description: "Embedding calls at {{ $value | printf \"%.1f\" }}/sec. Check for runaway jobs."
+
+  # ===========================================================================
+  # Infrastructure Alerts
+  # ===========================================================================
+  - name: flashcard_infrastructure
+    interval: 30s
+    rules:
+      # Worker not processing
+      - alert: WorkerNotProcessing
+        expr: |
+          sum(rate(flashcard_jobs_completed_total[15m])) == 0 
+          and 
+          sum(flashcard_queue_depth) > 0
+        for: 15m
+        labels:
+          severity: warning
+          team: flashcard
+        annotations:
+          summary: "Flashcard workers not processing jobs"
+          description: "No jobs completed in 15 minutes but queue has {{ $value }} jobs."
+
+      # High worker memory usage
+      - alert: WorkerHighMemory
+        expr: |
+          (container_memory_usage_bytes{container="flashcard-orchestrator-worker"} / 
+           container_spec_memory_limit_bytes{container="flashcard-orchestrator-worker"}) > 0.85
+        for: 10m
+        labels:
+          severity: warning
+          team: flashcard
+        annotations:
+          summary: "Worker memory usage high"
+          description: "Worker memory at {{ $value | humanizePercentage }}. May trigger OOM restarts."
+
+      # Redis connection issues
+      - alert: RedisConnectionErrors
+        expr: |
+          rate(flashcard_redis_errors_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          team: flashcard
+        annotations:
+          summary: "Redis connection errors"
+          description: "Redis errors at {{ $value }}/sec. Check Redis health."
+
+      # Vector DB connection issues
+      - alert: VectorDBConnectionErrors
+        expr: |
+          rate(flashcard_vectordb_errors_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          team: flashcard
+        annotations:
+          summary: "Vector DB connection errors"
+          description: "Vector DB errors at {{ $value }}/sec. Check Qdrant/Pinecone health."
+
+  # ===========================================================================
+  # API Alerts
+  # ===========================================================================
+  - name: flashcard_api
+    interval: 30s
+    rules:
+      # High API error rate
+      - alert: HighAPIErrorRate
+        expr: |
+          (
+            sum(rate(http_requests_total{status=~"5.."}[5m])) /
+            sum(rate(http_requests_total[5m]))
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          team: flashcard
+        annotations:
+          summary: "High API error rate"
+          description: "API 5xx rate is {{ $value | humanizePercentage }}."
+
+      # API latency high
+      - alert: HighAPILatency
+        expr: |
+          histogram_quantile(0.95, rate(flashcard_api_latency_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+          team: flashcard
+        annotations:
+          summary: "High API latency"
+          description: "95th percentile API latency is {{ $value }}s."
+
+      # Rate limiting triggered frequently
+      - alert: HighRateLimitingRate
+        expr: |
+          sum(rate(flashcard_rate_limit_exceeded_total[5m])) > 1
+        for: 10m
+        labels:
+          severity: info
+          team: flashcard
+        annotations:
+          summary: "Frequent rate limiting"
+          description: "Rate limiting triggered {{ $value }}/sec. May indicate abuse or need for limit adjustment."

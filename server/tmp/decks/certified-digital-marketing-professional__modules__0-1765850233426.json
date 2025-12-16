@@ -1,0 +1,305 @@
+{
+  "course_id": "certified-digital-marketing-professional",
+  "module_id": "certified-digital-marketing-professional::modules::0",
+  "module_title": "DM - 101 Fundamentals of Digital Marketing",
+  "cards": [
+    {
+      "card_id": "card_1",
+      "q": "What is digital marketing?",
+      "a": "Using digital channels to promote products and services.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "DM-101 Fundamentals of Digital Marketing",
+          "loc": "Introduction to Digital Marketing",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Digital marketing refers to the use of digital channels to promote products and services."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "DM-101 Fundamentals of Digital Marketing",
+          "loc": "Introduction to Digital Marketing"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Understanding the definition of digital marketing is crucial for further study.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_2",
+      "q": "When did digital marketing begin?",
+      "a": "In the 1990s.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "DM-101 Fundamentals of Digital Marketing",
+          "loc": "Historical Evolution of Digital Marketing",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Digital marketing began in the 1990s."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "DM-101 Fundamentals of Digital Marketing",
+          "loc": "Historical Evolution of Digital Marketing"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Knowing the origins of digital marketing helps understand its development.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_3",
+      "q": "What is the impact of digital marketing on consumer behavior?",
+      "a": "Significant influence on purchasing decisions.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "DM-101 Fundamentals of Digital Marketing",
+          "loc": "Introduction to Digital Marketing",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Digital marketing significantly influences consumer behavior and purchasing decisions."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "DM-101 Fundamentals of Digital Marketing",
+          "loc": "Introduction to Digital Marketing"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Understanding the impact of digital marketing on consumers is vital for marketing strategies.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_4",
+      "q": "What is the role of SEO in digital marketing?",
+      "a": "Improves search engine rankings using keywords.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "DM-101 Fundamentals of Digital Marketing",
+          "loc": "Essential Components of Digital Marketing",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "SEO Strategies: Effectively use keywords to improve search engine rankings."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "DM-101 Fundamentals of Digital Marketing",
+          "loc": "Essential Components of Digital Marketing"
+        }
+      ],
+      "confidence_score": 0.8,
+      "rationale": "SEO is a crucial aspect of digital marketing for online visibility.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_5",
+      "q": "How does digital marketing expand business reach?",
+      "a": "Through global online platforms.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "DM-101 Fundamentals of Digital Marketing",
+          "loc": "Impact of Digital Marketing on Business Practices",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Digital marketing has expanded the global reach of businesses."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "DM-101 Fundamentals of Digital Marketing",
+          "loc": "Impact of Digital Marketing on Business Practices"
+        }
+      ],
+      "confidence_score": 0.8,
+      "rationale": "Understanding how digital marketing affects business reach is important for strategy development.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_6",
+      "q": "What is the significance of data analytics in digital marketing?",
+      "a": "Improves decision-making processes.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "DM-101 Fundamentals of Digital Marketing",
+          "loc": "Impact of Digital Marketing on Business Practices",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Companies leveraging data analytics in digital marketing report improved decision-making processes."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "DM-101 Fundamentals of Digital Marketing",
+          "loc": "Impact of Digital Marketing on Business Practices"
+        }
+      ],
+      "confidence_score": 0.8,
+      "rationale": "Data analytics is crucial for measuring the effectiveness of digital marketing strategies.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_7",
+      "q": "How does influencer marketing impact brand credibility?",
+      "a": "Authentic partnerships boost credibility and trust.",
+      "difficulty": "medium",
+      "bloom_level": "Analyze",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "DM-101 Fundamentals of Digital Marketing",
+          "loc": "Current Trends in Digital Marketing",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Authentic partnerships with influencers can significantly boost brand credibility and trust."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "DM-101 Fundamentals of Digital Marketing",
+          "loc": "Current Trends in Digital Marketing"
+        }
+      ],
+      "confidence_score": 0.7,
+      "rationale": "Influencer marketing can significantly impact brand reputation and customer trust.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_8",
+      "q": "What role does AI play in digital marketing?",
+      "a": "Enables data-driven decision-making and personalization.",
+      "difficulty": "hard",
+      "bloom_level": "Analyze",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "DM-101 Fundamentals of Digital Marketing",
+          "loc": "Current Trends in Digital Marketing",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Artificial Intelligence is revolutionizing digital marketing by enabling data-driven decision-making."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "DM-101 Fundamentals of Digital Marketing",
+          "loc": "Current Trends in Digital Marketing"
+        }
+      ],
+      "confidence_score": 0.7,
+      "rationale": "AI is transforming digital marketing by enhancing customer experiences and decision-making.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_9",
+      "q": "How does personalization impact customer engagement?",
+      "a": "Tailored content and targeted advertising improve conversion rates and loyalty.",
+      "difficulty": "hard",
+      "bloom_level": "Evaluate",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "DM-101 Fundamentals of Digital Marketing",
+          "loc": "Current Trends in Digital Marketing",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Personalization is key to engaging customers in a crowded marketplace."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "DM-101 Fundamentals of Digital Marketing",
+          "loc": "Current Trends in Digital Marketing"
+        }
+      ],
+      "confidence_score": 0.6,
+      "rationale": "Personalization is critical for effective customer engagement and retention in digital marketing.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_10",
+      "q": "What are the essential components of digital marketing?",
+      "a": "Data analytics, email campaigns, social engagement, SEO strategies, and understanding digital marketing fundamentals.",
+      "difficulty": "hard",
+      "bloom_level": "Create",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "DM-101 Fundamentals of Digital Marketing",
+          "loc": "Essential Components of Digital Marketing",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Essential Components of Digital Marketing: Data Analytics, Email Campaigns, Social Engagement, SEO Strategies, Fundamentals of Digital Marketing"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "DM-101 Fundamentals of Digital Marketing",
+          "loc": "Essential Components of Digital Marketing"
+        }
+      ],
+      "confidence_score": 0.6,
+      "rationale": "Understanding the essential components is vital for developing comprehensive digital marketing strategies.",
+      "review_required": false
+    }
+  ],
+  "stage_a_output": {
+    "module_summary": [
+      {
+        "point": "Key concepts from DM - 101 Fundamentals of Digital Marketing",
+        "supports": []
+      }
+    ],
+    "key_topics": [
+      {
+        "topic": "DM - 101 Fundamentals of Digital Marketing",
+        "supports": []
+      }
+    ],
+    "coverage_map": []
+  },
+  "warnings": [],
+  "generation_metadata": {
+    "model": "meta-llama/llama-3.3-70b-instruct:free",
+    "temperature": 0.1,
+    "timestamp": "2025-12-16T01:56:17.125Z"
+  },
+  "created_at": "2025-12-16T01:57:13.424Z",
+  "updated_at": "2025-12-16T01:57:13.424Z",
+  "reviewed_by": null,
+  "review_status": "pending",
+  "id": "deck_certified-digital-marketing-professional::modules::0_1765850233426",
+  "saved_at": "2025-12-16T01:57:13.427Z",
+  "file_path": "C:\\codes\\AGI\\server\\tmp\\decks\\certified-digital-marketing-professional__modules__0-1765850233426.json"
+}

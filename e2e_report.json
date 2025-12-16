@@ -1,0 +1,53 @@
+{
+  "run_id": "8bdca269-d05d-413b-9605-73aa31c3cad0",
+  "module_id": "e2e-test-module",
+  "mode": "mock",
+  "started_at": "2025-12-15T21:59:39.826Z",
+  "completed_at": "2025-12-15T21:59:39.836Z",
+  "duration_ms": 10,
+  "status": "success",
+  "stages": {
+    "ingest": {
+      "status": "success",
+      "duration_ms": 2
+    },
+    "transcribe": {
+      "status": "skipped",
+      "duration_ms": 0,
+      "message": "Using local chunks"
+    },
+    "chunk": {
+      "status": "skipped",
+      "duration_ms": 0
+    },
+    "embed": {
+      "status": "success",
+      "duration_ms": 2
+    },
+    "upsert": {
+      "status": "success",
+      "duration_ms": 0
+    },
+    "stageA": {
+      "status": "success",
+      "duration_ms": 1
+    },
+    "stageB": {
+      "status": "success",
+      "duration_ms": 0
+    },
+    "verify": {
+      "status": "success",
+      "duration_ms": 1
+    },
+    "save": {
+      "status": "success",
+      "duration_ms": 2
+    }
+  },
+  "warnings": [],
+  "errors": [],
+  "deck_path": "C:\\codes\\AGI\\server\\tmp\\decks\\e2e-test-module_1765835979835.json",
+  "card_count": 10,
+  "verified_count": 10
+}

@@ -1,0 +1,111 @@
+
+> rest-express@1.0.0 test:run
+> vitest run test/unit
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90mC:/codes/AGI[39m
+
+[90mstdout[2m | test/unit/stageA.test.ts[2m > [22m[2mStageA - Content Summarization[2m > [22m[2mrunStageA (with mocked LLM)[2m > [22m[2mshould call LLM and return parsed output
+[22m[39m[StageA] Starting for module mod-test-001 with 3 chunks
+[StageA] Sending request to LLM (est. 471 input tokens)
+
+[90mstdout[2m | test/unit/stageA.test.ts[2m > [22m[2mStageA - Content Summarization[2m > [22m[2mrunStageA (with mocked LLM)[2m > [22m[2mshould call LLM and return parsed output
+[22m[39m[StageA] Received response (est. 161 output tokens)
+[StageA] Completed in 3ms:
+  - Learning objectives: 3
+  - Key terms: 4
+  - Difficulty: intermediate
+
+[90mstdout[2m | test/unit/stageA.test.ts[2m > [22m[2mStageA - Content Summarization[2m > [22m[2mrunStageA (with mocked LLM)[2m > [22m[2mshould include summary in output
+[22m[39m[StageA] Starting for module mod-test-001 with 3 chunks
+[StageA] Sending request to LLM (est. 463 input tokens)
+
+[90mstdout[2m | test/unit/stageA.test.ts[2m > [22m[2mStageA - Content Summarization[2m > [22m[2mrunStageA (with mocked LLM)[2m > [22m[2mshould include summary in output
+[22m[39m[StageA] Received response (est. 161 output tokens)
+[StageA] Completed in 1ms:
+  - Learning objectives: 3
+  - Key terms: 4
+  - Difficulty: intermediate
+
+[90mstdout[2m | test/unit/stageB.test.ts[2m > [22m[2mStageB - Flashcard Generation[2m > [22m[2mrunStageB (with mocked LLM)[2m > [22m[2mshould call LLM and return parsed cards
+[22m[39m[StageB] Starting for module mod-test-001 with 2 chunks
+[StageB] Target: 10 cards, 2 learning objectives
+[StageB] Sending request to LLM (est. 631 input tokens)
+
+[90mstdout[2m | test/unit/stageA.test.ts[2m > [22m[2mStageA - Content Summarization[2m > [22m[2mrunStageA (with mocked LLM)[2m > [22m[2mshould set difficulty level
+[22m[39m[StageA] Starting for module mod-test-001 with 3 chunks
+[StageA] Sending request to LLM (est. 463 input tokens)
+
+[90mstdout[2m | test/unit/stageA.test.ts[2m > [22m[2mStageA - Content Summarization[2m > [22m[2mrunStageA (with mocked LLM)[2m > [22m[2mshould set difficulty level
+[22m[39m[StageA] Received response (est. 161 output tokens)
+[StageA] Completed in 1ms:
+  - Learning objectives: 3
+  - Key terms: 4
+  - Difficulty: intermediate
+
+[90mstdout[2m | test/unit/evidenceVerifier.test.ts[2m > [22m[2mEvidence Verifier[2m > [22m[2mverifyCardsBatch[2m > [22m[2mshould verify multiple cards
+[22m[39m[Verifier] Verifying 2 cards in heuristic mode
+
+[90mstdout[2m | test/unit/evidenceVerifier.test.ts[2m > [22m[2mEvidence Verifier[2m > [22m[2mverifyCardsBatch[2m > [22m[2mshould verify multiple cards
+[22m[39m[Verifier] Completed: 1 verified, 1 failed
+
+[90mstdout[2m | test/unit/stageA.test.ts[2m > [22m[2mStageA - Content Summarization[2m > [22m[2merror handling[2m > [22m[2mshould throw error when no chunks provided
+[22m[39m[StageA] Starting for module mod-test-001 with 0 chunks
+
+[90mstdout[2m | test/unit/evidenceVerifier.test.ts[2m > [22m[2mEvidence Verifier[2m > [22m[2mverifyCardsBatch[2m > [22m[2mshould calculate verification rate correctly
+[22m[39m[Verifier] Verifying 3 cards in heuristic mode
+
+[90mstdout[2m | test/unit/evidenceVerifier.test.ts[2m > [22m[2mEvidence Verifier[2m > [22m[2mverifyCardsBatch[2m > [22m[2mshould calculate verification rate correctly
+[22m[39m[Verifier] Completed: 2 verified, 1 failed
+
+[90mstdout[2m | test/unit/stageB.test.ts[2m > [22m[2mStageB - Flashcard Generation[2m > [22m[2mrunStageB (with mocked LLM)[2m > [22m[2mshould call LLM and return parsed cards
+[22m[39m[StageB] Received response (est. 235 output tokens)
+[StageB] Completed in 3ms:
+  - Cards generated: 2
+  - Warnings: 0
+
+[90mstdout[2m | test/unit/evidenceVerifier.test.ts[2m > [22m[2mEvidence Verifier[2m > [22m[2mverifyCardsBatch[2m > [22m[2mshould handle empty batch
+[22m[39m[Verifier] Verifying 0 cards in heuristic mode
+[Verifier] Completed: 0 verified, 0 failed
+
+[90mstdout[2m | test/unit/evidenceVerifier.test.ts[2m > [22m[2mEvidence Verifier[2m > [22m[2mverifyCardsBatch[2m > [22m[2mshould track processing time
+[22m[39m[Verifier] Verifying 1 cards in heuristic mode
+
+[90mstdout[2m | test/unit/evidenceVerifier.test.ts[2m > [22m[2mEvidence Verifier[2m > [22m[2mverifyCardsBatch[2m > [22m[2mshould track processing time
+[22m[39m[Verifier] Completed: 1 verified, 0 failed
+
+[90mstdout[2m | test/unit/stageB.test.ts[2m > [22m[2mStageB - Flashcard Generation[2m > [22m[2mrunStageB (with mocked LLM)[2m > [22m[2mshould match evidence to chunks
+[22m[39m[StageB] Starting for module mod-test-001 with 2 chunks
+[StageB] Target: 10 cards, 2 learning objectives
+[StageB] Sending request to LLM (est. 631 input tokens)
+
+[90mstdout[2m | test/unit/stageB.test.ts[2m > [22m[2mStageB - Flashcard Generation[2m > [22m[2mrunStageB (with mocked LLM)[2m > [22m[2mshould match evidence to chunks
+[22m[39m[StageB] Received response (est. 235 output tokens)
+[StageB] Completed in 1ms:
+  - Cards generated: 2
+  - Warnings: 0
+
+ [32mΓ£ô[39m test/unit/stageA.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+[90mstdout[2m | test/unit/stageB.test.ts[2m > [22m[2mStageB - Flashcard Generation[2m > [22m[2mrunStageB (with mocked LLM)[2m > [22m[2mshould set confidence scores
+[22m[39m[StageB] Starting for module mod-test-001 with 2 chunks
+[StageB] Target: 10 cards, 2 learning objectives
+[StageB] Sending request to LLM (est. 631 input tokens)
+
+[90mstdout[2m | test/unit/stageB.test.ts[2m > [22m[2mStageB - Flashcard Generation[2m > [22m[2mrunStageB (with mocked LLM)[2m > [22m[2mshould set confidence scores
+[22m[39m[StageB] Received response (est. 235 output tokens)
+[StageB] Completed in 0ms:
+  - Cards generated: 2
+  - Warnings: 0
+
+[90mstdout[2m | test/unit/stageB.test.ts[2m > [22m[2mStageB - Flashcard Generation[2m > [22m[2merror handling[2m > [22m[2mshould throw error when no chunks provided
+[22m[39m[StageB] Starting for module mod-test-001 with 0 chunks
+[StageB] Target: 10 cards, 0 learning objectives
+
+ [32mΓ£ô[39m test/unit/evidenceVerifier.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32mΓ£ô[39m test/unit/stageB.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[32m34 passed[39m[22m[90m (34)[39m
+[2m   Start at [22m 01:59:04
+[2m   Duration [22m 4.20s[2m (transform 318ms, setup 3.12s, collect 867ms, tests 43ms, environment 4.24s, prepare 551ms)[22m
+

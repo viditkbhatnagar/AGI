@@ -1,0 +1,536 @@
+{
+  "course_id": "Certified-Sustainability-And-Leadership",
+  "module_id": "Certified-Sustainability-And-Leadership::modules::0",
+  "module_title": "Introduction to ESG",
+  "cards": [
+    {
+      "card_id": "card_1",
+      "q": "What is ESG?",
+      "a": "ESG stands for Environmental, Social, and Governance factors.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Introduction to ESG",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "ESG stands for Environmental, Social, and Governance factors that impact business performance."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Introduction to ESG",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Understanding the definition of ESG is fundamental for any role related to sustainability and leadership.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_2",
+      "q": "Explain the difference between Environmental, Social, and Governance components of ESG.",
+      "a": "Environmental refers to pollution control and resource management, Social involves human rights and labor practices, and Governance includes regulatory compliance and ethical practices.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Introduction to ESG",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Components of ESG: Environmental, Social, Governance"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Introduction to ESG",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.8,
+      "rationale": "Distinguishing between ESG components is crucial for implementing effective sustainability strategies.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_3",
+      "q": "What are the benefits of ESG integration into corporate strategy?",
+      "a": "ESG integration enhances long-term profitability, reduces risks, and improves financial performance.",
+      "difficulty": "medium",
+      "bloom_level": "Apply",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Introduction to ESG",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Integrating ESG criteria into business strategies can enhance long-term profitability."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Introduction to ESG",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.85,
+      "rationale": "Understanding the benefits of ESG integration is key to making informed business decisions.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_4",
+      "q": "How would you implement ESG into a company's corporate strategy?",
+      "a": "Set measurable ESG goals, monitor progress, and adjust strategies as needed, ensuring alignment with overall corporate strategy and values.",
+      "difficulty": "hard",
+      "bloom_level": "Analyze",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Introduction to ESG",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Implement a system for tracking ESG performance against set goals."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Introduction to ESG",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.8,
+      "rationale": "Practical application of ESG integration is essential for sustainability leadership roles.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_5",
+      "q": "What is the importance of ESG in business sustainability?",
+      "a": "ESG is crucial for assessing sustainability and ethical impact, enhancing long-term profitability, and reducing risks.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Introduction to ESG",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "ESG factors are essential for assessing the sustainability and ethical impact of investments."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Introduction to ESG",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Recognizing the importance of ESG in business sustainability is vital for strategic decision-making.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_6",
+      "q": "What are the key components of ESG reporting?",
+      "a": "ESG reporting includes environmental, social, and governance metrics, such as carbon footprint, social impact, and regulatory compliance.",
+      "difficulty": "medium",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Introduction to ESG",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Components of ESG: Environmental, Social, Governance"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Introduction to ESG",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.85,
+      "rationale": "Understanding ESG reporting components is necessary for transparency and accountability.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_7",
+      "q": "Why is ESG important in investment decisions?",
+      "a": "ESG considerations help investors assess potential risks and opportunities, leading to more informed investment choices.",
+      "difficulty": "easy",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Introduction to ESG",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "ESG factors are essential for assessing the sustainability and ethical impact of investments."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Introduction to ESG",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "ESG is crucial for responsible and sustainable investment practices.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_8",
+      "q": "How would you address challenges in ESG implementation?",
+      "a": "Identify relevant ESG factors, set clear goals, and monitor progress, engaging stakeholders and adjusting strategies as needed.",
+      "difficulty": "hard",
+      "bloom_level": "Analyze",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Introduction to ESG",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Steps to overcome ESG challenges"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Introduction to ESG",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.8,
+      "rationale": "Practical skills in addressing ESG challenges are essential for effective sustainability leadership.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_9",
+      "q": "What is the role of ESG in corporate governance?",
+      "a": "ESG ensures accountability, transparency, and ethical practices, guiding corporate decisions and actions.",
+      "difficulty": "medium",
+      "bloom_level": "Apply",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Introduction to ESG",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Corporate governance refers to the systems and processes that direct and control a company."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Introduction to ESG",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.85,
+      "rationale": "Understanding ESG's role in corporate governance is vital for responsible business practices.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_10",
+      "q": "Explain the historical evolution of ESG.",
+      "a": "ESG emerged in the early 2000s, gained traction by the 2010s, and is now a critical factor in investment decisions and corporate strategies.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Introduction to ESG",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Historic Evolution of ESG"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Introduction to ESG",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Understanding the historical context of ESG is important for appreciating its current significance.",
+      "review_required": false
+    }
+  ],
+  "stage_a_output": {
+    "module_summary": [
+      {
+        "point": "Understanding ESG and its components",
+        "supports": [
+          "Environmental, Social, and Governance factors",
+          "Importance of ESG in business sustainability"
+        ]
+      },
+      {
+        "point": "Historical evolution of ESG",
+        "supports": [
+          "Early 2000s inception",
+          "2010s traction among institutional investors",
+          "UN Principles for Responsible Investment"
+        ]
+      },
+      {
+        "point": "Integrating ESG into corporate strategy",
+        "supports": [
+          "Setting measurable goals",
+          "Identifying key ESG factors",
+          "Monitoring and reporting progress"
+        ]
+      },
+      {
+        "point": "Benefits of ESG integration",
+        "supports": [
+          "Improved risk management",
+          "Operational efficiency gains",
+          "Talent attraction and retention",
+          "Better access to capital",
+          "Innovation and competitive edge",
+          "Enhanced brand reputation",
+          "Lower regulatory risk",
+          "Positive financial performance"
+        ]
+      },
+      {
+        "point": "Challenges in ESG implementation",
+        "supports": [
+          "Environmental challenges (waste management, resource scarcity, climate change)",
+          "Social challenges (workplace safety, human trafficking, community engagement, labor rights, diversity and inclusion)",
+          "Governance challenges (transparency issues, ethical standards, corporate governance)"
+        ]
+      },
+      {
+        "point": "Steps to overcome ESG challenges",
+        "supports": [
+          "Establishing clear metrics",
+          "Regular reviews and feedback",
+          "Policy development",
+          "Stakeholder engagement"
+        ]
+      },
+      {
+        "point": "Importance of ESG in business sustainability",
+        "supports": [
+          "Long-term sustainability",
+          "Risk management",
+          "Regulatory compliance",
+          "Stakeholder expectations",
+          "Reputation and financial stability"
+        ]
+      },
+      {
+        "point": "Role of ESG in investment decisions",
+        "supports": [
+          "Assessing sustainability and ethical impact",
+          "Long-term financial performance",
+          "Risk management"
+        ]
+      },
+      {
+        "point": "Industry-standard terminology",
+        "supports": [
+          "ESG criteria",
+          "Sustainability",
+          "Corporate governance",
+          "Social responsibility",
+          "Environmental stewardship"
+        ]
+      },
+      {
+        "point": "Practical skills and knowledge",
+        "supports": [
+          "Data analysis",
+          "Stakeholder engagement",
+          "Policy development",
+          "Risk management",
+          "Sustainability reporting"
+        ]
+      }
+    ],
+    "key_topics": [
+      {
+        "topic": "ESG components (Environmental, Social, Governance)",
+        "supports": [
+          "Pollution control",
+          "Resource management",
+          "Carbon footprint",
+          "Social impact",
+          "Human rights",
+          "Community engagement",
+          "Labor practices",
+          "Regulatory compliance",
+          "Ethical practices",
+          "Corporate governance"
+        ]
+      },
+      {
+        "topic": "ESG integration into corporate strategy",
+        "supports": [
+          "Setting measurable goals",
+          "Identifying key ESG factors",
+          "Monitoring and reporting progress"
+        ]
+      },
+      {
+        "topic": "Benefits of ESG integration",
+        "supports": [
+          "Improved risk management",
+          "Operational efficiency gains",
+          "Talent attraction and retention",
+          "Better access to capital",
+          "Innovation and competitive edge",
+          "Enhanced brand reputation",
+          "Lower regulatory risk",
+          "Positive financial performance"
+        ]
+      },
+      {
+        "topic": "Challenges in ESG implementation",
+        "supports": [
+          "Environmental challenges (waste management, resource scarcity, climate change)",
+          "Social challenges (workplace safety, human trafficking, community engagement, labor rights, diversity and inclusion)",
+          "Governance challenges (transparency issues, ethical standards, corporate governance)"
+        ]
+      },
+      {
+        "topic": "Steps to overcome ESG challenges",
+        "supports": [
+          "Establishing clear metrics",
+          "Regular reviews and feedback",
+          "Policy development",
+          "Stakeholder engagement"
+        ]
+      },
+      {
+        "topic": "ESG events and their impact",
+        "supports": [
+          "Case studies of companies with positive and negative ESG impacts"
+        ]
+      },
+      {
+        "topic": "Importance of ESG in business sustainability",
+        "supports": [
+          "Long-term sustainability",
+          "Risk management",
+          "Regulatory compliance",
+          "Stakeholder expectations",
+          "Reputation and financial stability"
+        ]
+      },
+      {
+        "topic": "Role of ESG in investment decisions",
+        "supports": [
+          "Assessing sustainability and ethical impact",
+          "Long-term financial performance",
+          "Risk management"
+        ]
+      },
+      {
+        "topic": "Industry-standard terminology",
+        "supports": [
+          "ESG criteria",
+          "Sustainability",
+          "Corporate governance",
+          "Social responsibility",
+          "Environmental stewardship"
+        ]
+      },
+      {
+        "topic": "Practical skills and knowledge",
+        "supports": [
+          "Data analysis",
+          "Stakeholder engagement",
+          "Policy development",
+          "Risk management",
+          "Sustainability reporting"
+        ]
+      },
+      {
+        "topic": "ESG reporting and disclosure",
+        "supports": [
+          "Transparency",
+          "Accountability",
+          "Stakeholder engagement"
+        ]
+      },
+      {
+        "topic": "ESG and corporate governance",
+        "supports": [
+          "Board composition",
+          "Executive compensation",
+          "Audit committee",
+          "Risk management"
+        ]
+      },
+      {
+        "topic": "ESG and social responsibility",
+        "supports": [
+          "Human rights",
+          "Labor practices",
+          "Community engagement",
+          "Diversity and inclusion"
+        ]
+      },
+      {
+        "topic": "ESG and environmental stewardship",
+        "supports": [
+          "Climate change",
+          "Resource management",
+          "Pollution control",
+          "Biodiversity conservation"
+        ]
+      },
+      {
+        "topic": "ESG and risk management",
+        "supports": [
+          "Risk assessment",
+          "Risk mitigation",
+          "Risk monitoring"
+        ]
+      },
+      {
+        "topic": "ESG and sustainability reporting",
+        "supports": [
+          "Reporting frameworks",
+          "Reporting standards",
+          "Assurance and verification"
+        ]
+      }
+    ],
+    "coverage_map": []
+  },
+  "warnings": [],
+  "generation_metadata": {
+    "model": "meta-llama/llama-3.3-70b-instruct:free",
+    "temperature": 0.1,
+    "timestamp": "2025-12-16T05:04:40.057Z"
+  },
+  "created_at": "2025-12-16T05:06:22.162Z",
+  "updated_at": "2025-12-16T05:06:22.162Z",
+  "reviewed_by": null,
+  "review_status": "pending",
+  "id": "deck_Certified-Sustainability-And-Leadership::modules::0_1765861582165",
+  "saved_at": "2025-12-16T05:06:22.165Z",
+  "file_path": "C:\\codes\\AGI\\server\\tmp\\decks\\Certified-Sustainability-And-Leadership__modules__0-1765861582165.json"
+}

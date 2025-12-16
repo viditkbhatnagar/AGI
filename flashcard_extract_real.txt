@@ -1,0 +1,307 @@
+
+> rest-express@1.0.0 flashcard:extract:real
+> tsx scripts/test-flashcards.ts --real --extract
+
+============================================================
+Flashcard Generation Test
+============================================================
+Mode: REAL
+Extract Content: YES
+GEMINI_API_KEY: Set
+
+[1] Connecting to MongoDB...
+MongoDB connected successfully
+    Γ£ô Connected
+
+[2] Fetching available courses...
+    Γ£ô Found 22 courses
+
+    Available courses:
+    1. certified-supply-chain-professional - "Certified Supply Chain Professional" (9 modules)
+    2. Accounting-and-Finance - "Accounting and Finance" (11 modules)
+    3. Certified-Logistics-Manager - "Certified Logistics Manager" (10 modules)
+    4. Certified-Human-Resource-Professional - "Certified Human Resource Professional" (11 modules)
+    5. Certified-Sustainability-And-Leadership - "Certified Sustainability Leadership And Management" (12 modules)
+    ... and 17 more
+
+[3] Selected course: certified-supply-chain-professional
+    Γ£ô Found 9 modules
+
+    Modules:
+    - Module 0: "Supply Chain Strategy and Design" (3 docs, 2 videos)
+    - Module 1: "Demand Planning and Sales & Operations Planning (S&OP)" (2 docs, 2 videos)
+    - Module 2: "Strategic Sourcing and Procurement" (2 docs, 1 videos)
+    - Module 3: "Manufacturing, Operations, and Flow Management" (2 docs, 1 videos)
+    - Module 4: " Inventory Optimization and Control" (2 docs, 2 videos)
+    - Module 5: "Supply Chain Technology and Digital Transformation" (3 docs, 1 videos)
+    - Module 6: "Sustainable and Ethical Supply Chains" (2 docs, 1 videos)
+    - Module 7: "Supply Chain Performance Measurement and Analytics" (2 docs, 1 videos)
+    - Module 8: "Artificial Intelligence in Supply Chain Management" (2 docs, 1 videos)
+
+[4] Fetching content for module 0...
+[ContentFetcher] Fetching content for certified-supply-chain-professional/module-0
+[ContentFetcher] Found 3 documents, 2 videos, 0 recordings
+    Γ£ô Module: Supply Chain Strategy and Design
+    Γ£ô Documents: 3
+    Γ£ô Videos: 2
+    Γ£ô Recordings: 0
+
+    Documents:
+    1. [google_drive] Supply-Chain-Management Page 1-34
+    2. [google_drive] strategy-report-short
+    3. [google_drive] Supply Chain Strategy and Design
+
+[5] Preparing chunks for generation...
+    Using document content extraction...
+[ContentFetcher] Extracting content from 3 documents, 2 videos, 0 recordings
+[DocExtractor] Extracting from 3 documents, 2 videos, 0 recordings
+[DocExtractor] Extracting: Supply-Chain-Management Page 1-34 (google_drive)
+[DocExtractor] PDF parsing failed: TypeError: pdfParse is not a function
+    at extractTextFromPDF (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:99:28)
+    at async fetchGoogleDriveContent (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:175:30)
+    at async extractDocumentContent (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:330:28)
+    at async extractAllContent (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:497:31)
+    at async prepareChunksWithExtraction (C:\codes\AGI\server\services\flashcard\contentFetcher.ts:330:31)
+    at async main (C:\codes\AGI\scripts\test-flashcards.ts:112:24)
+[DocExtractor] Using Gemini for: Supply-Chain-Management Page 1-34
+[Gemini] Retry attempt 1 after 49000ms - [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
+[Retry] Attempt 1 failed, retrying in 49000ms...
+[Gemini] Retry attempt 2 after 59000ms - [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
+[Retry] Attempt 2 failed, retrying in 59000ms...
+[Gemini] Retry attempt 3 after 59000ms - [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
+[Retry] Attempt 3 failed, retrying in 59000ms...
+[Gemini] Retry attempt 4 after 59000ms - [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
+[Retry] Attempt 4 failed, retrying in 59000ms...
+[Gemini] Retry attempt 5 after 33821.1307638142ms - [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
+[Retry] Attempt 5 failed, retrying in 33821.1307638142ms...
+[DocExtractor] Gemini extraction failed: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent: [429 Too Many Requests] You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash
+Please retry in 25.286899052s. [{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Learn more about Gemini API quotas","url":"https://ai.google.dev/gemini-api/docs/rate-limits"}]},{"@type":"type.googleapis.com/google.rpc.QuotaFailure","violations":[{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_requests","quotaId":"GenerateRequestsPerDayPerProjectPerModel-FreeTier","quotaDimensions":{"model":"gemini-2.0-flash","location":"global"}},{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_requests","quotaId":"GenerateRequestsPerMinutePerProjectPerModel-FreeTier","quotaDimensions":{"location":"global","model":"gemini-2.0-flash"}},{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count","quotaId":"GenerateContentInputTokensPerModelPerMinute-FreeTier","quotaDimensions":{"location":"global","model":"gemini-2.0-flash"}}]},{"@type":"type.googleapis.com/google.rpc.RetryInfo","retryDelay":"25s"}]
+    at handleResponseNotOk (file:///C:/codes/AGI/node_modules/@google/generative-ai/dist/index.mjs:432:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (file:///C:/codes/AGI/node_modules/@google/generative-ai/dist/index.mjs:401:9)
+    at async generateContent (file:///C:/codes/AGI/node_modules/@google/generative-ai/dist/index.mjs:865:22)
+    at async withRetry (C:\codes\AGI\server\services\flashcard\utils\retry.ts:207:26)
+    at async withRetryThrow (C:\codes\AGI\server\services\flashcard\utils\retry.ts:275:20)
+    at async extractWithGemini (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:263:24)
+    at async extractDocumentContent (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:354:16)
+    at async extractAllContent (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:497:31)
+    at async prepareChunksWithExtraction (C:\codes\AGI\server\services\flashcard\contentFetcher.ts:330:31) {
+  status: 429,
+  statusText: 'Too Many Requests',
+  errorDetails: [
+    { '@type': 'type.googleapis.com/google.rpc.Help', links: [Array] },
+    {
+      '@type': 'type.googleapis.com/google.rpc.QuotaFailure',
+      violations: [Array]
+    },
+    {
+      '@type': 'type.googleapis.com/google.rpc.RetryInfo',
+      retryDelay: '25s'
+    }
+  ],
+  attempts: 6,
+  totalDelayMs: 259821.1307638142
+}
+[DocExtractor] Using fallback for: Supply-Chain-Management Page 1-34
+[DocExtractor] Extracting: strategy-report-short (google_drive)
+[DocExtractor] PDF parsing failed: TypeError: pdfParse is not a function
+    at extractTextFromPDF (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:99:28)
+    at async fetchGoogleDriveContent (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:175:30)
+    at async extractDocumentContent (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:330:28)
+    at async extractAllContent (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:497:31)
+    at async prepareChunksWithExtraction (C:\codes\AGI\server\services\flashcard\contentFetcher.ts:330:31)
+    at async main (C:\codes\AGI\scripts\test-flashcards.ts:112:24)
+[DocExtractor] Using Gemini for: strategy-report-short
+[Gemini] Retry attempt 1 after 18000ms - [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
+[Retry] Attempt 1 failed, retrying in 18000ms...
+[Gemini] Retry attempt 2 after 59000ms - [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
+[Retry] Attempt 2 failed, retrying in 59000ms...
+[Gemini] Retry attempt 3 after 59000ms - [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
+[Retry] Attempt 3 failed, retrying in 59000ms...
+[Gemini] Retry attempt 4 after 15730.341952591261ms - [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
+[Retry] Attempt 4 failed, retrying in 15730.341952591261ms...
+[Gemini] Retry attempt 5 after 43000ms - [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
+[Retry] Attempt 5 failed, retrying in 43000ms...
+[DocExtractor] Using fallback for: strategy-report-short
+[DocExtractor] Gemini extraction failed: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent: [429 Too Many Requests] You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash
+Please retry in 59.856687824s. [{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Learn more about Gemini API quotas","url":"https://ai.google.dev/gemini-api/docs/rate-limits"}]},{"@type":"type.googleapis.com/google.rpc.QuotaFailure","violations":[{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count","quotaId":"GenerateContentInputTokensPerModelPerMinute-FreeTier","quotaDimensions":{"location":"global","model":"gemini-2.0-flash"}},{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_requests","quotaId":"GenerateRequestsPerMinutePerProjectPerModel-FreeTier","quotaDimensions":{"location":"global","model":"gemini-2.0-flash"}},{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_requests","quotaId":"GenerateRequestsPerDayPerProjectPerModel-FreeTier","quotaDimensions":{"location":"global","model":"gemini-2.0-flash"}}]},{"@type":"type.googleapis.com/google.rpc.RetryInfo","retryDelay":"59s"}]
+    at handleResponseNotOk (file:///C:/codes/AGI/node_modules/@google/generative-ai/dist/index.mjs:432:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (file:///C:/codes/AGI/node_modules/@google/generative-ai/dist/index.mjs:401:9)
+    at async generateContent (file:///C:/codes/AGI/node_modules/@google/generative-ai/dist/index.mjs:865:22)
+    at async withRetry (C:\codes\AGI\server\services\flashcard\utils\retry.ts:207:26)
+    at async withRetryThrow (C:\codes\AGI\server\services\flashcard\utils\retry.ts:275:20)
+    at async extractWithGemini (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:263:24)
+    at async extractDocumentContent (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:354:16)
+    at async extractAllContent (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:497:31)
+    at async prepareChunksWithExtraction (C:\codes\AGI\server\services\flashcard\contentFetcher.ts:330:31) {
+  status: 429,
+  statusText: 'Too Many Requests',
+  errorDetails: [
+    { '@type': 'type.googleapis.com/google.rpc.Help', links: [Array] },
+    {
+      '@type': 'type.googleapis.com/google.rpc.QuotaFailure',
+      violations: [Array]
+    },
+    {
+      '@type': 'type.googleapis.com/google.rpc.RetryInfo',
+      retryDelay: '59s'
+    }
+  ],
+  attempts: 6,
+  totalDelayMs: 194730.34195259126
+}
+[DocExtractor] Extracting: Supply Chain Strategy and Design (google_drive)
+[DocExtractor] PDF parsing failed: TypeError: pdfParse is not a function
+    at extractTextFromPDF (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:99:28)
+    at async fetchGoogleDriveContent (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:175:30)
+    at async extractDocumentContent (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:330:28)
+    at async extractAllContent (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:497:31)
+    at async prepareChunksWithExtraction (C:\codes\AGI\server\services\flashcard\contentFetcher.ts:330:31)
+    at async main (C:\codes\AGI\scripts\test-flashcards.ts:112:24)
+[DocExtractor] Using Gemini for: Supply Chain Strategy and Design
+[Gemini] Retry attempt 1 after 54000ms - [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
+[Retry] Attempt 1 failed, retrying in 54000ms...
+[Gemini] Retry attempt 2 after 59000ms - [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
+[Retry] Attempt 2 failed, retrying in 59000ms...
+[Gemini] Retry attempt 3 after 59000ms - [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
+[Retry] Attempt 3 failed, retrying in 59000ms...
+[Gemini] Retry attempt 4 after 59000ms - [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
+[Retry] Attempt 4 failed, retrying in 59000ms...
+[Gemini] Retry attempt 5 after 59000ms - [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
+[Retry] Attempt 5 failed, retrying in 59000ms...
+[DocExtractor] Using fallback for: Supply Chain Strategy and Design
+[DocExtractor] Gemini extraction failed: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent: [429 Too Many Requests] You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash
+Please retry in 28.777111ms. [{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Learn more about Gemini API quotas","url":"https://ai.google.dev/gemini-api/docs/rate-limits"}]},{"@type":"type.googleapis.com/google.rpc.QuotaFailure","violations":[{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_requests","quotaId":"GenerateRequestsPerDayPerProjectPerModel-FreeTier","quotaDimensions":{"location":"global","model":"gemini-2.0-flash"}},{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_requests","quotaId":"GenerateRequestsPerMinutePerProjectPerModel-FreeTier","quotaDimensions":{"location":"global","model":"gemini-2.0-flash"}},{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count","quotaId":"GenerateContentInputTokensPerModelPerMinute-FreeTier","quotaDimensions":{"location":"global","model":"gemini-2.0-flash"}}]},{"@type":"type.googleapis.com/google.rpc.RetryInfo","retryDelay":"0s"}]
+    at handleResponseNotOk (file:///C:/codes/AGI/node_modules/@google/generative-ai/dist/index.mjs:432:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (file:///C:/codes/AGI/node_modules/@google/generative-ai/dist/index.mjs:401:9)
+    at async generateContent (file:///C:/codes/AGI/node_modules/@google/generative-ai/dist/index.mjs:865:22)
+    at async withRetry (C:\codes\AGI\server\services\flashcard\utils\retry.ts:207:26)
+    at async withRetryThrow (C:\codes\AGI\server\services\flashcard\utils\retry.ts:275:20)
+    at async extractWithGemini (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:263:24)
+    at async extractDocumentContent (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:354:16)
+    at async extractAllContent (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:497:31)
+    at async prepareChunksWithExtraction (C:\codes\AGI\server\services\flashcard\contentFetcher.ts:330:31) {
+  status: 429,
+  statusText: 'Too Many Requests',
+  errorDetails: [
+    { '@type': 'type.googleapis.com/google.rpc.Help', links: [Array] },
+    {
+      '@type': 'type.googleapis.com/google.rpc.QuotaFailure',
+      violations: [Array]
+    },
+    {
+      '@type': 'type.googleapis.com/google.rpc.RetryInfo',
+      retryDelay: '0s'
+    }
+  ],
+  attempts: 6,
+  totalDelayMs: 290000
+}
+[Gemini] Retry attempt 1 after 59000ms - [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
+[Retry] Attempt 1 failed, retrying in 59000ms...
+[Gemini] Retry attempt 2 after 59000ms - [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
+[Retry] Attempt 2 failed, retrying in 59000ms...
+[Gemini] Retry attempt 3 after 59000ms - [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
+[Retry] Attempt 3 failed, retrying in 59000ms...
+[Gemini] Retry attempt 4 after 13471.85685259562ms - [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
+[Retry] Attempt 4 failed, retrying in 13471.85685259562ms...
+[Gemini] Retry attempt 5 after 46000ms - [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
+[Retry] Attempt 5 failed, retrying in 46000ms...
+[DocExtractor] Video Gemini extraction failed: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent: [429 Too Many Requests] You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash
+Please retry in 59.245370916s. [{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Learn more about Gemini API quotas","url":"https://ai.google.dev/gemini-api/docs/rate-limits"}]},{"@type":"type.googleapis.com/google.rpc.QuotaFailure","violations":[{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_requests","quotaId":"GenerateRequestsPerDayPerProjectPerModel-FreeTier","quotaDimensions":{"model":"gemini-2.0-flash","location":"global"}},{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_requests","quotaId":"GenerateRequestsPerMinutePerProjectPerModel-FreeTier","quotaDimensions":{"location":"global","model":"gemini-2.0-flash"}},{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count","quotaId":"GenerateContentInputTokensPerModelPerMinute-FreeTier","quotaDimensions":{"model":"gemini-2.0-flash","location":"global"}}]},{"@type":"type.googleapis.com/google.rpc.RetryInfo","retryDelay":"59s"}]
+    at handleResponseNotOk (file:///C:/codes/AGI/node_modules/@google/generative-ai/dist/index.mjs:432:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (file:///C:/codes/AGI/node_modules/@google/generative-ai/dist/index.mjs:401:9)
+    at async generateContent (file:///C:/codes/AGI/node_modules/@google/generative-ai/dist/index.mjs:865:22)
+    at async withRetry (C:\codes\AGI\server\services\flashcard\utils\retry.ts:207:26)
+    at async withRetryThrow (C:\codes\AGI\server\services\flashcard\utils\retry.ts:275:20)
+    at async extractVideoContent (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:417:28)
+    at async extractAllContent (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:507:31)
+    at async prepareChunksWithExtraction (C:\codes\AGI\server\services\flashcard\contentFetcher.ts:330:31)
+    at async main (C:\codes\AGI\scripts\test-flashcards.ts:112:24) {
+  status: 429,
+  statusText: 'Too Many Requests',
+  errorDetails: [
+    { '@type': 'type.googleapis.com/google.rpc.Help', links: [Array] },
+    {
+      '@type': 'type.googleapis.com/google.rpc.QuotaFailure',
+      violations: [Array]
+    },
+    {
+      '@type': 'type.googleapis.com/google.rpc.RetryInfo',
+      retryDelay: '59s'
+    }
+  ],
+  attempts: 6,
+  totalDelayMs: 236471.8568525956
+}
+[Gemini] Retry attempt 1 after 59000ms - [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
+[Retry] Attempt 1 failed, retrying in 59000ms...
+[Gemini] Retry attempt 2 after 59000ms - [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
+[Retry] Attempt 2 failed, retrying in 59000ms...
+[Gemini] Retry attempt 3 after 59000ms - [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
+[Retry] Attempt 3 failed, retrying in 59000ms...
+[Gemini] Retry attempt 4 after 17953.939343817325ms - [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
+[Retry] Attempt 4 failed, retrying in 17953.939343817325ms...
+[Gemini] Retry attempt 5 after 41000ms - [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
+[Retry] Attempt 5 failed, retrying in 41000ms...
+[DocExtractor] Video Gemini extraction failed: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent: [429 Too Many Requests] You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash
+Please retry in 59.538021766s. [{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Learn more about Gemini API quotas","url":"https://ai.google.dev/gemini-api/docs/rate-limits"}]},{"@type":"type.googleapis.com/google.rpc.QuotaFailure","violations":[{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_requests","quotaId":"GenerateRequestsPerDayPerProjectPerModel-FreeTier","quotaDimensions":{"model":"gemini-2.0-flash","location":"global"}},{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_requests","quotaId":"GenerateRequestsPerMinutePerProjectPerModel-FreeTier","quotaDimensions":{"location":"global","model":"gemini-2.0-flash"}},{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count","quotaId":"GenerateContentInputTokensPerModelPerMinute-FreeTier","quotaDimensions":{"location":"global","model":"gemini-2.0-flash"}}]},{"@type":"type.googleapis.com/google.rpc.RetryInfo","retryDelay":"59s"}]
+    at handleResponseNotOk (file:///C:/codes/AGI/node_modules/@google/generative-ai/dist/index.mjs:432:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (file:///C:/codes/AGI/node_modules/@google/generative-ai/dist/index.mjs:401:9)
+    at async generateContent (file:///C:/codes/AGI/node_modules/@google/generative-ai/dist/index.mjs:865:22)
+    at async withRetry (C:\codes\AGI\server\services\flashcard\utils\retry.ts:207:26)
+    at async withRetryThrow (C:\codes\AGI\server\services\flashcard\utils\retry.ts:275:20)
+    at async extractVideoContent (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:417:28)
+    at async extractAllContent (C:\codes\AGI\server\services\flashcard\documentExtractor.ts:507:31)
+    at async prepareChunksWithExtraction (C:\codes\AGI\server\services\flashcard\contentFetcher.ts:330:31)
+    at async main (C:\codes\AGI\scripts\test-flashcards.ts:112:24) {
+  status: 429,
+  statusText: 'Too Many Requests',
+  errorDetails: [
+    { '@type': 'type.googleapis.com/google.rpc.Help', links: [Array] },
+    {
+      '@type': 'type.googleapis.com/google.rpc.QuotaFailure',
+      violations: [Array]
+    },
+    {
+      '@type': 'type.googleapis.com/google.rpc.RetryInfo',
+      retryDelay: '59s'
+    }
+  ],
+  attempts: 6,
+  totalDelayMs: 235953.93934381733
+}
+[DocExtractor] Extraction complete: 0/5 successful
+[ContentFetcher] Prepared 5 chunks with extracted content
+    Γ£ô Created 5 chunks
+
+[6] Running StageA (content analysis)...
+[StageA] Starting for module certified-supply-chain-professional::modules::0 with 5 chunks
+[StageA] Sending request to LLM (est. 980 input tokens)
+[StageA] Retry attempt 1 in 59000ms - [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googl
+[Retry] Attempt 1 failed, retrying in 59000ms...
+[StageA] Retry attempt 2 in 4940.079310716391ms - [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googl
+[Retry] Attempt 2 failed, retrying in 4940.079310716391ms...
+[StageA] Retry attempt 3 in 54000ms - [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googl
+[Retry] Attempt 3 failed, retrying in 54000ms...
+[StageA] Retry attempt 4 in 59000ms - [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googl
+[Retry] Attempt 4 failed, retrying in 59000ms...

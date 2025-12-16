@@ -1,0 +1,367 @@
+{
+  "course_id": "Certified-Training-and-Development-Professional",
+  "module_id": "Certified-Training-and-Development-Professional::modules::4",
+  "module_title": "Unit 5",
+  "cards": [
+    {
+      "card_id": "card_1",
+      "q": "What is the strategic role of training and development in organizations?",
+      "a": "Training and development align employee skills with organizational goals, enhancing performance and competitive advantage.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src1",
+          "source_file": "Unit 5",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "The Impact of Implementing Learning & Development"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 5",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Understanding the strategic role is fundamental for aligning training with business objectives.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_2",
+      "q": "Explain the difference between employee engagement and motivation.",
+      "a": "Engagement is the emotional commitment to the organization, while motivation is the drive to achieve goals.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src2",
+          "source_file": "Unit 5",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "The Difference Between Employee Engagement & Motivation"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 5",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Differentiating these concepts helps in designing effective engagement strategies.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_3",
+      "q": "How would you conduct a training needs analysis?",
+      "a": "Identify organizational goals, assess current skills, determine gaps, and prioritize training needs.",
+      "difficulty": "hard",
+      "bloom_level": "Apply",
+      "evidence": [
+        {
+          "chunk_id": "src3",
+          "source_file": "Unit 5",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Needs Analysis Process"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 5",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Practical application of needs analysis is crucial for effective training design.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_4",
+      "q": "What are the key components of an inclusive learning culture?",
+      "a": "Diversity, accessibility, continuous feedback, and supportive leadership.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src4",
+          "source_file": "Unit 5",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Inclusive Learning Cultures"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 5",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Inclusive cultures enhance learning effectiveness and employee satisfaction.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_5",
+      "q": "Why is the transfer of learning important in training programs?",
+      "a": "It ensures skills and knowledge are applied in the workplace, maximizing training ROI.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src5",
+          "source_file": "Unit 5",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "What is the Transfer of Learning?"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 5",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Transfer of learning is critical for achieving training objectives.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_6",
+      "q": "How can e-learning enhance training effectiveness?",
+      "a": "E-learning offers flexibility, scalability, and personalized learning experiences.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src6",
+          "source_file": "Unit 5",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "e-Learning and Technology in Training"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 5",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "E-learning is increasingly used for its adaptability to diverse learning needs.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_7",
+      "q": "What is Adult Learning Theory?",
+      "a": "It focuses on how adults learn differently from children, emphasizing self-direction and practical application.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src7",
+          "source_file": "Unit 5",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "What is Adult Learning Theory?"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 5",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Understanding adult learning principles is essential for effective training design.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_8",
+      "q": "Explain how coaching can improve employee performance.",
+      "a": "Coaching provides personalized feedback and support, fostering skill development and confidence.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src8",
+          "source_file": "Unit 5",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Coaching for Performance"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 5",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Coaching is a key tool for enhancing individual and team performance.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_9",
+      "q": "How would you integrate technology into a training program?",
+      "a": "Use LMS for tracking, incorporate multimedia for engagement, and enable mobile access for flexibility.",
+      "difficulty": "hard",
+      "bloom_level": "Apply",
+      "evidence": [
+        {
+          "chunk_id": "src9",
+          "source_file": "Unit 5",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "e-Learning and Technology in Training"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 5",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Technology integration is crucial for modern, effective training solutions.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_10",
+      "q": "What are the benefits of conducting a training program evaluation?",
+      "a": "Evaluations identify program effectiveness, inform improvements, and justify training investments.",
+      "difficulty": "hard",
+      "bloom_level": "Apply",
+      "evidence": [
+        {
+          "chunk_id": "src10",
+          "source_file": "Unit 5",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Purpose of Training Program Evaluation"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Unit 5",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Evaluations ensure training programs meet organizational and learner needs.",
+      "review_required": false
+    }
+  ],
+  "stage_a_output": {
+    "module_summary": [
+      {
+        "point": "Strategic Role of Training and Development",
+        "supports": [
+          "Understanding how training initiatives impact organizational success.",
+          "Importance of investing in workforce development for competitive advantage."
+        ]
+      },
+      {
+        "point": "Adult Learning Theory",
+        "supports": [
+          "Differences between adult and child learning processes.",
+          "Application of adult learning principles in corporate training."
+        ]
+      },
+      {
+        "point": "Employee Motivation and Engagement",
+        "supports": [
+          "Distinguishing between motivation and engagement.",
+          "Strategies to enhance employee engagement in the workplace."
+        ]
+      },
+      {
+        "point": "Training Needs Analysis",
+        "supports": [
+          "Process and types of training needs analysis.",
+          "Developing effective training plans based on needs analysis."
+        ]
+      },
+      {
+        "point": "Inclusive Learning Cultures",
+        "supports": [
+          "Developing strategies for inclusive learning environments.",
+          "Addressing barriers to participation in learning."
+        ]
+      }
+    ],
+    "key_topics": [
+      {
+        "topic": "Learning & Development Metrics",
+        "supports": [
+          "Key metrics for evaluating training effectiveness.",
+          "Importance of aligning training outcomes with organizational goals."
+        ]
+      },
+      {
+        "topic": "Transfer of Learning",
+        "supports": [
+          "Strategies to enhance learning transfer in program planning.",
+          "Facilitation techniques for effective learning transfer."
+        ]
+      },
+      {
+        "topic": "e-Learning and Technology in Training",
+        "supports": [
+          "Impact of e-learning on workforce development.",
+          "Role of technology in modern training programs."
+        ]
+      },
+      {
+        "topic": "Performance Management",
+        "supports": [
+          "Components of effective performance management systems.",
+          "Role of regular check-ins and performance reviews."
+        ]
+      },
+      {
+        "topic": "Coaching for Performance",
+        "supports": [
+          "Methods and models for effective coaching.",
+          "Use of open-ended questions in coaching sessions."
+        ]
+      }
+    ],
+    "coverage_map": []
+  },
+  "warnings": [],
+  "generation_metadata": {
+    "model": "gpt-4o",
+    "temperature": 0.1,
+    "timestamp": "2025-12-16T15:45:55.523Z"
+  },
+  "created_at": "2025-12-16T15:46:17.507Z",
+  "updated_at": "2025-12-16T15:46:17.507Z",
+  "reviewed_by": null,
+  "review_status": "pending",
+  "id": "deck_Certified-Training-and-Development-Professional::modules::4_1765899977509",
+  "saved_at": "2025-12-16T15:46:17.510Z",
+  "file_path": "C:\\codes\\AGI\\server\\tmp\\decks\\Certified-Training-and-Development-Professional__modules__4-1765899977509.json"
+}

@@ -1,0 +1,90 @@
+[
+  {
+    "chunk_id": "c1",
+    "source_file": "hr_fundamentals_slides.pptx",
+    "provider": "local",
+    "slide_or_page": "slide 2",
+    "start_sec": null,
+    "end_sec": null,
+    "heading": "Definition of Organizational Culture",
+    "text": "Organizational culture is a system of shared assumptions, values, and beliefs which governs how people behave in organizations. These shared values have a strong influence on the people in the organization and dictate how they dress, act, and perform their jobs.",
+    "tokens_est": 45
+  },
+  {
+    "chunk_id": "c2",
+    "source_file": "hr_fundamentals_slides.pptx",
+    "provider": "local",
+    "slide_or_page": "slide 5",
+    "start_sec": null,
+    "end_sec": null,
+    "heading": "Types of Organizational Culture",
+    "text": "There are four main types of organizational culture: Clan Culture (collaborative), Adhocracy Culture (creative), Market Culture (competitive), and Hierarchy Culture (controlled). Each type has distinct characteristics that influence employee behavior and organizational outcomes.",
+    "tokens_est": 42
+  },
+  {
+    "chunk_id": "c3",
+    "source_file": "recruitment_reading.pdf",
+    "provider": "local",
+    "slide_or_page": "p.12",
+    "start_sec": null,
+    "end_sec": null,
+    "heading": "Recruitment Process Overview",
+    "text": "Recruitment refers to the overall process of attracting, shortlisting, selecting and appointing suitable candidates for jobs within an organization. The recruitment process includes analyzing job requirements, attracting candidates, screening applications, and selecting the right candidate.",
+    "tokens_est": 48
+  },
+  {
+    "chunk_id": "c4",
+    "source_file": "recruitment_reading.pdf",
+    "provider": "local",
+    "slide_or_page": "p.15",
+    "start_sec": null,
+    "end_sec": null,
+    "heading": "Internal vs External Recruitment",
+    "text": "Internal recruitment involves filling vacancies with existing employees through promotions or transfers. External recruitment brings in new talent from outside the organization. Both methods have advantages: internal recruitment improves morale and reduces training costs, while external recruitment brings fresh perspectives and new skills.",
+    "tokens_est": 52
+  },
+  {
+    "chunk_id": "c5",
+    "source_file": "hr_lecture_recording.mp4",
+    "provider": "google_drive",
+    "slide_or_page": "05:30-06:45",
+    "start_sec": 330,
+    "end_sec": 405,
+    "heading": "Employee Training and Development",
+    "text": "Employee training is essential for developing skills and improving performance in the workplace. Training programs should be aligned with organizational goals and individual career development plans. Effective training leads to increased productivity, improved job satisfaction, and reduced turnover.",
+    "tokens_est": 46
+  },
+  {
+    "chunk_id": "c6",
+    "source_file": "hr_lecture_recording.mp4",
+    "provider": "google_drive",
+    "slide_or_page": "12:15-13:30",
+    "start_sec": 735,
+    "end_sec": 810,
+    "heading": "Performance Management",
+    "text": "Performance management is a continuous process of identifying, measuring, and developing the performance of individuals and teams. It involves setting clear expectations, providing regular feedback, conducting performance reviews, and creating development plans to help employees reach their full potential.",
+    "tokens_est": 48
+  },
+  {
+    "chunk_id": "c7",
+    "source_file": "compensation_slides.pptx",
+    "provider": "local",
+    "slide_or_page": "slide 8",
+    "start_sec": null,
+    "end_sec": null,
+    "heading": "Compensation and Benefits",
+    "text": "Compensation includes all forms of pay and rewards received by employees for their work. This includes base salary, bonuses, commissions, and benefits such as health insurance, retirement plans, and paid time off. A competitive compensation package helps attract and retain top talent.",
+    "tokens_est": 50
+  },
+  {
+    "chunk_id": "c8",
+    "source_file": "employee_relations.pdf",
+    "provider": "local",
+    "slide_or_page": "p.23",
+    "start_sec": null,
+    "end_sec": null,
+    "heading": "Employee Relations and Engagement",
+    "text": "Employee relations focuses on maintaining positive relationships between employers and employees. Strong employee relations lead to higher engagement, better communication, and a more productive work environment. Key factors include fair treatment, open communication, recognition programs, and work-life balance initiatives.",
+    "tokens_est": 47
+  }
+]

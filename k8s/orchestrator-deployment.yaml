@@ -1,0 +1,385 @@
+# Kubernetes Deployment - Orchestrator Worker
+#
+# Deploys the flashcard orchestrator worker with:
+# - Deployment with configurable replicas
+# - Horizontal Pod Autoscaler (HPA)
+# - Service for metrics scraping
+# - ConfigMap for environment variables
+# - Secret references for sensitive data
+#
+# Usage:
+#   # Apply all resources
+#   kubectl apply -f k8s/orchestrator-deployment.yaml
+#
+#   # Check status
+#   kubectl get pods -l app=flashcard-orchestrator-worker
+#
+#   # View logs
+#   kubectl logs -l app=flashcard-orchestrator-worker -f
+#
+#   # Scale manually
+#   kubectl scale deployment flashcard-orchestrator-worker --replicas=3
+#
+# Prerequisites:
+#   - Create secrets: kubectl create secret generic flashcard-secrets \
+#       --from-literal=GEMINI_API_KEY=your-key \
+#       --from-literal=SIGNING_KEY=your-signing-key
+#   - Redis accessible at redis:6379 (or configure REDIS_URL)
+#   - Qdrant accessible at qdrant:6333 (or configure QDRANT_URL)
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: flashcard-system
+  labels:
+    app.kubernetes.io/name: flashcard-orchestrator
+    app.kubernetes.io/part-of: flashcard-system
+
+---
+# =============================================================================
+# ConfigMap - Non-sensitive configuration
+# =============================================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flashcard-config
+  namespace: flashcard-system
+  labels:
+    app.kubernetes.io/name: flashcard-orchestrator
+data:
+  NODE_ENV: "production"
+  LOG_LEVEL: "info"
+  REDIS_URL: "redis://redis:6379"
+  DATABASE_URL: "postgres://postgres:5432/flashcards"
+  VECTOR_DB_PROVIDER: "qdrant"
+  QDRANT_URL: "http://qdrant:6333"
+  EMBEDDING_PROVIDER: "gemini"
+  WORKER_CONCURRENCY: "2"
+  COST_BUDGET_DAILY: "100"
+  EMBEDDING_BATCH_SIZE: "64"
+  VECTOR_UPSERT_BATCH_SIZE: "100"
+
+---
+# =============================================================================
+# Orchestrator Worker Deployment
+# =============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flashcard-orchestrator-worker
+  namespace: flashcard-system
+  labels:
+    app: flashcard-orchestrator-worker
+    app.kubernetes.io/name: flashcard-orchestrator
+    app.kubernetes.io/component: worker
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: flashcard-orchestrator-worker
+  template:
+    metadata:
+      labels:
+        app: flashcard-orchestrator-worker
+        app.kubernetes.io/name: flashcard-orchestrator
+        app.kubernetes.io/component: worker
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+        - name: worker
+          image: your-registry/flashcard-orchestrator:latest  # Replace with your image
+          imagePullPolicy: Always
+          command: ["npm", "run", "worker:orchestrator"]
+          ports:
+            - name: metrics
+              containerPort: 9090
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: flashcard-config
+          env:
+            - name: GEMINI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: flashcard-secrets
+                  key: GEMINI_API_KEY
+                  optional: true
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: flashcard-secrets
+                  key: OPENAI_API_KEY
+                  optional: true
+            - name: SIGNING_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: flashcard-secrets
+                  key: SIGNING_KEY
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "2000m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 9090
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 9090
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - name: tmp-storage
+              mountPath: /app/server/tmp
+      volumes:
+        - name: tmp-storage
+          emptyDir:
+            sizeLimit: 5Gi
+      terminationGracePeriodSeconds: 60
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: flashcard-orchestrator-worker
+                topologyKey: kubernetes.io/hostname
+
+---
+# =============================================================================
+# Horizontal Pod Autoscaler
+# =============================================================================
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: flashcard-orchestrator-worker-hpa
+  namespace: flashcard-system
+  labels:
+    app.kubernetes.io/name: flashcard-orchestrator
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: flashcard-orchestrator-worker
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+    # Scale based on CPU usage
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    # Scale based on memory usage
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+    # Custom metric: queue depth (requires Prometheus Adapter)
+    # - type: External
+    #   external:
+    #     metric:
+    #       name: flashcard_queue_depth
+    #     target:
+    #       type: AverageValue
+    #       averageValue: "50"
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Percent
+          value: 10
+          periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+        - type: Percent
+          value: 100
+          periodSeconds: 30
+        - type: Pods
+          value: 4
+          periodSeconds: 60
+
+---
+# =============================================================================
+# Service (for metrics scraping)
+# =============================================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: flashcard-orchestrator-worker
+  namespace: flashcard-system
+  labels:
+    app: flashcard-orchestrator-worker
+    app.kubernetes.io/name: flashcard-orchestrator
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9090"
+spec:
+  type: ClusterIP
+  selector:
+    app: flashcard-orchestrator-worker
+  ports:
+    - name: metrics
+      port: 9090
+      targetPort: 9090
+      protocol: TCP
+
+---
+# =============================================================================
+# API Deployment
+# =============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flashcard-api
+  namespace: flashcard-system
+  labels:
+    app: flashcard-api
+    app.kubernetes.io/name: flashcard-orchestrator
+    app.kubernetes.io/component: api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: flashcard-api
+  template:
+    metadata:
+      labels:
+        app: flashcard-api
+        app.kubernetes.io/name: flashcard-orchestrator
+        app.kubernetes.io/component: api
+    spec:
+      containers:
+        - name: api
+          image: your-registry/flashcard-orchestrator:latest  # Replace with your image
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: flashcard-config
+          env:
+            - name: PORT
+              value: "5000"
+            - name: GEMINI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: flashcard-secrets
+                  key: GEMINI_API_KEY
+                  optional: true
+            - name: SIGNING_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: flashcard-secrets
+                  key: SIGNING_KEY
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+
+---
+# =============================================================================
+# API Service
+# =============================================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: flashcard-api
+  namespace: flashcard-system
+  labels:
+    app: flashcard-api
+    app.kubernetes.io/name: flashcard-orchestrator
+spec:
+  type: ClusterIP
+  selector:
+    app: flashcard-api
+  ports:
+    - name: http
+      port: 80
+      targetPort: 5000
+      protocol: TCP
+
+---
+# =============================================================================
+# API Ingress (optional - adjust for your ingress controller)
+# =============================================================================
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: flashcard-api-ingress
+  namespace: flashcard-system
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  rules:
+    - host: flashcard-api.example.com  # Replace with your domain
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: flashcard-api
+                port:
+                  number: 80
+  # tls:
+  #   - hosts:
+  #       - flashcard-api.example.com
+  #     secretName: flashcard-api-tls
+
+---
+# =============================================================================
+# Pod Disruption Budget
+# =============================================================================
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: flashcard-orchestrator-worker-pdb
+  namespace: flashcard-system
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: flashcard-orchestrator-worker
