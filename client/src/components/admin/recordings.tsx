@@ -10,7 +10,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { Upload, Trash2, Edit, Eye, Calendar, Clock, FileVideo, Users, Search, Filter, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Upload, Trash2, Edit, Eye, Calendar, Clock, FileVideo, Users, Search, Filter, ChevronLeft, ChevronRight, X, Plus, Minus } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useConditionalRender } from '@/lib/permissions-provider';
@@ -47,6 +47,14 @@ interface FilterState {
   classDate: string;
 }
 
+interface RecordingEntry {
+  id: string;
+  title: string;
+  description: string;
+  fileUrl: string;
+  isVisible: boolean;
+}
+
 // Removed LiveClass interface since we no longer use live class associations
 
 export function AdminRecordings() {
@@ -56,10 +64,13 @@ export function AdminRecordings() {
     courseSlug: '',
     moduleIndex: -1,
     classDate: '',
-    title: '',
-    description: '',
-    fileUrl: '',
-    isVisible: true
+    recordings: [{
+      id: '1',
+      title: '',
+      description: '',
+      fileUrl: '',
+      isVisible: true
+    }] as RecordingEntry[]
   });
 
   // State for modules
@@ -129,15 +140,19 @@ export function AdminRecordings() {
     })();
   }, [uploadForm.courseSlug]);
 
-  // Create recording mutation
+  // Create multiple recordings mutation
   const uploadMutation = useMutation({
-    mutationFn: async (recordingData: any) => {
-      const response = await apiRequest('POST', '/api/recordings', recordingData);
-      return response.json();
+    mutationFn: async (recordingsData: any[]) => {
+      const responses = await Promise.all(
+        recordingsData.map(recordingData => 
+          apiRequest('POST', '/api/recordings', recordingData)
+        )
+      );
+      return responses;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/recordings'] });
-      toast({ title: 'Success', description: 'Recording created successfully' });
+      toast({ title: 'Success', description: `${uploadForm.recordings.length} recording(s) created successfully` });
       resetUploadForm();
     },
     onError: (error: Error) => {
@@ -224,19 +239,43 @@ export function AdminRecordings() {
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!uploadForm.courseSlug || uploadForm.moduleIndex < 0 || !uploadForm.classDate || !uploadForm.title || !uploadForm.fileUrl) {
-      toast({ title: 'Error', description: 'Please fill in all required fields including module selection', variant: 'destructive' });
+    if (!uploadForm.courseSlug || uploadForm.moduleIndex < 0 || !uploadForm.classDate) {
+      toast({ title: 'Error', description: 'Please select course, module and class date', variant: 'destructive' });
+      return;
+    }
+
+    // Validate all recordings
+    const validRecordings = uploadForm.recordings.filter(recording => 
+      recording.title.trim() && recording.fileUrl.trim()
+    );
+
+    if (validRecordings.length === 0) {
+      toast({ title: 'Error', description: 'Please add at least one recording with title and URL', variant: 'destructive' });
       return;
     }
 
     const linkPattern = /^https?:\/\//i;
-    if (!linkPattern.test(uploadForm.fileUrl.trim())) {
-      toast({ title: 'Error', description: 'Please provide a valid shareable link (http/https)', variant: 'destructive' });
-      return;
+    for (const recording of validRecordings) {
+      if (!linkPattern.test(recording.fileUrl.trim())) {
+        toast({ title: 'Error', description: `Please provide a valid shareable link for "${recording.title}"`, variant: 'destructive' });
+        return;
+      }
     }
 
     setIsUploading(true);
-    uploadMutation.mutate(uploadForm);
+    
+    // Create recording data for each valid recording
+    const recordingsData = validRecordings.map(recording => ({
+      courseSlug: uploadForm.courseSlug,
+      moduleIndex: uploadForm.moduleIndex,
+      classDate: uploadForm.classDate,
+      title: recording.title,
+      description: recording.description,
+      fileUrl: recording.fileUrl,
+      isVisible: recording.isVisible
+    }));
+
+    uploadMutation.mutate(recordingsData);
   };
 
   const resetUploadForm = () => {
@@ -244,13 +283,46 @@ export function AdminRecordings() {
       courseSlug: '',
       moduleIndex: -1,
       classDate: '',
-      title: '',
-      description: '',
-      fileUrl: '',
-      isVisible: true
+      recordings: [{
+        id: '1',
+        title: '',
+        description: '',
+        fileUrl: '',
+        isVisible: true
+      }]
     });
     setIsUploading(false);
     setModules([]);
+  };
+
+  const addRecording = () => {
+    const newId = Date.now().toString();
+    setUploadForm(prev => ({
+      ...prev,
+      recordings: [...prev.recordings, {
+        id: newId,
+        title: '',
+        description: '',
+        fileUrl: '',
+        isVisible: true
+      }]
+    }));
+  };
+
+  const removeRecording = (id: string) => {
+    setUploadForm(prev => ({
+      ...prev,
+      recordings: prev.recordings.filter(recording => recording.id !== id)
+    }));
+  };
+
+  const updateRecording = (id: string, field: keyof RecordingEntry, value: string | boolean) => {
+    setUploadForm(prev => ({
+      ...prev,
+      recordings: prev.recordings.map(recording =>
+        recording.id === id ? { ...recording, [field]: value } : recording
+      )
+    }));
   };
 
   const handleEdit = (recording: Recording) => {
@@ -401,58 +473,104 @@ export function AdminRecordings() {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="title">Recording Title *</Label>
-                <Input
-                  id="title"
-                  value={uploadForm.title}
-                  onChange={(e) => setUploadForm(prev => ({ ...prev, title: e.target.value }))}
-                  placeholder="Enter recording title"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  value={uploadForm.description}
-                  onChange={(e) => setUploadForm(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="Enter recording description"
-                  rows={3}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="isVisible">Visible to Students</Label>
-                <div className="flex items-center space-x-2 pt-2">
-                  <Switch
-                    id="isVisible"
-                    checked={uploadForm.isVisible}
-                    onCheckedChange={(checked) => setUploadForm(prev => ({ ...prev, isVisible: checked }))}
-                  />
-                  <span className="text-sm text-muted-foreground">
-                    {uploadForm.isVisible ? 'Visible' : 'Hidden'}
-                  </span>
+              {/* Multiple Recordings Section */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label className="text-lg font-semibold">Recordings for this Module</Label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={addRecording}
+                    className="gap-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Recording
+                  </Button>
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="fileUrl">Recording Link *</Label>
-                <Input
-                  id="fileUrl"
-                  type="url"
-                  value={uploadForm.fileUrl}
-                  onChange={(e) => setUploadForm(prev => ({ ...prev, fileUrl: e.target.value }))}
-                  placeholder="https://onedrive.live.com/...? or https://drive.google.com/file/d/your-file-id/view"
-                />
+                {uploadForm.recordings.map((recording, index) => (
+                  <div key={recording.id} className="border rounded-lg p-4 space-y-4 bg-gray-50">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-medium">Recording #{index + 1}</h4>
+                      {uploadForm.recordings.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => removeRecording(recording.id)}
+                          className="gap-2 text-red-600 hover:text-red-700"
+                        >
+                          <Minus className="h-4 w-4" />
+                          Remove
+                        </Button>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Recording Title *</Label>
+                        <Input
+                          value={recording.title}
+                          onChange={(e) => updateRecording(recording.id, 'title', e.target.value)}
+                          placeholder="Enter recording title"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Visible to Students</Label>
+                        <div className="flex items-center space-x-2 pt-2">
+                          <Switch
+                            checked={recording.isVisible}
+                            onCheckedChange={(checked) => updateRecording(recording.id, 'isVisible', checked)}
+                          />
+                          <span className="text-sm text-muted-foreground">
+                            {recording.isVisible ? 'Visible' : 'Hidden'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Description</Label>
+                      <Textarea
+                        value={recording.description}
+                        onChange={(e) => updateRecording(recording.id, 'description', e.target.value)}
+                        placeholder="Enter recording description"
+                        rows={2}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Recording Link *</Label>
+                      <Input
+                        type="url"
+                        value={recording.fileUrl}
+                        onChange={(e) => updateRecording(recording.id, 'fileUrl', e.target.value)}
+                        placeholder="https://onedrive.live.com/...? or https://drive.google.com/file/d/your-file-id/view"
+                      />
+                    </div>
+                  </div>
+                ))}
+
                 <p className="text-sm text-muted-foreground">
-                  Provide a shareable link to your recording (Google Drive, OneDrive, etc.)
+                  You can add multiple recordings for the same module. Each recording will be created separately and students will see all recordings for this module.
                 </p>
               </div>
 
               <div className="flex gap-3 pt-2">
-                <Button type="submit" disabled={isUploading || !uploadForm.fileUrl} className="px-6">
-                  {isUploading ? 'Creating...' : 'Add Recording'}
+                <Button 
+                  type="submit" 
+                  disabled={
+                    isUploading || 
+                    !uploadForm.courseSlug || 
+                    uploadForm.moduleIndex < 0 || 
+                    !uploadForm.classDate ||
+                    uploadForm.recordings.every(r => !r.title.trim() || !r.fileUrl.trim())
+                  } 
+                  className="px-6"
+                >
+                  {isUploading ? 'Creating...' : `Add ${uploadForm.recordings.filter(r => r.title.trim() && r.fileUrl.trim()).length} Recording(s)`}
                 </Button>
                 <Button type="button" variant="outline" onClick={resetUploadForm} className="px-6">
                   Reset Form

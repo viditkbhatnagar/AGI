@@ -11,6 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 interface Recording {
   _id: string;
   courseSlug: string;
+  moduleIndex: number;
   classDate: string;
   title: string;
   description?: string;
@@ -51,12 +52,16 @@ export function StudentRecordings() {
     return matchesCourse && matchesSearch && recording.isVisible;
   });
 
-  // Group recordings by course
+  // Group recordings by course and then by module
   const recordingsByCourse = filteredRecordings.reduce((acc: any, recording: Recording) => {
     if (!acc[recording.courseSlug]) {
-      acc[recording.courseSlug] = [];
+      acc[recording.courseSlug] = {};
     }
-    acc[recording.courseSlug].push(recording);
+    const moduleKey = `module-${recording.moduleIndex}`;
+    if (!acc[recording.courseSlug][moduleKey]) {
+      acc[recording.courseSlug][moduleKey] = [];
+    }
+    acc[recording.courseSlug][moduleKey].push(recording);
     return acc;
   }, {});
 
@@ -198,58 +203,85 @@ export function StudentRecordings() {
         </Card>
       ) : (
         <div className="space-y-6">
-          {Object.entries(recordingsByCourse).map(([courseSlug, courseRecordings]: [string, any[]]) => (
-            <Card key={courseSlug}>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BookOpen className="h-5 w-5" />
-                  {getCourseTitle(courseSlug)}
-                </CardTitle>
-                <CardDescription>
-                  {courseRecordings.length} recording{courseRecordings.length !== 1 ? 's' : ''}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {courseRecordings.map((recording: Recording) => (
-                    <Card key={recording._id} className="transition-shadow hover:shadow-md">
-                      <CardContent className="p-4">
-                        <div className="space-y-3">
-                          <div>
-                            <h4 className="font-medium line-clamp-2">{recording.title}</h4>
-                            {recording.description && (
-                              <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
-                                {recording.description}
-                              </p>
-                            )}
-                          </div>
+          {Object.entries(recordingsByCourse).map(([courseSlug, moduleGroups]: [string, any]) => {
+            const totalRecordings = Object.values(moduleGroups).reduce((sum: number, recordings: any) => sum + recordings.length, 0);
+            
+            return (
+              <Card key={courseSlug}>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BookOpen className="h-5 w-5" />
+                    {getCourseTitle(courseSlug)}
+                  </CardTitle>
+                  <CardDescription>
+                    {totalRecordings} recording{totalRecordings !== 1 ? 's' : ''} across {Object.keys(moduleGroups).length} module{Object.keys(moduleGroups).length !== 1 ? 's' : ''}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    {Object.entries(moduleGroups).map(([moduleKey, moduleRecordings]: [string, any]) => {
+                      const moduleIndex = parseInt(moduleKey.replace('module-', ''));
+                      
+                      return (
+                        <div key={moduleKey} className="border rounded-lg p-4 bg-gray-50">
+                          <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                            <FileVideo className="h-4 w-4" />
+                            Module {moduleIndex + 1} Recordings
+                            <span className="text-sm font-normal text-gray-600">
+                              ({moduleRecordings.length} recording{moduleRecordings.length !== 1 ? 's' : ''})
+                            </span>
+                          </h4>
                           
-                          <div className="text-xs text-muted-foreground space-y-1">
-                            <div className="flex items-center gap-1">
-                              <Calendar className="h-3 w-3" />
-                              Class: {new Date(recording.classDate).toLocaleDateString()}
-                            </div>
-                            <div>
-                              Added: {new Date(recording.uploadedAt).toLocaleDateString()}
-                            </div>
-                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {moduleRecordings.map((recording: Recording, index: number) => (
+                              <Card key={recording._id} className="transition-shadow hover:shadow-md bg-white">
+                                <CardContent className="p-4">
+                                  <div className="space-y-3">
+                                    <div>
+                                      <h5 className="font-medium line-clamp-2">{recording.title}</h5>
+                                      {recording.description && (
+                                        <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+                                          {recording.description}
+                                        </p>
+                                      )}
+                                    </div>
+                                    
+                                    <div className="text-xs text-muted-foreground space-y-1">
+                                      <div className="flex items-center gap-1">
+                                        <Calendar className="h-3 w-3" />
+                                        Class: {new Date(recording.classDate).toLocaleDateString()}
+                                      </div>
+                                      <div>
+                                        Added: {new Date(recording.uploadedAt).toLocaleDateString()}
+                                      </div>
+                                      {moduleRecordings.length > 1 && (
+                                        <div className="text-xs font-medium text-blue-600">
+                                          Recording #{index + 1} of {moduleRecordings.length}
+                                        </div>
+                                      )}
+                                    </div>
 
-                          <Button 
-                            onClick={() => handlePlayRecording(recording)}
-                            className="w-full"
-                            size="sm"
-                          >
-                            <Play className="h-4 w-4 mr-2" />
-                            Watch Recording
-                          </Button>
+                                    <Button 
+                                      onClick={() => handlePlayRecording(recording)}
+                                      className="w-full"
+                                      size="sm"
+                                    >
+                                      <Play className="h-4 w-4 mr-2" />
+                                      Watch Recording
+                                    </Button>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            ))}
+                          </div>
                         </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>
