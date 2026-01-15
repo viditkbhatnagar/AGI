@@ -733,3 +733,184 @@ export const deleteTeacher = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+// Helper function to generate random password
+function generateRandomPassword(length: number = 12): string {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%';
+  let password = '';
+  for (let i = 0; i < length; i++) {
+    password += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return password;
+}
+
+// Resend welcome email with new password
+export const resendWelcomeEmail = async (req: Request, res: Response) => {
+  try {
+    const { studentId } = req.params;
+
+    // Find the student
+    const student = await Student.findById(studentId);
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    // Find the user
+    const user = await User.findById(student.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Generate new password
+    const newPassword = generateRandomPassword();
+
+    // Update user password (will be hashed by pre-save hook)
+    user.password = newPassword;
+    await user.save();
+
+    // Get enrolled courses for email
+    const enrollments = await Enrollment.find({ studentId: student._id });
+    const courseSlugs = enrollments.map(e => e.courseSlug);
+    const courses = await Course.find({ slug: { $in: courseSlugs } });
+    const courseTitle = courses.map(c => c.title).join(', ') || 'Your enrolled courses';
+
+    // Send welcome email
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT),
+      secure: process.env.SMTP_SECURE === 'true',
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
+
+    const html = renderWelcomeHtml({
+      name: student.name,
+      courseTitle,
+      email: user.email,
+      tempPassword: newPassword,
+      appUrl: process.env.APP_URL!,
+    });
+
+    const text = `Hello ${student.name},
+
+Your login credentials have been reset.
+
+Login details:
+• Email: ${user.email}
+• New password: ${newPassword}
+
+Please sign in at ${process.env.APP_URL}/login and change your password right away.
+
+Happy learning!
+AGI.online Team
+`;
+
+    await transporter.sendMail({
+      from: process.env.SMTP_FROM,
+      to: user.email,
+      replyTo: process.env.SUPPORT_EMAIL,
+      subject: 'Your AGI Account Credentials',
+      text,
+      html,
+      attachments: [
+        {
+          filename: 'logo.png',
+          path: path.resolve('client/src/components/layout/AGI Logo.png'),
+          cid: 'agiLogo'
+        }
+      ]
+    });
+
+    console.log('Welcome email resent to:', user.email);
+
+    res.status(200).json({ 
+      message: 'Welcome email sent successfully',
+      email: user.email
+    });
+  } catch (error) {
+    console.error('Resend welcome email error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Update student email
+export const updateStudentEmail = async (req: Request, res: Response) => {
+  try {
+    const { studentId } = req.params;
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+
+    // Find the student
+    const student = await Student.findById(studentId);
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    // Find the user
+    const user = await User.findById(student.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Check if email is already in use by another user
+    const existingUser = await User.findOne({ email, _id: { $ne: user._id } });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email already in use' });
+    }
+
+    // Update user email and username (derived from email)
+    user.email = email;
+    user.username = email.split('@')[0];
+    await user.save();
+
+    res.status(200).json({ 
+      message: 'Email updated successfully',
+      email: user.email
+    });
+  } catch (error) {
+    console.error('Update student email error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Get student credentials (generates new password and returns for download)
+export const getStudentCredentials = async (req: Request, res: Response) => {
+  try {
+    const { studentId } = req.params;
+
+    // Find the student
+    const student = await Student.findById(studentId);
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    // Find the user
+    const user = await User.findById(student.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Generate new password
+    const newPassword = generateRandomPassword();
+
+    // Update user password (will be hashed by pre-save hook)
+    user.password = newPassword;
+    await user.save();
+
+    // Return credentials for download
+    res.status(200).json({ 
+      message: 'Credentials generated successfully',
+      studentName: student.name,
+      email: user.email,
+      password: newPassword
+    });
+  } catch (error) {
+    console.error('Get student credentials error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLocation } from "wouter";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Eye, Plus, Search, SlidersHorizontal, Trash2, UserPlus, Download, SortAsc, SortDesc } from "lucide-react";
+import { Edit, Eye, Plus, Search, SlidersHorizontal, Trash2, UserPlus, Download, SortAsc, SortDesc, Mail, MoreVertical, FileDown } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -55,6 +55,14 @@ export function Students() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [showResendEmailDialog, setShowResendEmailDialog] = useState(false);
+  const [resendingStudentId, setResendingStudentId] = useState<string | null>(null);
+  const [resendingStudentName, setResendingStudentName] = useState<string>("");
+  const [showCredentialsDialog, setShowCredentialsDialog] = useState(false);
+  const [credentialsStudentId, setCredentialsStudentId] = useState<string | null>(null);
+  const [credentialsStudentName, setCredentialsStudentName] = useState<string>("");
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
   const updateMutation = useMutation({
     mutationFn: async (formData: any) => {
       const token = localStorage.getItem("token");
@@ -151,6 +159,106 @@ export function Students() {
     },
     onError: (error) => {
       console.error('Toggle access error:', error);
+      alert(`Error: ${error.message}`);
+    },
+  });
+
+  const resendEmailMutation = useMutation({
+    mutationFn: async (studentId: string) => {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`/api/admin/students/${studentId}/resend-welcome-email`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to send email');
+      }
+
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setShowResendEmailDialog(false);
+      setSuccessMessage(`Welcome email sent successfully to ${data.email}`);
+      setShowSuccessDialog(true);
+    },
+    onError: (error) => {
+      console.error('Resend email error:', error);
+      alert(`Error: ${error.message}`);
+    },
+  });
+
+  const updateEmailMutation = useMutation({
+    mutationFn: async ({ studentId, email }: { studentId: string; email: string }) => {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`/api/admin/students/${studentId}/email`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        credentials: "include",
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update email');
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/students'] });
+    },
+    onError: (error) => {
+      console.error('Update email error:', error);
+      alert(`Error: ${error.message}`);
+    },
+  });
+
+  const getCredentialsMutation = useMutation({
+    mutationFn: async (studentId: string) => {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`/api/admin/students/${studentId}/credentials`, {
+        method: "GET",
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to get credentials');
+      }
+
+      return response.json();
+    },
+    onSuccess: (data) => {
+      // Create CSV and download
+      const csvContent = `Student Name,Email,Password\n"${data.studentName}","${data.email}","${data.password}"`;
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `student_credentials_${data.email}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      setShowCredentialsDialog(false);
+      setSuccessMessage(`Credentials downloaded. A new password has been generated for ${data.email}`);
+      setShowSuccessDialog(true);
+    },
+    onError: (error) => {
+      console.error('Get credentials error:', error);
       alert(`Error: ${error.message}`);
     },
   });
@@ -475,8 +583,8 @@ export function Students() {
             <TableHeader>
               <TableRow>
                 <TableHead className="font-bold">S.No</TableHead>
-                <TableHead className="font-bold">Student ID</TableHead>
                 <TableHead className="font-bold">Student Name</TableHead>
+                <TableHead className="font-bold">Email</TableHead>
                 <TableHead className="font-bold">Phone Number</TableHead>
                 <TableHead className="font-bold">Date of Enrollment</TableHead>
                 <TableHead className="font-bold">Courses Enrolled</TableHead>
@@ -490,9 +598,11 @@ export function Students() {
                 sortedStudents.map((student, index) => (
                   <TableRow key={student._id}>
                     <TableCell className="text-sm text-gray-700">{index + 1}</TableCell>
-                    <TableCell className="text-sm text-gray-700">{student._id}</TableCell>
                     <TableCell>
                       <div className="text-lg font-bold text-gray-900">{student.name}</div>
+                    </TableCell>
+                    <TableCell className="text-sm text-gray-700">
+                      {(student.userId as any)?.email || 'N/A'}
                     </TableCell>
                     <TableCell className="text-sm text-gray-500">{student.phone}</TableCell>
                     <TableCell className="text-sm text-gray-700">
@@ -549,48 +659,73 @@ export function Students() {
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setDetailId(student._id)}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                  {renderIfCanEdit(
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => {
-                        setEditForm({
-                          ...student,
-                          courseSlugs: studentCoursesMap.get(student._id) || [],
-                        });
-                        setShowEditDialog(true);
-                      }}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                  )}
-                  {renderIfCanDelete(
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => {
-                        setDeletingId(student._id);
-                        setShowDeleteDialog(true);
-                      }}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  )}
-                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => setDetailId(student._id)}>
+                            <Eye className="mr-2 h-4 w-4" />
+                            View Details
+                          </DropdownMenuItem>
+                          {canEdit && (
+                            <DropdownMenuItem onClick={() => {
+                              setEditForm({
+                                ...student,
+                                email: (student.userId as any)?.email || '',
+                                courseSlugs: studentCoursesMap.get(student._id) || [],
+                              });
+                              setShowEditDialog(true);
+                            }}>
+                              <Edit className="mr-2 h-4 w-4" />
+                              Edit Student
+                            </DropdownMenuItem>
+                          )}
+                          <DropdownMenuSeparator />
+                          {canEdit && (
+                            <DropdownMenuItem onClick={() => {
+                              setResendingStudentId(student._id);
+                              setResendingStudentName(student.name);
+                              setShowResendEmailDialog(true);
+                            }}>
+                              <Mail className="mr-2 h-4 w-4" />
+                              Resend Welcome Email
+                            </DropdownMenuItem>
+                          )}
+                          {canEdit && (
+                            <DropdownMenuItem onClick={() => {
+                              setCredentialsStudentId(student._id);
+                              setCredentialsStudentName(student.name);
+                              setShowCredentialsDialog(true);
+                            }}>
+                              <FileDown className="mr-2 h-4 w-4" />
+                              Download Credentials
+                            </DropdownMenuItem>
+                          )}
+                          {canEdit && <DropdownMenuSeparator />}
+                          {canEdit && (
+                            <DropdownMenuItem 
+                              onClick={() => {
+                                setDeletingId(student._id);
+                                setShowDeleteDialog(true);
+                              }}
+                              className="text-red-600"
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Delete Student
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
                   <TableCell colSpan={9} className="h-24 text-center">
+                    {/* Column count: S.No, Name, Email, Phone, Date, Courses, Pathway, Access, Actions */}
                     {searchQuery ? (
                       <div className="flex flex-col items-center justify-center">
                         <Search className="h-8 w-8 text-gray-300 mb-2" />
@@ -622,6 +757,15 @@ export function Students() {
                 <Input
                   value={editForm.name}
                   onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Email</label>
+                <Input
+                  type="email"
+                  value={editForm.email || ''}
+                  onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                  placeholder="student@example.com"
                 />
               </div>
               <div>
@@ -669,7 +813,15 @@ export function Students() {
               </div>
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={() => setShowEditDialog(false)}>Cancel</Button>
-                <Button onClick={() => updateMutation.mutate(editForm)}>Save</Button>
+                <Button onClick={async () => {
+                  // First update email if changed
+                  const originalEmail = (data?.find((s: any) => s._id === editForm._id)?.userId as any)?.email;
+                  if (editForm.email && editForm.email !== originalEmail) {
+                    await updateEmailMutation.mutateAsync({ studentId: editForm._id, email: editForm.email });
+                  }
+                  // Then update other student details
+                  updateMutation.mutate(editForm);
+                }}>Save</Button>
               </div>
             </div>
           )}
@@ -696,6 +848,73 @@ export function Students() {
             >
               Delete
             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Resend Email Confirmation Dialog */}
+      <Dialog open={showResendEmailDialog} onOpenChange={(o) => !o && setShowResendEmailDialog(false)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Resend Welcome Email</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-gray-600">
+              This will generate a new password for <strong>{resendingStudentName}</strong> and send a welcome email with the new credentials.
+            </p>
+            <p className="text-sm text-amber-600 bg-amber-50 p-3 rounded-md">
+              Warning: The student's current password will be reset and they will need to use the new password to log in.
+            </p>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setShowResendEmailDialog(false)}>Cancel</Button>
+              <Button 
+                onClick={() => resendingStudentId && resendEmailMutation.mutate(resendingStudentId)}
+                disabled={resendEmailMutation.isPending}
+              >
+                {resendEmailMutation.isPending ? 'Sending...' : 'Send Email'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Download Credentials Confirmation Dialog */}
+      <Dialog open={showCredentialsDialog} onOpenChange={(o) => !o && setShowCredentialsDialog(false)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Download Credentials</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-gray-600">
+              This will generate a new password for <strong>{credentialsStudentName}</strong> and download a CSV file with their login credentials.
+            </p>
+            <p className="text-sm text-amber-600 bg-amber-50 p-3 rounded-md">
+              Warning: The student's current password will be reset and they will need to use the new password to log in.
+            </p>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setShowCredentialsDialog(false)}>Cancel</Button>
+              <Button 
+                onClick={() => credentialsStudentId && getCredentialsMutation.mutate(credentialsStudentId)}
+                disabled={getCredentialsMutation.isPending}
+              >
+                {getCredentialsMutation.isPending ? 'Generating...' : 'Download CSV'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Success Dialog */}
+      <Dialog open={showSuccessDialog} onOpenChange={(o) => !o && setShowSuccessDialog(false)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Success</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-gray-600">{successMessage}</p>
+            <div className="flex justify-end">
+              <Button onClick={() => setShowSuccessDialog(false)}>OK</Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

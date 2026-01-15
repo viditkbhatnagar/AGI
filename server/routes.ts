@@ -90,6 +90,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/admin/students/:id", auth, requireAdmin, adminController.updateStudent);
   app.delete("/api/admin/students/:id", auth, requireAdmin, adminController.deleteStudent);
   app.put("/api/admin/students/:studentId/toggle-access", auth, requireAdmin, adminController.toggleStudentAccess);
+  app.post("/api/admin/students/:studentId/resend-welcome-email", auth, requireAdmin, adminController.resendWelcomeEmail);
+  app.put("/api/admin/students/:studentId/email", auth, requireAdmin, adminController.updateStudentEmail);
+  app.get("/api/admin/students/:studentId/credentials", auth, requireAdmin, adminController.getStudentCredentials);
 
   // LOGIN HISTORY ROUTES (Admin only)
   app.get("/api/admin/login-history/students", auth, requireAdminAccess, loginHistoryController.getStudentsLoginHistory);
