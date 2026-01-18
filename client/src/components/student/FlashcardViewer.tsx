@@ -363,7 +363,7 @@ export function FlashcardViewer({ moduleIndex, courseSlug, onClose }: FlashcardV
                     </div>
                 </div>
                 
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Ready to test your knowledge?</h3>
+<h3 className="text-2xl font-bold text-gray-900 mb-2">Ready to test your module learnings?</h3>
                 <p className="text-gray-500 max-w-md mb-4">
                     Generate AI-powered flashcards tailored to help you master the key concepts.
                 </p>
@@ -371,7 +371,7 @@ export function FlashcardViewer({ moduleIndex, courseSlug, onClose }: FlashcardV
                 {/* Features */}
                 <div className="flex flex-wrap justify-center gap-3 mb-8 max-w-md">
                     <Badge variant="secondary" className="bg-green-100 text-green-700 border-green-200">
-                        <Target className="h-3 w-3 mr-1" /> Personalized for each module
+<Target className="h-3 w-3 mr-1" /> Personalized
                     </Badge>
                     <Badge variant="secondary" className="bg-blue-100 text-blue-700 border-blue-200">
                         <BookOpen className="h-3 w-3 mr-1" /> From Your Materials

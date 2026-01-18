@@ -20,6 +20,7 @@ import StudentProfile from "@/pages/student/profile";
 import StudentDebug from "@/pages/student/debug";
 import StudentFeedback from "@/pages/student/feedback";
 import StudentFinalExaminations from "@/pages/student/final-examinations";
+import StudentCertificates from "@/pages/student/certificates";
 
 // Teacher Pages
 import TeacherDashboard from "./pages/teacher/dashboard";
@@ -71,6 +72,7 @@ function Router() {
       <Route path="/student/courses" component={StudentCourses} />
       <Route path="/student/courses/:slug" component={StudentCourseDetail} />
       <Route path="/student/final-examinations" component={StudentFinalExaminations} />
+      <Route path="/student/certificates" component={StudentCertificates} />
       <Route path="/student/live-classes" component={StudentLiveClasses} />
       <Route path="/student/recordings" component={StudentRecordings} />
       <Route path="/student/profile" component={StudentProfile} />

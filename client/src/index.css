@@ -119,6 +119,48 @@
     @apply bg-accent/10 border-l-2 border-primary;
   }
 
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Student Dashboard specific styles */
+  .student-dashboard {
+    font-family: 'Manrope', sans-serif;
+  }
+
+  .student-dashboard h1,
+  .student-dashboard h2,
+  .student-dashboard h3,
+  .student-dashboard h4 {
+    font-family: 'Epilogue', sans-serif;
+  }
+
+  /* Sleek scrollbar for student dashboard */
+  .student-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .student-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .student-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+  }
+
+  .student-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
   /* Quiz layout stability */
   .quiz-container {
     @apply transform-gpu;

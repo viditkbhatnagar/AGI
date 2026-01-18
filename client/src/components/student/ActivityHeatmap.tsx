@@ -6,8 +6,8 @@ interface HeatmapProps {
   matrix: number[][];
   label?: string;
 }
+
 export default function ActivityHeatmap({ matrix, label }: HeatmapProps) {
-  // tooltip state
   const [tooltip, setTooltip] = useState<{
     visible: boolean;
     value: number;
@@ -16,43 +16,39 @@ export default function ActivityHeatmap({ matrix, label }: HeatmapProps) {
   }>({ visible: false, value: 0, x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const max = Math.max(...matrix.flat());
+  const max = Math.max(...matrix.flat(), 1);
 
-  // derive month-year label if not provided
-  const labelText =
-    label ||
-    new Date().toLocaleString('default', {
-      month: 'long',
-      year: 'numeric',
-    });
+  const labelText = label || new Date().toLocaleString('default', {
+    month: 'long',
+    year: 'numeric',
+  });
 
-  // color thresholds
-  const getColorClass = (val: number) =>
-    val === 0
-      ? 'bg-gray-200'
-      : val < max * 0.33
-      ? 'bg-[#B2E0D6]'
-      : val < max * 0.66
-      ? 'bg-[#5BC0EB]'
-      : 'bg-[#2E96D1]';
+  // Updated color scheme to match new design
+  const getColorClass = (val: number) => {
+    if (val === 0) return 'bg-slate-100';
+    if (val < max * 0.33) return 'bg-[#8BC34A]/40';
+    if (val < max * 0.66) return 'bg-[#18548b]/50';
+    return 'bg-[#18548b]';
+  };
 
   return (
-    <div ref={containerRef} className="relative w-full h-full flex flex-col items-center justify-center p-4">
-      {/* Month range label */}
-      <div className="w-full text-center text-lg font-semibold mb-4 text-[#375BBE]">
+    <div ref={containerRef} className="relative w-full flex flex-col items-center">
+      {/* Month Label */}
+      <div className="text-center text-sm font-medium mb-2 text-[#18548b]">
         Showing activity for {labelText}
       </div>
-      <div className="w-full text-center text-xm text-[#375BBE] mb-4">
+      <div className="text-center text-xs text-slate-500 mb-4">
         Rows: last 4 weeks (oldest at top); Columns: Sunday–Saturday
       </div>
-      {/* Heat‑grid */}
-      <div className="grid grid-cols-7 gap-[2px] w-full max-w-[520px]">
+
+      {/* Heatmap Grid */}
+      <div className="grid grid-cols-7 gap-1 w-full max-w-[280px]">
         {matrix.map((row, r) =>
           row.map((val, c) => (
             <div
               key={r + '-' + c}
               className={clsx(
-                'aspect-square w-full max-w-[42px] rounded-[3px] cursor-pointer transition-opacity duration-150 hover:opacity-75',
+                'aspect-square rounded-sm cursor-pointer transition-all duration-150 hover:scale-110 hover:shadow-md',
                 getColorClass(val)
               )}
               title={`${val} min`}
@@ -72,28 +68,29 @@ export default function ActivityHeatmap({ matrix, label }: HeatmapProps) {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center space-x-4 mt-4 text-sm">
-        <div className="flex items-center space-x-1">
-          <span className="w-4 h-4 rounded-sm bg-gray-200" />
+      <div className="flex items-center justify-center gap-4 mt-4 text-xs text-slate-600">
+        <div className="flex items-center gap-1">
+          <span className="w-3 h-3 rounded-sm bg-slate-100" />
           <span>No activity</span>
         </div>
-        <div className="flex items-center space-x-1">
-          <span className="w-4 h-4 rounded-sm bg-[#B2E0D6]" />
+        <div className="flex items-center gap-1">
+          <span className="w-3 h-3 rounded-sm bg-[#8BC34A]/40" />
           <span>Low</span>
         </div>
-        <div className="flex items-center space-x-1">
-          <span className="w-4 h-4 rounded-sm bg-[#5BC0EB]" />
+        <div className="flex items-center gap-1">
+          <span className="w-3 h-3 rounded-sm bg-[#18548b]/50" />
           <span>Moderate</span>
         </div>
-        <div className="flex items-center space-x-1">
-          <span className="w-4 h-4 rounded-sm bg-[#2E96D1]" />
+        <div className="flex items-center gap-1">
+          <span className="w-3 h-3 rounded-sm bg-[#18548b]" />
           <span>High</span>
         </div>
       </div>
 
+      {/* Tooltip */}
       {tooltip.visible && (
         <div
-          className="absolute bg-white text-sm text-[#2E3A59] px-2 py-1 rounded shadow-md pointer-events-none"
+          className="absolute bg-white text-sm text-slate-700 px-3 py-1.5 rounded-lg shadow-lg border border-slate-100 pointer-events-none z-10 font-medium"
           style={{ top: tooltip.y + 10, left: tooltip.x + 10 }}
         >
           {tooltip.value} min

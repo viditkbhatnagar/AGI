@@ -1,72 +1,94 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { PieChart, Pie, ResponsiveContainer, Cell } from "recharts";
-import { useMemo } from "react";
-// Soft‑mint text color (formerly imported from "@/lib/colors")
-const SOFT_LILAC = "#B2E0D6";
+import React from 'react';
 
 type Props = { modules: { title: string; percentComplete: number }[] };
 
 export default function ModuleBreakdown({ modules }: Props) {
-  // 👉 Guard for empty data
   if (modules.length === 0) {
     return (
-      <Card className="shadow-sm mb-6 rounded-2xl bg-[#FEFDF7] text-[#2E3A59]">
-        <div className="sticky top-0 z-10 px-5 py-4 rounded-t-2xl bg-[#375BBE]">
-          <h2 className="text-2xl font-semibold text-white">Module Wise Progress</h2>
+      <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
+        <h3 className="font-heading text-lg font-bold text-slate-800 mb-4">Module Progress</h3>
+        <div className="text-center py-8 text-slate-400">
+          <p className="text-sm">No module progress data yet</p>
         </div>
-        <CardContent className="py-12 flex items-center justify-center">
-          <span className="text-sm">No module progress data yet</span>
-        </CardContent>
-      </Card>
+      </div>
     );
   }
 
-  return (
-    <Card className="shadow-sm mb-6 rounded-2xl bg-[#FEFDF7] text-[#2E3A59]">
-      {/* Gradient header for Module Progress */}
-      <div className="sticky top-0 z-10 px-5 py-4 rounded-t-2xl bg-[#375BBE]">
-        <h2 className="text-2xl font-semibold text-white">Module Wise Progress</h2>
+  // Get color based on percentage
+  const getProgressColor = (percent: number) => {
+    if (percent >= 90) return { stroke: '#8BC34A', bg: 'bg-green-50' }; // Green
+    if (percent >= 75) return { stroke: '#18548b', bg: 'bg-blue-50' }; // Primary blue
+    if (percent >= 50) return { stroke: '#FF7F11', bg: 'bg-orange-50' }; // Orange
+    if (percent > 0) return { stroke: '#ef4444', bg: 'bg-red-50' }; // Red
+    return { stroke: '#e2e8f0', bg: 'bg-slate-50' }; // Gray
+  };
+
+  // SVG Progress Ring Component
+  const ProgressRing = ({ percent, size = 64, strokeWidth = 4 }: { percent: number; size?: number; strokeWidth?: number }) => {
+    const radius = (size - strokeWidth) / 2;
+    const circumference = radius * 2 * Math.PI;
+    const offset = circumference - (percent / 100) * circumference;
+    const colors = getProgressColor(percent);
+
+    return (
+      <div className="relative" style={{ width: size, height: size }}>
+        <svg width={size} height={size} className="transform -rotate-90">
+          {/* Background circle */}
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            fill="none"
+            stroke="#e2e8f0"
+            strokeWidth={strokeWidth}
+          />
+          {/* Progress circle */}
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            fill="none"
+            stroke={colors.stroke}
+            strokeWidth={strokeWidth}
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+            strokeLinecap="round"
+            className="transition-all duration-700 ease-out"
+          />
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-sm font-bold text-slate-700">{percent}%</span>
+        </div>
       </div>
-      <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6 bg-[#FEFDF7]">
-        {modules.map((m, idx) => {
-          // determine color by percentage
-          let fillColor = "#E63946";        // <50%
-          if (m.percentComplete >= 75) fillColor = "#5BC0EB";
-          else if (m.percentComplete >= 50) fillColor = "#FF7F50";
+    );
+  };
+
+  return (
+    <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
+      <h3 className="font-heading text-lg font-bold text-slate-800 mb-4">Module Progress</h3>
+      
+      {/* Horizontal Scroll Container */}
+      <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide -mx-2 px-2">
+        {modules.map((module, idx) => {
+          const colors = getProgressColor(module.percentComplete);
+          
           return (
-            <div key={idx} className="flex items-center space-x-4">
-              <PieChart width={120} height={120}>
-                <Pie
-                  data={[
-                    { value: m.percentComplete },
-                    { value: 100 - m.percentComplete }
-                  ]}
-                  dataKey="value"
-                  startAngle={90}
-                  endAngle={-270}
-                  innerRadius={40}
-                  outerRadius={50}
-                >
-                  <Cell fill={fillColor} />
-                  <Cell fill="#E5E5E5" />
-                </Pie>
-                <text
-                  x={60}
-                  y={60}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  className="text-lg font-semibold fill-[#2E3A59]"
-                >
-                  {m.percentComplete}%
-                </text>
-              </PieChart>
-              <div className="text-base text-[#375BBE] w-40 break-words">
-                {m.title}
-              </div>
+            <div 
+              key={idx} 
+              className={`min-w-[160px] ${colors.bg} p-4 rounded-xl border border-slate-100 shadow-sm flex flex-col items-center text-center transition-all duration-200 hover:shadow-md hover:scale-[1.02] cursor-default ${module.percentComplete === 0 ? 'opacity-60' : ''}`}
+            >
+              <ProgressRing percent={module.percentComplete} />
+              <h4 className="font-bold text-sm text-slate-800 leading-tight mt-3 mb-1 line-clamp-2">
+                {module.title}
+              </h4>
+              <span className="text-xs text-slate-500">
+                {module.percentComplete === 0 ? 'Not Started' : 
+                 module.percentComplete === 100 ? 'Completed' : 'In Progress'}
+              </span>
             </div>
           );
         })}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
