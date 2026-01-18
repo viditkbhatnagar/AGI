@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Header } from "./header";
 import { Sidebar } from "./sidebar";
+import { StudentSidebar } from "@/components/student/StudentSidebar";
 import { useAuth } from "@/lib/auth-provider";
 import { Loader2 } from "lucide-react";
-import { useLocation, useSearch, Redirect } from "wouter";
+import { useLocation, Redirect } from "wouter";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -41,7 +42,51 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                         userRole === 'teacher' ? '/teacher' : '/admin';
     return <Redirect to={redirectPath} />;
   }
+
+  // Check if this is a student route for the new sidebar design
+  const isStudentRoute = userRole === 'student' && location.startsWith('/student');
   
+  // Student Layout with new sidebar design
+  if (isStudentRoute) {
+    return (
+      <div className="flex h-screen bg-[#f6f7f8] font-display antialiased overflow-hidden">
+        {/* Mobile Overlay */}
+        <div
+          className={`fixed inset-0 bg-black/50 z-40 md:hidden transition-opacity ${
+            mobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          }`}
+          onClick={toggleMobileMenu}
+        />
+        
+        {/* Mobile Sidebar */}
+        <div
+          className={`fixed inset-y-0 left-0 w-64 z-50 md:hidden transform transition-transform duration-300 ${
+            mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
+        >
+          <StudentSidebar isMobile={true} onClose={toggleMobileMenu} />
+        </div>
+
+        {/* Desktop Sidebar - Always visible */}
+        <div className="hidden md:flex md:w-64 md:flex-shrink-0">
+          <StudentSidebar />
+        </div>
+        
+        {/* Main Content Area */}
+        <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+          {/* Top Header Bar */}
+          <Header onMobileMenuToggle={toggleMobileMenu} isStudentLayout={true} />
+          
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto bg-[#f6f7f8]">
+            {children}
+          </div>
+        </main>
+      </div>
+    );
+  }
+  
+  // Default Layout for Admin/Teacher
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar - hidden on mobile, but visible when menu is toggled */}

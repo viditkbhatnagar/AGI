@@ -13,6 +13,10 @@ export default {
           "2xl": "1440px",
         },
       },
+      fontFamily: {
+        display: ["Manrope", "sans-serif"],
+        heading: ["Epilogue", "sans-serif"],
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
@@ -21,6 +25,15 @@ export default {
         "3xl": "1.25rem",
       },
       colors: {
+        // Student Dashboard Theme Colors
+        "student-primary": "#18548b",
+        "student-primary-light": "#e8f0f7",
+        "student-accent": "#FF7F11",
+        "student-secondary": "#8BC34A",
+        "student-bg": "#f6f7f8",
+        "student-surface": "#ffffff",
+        "student-text": "#121417",
+        "student-muted": "#657686",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {

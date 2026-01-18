@@ -1,31 +1,44 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/lib/auth-provider";
-//import { Link } from "react-router-dom";
-import { ProgressRing } from "@/components/ui/progress-ring";
-import ProgressChart from '@/components/student/ProgressChart';
-import DailyStreak from '@/components/student/DailyStreak';
-import { DashboardMetrics } from '@/components/student/DashboardMetrics';
-import ModuleBreakdown from '@/components/student/ModuleBreakdown';
-import TimeAllocation from "@/components/student/TimeAllocation";
-import ProgressOverTime from '@/components/student/ProgressOverTime';
-import ActivityHeatmap from '@/components/student/ActivityHeatmap';
+import BarLoader from "@/components/ui/bar-loader";
+import AttendanceCalendar from "@/components/student/AttendanceCalendar";
+
+// Enhanced ECharts components
+import GaugeChart from "@/components/student/charts/GaugeChart";
+import ModuleProgressChart from "@/components/student/charts/ModuleProgressChart";
+import MiniAreaChart from "@/components/student/charts/MiniAreaChart";
+import WeeklyActivityChart from "@/components/student/charts/WeeklyActivityChart";
+import CompletionDonutChart from "@/components/student/charts/CompletionDonutChart";
+import LearningTrendChart from "@/components/student/charts/LearningTrendChart";
+import LearningTimeline from "@/components/student/charts/LearningTimeline";
+import StudyStreakCard from "@/components/student/charts/StudyStreakCard";
+import ActivityPolarChart from "@/components/student/charts/ActivityPolarChart";
+import ProgressRingChart from "@/components/student/charts/ProgressRingChart";
+import QuizPerformanceChart from "@/components/student/charts/QuizPerformanceChart";
+import AchievementBadges from "@/components/student/charts/AchievementBadges";
+import LearningGoalsCard from "@/components/student/charts/LearningGoalsCard";
+import PerformanceScorecard from "@/components/student/charts/PerformanceScorecard";
+import SkillMasteryChart from "@/components/student/charts/SkillMasteryChart";
 
 import {
   CalendarClock,
   Clock,
   PlayCircle,
-  PieChart,
-  BookOpen
+  BookOpen,
+  Trophy,
+  Video,
+  TrendingUp,
+  Target,
+  FileText,
+  Zap,
+  Award,
+  ChevronRight,
+  Sparkles,
 } from "lucide-react";
-// Unified bar color for progress bars in course card
-const UNIFIED_BAR_COLOR = "bg-gradient-to-r from-yellow-500 to-yellow-400";
-import { formatDateTime, formatTimeRemaining } from "@/lib/utils";
+
+import { formatDateTime } from "@/lib/utils";
 import { useState, useEffect, useMemo } from "react";
-import AttendanceCalendar from "@/components/student/AttendanceCalendar";
-import FinalExamScoresChart from "@/components/student/FinalExamScoresChart";
-import { Trophy } from "lucide-react";
 import { useLocation } from "wouter";
 
 // Types based on API response from server
@@ -61,7 +74,7 @@ interface DashboardData {
       enrollDate: string;
       validUntil: string;
     };
-    description: string; // Add description field
+    description: string;
   } | null;
   upcomingLiveClasses: Array<{
     _id: string;
@@ -94,32 +107,23 @@ interface DashboardData {
   }>;
 }
 
-
 export function StudentDashboard() {
   const { student } = useAuth();
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [coursesLoading, setCoursesLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  // List of enrolled courses for course picker
   const [courses, setCourses] = useState<{ slug: string; title: string }[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<string | null>(null);
-  // useLocation returns [currentPath, setLocation]. We alias setLocation as navigate for clarity.
   const [, navigate] = useLocation();
-  // Motivational tips
-  // derive quizScores array safely before any returns
+  
   const quizScoresArray = dashboardData?.quizScores ?? [];
 
-  // compute quiz performance as average of best scores per module
   const computedQuizPerformance = useMemo(() => {
     if (quizScoresArray.length === 0) return null;
-    // Group scores by quiz title and take the best (highest) per module
     const bestScoresMap: Record<string, number> = {};
     quizScoresArray.forEach(({ title, score }) => {
-      if (
-        !(title in bestScoresMap) ||
-        score > bestScoresMap[title]
-      ) {
+      if (!(title in bestScoresMap) || score > bestScoresMap[title]) {
         bestScoresMap[title] = score;
       }
     });
@@ -129,13 +133,14 @@ export function StudentDashboard() {
     return Number(avgBest.toFixed(2));
   }, [quizScoresArray]);
 
+  // Motivational tips
   const TIPS = [
     "Consistency is key—any progress is good progress!",
-    "You’re one step closer to mastery every time you log in.",
+    "You're one step closer to mastery every time you log in.",
     "Small daily improvements lead to stunning results.",
-    "Hard work beats talent when talent doesn’t work hard.",
-    "Don’t watch the clock; do what it does—keep going.",
-    "Believe you can and you’re halfway there.",
+    "Hard work beats talent when talent doesn't work hard.",
+    "Don't watch the clock; do what it does—keep going.",
+    "Believe you can and you're halfway there.",
     "The secret of getting ahead is getting started.",
     "Success is the sum of small efforts repeated day in and day out.",
     "Strive for progress, not perfection.",
@@ -147,20 +152,13 @@ export function StudentDashboard() {
     "Focus on being productive instead of busy."
   ];
   const [tip, setTip] = useState<string>("");
-  // ----------- Progress‑over‑time date range (defaults to last 3 days) -----------
-  const todayISO = new Date().toISOString().slice(0, 10);
-  const threeDaysAgoISO = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
-    .toISOString()
-    .slice(0, 10);
 
-  const [startDate, setStartDate] = useState<string>(threeDaysAgoISO);
-  const [endDate, setEndDate] = useState<string>(todayISO);
   useEffect(() => {
     const randomIndex = Math.floor(Math.random() * TIPS.length);
     setTip(TIPS[randomIndex]);
   }, []);
   
-  // Load enrolled courses for this student
+  // Load enrolled courses
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -175,7 +173,6 @@ export function StudentDashboard() {
       .then(res => res.json())
       .then((data: { slug: string; title: string }[]) => {
         setCourses(data);
-        // Auto-select the first course when enrollments are loaded
         if (data.length > 0) {
           setSelectedCourse(data[0].slug);
         }
@@ -196,7 +193,6 @@ export function StudentDashboard() {
       }
       
       if (!selectedCourse) {
-        // Only set loading to false if courses have finished loading
         if (!coursesLoading) {
           setIsLoading(false);
         }
@@ -212,7 +208,6 @@ export function StudentDashboard() {
           throw new Error(`Error ${response.status}: ${response.statusText}`);
         }
         const data = await response.json();
-        console.log('Dashboard data:', data);
         setDashboardData(data);
         setError(null);
       } catch (err) {
@@ -225,17 +220,15 @@ export function StudentDashboard() {
     fetchDashboardData();
   }, [selectedCourse, coursesLoading]);
   
-  // Display loading skeleton
   if (isLoading || coursesLoading) {
     return <DashboardSkeleton />;
   }
   
-  // Display error message if fetch failed
   if (error) {
     return (
-      <div className="p-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-4">Dashboard</h1>
-        <Card>
+      <div className="p-4 md:p-8">
+        <h1 className="font-heading text-2xl font-bold text-slate-800 mb-4">Dashboard</h1>
+        <Card className="bg-white rounded-xl border border-slate-200">
           <CardContent className="p-6">
             <p className="text-red-500">Error loading dashboard data: {error.message}</p>
           </CardContent>
@@ -244,28 +237,23 @@ export function StudentDashboard() {
     );
   }
   
-  // Display message if no data available
   if (!dashboardData) {
     return (
-      <div className="p-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-4">Dashboard</h1>
-        <Card>
+      <div className="p-4 md:p-8">
+        <h1 className="font-heading text-2xl font-bold text-slate-800 mb-4">Dashboard</h1>
+        <Card className="bg-white rounded-xl border border-slate-200">
           <CardContent className="p-6">
-            <p className="text-yellow-500">No dashboard data available. Please try again later.</p>
+            <p className="text-amber-600">No dashboard data available. Please try again later.</p>
           </CardContent>
         </Card>
       </div>
     );
   }
   
-  // Destructure data for easier access
   const {
     courseProgress,
-    completedModules,
     watchTime,
-    certificationProgress,
     dailyWatchTime,
-    // quizScores, // No longer destructured, use quizScoresArray if needed
     course,
     upcomingLiveClasses,
     attendance,
@@ -273,7 +261,7 @@ export function StudentDashboard() {
     watchTimeInMinutes,
   } = dashboardData;
 
-  // Build cumulative % series for the Progress‑over‑time line chart
+  // Build cumulative % series for the Learning Trend chart
   const progressSeries = (() => {
     const sorted = [...dailyWatchTime].sort(
       (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
@@ -283,473 +271,535 @@ export function StudentDashboard() {
     return sorted.map(({ date, minutes }) => {
       running += minutes;
       return {
-        date: date.slice(5),     // label "MM‑DD" for the chart
-        iso: date,               // full YYYY‑MM‑DD for range filtering
-        percent: total ? Math.min(100, Math.round((running / total) * 100)) : 0,
+        date,
+        percentComplete: total ? Math.min(100, Math.round((running / total) * 100)) : 0,
       };
     });
   })();
 
-  const filteredSeries = progressSeries.filter(
-    (p) => p.iso >= startDate && p.iso <= endDate
-  );
+  // Calculate streak data
+  const streakData = (() => {
+    const sorted = [...dailyWatchTime]
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    
+    let currentStreak = 0;
+    let longestStreak = 0;
+    let tempStreak = 0;
+    const today = new Date().toISOString().slice(0, 10);
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    
+    // Check if studied today
+    const todayCompleted = sorted.some(d => d.date === today && d.minutes > 0);
+    
+    // Calculate current streak
+    for (const d of sorted) {
+      if (d.minutes > 0) {
+        tempStreak++;
+        if (tempStreak > longestStreak) longestStreak = tempStreak;
+      } else {
+        tempStreak = 0;
+      }
+    }
+    
+    // Simple current streak calc
+    for (const d of sorted) {
+      if (d.minutes > 0) {
+        currentStreak++;
+      } else {
+        break;
+      }
+    }
+    
+    return { currentStreak, longestStreak: Math.max(longestStreak, 7), todayCompleted };
+  })();
 
-  // ---------------- Activity heat‑map matrix (last 4 weeks) ----------------
-  const heatmapMatrix = (() => {
-    // 4 rows (weeks) × 7 cols (days), most‑recent week is row 0
-    const matrix = Array.from({ length: 4 }, () => Array(7).fill(0));
-    dailyWatchTime.forEach(({ date, minutes }) => {
-      const d = new Date(date);
-      if (isNaN(d.getTime())) return;
-      const day = d.getDay(); // 0 = Sun
-      const weeksAgo = Math.floor(
-        (Date.now() - d.getTime()) / (7 * 24 * 60 * 60 * 1000)
-      );
-      if (weeksAgo >= 0 && weeksAgo < 4) {
-        matrix[weeksAgo][day] += minutes;
+  // Generate timeline items from recent activity
+  const timelineItems = (() => {
+    const items: Array<{
+      id: string;
+      type: 'video' | 'document' | 'quiz' | 'achievement' | 'lesson';
+      title: string;
+      time: string;
+      duration?: string;
+      status?: 'completed' | 'in_progress';
+    }> = [];
+
+    // Add recent study sessions
+    dailyWatchTime.slice(-5).reverse().forEach((d, i) => {
+      if (d.minutes > 0) {
+        const date = new Date(d.date);
+        items.push({
+          id: `study-${i}`,
+          type: 'video',
+          title: `Study session - ${d.minutes} minutes`,
+          time: date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
+          duration: `${d.minutes}m`,
+          status: 'completed'
+        });
       }
     });
-    return matrix.reverse(); // oldest on top, newest on bottom
+
+    // Add quiz attempts
+    quizScoresArray.slice(-3).forEach((q, i) => {
+      items.push({
+        id: `quiz-${i}`,
+        type: 'quiz',
+        title: q.title,
+        time: 'Recently',
+        status: q.score >= 70 ? 'completed' : 'in_progress'
+      });
+    });
+
+    return items.slice(0, 6);
   })();
+
+  // Data for completion donut
+  const completionData = [
+    { name: "Completed", value: course?.completedModules || 0, color: "#8BC34A" },
+    { name: "Remaining", value: (course?.totalModules || 0) - (course?.completedModules || 0), color: "#e2e8f0" }
+  ];
+
+  // Data for time allocation
+  const timeAllocationData = [
+    { name: "Videos", value: watchTimeInMinutes, color: "#18548b" },
+    { name: "Documents", value: dashboardData.documentsViewed * 5, color: "#FF7F11" },
+    { name: "Quizzes", value: quizScoresArray.length * 10, color: "#8BC34A" }
+  ];
+
+  // Sparkline data for stat cards
+  const watchTimeSparkline = dailyWatchTime.slice(-7).map(d => d.minutes);
+  const progressSparkline = progressSeries.slice(-7).map(d => d.percentComplete);
   
   return (
-    <div className="min-h-screen bg-[#FEFDF7] p-4 md:p-6">
-      {/* Welcome Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-        <h1 className="text-[25px] font-bold text-gray-800">
-          Welcome back, {student?.name?.split(' ')[0]}!
-        </h1>
-      </div>
-      {/* Course Picker for multiple enrollments */}
-      {courses.length > 1 && (
-        <div className="mb-4">
-          <h3 className="text-base font-semibold text-gray-800 mb-3">Select Course:</h3>
-          <div className={`grid gap-3 ${
-            courses.length === 2 ? 'grid-cols-2 sm:grid-cols-2' :
-            courses.length === 3 ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-3' :
-            courses.length === 4 ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4' :
-            courses.length <= 6 ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6' :
-            'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'
-          }`}>
-            {courses.map(course => (
-              <div
-                key={course.slug}
-                onClick={() => setSelectedCourse(course.slug)}
-                className={`
-                  relative cursor-pointer rounded-lg border-2 p-3 transition-all duration-200 
-                  hover:shadow-md hover:scale-105 group min-h-[80px] flex items-center justify-center
-                  ${selectedCourse === course.slug 
-                    ? 'border-[#375BBE] bg-[#375BBE]/5 shadow-md' 
-                    : 'border-gray-200 bg-white hover:border-[#375BBE]/50'
-                  }
-                `}
-              >
-                {/* Selected indicator */}
-                {selectedCourse === course.slug && (
-                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#375BBE] rounded-full flex items-center justify-center">
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                )}
-                
-                {/* Course title */}
-                <h4 className={`text-center font-medium text-sm transition-colors line-clamp-3 ${
-                  selectedCourse === course.slug 
-                    ? 'text-[#375BBE]' 
-                    : 'text-gray-700 group-hover:text-[#375BBE]'
-                }`}>
-                  {course.title}
-                </h4>
-                
-                {/* Hover effect overlay */}
-                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-[#375BBE]/0 to-[#375BBE]/0 group-hover:from-[#375BBE]/3 group-hover:to-[#375BBE]/5 transition-all duration-200 pointer-events-none" />
-              </div>
-            ))}
-          </div>
-          
-          {/* Show selected course name */}
-          {selectedCourse && (
-            <div className="mt-3 p-2 bg-[#375BBE]/5 border border-[#375BBE]/20 rounded-md">
-              <p className="text-xs text-[#375BBE] font-medium">
-                Currently viewing: <span className="font-semibold">
-                  {courses.find(c => c.slug === selectedCourse)?.title}
-                </span>
-              </p>
-            </div>
-          )}
-        </div>
-      )}
-      {/* Dashboard KPI Metrics */}
-      {/* <DashboardMetrics
-        courseProgress={courseProgress}
-        watchTime={watchTime}
-        quizPerformance={quizPerformance}
-        upcomingLiveClasses={upcomingLiveClasses}
-      /> */}
-
-
-      {/* Unified Course Card */}
-      <Card className="rounded-3xl overflow-hidden shadow-lg mb-6" style={{ background: "#FEFDF7" }}>
-        <div className="w-full bg-[#375BBE] text-white p-8 shadow-xl">
-          <div className="flex flex-col lg:flex-row">
-            {/* Left Column: Course info */}
-            <div className="lg:w-1/2 pr-6">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold mb-2 break-words">
-                {course?.title}
-              </h2>
-              <div className="space-y-2 text-sm mb-4">
-                <div className="flex items-center">
-                  <CalendarClock className="mr-2 h-5 w-5 stroke-2 text-[#FF7F50]" />
-                  <span><strong>Enrolled:</strong> {course && course.enrollment && formatDateTime(course.enrollment.enrollDate)}</span>
-                </div>
-                <div className="flex items-center">
-                  <Clock className="mr-2 h-5 w-5 stroke-2 text-[#FF7F50]" />
-                  <span><strong>Valid until:</strong> {course && course.enrollment ? formatDateTime(course.enrollment.validUntil) : 'N/A'}</span>
-                </div>
-              </div>
-              <p className="text-sm mb-6">{course?.description}</p>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-base font-semibold mb-8">
-                <div>Live Classes Scheduled : {upcomingLiveClasses.length}</div>
-                <div>Documents Viewed : {dashboardData.documentsViewed}</div>
-              </div>
-              <a
-                href={`/student/courses/${selectedCourse || course?.slug}`}
-                className="mt-6 block"
-              >
-                <Button className="bg-[#FF7F50] text-white rounded-lg py-3 px-6 text-xl">
-                  Continue Learning
-                </Button>
-              </a>
-            </div>
-
-            {/* Right Column: 3-metric grid */}
-            <div className="lg:w-1/2 mt-6 lg:mt-0">
-            <div className="grid grid-cols-1 sm:grid-cols-3 bg-[#FAF3E0] text-[#2E3A59] divide-y sm:divide-y-0 sm:divide-x divide-[#2E3A59]/30 gap-0 p-4 rounded-xl">
-                <div className="text-center px-4 py-6">
-                  <PieChart className="mx-auto h-8 w-8 mb-2 text-[#2E3A59]" />
-                  <div className="text-3xl font-bold">{courseProgress || 0}%</div>
-                  <div className="text-xl mt-1">Course Progress</div>
-                </div>
-                <div className="text-center px-4 py-6">
-                  <Clock className="mx-auto h-8 w-8 mb-2 text-[#2E3A59]" />
-                  <div className="text-3xl font-bold">{watchTime.total}</div>
-                  <div className="text-xl mt-1">Watch Time</div>
-                </div>
-                <div className="text-center px-4 py-6">
-                  <BookOpen className="mx-auto h-8 w-8 mb-2 text-[#2E3A59]" />
-                  <div className="text-3xl font-bold">{course?.completedModules}/{course?.totalModules}</div>
-                  <div className="text-xl mt-1">Modules Completed</div>
-                </div>
-              </div>
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 p-4 md:p-6 lg:p-8 font-display">
+      <div className="max-w-[1600px] mx-auto">
+        {/* Header Section */}
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
+          <div>
+            <h1 className="font-heading text-2xl md:text-3xl font-bold text-slate-800">
+              Welcome back, <span className="text-[#18548b]">{student?.name?.split(' ')[0]}</span>! 👋
+            </h1>
+            <p className="text-slate-500 mt-1 flex items-center gap-2">
+              <Sparkles className="size-4 text-[#FF7F11]" />
+              You've completed <span className="text-[#18548b] font-bold">{courseProgress || 0}%</span> of your course
+            </p>
           </div>
         </div>
-      </Card>
 
-        {/* Three‑column dashboard section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          {/* Column 1: Daily Watch Time Chart */}
-          <Card className="rounded-3xl shadow-sm hover:shadow-lg transition-shadow duration-200 ease-in-out bg-[#FEFDF7] text-[#6D0016]">
-            <div className="px-5 py-4 bg-[#375BBE] rounded-t-3xl">
-              <h2 className="text-2xl font-semibold text-white">Daily Watch Time Analysis</h2>
-            </div>
-            <CardContent className="p-5">
-              <ProgressChart
-                data={dashboardData.dailyWatchTime}
-                watchTime={dashboardData.watchTime}
-              />
-              {/* Removed inline header as per instructions */}
-              <p className="mt-2 text-xl font-large text-[#FF7F50]">
-                Your Weekly Watch time is <strong>{dashboardData.watchTime.thisWeek}</strong> and your total watch time till date is <strong>{dashboardData.watchTime.total}</strong>
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* Column 2: Upcoming Live Classes */}
-          <Card className="rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow bg-[#FEFDF7]">
-            <div className="px-6 py-3 bg-[#375BBE] text-white rounded-t-3xl">
-              <h2 className="text-[22px] font-bold text-white">Upcoming Live Classes</h2>
-            </div>
-            <CardContent className="p-6 text-[#2E3A59] bg-[#FEFDF7] rounded-b-3xl">
-              {upcomingLiveClasses?.length > 0 ? (
-                upcomingLiveClasses.map((liveClass) => (
-                  <div key={liveClass._id} className="border border-gray-200 rounded-lg p-4 mb-4">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between">
-                      <div>
-                        <div className="flex items-center">
-                          <CalendarClock className="text-[#2E3A59] mr-2 h-5 w-5" />
-                          <h3 className="font-medium text-[#2E3A59]">{liveClass.title}</h3>
-                        </div>
-                        <p className="text-sm mt-1 text-[#2E3A59]">Course: {liveClass.courseSlug}</p>
-                        <div className="flex items-center mt-2">
-                          <span className="text-sm text-[#2E3A59]">{formatDateTime(liveClass.startTime)}</span>
-                          <span className="mx-2 text-gray-300">|</span>
-                          <span className="text-sm text-[#2E3A59]">
-                            {Math.round((new Date(liveClass.endTime).getTime() - new Date(liveClass.startTime).getTime()) / (1000 * 60))} minutes
-                          </span>
-                        </div>
-                      </div>
-                      <div className="mt-4 md:mt-0">
-                        {(() => {
-                          const now = new Date();
-                          const start = new Date(liveClass.startTime);
-                          const end = new Date(liveClass.endTime);
-                          const isActive =
-                            now >= new Date(start.getTime() - 15 * 60000) &&
-                            now <= new Date(end.getTime() + 15 * 60000);
-                          if (!liveClass.meetLink) return null;
-                          return isActive ? (
-                            <a
-                              href={liveClass.meetLink}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              <Button className="bg-[#FF7F50] text-white rounded-lg py-2 px-4">
-                                Join Session
-                              </Button>
-                            </a>
-                          ) : (
-                            <Button
-                              disabled
-                              className="bg-gray-300 text-white rounded-lg py-2 px-4 cursor-not-allowed"
-                            >
-                              Join Session
-                            </Button>
-                          );
-                        })()}
-                      </div>
+        {/* Course Picker - Horizontal Scroll */}
+        {courses.length > 1 && (
+          <div className="mb-6">
+            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">My Courses</h3>
+            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-2 px-2">
+              {courses.map(c => (
+                <button
+                  key={c.slug}
+                  onClick={() => setSelectedCourse(c.slug)}
+                  className={`
+                    relative flex-shrink-0 cursor-pointer rounded-2xl border-2 px-5 py-3 transition-all duration-300 
+                    hover:shadow-lg group min-w-[200px] max-w-[240px] flex items-center justify-center text-center
+                    ${selectedCourse === c.slug 
+                      ? 'border-[#18548b] bg-gradient-to-br from-[#18548b]/10 to-[#18548b]/5 shadow-lg shadow-[#18548b]/10' 
+                      : 'border-slate-200 bg-white hover:border-[#18548b]/40 hover:bg-slate-50'
+                    }
+                  `}
+                >
+                  {selectedCourse === c.slug && (
+                    <div className="absolute -top-1.5 -right-1.5 size-6 bg-gradient-to-br from-[#18548b] to-[#1a6ab0] rounded-full flex items-center justify-center shadow-lg">
+                      <svg className="size-3.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
                     </div>
-                  </div>
-                ))
-              ) : (
-                <div className="text-center py-8">
-                  <CalendarClock className="h-12 w-12 text-gray-300 mx-auto mb-2" />
-                  <p className="mt-2 text-gray-500">No upcoming live classes</p>
+                  )}
+                  <h4 className={`font-semibold text-sm line-clamp-2 ${
+                    selectedCourse === c.slug ? 'text-[#18548b]' : 'text-slate-700 group-hover:text-[#18548b]'
+                  }`}>
+                    {c.title}
+                  </h4>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 3-Column Bento Grid Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          {/* ========== LEFT COLUMN - Main Content (5 cols) ========== */}
+          <div className="lg:col-span-5 space-y-6">
+            
+            {/* Continue Learning Card - Pastel Blue */}
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 via-blue-50/80 to-indigo-50 p-6 border border-blue-100/50 shadow-sm">
+              <div className="absolute top-0 right-0 w-40 h-40 bg-[#18548b]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+              
+              <div className="relative z-10">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#18548b]/10 text-[#18548b] text-xs font-bold uppercase tracking-wider mb-3">
+                  <PlayCircle className="size-3" />
+                  Continue Learning
                 </div>
-              )}
-            </CardContent>
-          </Card>
+                
+                <h3 className="font-heading text-xl font-bold text-slate-800 mb-2 line-clamp-2">{course?.title}</h3>
+                <p className="text-slate-500 text-sm mb-4 line-clamp-2">{course?.description}</p>
+                
+                {/* Progress bar */}
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="flex-1 h-3 bg-white/80 rounded-full overflow-hidden shadow-inner">
+                    <div 
+                      className="h-full bg-gradient-to-r from-[#18548b] to-[#3b82f6] rounded-full transition-all duration-700" 
+                      style={{ width: `${courseProgress || 0}%` }}
+                    />
+                  </div>
+                  <span className="text-sm font-bold text-[#18548b] min-w-[45px]">{courseProgress || 0}%</span>
+                </div>
 
-          {/* Column 3: Daily Attendance */}
-            <AttendanceCalendar
-              attendance={dashboardData.attendance}
-              weeklyAttendanceRate={dashboardData.weeklyAttendanceRate}
-              monthlyAttendanceRate={dashboardData.monthlyAttendanceRate}
-            />
-        </div>
+                <div className="flex items-center gap-3">
+                  <a href={`/student/courses/${selectedCourse || course?.slug}`} className="flex-1">
+                    <Button className="w-full flex items-center justify-center gap-2 bg-[#18548b] hover:bg-[#134775] text-white px-5 py-3 rounded-xl transition-all shadow-lg shadow-[#18548b]/20 font-bold text-sm">
+                      <PlayCircle className="size-4" />
+                      Resume Course
+                    </Button>
+                  </a>
+                </div>
+              </div>
+            </div>
 
-      {/* Module Breakdown, Day Wise Streak, and Time Allocation */}
-      <div className="grid grid-cols-1 md:grid-cols-[65%_35%] gap-4 mb-6">
-        <ModuleBreakdown modules={dashboardData.course?.modules || []} />
-        <div className="flex flex-col gap-4">
-          <Card className="shadow-sm hover:shadow-lg transition-shadow rounded-3xl overflow-hidden">
-            <div className="px-5 py-4" style={{ backgroundColor: "#375BBE" }}>
-              <h2 className="text-2xl font-medium text-white">Streak Counter</h2>
+            {/* Course Progress Gauge - Pastel Green */}
+            <div className="rounded-2xl bg-gradient-to-br from-emerald-50 via-green-50/80 to-teal-50 p-6 border border-emerald-100/50 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <Target className="size-5 text-emerald-600" />
+                <h3 className="font-heading text-lg font-bold text-slate-800">Overall Progress</h3>
+              </div>
+              <GaugeChart progress={courseProgress || 0} title="Course Completion" />
+              
+              <div className="grid grid-cols-3 gap-4 mt-4 pt-4 border-t border-emerald-200/50">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-slate-800">{course?.completedModules || 0}</p>
+                  <p className="text-xs text-slate-500">Completed</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-slate-800">{course?.totalModules || 0}</p>
+                  <p className="text-xs text-slate-500">Total</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-[#FF7F11]">{(course?.totalModules || 0) - (course?.completedModules || 0)}</p>
+                  <p className="text-xs text-slate-500">Remaining</p>
+                </div>
+              </div>
             </div>
-            <div className="rounded-b-3xl">
-              <DailyStreak dailyWatchTime={dashboardData.dailyWatchTime} />
+
+            {/* Module Progress - Pastel Purple */}
+            <div className="rounded-2xl bg-gradient-to-br from-violet-50 via-purple-50/80 to-fuchsia-50 p-6 border border-violet-100/50 shadow-sm">
+              <div className="flex items-center gap-2 mb-2">
+                <Award className="size-5 text-violet-600" />
+                <h3 className="font-heading text-lg font-bold text-slate-800">Module Progress</h3>
+              </div>
+              <ModuleProgressChart modules={course?.modules || []} />
             </div>
-          </Card>
-          <Card className="shadow-sm hover:shadow-lg transition-shadow rounded-3xl overflow-hidden bg-[#FEFDF7]">
-            <div className="px-5 py-4 bg-[#375BBE] rounded-t-3xl">
-              <h2 className="text-2xl font-semibold text-white">Tip of the Day</h2>
+
+            {/* Skill Mastery Radar - Pastel Cyan */}
+            <div className="rounded-2xl bg-gradient-to-br from-cyan-50 via-sky-50/80 to-blue-50 p-6 border border-cyan-100/50 shadow-sm">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Target className="size-5 text-cyan-600" />
+                  <h3 className="font-heading text-lg font-bold text-slate-800">Skill Mastery</h3>
+                </div>
+                <span className="text-xs text-slate-400">{course?.modules?.length || 0} skills</span>
+              </div>
+              <SkillMasteryChart modules={course?.modules || []} />
             </div>
-            <CardContent className="p-6 text-[#2E3A59] bg-[#FEFDF7] rounded-b-3xl">
-              <p className="text-base italic">"{tip}"</p>
-            </CardContent>
-          </Card>
-          <TimeAllocation
-            data={[
-              { name: "Total time previews", value: dashboardData.documentsViewed },
-              { name: "Total quiz time", value: dashboardData.quizScores.reduce((sum, q) => sum + q.score, 0) }
-            ]}
-          />
-        </div>
-      </div>
-      {/* Bottom row: Progress‑over‑time + placeholder */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        {/* Progress Over Time */}
-        <Card className="rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow bg-[#FEFDF7]">
-          <div className="px-5 py-4 bg-[#375BBE] rounded-t-3xl flex flex-col md:flex-row md:items-center md:justify-between">
-            <h2 className="text-2xl font-semibold text-white mb-3 md:mb-0">Progress Over Time</h2>
-            {/* Date range picker */}
-            <div className="flex items-center space-x-2 text-[#FEFDF7]">
-              <input
-                type="date"
-                value={startDate}
-                max={endDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="rounded px-2 py-1 text-[#2E3A59]"
+
+            {/* Performance Scorecard */}
+            <div className="rounded-2xl bg-gradient-to-br from-slate-50 via-gray-50/80 to-zinc-50 p-6 border border-slate-100/50 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <Trophy className="size-5 text-amber-500" />
+                <h3 className="font-heading text-lg font-bold text-slate-800">Performance Score</h3>
+              </div>
+              <PerformanceScorecard 
+                courseProgress={courseProgress || 0}
+                quizAverage={computedQuizPerformance}
+                watchTimeMinutes={watchTimeInMinutes}
+                modulesCompleted={course?.completedModules || 0}
+                totalModules={course?.totalModules || 0}
               />
-              <span className="text-white">to</span>
-              <input
-                type="date"
-                value={endDate}
-                min={startDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="rounded px-2 py-1 text-[#2E3A59]"
-              />
             </div>
-          </div>
-          <CardContent className="p-6 bg-[#FEFDF7]">
-            <ProgressOverTime dates={filteredSeries.map(({ date, percent }) => ({ date, percent }))} />
-          </CardContent>
-        </Card>
 
-        {/* Activity Heatmap */}
-        <Card className="rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow bg-[#FEFDF7]">
-          <div className="px-5 py-4 bg-[#375BBE] rounded-t-3xl">
-            <h2 className="text-2xl font-semibold text-white">Activity Heatmap</h2>
-          </div>
-          <CardContent className="p-6 bg-[#FEFDF7] flex justify-center">
-            <ActivityHeatmap matrix={heatmapMatrix} />
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Final Examination Section */}
-      {dashboardData.finalExamStatus && dashboardData.finalExamStatus.available && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          {/* Final Exam Status Card */}
-          <Card className="rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow bg-[#FEFDF7]">
-            <div className="px-5 py-4 bg-[#375BBE] rounded-t-3xl">
-              <h2 className="text-2xl font-semibold text-white">Final Examination</h2>
-            </div>
-            <CardContent className="p-6 bg-[#FEFDF7]">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center">
-                  <Trophy className="h-12 w-12 text-yellow-500 mr-4" />
+            {/* Final Examination Card */}
+            {dashboardData.finalExamStatus && dashboardData.finalExamStatus.available && (
+              <div className="rounded-2xl bg-gradient-to-br from-amber-50 via-yellow-50/80 to-orange-50 p-6 border border-amber-100/50 shadow-sm">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="size-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-400 flex items-center justify-center shadow-lg">
+                    <Trophy className="size-6 text-white" />
+                  </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-[#2E3A59]">
-                      {dashboardData.finalExamStatus.passed ? 'Passed!' : 'Ready for Final Exam'}
+                    <h3 className="font-heading text-lg font-bold text-slate-800">
+                      {dashboardData.finalExamStatus.passed ? '🎉 Passed!' : 'Final Examination'}
                     </h3>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-slate-500">
                       {dashboardData.finalExamStatus.eligible 
-                        ? `${dashboardData.finalExamStatus.attempts} of ${dashboardData.finalExamStatus.maxAttempts} attempts used`
+                        ? `${dashboardData.finalExamStatus.attempts}/${dashboardData.finalExamStatus.maxAttempts} attempts`
                         : 'Complete all modules to unlock'}
                     </p>
                   </div>
                 </div>
+
+                {dashboardData.finalExamStatus.eligible ? (
+                  <div className="space-y-4">
+                    {dashboardData.finalExamStatus.bestScore !== null && (
+                      <div className="flex items-center justify-between p-4 bg-white/60 rounded-xl">
+                        <span className="text-sm text-slate-600">Best Score</span>
+                        <span className="text-2xl font-bold text-[#18548b]">
+                          {dashboardData.finalExamStatus.bestScore}%
+                        </span>
+                      </div>
+                    )}
+                    
+                    {dashboardData.finalExamStatus.canAttempt && (
+                      <Button 
+                        className="w-full bg-gradient-to-r from-[#FF7F11] to-orange-500 hover:from-orange-600 hover:to-orange-500 text-white rounded-xl py-3 font-bold shadow-lg shadow-orange-200"
+                        onClick={() => navigate(`/student/courses/${selectedCourse || course?.slug}?showFinalExam=true`)}
+                      >
+                        {dashboardData.finalExamStatus.attempts > 0 ? 'Retake Exam' : 'Take Final Exam'}
+                        <ChevronRight className="size-4 ml-1" />
+                      </Button>
+                    )}
+                  </div>
+                ) : (
+                  <div className="p-4 bg-amber-100/50 rounded-xl">
+                    <p className="text-amber-800 text-sm">
+                      Complete {(course?.totalModules || 0) - (course?.completedModules || 0)} more modules to unlock
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* ========== MIDDLE COLUMN - Analytics (4 cols) ========== */}
+          <div className="lg:col-span-4 space-y-6">
+            
+            {/* Stats Row - Mini Cards */}
+            <div className="grid grid-cols-2 gap-4">
+              {/* Watch Time Card */}
+              <div className="rounded-2xl bg-gradient-to-br from-rose-50 via-pink-50/80 to-rose-50 p-4 border border-rose-100/50 shadow-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <Clock className="size-4 text-rose-500" />
+                  <span className="text-xs font-medium text-slate-500">Watch Time</span>
+                </div>
+                <p className="text-2xl font-bold text-slate-800">{watchTime.total}</p>
+                <MiniAreaChart data={watchTimeSparkline} color="#f43f5e" height={40} />
               </div>
 
-              {dashboardData.finalExamStatus.eligible ? (
-                <div className="space-y-4">
-                  {dashboardData.finalExamStatus.bestScore !== null && (
-                    <div className="bg-gray-100 p-4 rounded-lg">
-                      <p className="text-sm text-gray-600">Best Score</p>
-                      <p className="text-2xl font-bold text-[#2E3A59]">
-                        {dashboardData.finalExamStatus.bestScore}%
-                      </p>
-                    </div>
-                  )}
-                  
-                  {dashboardData.finalExamStatus.canAttempt && (
-                    <Button 
-                      className="w-full bg-[#FF7F50] text-white rounded-lg py-3 text-lg font-semibold"
-                      onClick={() => navigate(`/student/courses/${selectedCourse || course?.slug}?showFinalExam=true`)}
-                    >
-                      {dashboardData.finalExamStatus.attempts > 0 ? 'Retake Final Exam' : 'Take Final Exam'}
-                    </Button>
-                  )}
-                  
-                  {!dashboardData.finalExamStatus.canAttempt && dashboardData.finalExamStatus.attempts >= dashboardData.finalExamStatus.maxAttempts && (
-                    <div className="bg-red-50 p-4 rounded-lg">
-                      <p className="text-red-700 font-medium">
-                        Maximum attempts reached
-                      </p>
-                    </div>
-                  )}
+              {/* Quizzes Card */}
+              <div className="rounded-2xl bg-gradient-to-br from-cyan-50 via-sky-50/80 to-cyan-50 p-4 border border-cyan-100/50 shadow-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <Zap className="size-4 text-cyan-500" />
+                  <span className="text-xs font-medium text-slate-500">Quiz Score</span>
                 </div>
-              ) : (
-                <div className="bg-yellow-50 p-4 rounded-lg">
-                  <p className="text-yellow-800">
-                    Complete all {course?.totalModules} modules to unlock the final examination.
-                    You have completed {course?.completedModules} modules so far.
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                <p className="text-2xl font-bold text-slate-800">{computedQuizPerformance || 0}%</p>
+                <MiniAreaChart data={quizScoresArray.slice(-7).map(q => q.score)} color="#06b6d4" height={40} />
+              </div>
+            </div>
 
-          {/* Final Exam Scores Chart */}
-          {dashboardData.finalExamScores && dashboardData.finalExamScores.length > 0 && (
-            <FinalExamScoresChart 
-              data={dashboardData.finalExamScores}
-              passingScore={70}
+            {/* Study Streak Card */}
+            <StudyStreakCard 
+              currentStreak={streakData.currentStreak}
+              longestStreak={streakData.longestStreak}
+              todayCompleted={streakData.todayCompleted}
             />
-          )}
+
+            {/* Learning Goals Card - Pastel Lime */}
+            <div className="rounded-2xl bg-gradient-to-br from-lime-50 via-green-50/80 to-emerald-50 p-6 border border-lime-100/50 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <Target className="size-5 text-lime-600" />
+                <h3 className="font-heading text-lg font-bold text-slate-800">Learning Goals</h3>
+              </div>
+              <LearningGoalsCard 
+                todayMinutes={dailyWatchTime.find(d => d.date === new Date().toISOString().slice(0, 10))?.minutes || 0}
+                weekMinutes={dailyWatchTime.slice(-7).reduce((sum, d) => sum + d.minutes, 0)}
+                streakDays={streakData.currentStreak}
+              />
+            </div>
+
+            {/* Weekly Activity Chart - Pastel Orange */}
+            <div className="rounded-2xl bg-gradient-to-br from-orange-50 via-amber-50/80 to-yellow-50 p-6 border border-orange-100/50 shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="size-5 text-orange-500" />
+                  <h3 className="font-heading text-lg font-bold text-slate-800">Weekly Activity</h3>
+                </div>
+                <span className="text-xs text-slate-500">{watchTime.thisWeek} this week</span>
+              </div>
+              <WeeklyActivityChart dailyWatchTimes={dailyWatchTime} />
+            </div>
+
+            {/* Learning Trend - Pastel Teal */}
+            <div className="rounded-2xl bg-gradient-to-br from-teal-50 via-emerald-50/80 to-green-50 p-6 border border-teal-100/50 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <TrendingUp className="size-5 text-teal-600" />
+                <h3 className="font-heading text-lg font-bold text-slate-800">Progress Trend</h3>
+              </div>
+              <LearningTrendChart progressData={progressSeries} />
+            </div>
+
+            {/* Time Allocation Donut */}
+            <div className="rounded-2xl bg-gradient-to-br from-indigo-50 via-blue-50/80 to-violet-50 p-6 border border-indigo-100/50 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <FileText className="size-5 text-indigo-600" />
+                <h3 className="font-heading text-lg font-bold text-slate-800">Time Allocation</h3>
+              </div>
+              <CompletionDonutChart 
+                data={timeAllocationData}
+                centerText={`${Math.round(watchTimeInMinutes / 60)}h`}
+                centerSubtext="Total"
+              />
+              <div className="flex justify-center gap-6 mt-4">
+                {timeAllocationData.map((item) => (
+                  <div key={item.name} className="flex items-center gap-2">
+                    <div className="size-3 rounded-full" style={{ backgroundColor: item.color }} />
+                    <span className="text-xs text-slate-600">{item.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Quiz Performance Chart - Pastel Blue */}
+            <div className="rounded-2xl bg-gradient-to-br from-blue-50 via-indigo-50/80 to-violet-50 p-6 border border-blue-100/50 shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Zap className="size-5 text-blue-600" />
+                  <h3 className="font-heading text-lg font-bold text-slate-800">Quiz Scores</h3>
+                </div>
+                <span className="text-xs text-slate-400">{quizScoresArray.length} attempts</span>
+              </div>
+              <QuizPerformanceChart quizScores={quizScoresArray} />
+            </div>
+
+            {/* Activity Distribution Polar Chart */}
+            <div className="rounded-2xl bg-gradient-to-br from-fuchsia-50 via-pink-50/80 to-rose-50 p-6 border border-fuchsia-100/50 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <Target className="size-5 text-fuchsia-600" />
+                <h3 className="font-heading text-lg font-bold text-slate-800">Day Distribution</h3>
+              </div>
+              <ActivityPolarChart dailyWatchTimes={dailyWatchTime} />
+              <p className="text-xs text-slate-500 text-center mt-2">Average study time by day of week</p>
+            </div>
+          </div>
+
+          {/* ========== RIGHT COLUMN - Calendar & Timeline (3 cols) ========== */}
+          <div className="lg:col-span-3 space-y-6">
+            
+            {/* Tip of the Day */}
+            <div className="rounded-2xl bg-gradient-to-br from-[#18548b] to-[#1a6ab0] p-5 text-white shadow-lg relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
+              <div className="relative z-10">
+                <div className="flex items-center gap-2 mb-2">
+                  <Sparkles className="size-4" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-white/80">Tip of the Day</span>
+                </div>
+                <p className="text-sm italic text-white/90">"{tip}"</p>
+              </div>
+            </div>
+
+            {/* Upcoming Live Classes */}
+            <div className="rounded-2xl bg-white p-5 border border-slate-100 shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-heading text-base font-bold text-slate-800">Upcoming Live</h3>
+                <a className="text-xs font-medium text-[#18548b] hover:underline" href="/student/courses">See all</a>
+              </div>
+              
+              <div className="space-y-3 max-h-64 overflow-y-auto scrollbar-hide">
+                {upcomingLiveClasses?.length > 0 ? (
+                  upcomingLiveClasses.slice(0, 3).map((liveClass) => {
+                    const start = new Date(liveClass.startTime);
+                    const end = new Date(liveClass.endTime);
+                    const now = new Date();
+                    const isActive = now >= new Date(start.getTime() - 15 * 60000) && now <= new Date(end.getTime() + 15 * 60000);
+                    const duration = Math.round((end.getTime() - start.getTime()) / (1000 * 60));
+
+                    return (
+                      <div key={liveClass._id} className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100 hover:bg-slate-100 transition-colors">
+                        <div className="flex flex-col items-center min-w-[44px] bg-white rounded-lg p-2 border border-slate-100 shadow-sm">
+                          <span className="text-[10px] font-bold text-slate-400 uppercase">
+                            {start.toLocaleDateString('en-US', { month: 'short' })}
+                          </span>
+                          <span className="text-lg font-bold text-[#18548b]">
+                            {start.getDate()}
+                          </span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          {isActive && (
+                            <p className="text-[10px] text-[#FF7F11] font-bold mb-0.5 flex items-center gap-1">
+                              <span className="size-1.5 rounded-full bg-[#FF7F11] animate-pulse" />
+                              Starting soon
+                            </p>
+                          )}
+                          <h4 className="text-sm font-semibold text-slate-800 truncate">{liveClass.title}</h4>
+                          <p className="text-xs text-slate-500">{duration} min</p>
+                        </div>
+                        {liveClass.meetLink && isActive && (
+                          <a href={liveClass.meetLink} target="_blank" rel="noopener noreferrer">
+                            <button className="size-9 bg-[#18548b] hover:bg-[#134775] text-white rounded-lg flex items-center justify-center transition-colors shadow-sm">
+                              <Video className="size-4" />
+                            </button>
+                          </a>
+                        )}
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="text-center py-6 text-slate-400">
+                    <CalendarClock className="size-8 mx-auto mb-2 opacity-50" />
+                    <p className="text-xs">No upcoming live classes</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Achievement Badges */}
+            <div className="rounded-2xl bg-gradient-to-br from-amber-50 via-yellow-50/80 to-orange-50 p-5 border border-amber-100/50 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <Award className="size-5 text-amber-500" />
+                <h3 className="font-heading text-base font-bold text-slate-800">Achievements</h3>
+              </div>
+              <AchievementBadges 
+                courseProgress={courseProgress || 0}
+                modulesCompleted={course?.completedModules || 0}
+                totalModules={course?.totalModules || 0}
+                watchTimeMinutes={watchTimeInMinutes}
+                quizAverage={computedQuizPerformance}
+                streakDays={streakData.currentStreak}
+              />
+            </div>
+
+            {/* Attendance Calendar */}
+            <AttendanceCalendar
+              attendance={attendance}
+              weeklyAttendanceRate={weeklyAttendanceRate}
+              monthlyAttendanceRate={dashboardData.monthlyAttendanceRate}
+            />
+
+            {/* Learning Timeline */}
+            <div className="rounded-2xl bg-white p-5 border border-slate-100 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <Clock className="size-4 text-slate-500" />
+                <h3 className="font-heading text-base font-bold text-slate-800">Recent Activity</h3>
+              </div>
+              <LearningTimeline items={timelineItems} />
+            </div>
+          </div>
         </div>
-      )}
-      
+      </div>
     </div>
   );
 }
 
 function DashboardSkeleton() {
   return (
-    <div className="p-4 md:p-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-        <Skeleton className="h-8 w-64" />
-        <Skeleton className="h-10 w-36 mt-2 md:mt-0" />
-      </div>
-      
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 mb-6">
-        {[1, 2, 3, 4].map((i) => (
-          <Card key={i} className="dashboard-card">
-            <CardContent className="p-4">
-              <div className="flex items-center">
-                <Skeleton className="h-12 w-12 rounded-full" />
-                <div className="ml-4 w-full">
-                  <Skeleton className="h-4 w-24 mb-2" />
-                  <Skeleton className="h-6 w-16 mb-2" />
-                  <Skeleton className="h-2 w-full" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-      
-      <Card className="mb-6">
-        <div className="px-5 py-4 border-b border-gray-200">
-          <Skeleton className="h-6 w-32" />
-        </div>
-        <CardContent className="p-5">
-          <div className="flex flex-col md:flex-row items-start">
-            <Skeleton className="h-20 w-20 rounded-lg mb-4 md:mb-0" />
-            <div className="md:ml-6 w-full">
-              <Skeleton className="h-6 w-64 mb-2" />
-              <Skeleton className="h-4 w-40 mb-4" />
-              <Skeleton className="h-2 w-full mb-4" />
-              <Skeleton className="h-10 w-36" />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-      
-      <Card>
-        <div className="px-5 py-4 border-b border-gray-200">
-          <Skeleton className="h-6 w-48" />
-        </div>
-        <CardContent className="p-5">
-          {[1, 2].map((i) => (
-            <div key={i} className="border border-gray-200 rounded-lg p-4 mb-4">
-              <div className="flex flex-col md:flex-row justify-between">
-                <div className="w-full md:w-2/3">
-                  <Skeleton className="h-5 w-48 mb-2" />
-                  <Skeleton className="h-4 w-32 mb-2" />
-                  <Skeleton className="h-4 w-56" />
-                </div>
-                <Skeleton className="h-10 w-28 mt-4 md:mt-0" />
-              </div>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+    <div className="h-[calc(100vh-80px)] w-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-50">
+      <BarLoader bars={10} barWidth={12} barHeight={80} color="bg-[#18548b]" speed={1.2} />
+      <span className="text-slate-500 mt-6 text-lg font-display">Loading dashboard data...</span>
     </div>
   );
 }
 
 export default StudentDashboard;
-
