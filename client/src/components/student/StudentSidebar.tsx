@@ -57,17 +57,15 @@ export function StudentSidebar({ className, isMobile, onClose }: StudentSidebarP
       )}
     >
       {/* Logo Area */}
-      <div className="h-20 flex items-center justify-center px-4 border-b border-white/10 bg-white/5">
-        <Link href="/student">
-          <div className="cursor-pointer hover:opacity-90 transition-opacity px-2 py-1 rounded-lg bg-white">
-            <img
-              src={logo}
-              alt="American Global Institute"
-              className="h-12 w-auto object-contain"
-            />
-          </div>
-        </Link>
-      </div>
+      <Link href="/student" className="block">
+        <div className="h-20 flex items-center justify-center bg-white cursor-pointer hover:opacity-95 transition-opacity border-r border-slate-300">
+          <img
+            src={logo}
+            alt="American Global Institute"
+            className="h-16 w-auto object-contain"
+          />
+        </div>
+      </Link>
 
       {/* Navigation */}
       <ScrollArea className="flex-1 py-6 px-3">

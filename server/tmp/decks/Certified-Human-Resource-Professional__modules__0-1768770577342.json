@@ -1,0 +1,527 @@
+{
+  "course_id": "Certified-Human-Resource-Professional",
+  "module_id": "Certified-Human-Resource-Professional::modules::0",
+  "module_title": "Fundamentals of Human Resource Management",
+  "cards": [
+    {
+      "card_id": "card_1",
+      "q": "What is Human Resource Management (HRM)?",
+      "a": "HRM is acquiring, training, appraising, and compensating employees, and managing their labor relations, health/safety, and fairness to achieve organizational goals.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "ch1_def",
+          "source_file": "Fundamentals of Human Resource Management",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Human resource management is the process of acquiring, training, appraising, and compensating employees, and of attending to their labor relations, health and safety, and fairness concerns."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Fundamentals of Human Resource Management",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.96,
+      "rationale": "Interviewers test baseline understanding of HRM’s scope to ensure candidates can frame people practices in business terms.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_2",
+      "q": "What is job analysis?",
+      "a": "A systematic process to determine the nature and requirements of each job—its essential functions and duties—to build accurate job descriptions and specifications.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "ch1_job_analysis",
+          "source_file": "Fundamentals of Human Resource Management",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Conducting job analyses (determining the nature of each employee’s job)."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Fundamentals of Human Resource Management",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Job analysis underpins selection, training, performance, and pay—core topics in HR interviews.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_3",
+      "q": "What does the staffing function include?",
+      "a": "Determining who to hire; recruiting and selecting; setting performance standards; compensating; evaluating performance; counseling; training and developing employees.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "ch1_staffing",
+          "source_file": "Fundamentals of Human Resource Management",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Staffing. Determining what type of people should be hired; recruiting prospective employees; selecting employees; setting performance standards; compensating employees; evaluating performance; counseling employees; training and developing employees."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Fundamentals of Human Resource Management",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.94,
+      "rationale": "Interviewers expect HR candidates to know the scope of staffing beyond hiring alone.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_4",
+      "q": "Why does every manager need HR skills?",
+      "a": "To avoid bad hires, reduce turnover, ensure legal compliance, and promote safety—because people practices drive morale, productivity, and risk management.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "ch1_importance",
+          "source_file": "Fundamentals of Human Resource Management",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Apple and Hon Hai both know that the plant’s morale and productivity depend on its human resource practices."
+        },
+        {
+          "chunk_id": "ch1_people_aspects",
+          "source_file": "Fundamentals of Human Resource Management",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "The topics we’ll discuss should therefore provide you with the concepts and techniques you’ll need to perform the “people” or personnel aspects of management."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Fundamentals of Human Resource Management",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Managers are evaluated on team outcomes; interviews probe HR acumen for practical risk and performance management.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_5",
+      "q": "How does job analysis drive selection, training, appraisal, and pay?",
+      "a": "It defines essential duties and criteria, guiding selection tests/interviews; sets training content; establishes performance standards for appraisal; and informs job valuation and pay grades.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "ch1_job_analysis_link",
+          "source_file": "Fundamentals of Human Resource Management",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Conducting job analyses (determining the nature of each employee’s job)."
+        },
+        {
+          "chunk_id": "ch1_staffing_list",
+          "source_file": "Fundamentals of Human Resource Management",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "…selecting employees; setting performance standards; compensating employees; evaluating performance; … training and developing employees."
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Fundamentals of Human Resource Management",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.86,
+      "rationale": "Interviewers test whether candidates can connect foundational analysis to downstream HR systems.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_6",
+      "q": "Explain the difference between disparate treatment and disparate impact and typical defenses.",
+      "a": "Disparate treatment is intentional unequal treatment due to protected status; BFOQ may defend in rare cases. Disparate impact is neutral practices with adverse effects; defend via business necessity and job-related validation.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "toc_selecting",
+          "source_file": "Fundamentals of Human Resource Management",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Selecting Employees"
+        },
+        {
+          "chunk_id": "toc_ethics_fair",
+          "source_file": "Fundamentals of Human Resource Management",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Ethics, Employee Relations, and Fair Treatment at Work"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Fundamentals of Human Resource Management",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.68,
+      "rationale": "This legal foundation appears frequently; employers assess whether candidates can spot risk and articulate defenses.",
+      "review_required": true
+    },
+    {
+      "card_id": "card_7",
+      "q": "What are validity and reliability in selection, and why do they matter?",
+      "a": "Validity shows a method predicts job performance; reliability shows it yields consistent results. Together they improve hiring quality and legal defensibility of selection decisions.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "toc_selecting2",
+          "source_file": "Fundamentals of Human Resource Management",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Selecting Employees"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Fundamentals of Human Resource Management",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.8,
+      "rationale": "Selection science is core; interviewers check understanding of psychometric quality and compliance implications.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_8",
+      "q": "How would you analyze and address adverse impact in hiring?",
+      "a": "Calculate selection rates and the 4/5ths rule; review subgroup score distributions; validate job-relatedness; explore less-impactful alternatives; document analysis, justification, and changes; monitor outcomes over time.",
+      "difficulty": "hard",
+      "bloom_level": "Analyze",
+      "evidence": [
+        {
+          "chunk_id": "toc_selecting3",
+          "source_file": "Fundamentals of Human Resource Management",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Selecting Employees"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Fundamentals of Human Resource Management",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.66,
+      "rationale": "Employers want practical, stepwise approaches to compliance and defensible selection decisions.",
+      "review_required": true
+    },
+    {
+      "card_id": "card_9",
+      "q": "How would you handle an ADA accommodation request for an essential function?",
+      "a": "Confirm essential functions via job analysis; engage in an interactive dialogue; identify effective reasonable accommodations; implement unless undue hardship; document steps and revisit as needed.",
+      "difficulty": "hard",
+      "bloom_level": "Apply",
+      "evidence": [
+        {
+          "chunk_id": "ch1_job_analysis_essentials",
+          "source_file": "Fundamentals of Human Resource Management",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Conducting job analyses (determining the nature of each employee’s job)."
+        },
+        {
+          "chunk_id": "toc_safety_risk",
+          "source_file": "Fundamentals of Human Resource Management",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Improving Occupational Safety, Health, and Risk Management"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Fundamentals of Human Resource Management",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.62,
+      "rationale": "ADA scenarios are common; interviewers test legal literacy and process discipline.",
+      "review_required": true
+    },
+    {
+      "card_id": "card_10",
+      "q": "How would you structure interviews to minimize legal risk and maximize fairness?",
+      "a": "Use job analysis to craft job-related, lawful questions; standardize structured interviews and scoring rubrics; train interviewers; avoid protected-topic questions; ask all candidates the same core questions; document decisions.",
+      "difficulty": "hard",
+      "bloom_level": "Evaluate",
+      "evidence": [
+        {
+          "chunk_id": "ch1_job_analysis_link2",
+          "source_file": "Fundamentals of Human Resource Management",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Conducting job analyses (determining the nature of each employee’s job)."
+        },
+        {
+          "chunk_id": "toc_selecting4",
+          "source_file": "Fundamentals of Human Resource Management",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Selecting Employees"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Fundamentals of Human Resource Management",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.72,
+      "rationale": "Interview structure affects validity and legal defensibility; employers seek candidates who can operationalize best practices.",
+      "review_required": true
+    }
+  ],
+  "stage_a_output": {
+    "module_summary": [
+      {
+        "point": "Human Resource Management (HRM): process of acquiring, training, appraising, compensating, and managing employee relations, health/safety, and fairness",
+        "supports": [
+          "Dessler, Fundamentals HRM 3e – Managing HR Today: HRM definition & scope",
+          "Management process: planning, organizing, staffing, leading, controlling"
+        ]
+      },
+      {
+        "point": "Line vs staff authority; shared HR responsibilities between HR and line managers",
+        "supports": [
+          "Line managers direct work; HR has staff/advisory authority",
+          "Shared tasks: recruiting, training, performance management"
+        ]
+      },
+      {
+        "point": "Strategic HRM: align people practices to produce competencies/behaviors that achieve business strategy",
+        "supports": [
+          "3-step linkage: strategy → needed behaviors/skills → HR policies/practices",
+          "HR shifts from transactional to strategic partner"
+        ]
+      },
+      {
+        "point": "Talent management: integrated, end-to-end process (workforce planning, recruiting, development, performance, rewards, succession)",
+        "supports": [
+          "IBM case: segment-specific HR teams",
+          "Survey: talent management as top HR concern"
+        ]
+      },
+      {
+        "point": "Employee engagement: mental/emotional investment in work; critical driver of performance",
+        "supports": [
+          "Less than one-third of US workforce engaged; HR must raise engagement",
+          "Value-added HR practices improve service and profit (bank example)"
+        ]
+      },
+      {
+        "point": "Evidence-based HR and metrics: use data, analytics, and research to justify and improve HR decisions",
+        "supports": [
+          "Measure cost-per-hire, time-to-fill, turnover, ROI of programs",
+          "Benchmarking via SHRM and similar services"
+        ]
+      },
+      {
+        "point": "HR roles and competencies: evolve from administrative to strategic; Ulrich model (strategic positioner, credible activist, capability builder, change champion, HR innovator/integrator, technology proponent)",
+        "supports": [
+          "Competencies needed to partner with business, lead change, and leverage tech",
+          "HR must speak the CFO’s language and show impact"
+        ]
+      },
+      {
+        "point": "High-performance work systems (HPWS): coherent HR practices that raise skills, autonomy, incentives, and outcomes",
+        "supports": [
+          "Self-directed teams, enriched jobs, robust training",
+          "Linked to better safety, quality, and financial results"
+        ]
+      },
+      {
+        "point": "HR service delivery models: embedded HRBPs, centers of expertise, corporate HR, transactional/shared services, and outsourcing",
+        "supports": [
+          "Self-service portals, call centers, vendors for benefits/payroll",
+          "Organize HR around business segments or services"
+        ]
+      },
+      {
+        "point": "EEO legal framework: Title VII/EEOC, Equal Pay Act, ADEA, ADA, PDA, Executive Orders & OFCCP, Civil Rights Act 1991",
+        "supports": [
+          "Core compliance impact on recruiting, selection, promotion, compensation",
+          "EEOC enforcement process (charge, investigation, conciliation)"
+        ]
+      },
+      {
+        "point": "Discrimination theories and defenses: disparate impact vs treatment; business necessity, validation, BFOQ (limited); key cases (Griggs, Albemarle); CRA 1991 mixed-motive and damages",
+        "supports": [
+          "Burden of proof standards; job-relatedness and validation",
+          "Adverse impact analysis and compliant selection"
+        ]
+      },
+      {
+        "point": "ADA compliance: qualified individual, essential functions, reasonable accommodation, undue hardship; mental impairments included",
+        "supports": [
+          "Interactive process; examples of accommodations and essential functions",
+          "Assistive technologies enable performance"
+        ]
+      },
+      {
+        "point": "Trends reshaping HR: technology, human capital, demographics (aging, diversity), nontraditional workers/remote work, globalization, economic volatility",
+        "supports": [
+          "Shift from goods to services; talent shortages; visas; offshoring",
+          "HR must plan skills, redesign jobs, and manage flexible work"
+        ]
+      },
+      {
+        "point": "HR in small businesses: ad hoc practices are common; managers must still apply core HR techniques effectively",
+        "supports": [
+          "Entrepreneur role as de facto HR",
+          "Scalable, compliant basics matter early"
+        ]
+      }
+    ],
+    "key_topics": [
+      {
+        "topic": "Explain HRM and why every manager needs HR skills (avoiding hiring mistakes, turnover, legal risk, safety)",
+        "supports": [
+          "Dessler, Managing HR Today – importance to all managers"
+        ]
+      },
+      {
+        "topic": "Conducting job analysis to define essential functions and build selection, training, appraisal, and pay",
+        "supports": [
+          "Job analysis underpins compliant selection and ADA"
+        ]
+      },
+      {
+        "topic": "Workforce planning and recruiting strategies aligned to business needs and labor market trends",
+        "supports": [
+          "Talent shortages; demographic shifts; service economy"
+        ]
+      },
+      {
+        "topic": "Selection system design: validity, reliability, adverse impact analysis, and documentation",
+        "supports": [
+          "Uniform Guidelines; Albemarle; validation requirements"
+        ]
+      },
+      {
+        "topic": "EEO compliance: Title VII scope, protected classes, EEOC process, lawful interview questions",
+        "supports": [
+          "Prohibited practices in recruitment/selection/promotion"
+        ]
+      },
+      {
+        "topic": "Disparate impact vs disparate treatment; defenses (business necessity, BFOQ); CRA 1991 impacts on burden and damages",
+        "supports": [
+          "Griggs standard; mixed-motive considerations"
+        ]
+      },
+      {
+        "topic": "ADA reasonable accommodation and interactive process; defining essential functions and undue hardship",
+        "supports": [
+          "Mental impairments; assistive tech; accommodation examples"
+        ]
+      },
+      {
+        "topic": "Strategic HRM and HRBP model: linking HR initiatives to strategy and outcomes; organizing HR (COEs, shared services)",
+        "supports": [
+          "IBM segmentation; Ulrich competencies"
+        ]
+      },
+      {
+        "topic": "Talent management lifecycle: sourcing, onboarding, learning, performance, succession, and pay",
+        "supports": [
+          "Integrated, goal-oriented processes"
+        ]
+      },
+      {
+        "topic": "Driving employee engagement: measurement, managerial practices, and HR interventions",
+        "supports": [
+          "Low engagement baseline; training/job redesign boosts results"
+        ]
+      },
+      {
+        "topic": "HR analytics/metrics: building business cases (ROI), dashboards, and benchmarking",
+        "supports": [
+          "Evidence-based HR; HR expense ratios; time-to-fill, turnover"
+        ]
+      },
+      {
+        "topic": "High-performance work systems and change management: teams, empowerment, incentives, and culture",
+        "supports": [
+          "Safety/performance gains with HPWS; change champion role"
+        ]
+      },
+      {
+        "topic": "Diversity, equity, inclusion (DEI) and affirmative action (for federal contractors); OFCCP obligations",
+        "supports": [
+          "Executive Orders 11246/11375; AAP basics"
+        ]
+      },
+      {
+        "topic": "Ethics in HR: confidentiality, conflicts of interest, fair treatment, and SHRM code implications",
+        "supports": [
+          "Common dilemmas; training reduces incidents"
+        ]
+      },
+      {
+        "topic": "HR in small firms/startups: build compliant, scalable HR basics; when to outsource/shared services",
+        "supports": [
+          "HRIS/self-service/outsourcing for efficiency and compliance"
+        ]
+      }
+    ],
+    "coverage_map": []
+  },
+  "warnings": [
+    "Legal-focused cards (disparate impact/treatment, adverse impact analysis, ADA, lawful interviews) should be reviewed for jurisdiction-specific nuances and updated with organization policies."
+  ],
+  "generation_metadata": {
+    "model": "gpt-5",
+    "temperature": 0.1,
+    "timestamp": "2026-01-18T21:06:37.611Z"
+  },
+  "created_at": "2026-01-18T21:09:37.341Z",
+  "updated_at": "2026-01-18T21:09:37.341Z",
+  "reviewed_by": null,
+  "review_status": "pending",
+  "id": "deck_Certified-Human-Resource-Professional::modules::0_1768770577342",
+  "saved_at": "2026-01-18T21:09:37.342Z",
+  "file_path": "/Users/viditkbhatnagar/codes/AgiOnlineDashboard/server/tmp/decks/Certified-Human-Resource-Professional__modules__0-1768770577342.json"
+}

@@ -325,7 +325,7 @@ export function StudentDashboard() {
     }> = [];
 
     // Add recent study sessions
-    dailyWatchTime.slice(-5).reverse().forEach((d, i) => {
+    dailyWatchTime.slice(-8).reverse().forEach((d, i) => {
       if (d.minutes > 0) {
         const date = new Date(d.date);
         items.push({
@@ -340,7 +340,7 @@ export function StudentDashboard() {
     });
 
     // Add quiz attempts
-    quizScoresArray.slice(-3).forEach((q, i) => {
+    quizScoresArray.slice(-5).forEach((q, i) => {
       items.push({
         id: `quiz-${i}`,
         type: 'quiz',
@@ -350,7 +350,43 @@ export function StudentDashboard() {
       });
     });
 
-    return items.slice(0, 6);
+    // Add document views
+    if (dashboardData.documentsViewed > 0) {
+      items.push({
+        id: 'doc-1',
+        type: 'document',
+        title: `Viewed ${dashboardData.documentsViewed} documents`,
+        time: 'This week',
+        status: 'completed'
+      });
+    }
+
+    // Add module completion achievements
+    if (course?.completedModules && course.completedModules > 0) {
+      items.push({
+        id: 'achievement-modules',
+        type: 'achievement',
+        title: `Completed ${course.completedModules} modules`,
+        time: 'Progress',
+        status: 'completed'
+      });
+    }
+
+    // Add lesson progress
+    if (course?.modules && course.modules.length > 0) {
+      const inProgressModules = course.modules.filter(m => m.percentComplete > 0 && m.percentComplete < 100);
+      inProgressModules.slice(0, 2).forEach((m, i) => {
+        items.push({
+          id: `lesson-${i}`,
+          type: 'lesson',
+          title: m.title,
+          time: `${m.percentComplete}% complete`,
+          status: 'in_progress'
+        });
+      });
+    }
+
+    return items.slice(0, 10);
   })();
 
   // Data for completion donut
@@ -423,10 +459,10 @@ export function StudentDashboard() {
         )}
 
         {/* 3-Column Bento Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
           
-          {/* ========== LEFT COLUMN - Main Content (5 cols) ========== */}
-          <div className="lg:col-span-5 space-y-6">
+          {/* ========== LEFT COLUMN - Main Content (4 cols) ========== */}
+          <div className="lg:col-span-4 flex flex-col gap-5">
             
             {/* Continue Learning Card - Pastel Blue */}
             <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 via-blue-50/80 to-indigo-50 p-6 border border-blue-100/50 shadow-sm">
@@ -572,10 +608,94 @@ export function StudentDashboard() {
                 )}
               </div>
             )}
+
+            {/* Quick Stats Grid - Fill remaining space */}
+            <div className="grid grid-cols-2 gap-4">
+              {/* Documents Viewed */}
+              <div className="rounded-2xl bg-gradient-to-br from-amber-50 via-orange-50/80 to-yellow-50 p-4 border border-amber-100/50 shadow-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <FileText className="size-4 text-amber-500" />
+                  <span className="text-xs font-medium text-slate-500">Documents</span>
+                </div>
+                <p className="text-2xl font-bold text-slate-800">{dashboardData.documentsViewed}</p>
+                <p className="text-xs text-slate-400 mt-1">Files viewed</p>
+              </div>
+
+              {/* Study Sessions */}
+              <div className="rounded-2xl bg-gradient-to-br from-violet-50 via-purple-50/80 to-indigo-50 p-4 border border-violet-100/50 shadow-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <BookOpen className="size-4 text-violet-500" />
+                  <span className="text-xs font-medium text-slate-500">Sessions</span>
+                </div>
+                <p className="text-2xl font-bold text-slate-800">{dailyWatchTime.filter(d => d.minutes > 0).length}</p>
+                <p className="text-xs text-slate-400 mt-1">Study days</p>
+              </div>
+            </div>
+
+            {/* Average Session Duration Card */}
+            <div className="rounded-2xl bg-gradient-to-br from-sky-50 via-blue-50/80 to-cyan-50 p-4 border border-sky-100/50 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Clock className="size-4 text-sky-500" />
+                    <span className="text-xs font-medium text-slate-500">Avg. Session</span>
+                  </div>
+                  <p className="text-2xl font-bold text-slate-800">
+                    {dailyWatchTime.filter(d => d.minutes > 0).length > 0 
+                      ? Math.round(watchTimeInMinutes / dailyWatchTime.filter(d => d.minutes > 0).length)
+                      : 0}
+                    <span className="text-sm font-normal text-slate-500 ml-1">min</span>
+                  </p>
+                </div>
+                <div className="size-12 rounded-full bg-gradient-to-br from-sky-400 to-blue-500 flex items-center justify-center">
+                  <TrendingUp className="size-5 text-white" />
+                </div>
+              </div>
+            </div>
+
+            {/* Weekly Comparison */}
+            <div className="rounded-2xl bg-gradient-to-br from-emerald-50 via-green-50/80 to-teal-50 p-5 border border-emerald-100/50 shadow-sm flex-1 flex flex-col">
+              <div className="flex items-center gap-2 mb-4">
+                <TrendingUp className="size-4 text-emerald-500" />
+                <span className="text-xs font-medium text-slate-500">This Week vs Last Week</span>
+              </div>
+              <div className="flex-1 flex flex-col justify-center">
+                <div className="flex items-end justify-between mb-6">
+                  <div>
+                    <p className="text-xs text-slate-400">This week</p>
+                    <p className="text-2xl font-bold text-emerald-600">{watchTime.thisWeek}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs text-slate-400">Last week</p>
+                    <p className="text-2xl font-bold text-slate-400">
+                      {Math.round(dailyWatchTime.slice(-14, -7).reduce((sum, d) => sum + d.minutes, 0) / 60)}h
+                    </p>
+                  </div>
+                </div>
+                <div className="h-24 flex items-end gap-1.5">
+                  {dailyWatchTime.slice(-7).map((d, i) => (
+                    <div 
+                      key={i}
+                      className="flex-1 bg-gradient-to-t from-emerald-500 to-emerald-300 rounded-t transition-all"
+                      style={{ height: `${Math.max(8, (d.minutes / Math.max(...dailyWatchTime.slice(-7).map(x => x.minutes), 1)) * 100)}%` }}
+                    />
+                  ))}
+                </div>
+                <div className="flex justify-between mt-2 text-[10px] text-slate-400">
+                  <span>Mon</span>
+                  <span>Tue</span>
+                  <span>Wed</span>
+                  <span>Thu</span>
+                  <span>Fri</span>
+                  <span>Sat</span>
+                  <span>Sun</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* ========== MIDDLE COLUMN - Analytics (4 cols) ========== */}
-          <div className="lg:col-span-4 space-y-6">
+          {/* ========== MIDDLE COLUMN - Analytics (5 cols) ========== */}
+          <div className="lg:col-span-5 flex flex-col gap-5">
             
             {/* Stats Row - Mini Cards */}
             <div className="grid grid-cols-2 gap-4">
@@ -662,31 +782,21 @@ export function StudentDashboard() {
               </div>
             </div>
 
-            {/* Quiz Performance Chart - Pastel Blue */}
-            <div className="rounded-2xl bg-gradient-to-br from-blue-50 via-indigo-50/80 to-violet-50 p-6 border border-blue-100/50 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <Zap className="size-5 text-blue-600" />
-                  <h3 className="font-heading text-lg font-bold text-slate-800">Quiz Scores</h3>
-                </div>
-                <span className="text-xs text-slate-400">{quizScoresArray.length} attempts</span>
-              </div>
-              <QuizPerformanceChart quizScores={quizScoresArray} />
-            </div>
-
             {/* Activity Distribution Polar Chart */}
-            <div className="rounded-2xl bg-gradient-to-br from-fuchsia-50 via-pink-50/80 to-rose-50 p-6 border border-fuchsia-100/50 shadow-sm">
+            <div className="rounded-2xl bg-gradient-to-br from-fuchsia-50 via-pink-50/80 to-rose-50 p-6 border border-fuchsia-100/50 shadow-sm flex-1 flex flex-col">
               <div className="flex items-center gap-2 mb-4">
                 <Target className="size-5 text-fuchsia-600" />
                 <h3 className="font-heading text-lg font-bold text-slate-800">Day Distribution</h3>
               </div>
-              <ActivityPolarChart dailyWatchTimes={dailyWatchTime} />
-              <p className="text-xs text-slate-500 text-center mt-2">Average study time by day of week</p>
+              <div className="flex-1 flex items-center justify-center">
+                <ActivityPolarChart dailyWatchTimes={dailyWatchTime} />
+              </div>
+              <p className="text-xs text-slate-500 text-center mt-4">Average study time by day of week</p>
             </div>
           </div>
 
           {/* ========== RIGHT COLUMN - Calendar & Timeline (3 cols) ========== */}
-          <div className="lg:col-span-3 space-y-6">
+          <div className="lg:col-span-3 flex flex-col gap-5">
             
             {/* Tip of the Day */}
             <div className="rounded-2xl bg-gradient-to-br from-[#18548b] to-[#1a6ab0] p-5 text-white shadow-lg relative overflow-hidden">
@@ -779,12 +889,28 @@ export function StudentDashboard() {
             />
 
             {/* Learning Timeline */}
-            <div className="rounded-2xl bg-white p-5 border border-slate-100 shadow-sm">
+            <div className="rounded-2xl bg-white p-5 border border-slate-100 shadow-sm flex-1 flex flex-col">
               <div className="flex items-center gap-2 mb-4">
                 <Clock className="size-4 text-slate-500" />
                 <h3 className="font-heading text-base font-bold text-slate-800">Recent Activity</h3>
               </div>
-              <LearningTimeline items={timelineItems} />
+              <div className="flex-1 overflow-y-auto">
+                <LearningTimeline items={timelineItems} />
+              </div>
+            </div>
+          </div>
+
+          {/* ========== FULL WIDTH - Quiz Scores (12 cols) ========== */}
+          <div className="lg:col-span-12">
+            <div className="rounded-2xl bg-gradient-to-br from-blue-50 via-indigo-50/80 to-violet-50 p-6 border border-blue-100/50 shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Zap className="size-5 text-blue-600" />
+                  <h3 className="font-heading text-lg font-bold text-slate-800">Quiz Scores</h3>
+                </div>
+                <span className="text-xs text-slate-400">{quizScoresArray.length} attempts</span>
+              </div>
+              <QuizPerformanceChart quizScores={quizScoresArray} />
             </div>
           </div>
         </div>

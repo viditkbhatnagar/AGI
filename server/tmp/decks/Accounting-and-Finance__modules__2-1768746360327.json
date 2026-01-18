@@ -1,0 +1,514 @@
+{
+  "course_id": "Accounting-and-Finance",
+  "module_id": "Accounting-and-Finance::modules::2",
+  "module_title": "Ratio Analysis",
+  "cards": [
+    {
+      "card_id": "card_1",
+      "q": "What is the Current Ratio and how do you interpret it?",
+      "a": "Current Ratio = Current Assets / Current Liabilities. Gauges near‑term liquidity. >1 suggests coverage; excessively high may signal idle working capital. Interpret versus trends, seasonality, and industry benchmarks to avoid false comfort.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Ratio Analysis",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Liquidity ratios: Current, Quick (Acid‑Test), and Cash ratios—formulas, interpretation, and industry benchmarking"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Ratio Analysis",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Tests fundamental liquidity knowledge and ability to contextualize a headline metric—common in financial analyst and credit interviews.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_2",
+      "q": "What is the Quick (Acid‑Test) Ratio and when is it preferred?",
+      "a": "Quick Ratio = (Current Assets − Inventories − Prepaids) / Current Liabilities. Focuses on most liquid assets. Prefer it when inventory is large or slow‑moving; highlights cash and receivables’ ability to cover short‑term obligations.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Ratio Analysis",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Explain and interpret Current, Quick, and Cash ratios; suggest actions to improve short-term liquidity"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Ratio Analysis",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Interviewers probe whether candidates understand liquidity quality, not just quantity—especially in inventory‑heavy businesses.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_3",
+      "q": "What is DuPont Analysis?",
+      "a": "A ROE decomposition: ROE = Net Profit Margin × Asset Turnover × Equity Multiplier. It attributes equity returns to profitability, efficiency, and leverage to pinpoint drivers of change and target actions.",
+      "difficulty": "easy",
+      "bloom_level": "Remember",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Ratio Analysis",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Apply DuPont Analysis to attribute ROE changes to margins, asset turnover, or leverage"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Ratio Analysis",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "DuPont is a staple framework used across finance roles to diagnose performance and communicate drivers succinctly.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_4",
+      "q": "Explain the difference between Gross, Operating, and Net margins; what does each reveal?",
+      "a": "Gross: pricing/mix and COGS. Operating (EBIT): operating efficiency and overhead. Net: overall profitability after financing, taxes, one‑offs. Analyze movements via price, mix, input costs, productivity, SG&A, interest, and tax effects.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Ratio Analysis",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Walk through Gross, Operating, and Net margins; diagnose margin movements (price, mix, COGS, opex)"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Ratio Analysis",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Employers test whether candidates can connect margin lines to real operational levers and cost/pricing decisions.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_5",
+      "q": "Explain the difference between ROE, ROA, and ROCE; when is each most relevant?",
+      "a": "ROE = PAT / Avg Equity (shareholder return). ROA = Net Income or EBIT(1−t) / Avg Assets (asset efficiency). ROCE = EBIT / Capital Employed (operating return independent of financing). Use ROCE for operations, ROE for equity investors, ROA for asset‑intensive comparisons.",
+      "difficulty": "medium",
+      "bloom_level": "Understand",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Ratio Analysis",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Differentiate ROE, ROA, and ROCE; compute correctly and explain when each is most relevant"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Ratio Analysis",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Return metrics alignment is essential in equity research, FP&A, and credit—mismatches are a frequent interview trap.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_6",
+      "q": "How do you assess leverage and solvency across industries?",
+      "a": "Use D/E, Debt Ratio, Equity (proprietary) Ratio, Capital Gearing, and Interest Coverage (TIE=EBIT/Interest). Compare to sector norms and cycle risk; utilities/infrastructure sustain higher leverage than cyclical, capital‑light firms. Check covenants, debt mix, and maturities.",
+      "difficulty": "medium",
+      "bloom_level": "Analyze",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Ratio Analysis",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Assess leverage using D/E, Debt Ratio, Equity Ratio, and Interest Coverage; discuss optimal leverage by industry"
+        },
+        {
+          "chunk_id": "src",
+          "source_file": "Ratio Analysis",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Calculate proprietary (equity-to-assets) and capital gearing ratios; interpret in solvency context"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Ratio Analysis",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Hiring managers expect nuanced leverage assessment tied to sector dynamics, covenants, and interest‑rate exposure.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_7",
+      "q": "Why are consistent calculation methods and appropriate benchmarking important in ratio analysis?",
+      "a": "They prevent misinterpretation. Use averages, match numerator/denominator scope, net figures, and exclude one‑offs. Benchmark versus trends and true peers; cross‑industry ‘ideal’ ratios mislead due to business models, cycles, and accounting differences.",
+      "difficulty": "medium",
+      "bloom_level": "Apply",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Ratio Analysis",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Best practices for ratio calculation: use averages where relevant, match numerator/denominator, use net figures... and ensure consistency"
+        },
+        {
+          "chunk_id": "src",
+          "source_file": "Ratio Analysis",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Perform trend and peer benchmarking; explain why cross‑industry ratio comparisons can mislead"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Ratio Analysis",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Interviewers look for discipline in methodology and awareness of benchmarking pitfalls to ensure actionable insights.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_8",
+      "q": "How would you use cash‑flow based liquidity tests to assess resilience?",
+      "a": "Compute Operating Cash Flow Ratio (OCF/Current Liabilities), Defensive Interval (Quick Assets/Daily Cash Expenses), and cash‑basis TIE (OCF before interest and taxes/Cash Interest). Stress them under downturn scenarios to gauge serviceability without new financing.",
+      "difficulty": "hard",
+      "bloom_level": "Evaluate",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Ratio Analysis",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Compute and use cash-flow based liquidity tests (Operating Cash Flow Ratio, Defensive Interval, TIE cash-basis)"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Ratio Analysis",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Cash‑based tests are favored by lenders and investment committees to validate accrual ratios under stress.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_9",
+      "q": "ROE fell from 18% to 12%. How would you apply DuPont to diagnose and act?",
+      "a": "Decompose ROE into margin, asset turnover, and leverage; trend vs peers. If margin fell: address price/mix, costs, hedging. If turnover fell: improve utilization, divest idle assets. If leverage fell: recalibrate capital structure within risk and covenant limits.",
+      "difficulty": "hard",
+      "bloom_level": "Analyze",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Ratio Analysis",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Apply DuPont Analysis to attribute ROE changes to margins, asset turnover, or leverage"
+        },
+        {
+          "chunk_id": "src",
+          "source_file": "Ratio Analysis",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Connect ratios to macro/industry realities (commodity price swings, FX, interest rates) and risk mitigation (hedging, contracts)"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Ratio Analysis",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.88,
+      "rationale": "Shows ability to translate diagnostics into targeted operational and capital structure actions—key in FP&A and PE roles.",
+      "review_required": false
+    },
+    {
+      "card_id": "card_10",
+      "q": "Profits rise, but current ratio and cash fall; DSO and inventory days up. How would you diagnose and fix?",
+      "a": "Diagnose working capital: slow collections and overstocking. Fix: tighten credit/collections, incentivize early payments, optimize inventory (SKU rationalization, reorder points), extend supplier terms, align production to demand, consider receivables factoring.",
+      "difficulty": "hard",
+      "bloom_level": "Analyze",
+      "evidence": [
+        {
+          "chunk_id": "src",
+          "source_file": "Ratio Analysis",
+          "loc": "content",
+          "start_sec": null,
+          "end_sec": null,
+          "excerpt": "Diagnose working capital issues (e.g., low current ratio with growing profits) and propose fixes (collections, inventory, payables)"
+        }
+      ],
+      "sources": [
+        {
+          "type": "pdf",
+          "file": "Ratio Analysis",
+          "loc": "content"
+        }
+      ],
+      "confidence_score": 0.9,
+      "rationale": "Scenario tests practical ability to connect ratios to cash conversion and operational levers—high‑value in treasury and operations finance.",
+      "review_required": false
+    }
+  ],
+  "stage_a_output": {
+    "module_summary": [
+      {
+        "point": "Liquidity ratios: Current, Quick (Acid‑Test), and Cash ratios—formulas, interpretation, and industry benchmarking",
+        "supports": [
+          "CFI Financial-Ratios eBook: Liquidity Ratios (Current, Quick, Cash)",
+          "MBA Pathway Accounting Ratio Analysis: Liquidity ratios (formulas, implications)",
+          "Worked Example Tata Steel: Liquid ratios section and interpretation"
+        ]
+      },
+      {
+        "point": "Profitability margins: Gross, Operating (EBIT), and Net profit margins—what each reveals about cost control, pricing, and efficiency",
+        "supports": [
+          "CFI eBook: Gross Margin, Operating Profit Margin, Net Profit Margin",
+          "MBA Pathway: Key Profitability Ratios",
+          "Worked Example Tata Steel: Gross, Operating, Net profit ratio trends"
+        ]
+      },
+      {
+        "point": "Return metrics: ROE, ROA, ROCE—correct numerators/denominators and when to use each",
+        "supports": [
+          "CFI eBook: Return on Equity, Return on Assets, Return on Capital Employed",
+          "MBA Pathway: ROE, ROA definitions and use",
+          "Worked Example Tata Steel: ROE, ROCE insights"
+        ]
+      },
+      {
+        "point": "Leverage/solvency: Debt-to-Equity, Debt Ratio, Equity Ratio, Interest Coverage (Times Interest Earned) and trade‑offs of leverage",
+        "supports": [
+          "CFI eBook: Leverage ratios (D/E, Debt Ratio, Equity Ratio, TIE)",
+          "MBA Pathway: Solvency ratios (D/E, Interest Coverage, Equity Ratio)",
+          "Worked Example Tata Steel: Debt-Equity and solvency commentary"
+        ]
+      },
+      {
+        "point": "Efficiency/turnover: Inventory Turnover (and Days), Receivables Turnover (and DSO), Asset and Fixed Asset Turnover, Working Capital Turnover",
+        "supports": [
+          "CFI eBook: Efficiency ratios (AR Turnover, AR Days, Asset Turnover, Inventory Turnover, Days)",
+          "Ratio Analysis Worked Examples: Problems 1,3,4 (turnover computations)",
+          "MBA Pathway: Efficiency ratios"
+        ]
+      },
+      {
+        "point": "DuPont Analysis to decompose ROE into profitability, efficiency, and leverage drivers",
+        "supports": [
+          "MBA Pathway: DuPont Analysis (NPM x Asset Turnover x Equity Multiplier)",
+          "CFI eBook: Pyramid of Ratios (ROE drivers)"
+        ]
+      },
+      {
+        "point": "Best practices for ratio calculation: use averages where relevant, match numerator/denominator, use net figures (e.g., net credit sales), and ensure consistency",
+        "supports": [
+          "CFI eBook: Notes on averages and net measures within ratio definitions",
+          "Ratio Analysis Worked Examples: Step-by-step setups highlighting net and average usage"
+        ]
+      },
+      {
+        "point": "Benchmarking and trend analysis: compare across time, peers, and targets; avoid cross‑industry generalizations of 'ideal' ratios",
+        "supports": [
+          "CFI eBook: Why use ratio analysis; Pyramid of Ratios for benchmarking",
+          "MBA Pathway: Applications of ratio analysis (over time, across companies, vs benchmarks)"
+        ]
+      },
+      {
+        "point": "Cash-flow based liquidity: Operating Cash Flow Ratio, Defensive Interval, and Cash-basis TIE to test resilience beyond accrual metrics",
+        "supports": [
+          "CFI eBook: Operating Cash Flow Ratio, Defensive Interval Ratio, TIE (cash-basis)"
+        ]
+      },
+      {
+        "point": "Capital structure and gearing: interpreting low vs high leverage, cost of capital, and 'trading on equity'",
+        "supports": [
+          "MBA Pathway: Solvency ratios and strategic implications",
+          "Worked Example Tata Steel: Comment on solvency and trading on equity"
+        ]
+      },
+      {
+        "point": "Proprietary (Equity-to-Assets) ratio and Capital Gearing ratio—where used and how to interpret",
+        "supports": [
+          "Worked Example Tata Steel: Proprietary ratio",
+          "Ratio Analysis Worked Examples: Capital Gearing (Problem 5)",
+          "CFI eBook: Equity Ratio"
+        ]
+      },
+      {
+        "point": "Common pitfalls: window dressing, one-offs, inventory-heavy quick ratios, mismatched metrics (e.g., EBIT with capital employed vs PAT with equity)",
+        "supports": [
+          "CFI eBook: Ratio interpretation cautions throughout sections",
+          "MBA Pathway: Strategic implications and benchmarking notes"
+        ]
+      },
+      {
+        "point": "Linking ratios to business context: macro cycles, commodity volatility, and working-capital discipline (Tata Steel case)",
+        "supports": [
+          "Worked Example Tata Steel: Macroeconomic/industry factors and liquidity recommendations",
+          "MBA Pathway: Strategy and risk insights tied to ratios"
+        ]
+      }
+    ],
+    "key_topics": [
+      {
+        "topic": "Explain and interpret Current, Quick, and Cash ratios; suggest actions to improve short-term liquidity",
+        "supports": [
+          "CFI eBook: Liquidity ratios",
+          "Worked Example Tata Steel: Liquid ratios and suggestions",
+          "MBA Pathway: Liquidity strategic implications"
+        ]
+      },
+      {
+        "topic": "Walk through Gross, Operating, and Net margins; diagnose margin movements (price, mix, COGS, opex)",
+        "supports": [
+          "CFI eBook: Margin ratios",
+          "Worked Example Tata Steel: Margin trends and commentary"
+        ]
+      },
+      {
+        "topic": "Differentiate ROE, ROA, and ROCE; compute correctly and explain when each is most relevant",
+        "supports": [
+          "CFI eBook: ROE, ROA, ROCE",
+          "Worked Example Tata Steel: ROE/ROCE usage"
+        ]
+      },
+      {
+        "topic": "Assess leverage using D/E, Debt Ratio, Equity Ratio, and Interest Coverage; discuss optimal leverage by industry",
+        "supports": [
+          "CFI eBook: Leverage ratios, TIE",
+          "MBA Pathway: Solvency ratios and industry dependence"
+        ]
+      },
+      {
+        "topic": "Evaluate operating efficiency via Inventory Turnover/Days, Receivables Turnover/DSO, Asset and Fixed Asset Turnover",
+        "supports": [
+          "CFI eBook: Efficiency ratios",
+          "Ratio Analysis Worked Examples: Problems 1,3,4"
+        ]
+      },
+      {
+        "topic": "Apply DuPont Analysis to attribute ROE changes to margins, asset turnover, or leverage",
+        "supports": [
+          "MBA Pathway: DuPont Analysis framework",
+          "CFI eBook: Pyramid of Ratios"
+        ]
+      },
+      {
+        "topic": "Perform trend and peer benchmarking; explain why cross‑industry ratio comparisons can mislead",
+        "supports": [
+          "MBA Pathway: Applications of ratio analysis",
+          "CFI eBook: Why use ratio analysis"
+        ]
+      },
+      {
+        "topic": "Compute and use cash-flow based liquidity tests (Operating Cash Flow Ratio, Defensive Interval, TIE cash-basis)",
+        "supports": [
+          "CFI eBook: Cash-flow ratios and DIR"
+        ]
+      },
+      {
+        "topic": "Diagnose working capital issues (e.g., low current ratio with growing profits) and propose fixes (collections, inventory, payables)",
+        "supports": [
+          "Worked Example Tata Steel: Liquidity shortfalls and recommendations",
+          "CFI eBook: Liquidity ratio interpretation"
+        ]
+      },
+      {
+        "topic": "Discuss capital structure choices, cost of debt vs equity, and the concept of trading on equity",
+        "supports": [
+          "MBA Pathway: Solvency and capital structure",
+          "Worked Example Tata Steel: Solvency comments"
+        ]
+      },
+      {
+        "topic": "Calculate proprietary (equity-to-assets) and capital gearing ratios; interpret in solvency context",
+        "supports": [
+          "Worked Example Tata Steel: Proprietary ratio",
+          "Ratio Analysis Worked Examples: Capital Gearing"
+        ]
+      },
+      {
+        "topic": "Avoid common calculation pitfalls (use averages, match operating numerators/denominators, remove one-offs, use net credit sales)",
+        "supports": [
+          "CFI eBook: Ratio definitions and notes",
+          "Ratio Analysis Worked Examples: Detailed setups"
+        ]
+      },
+      {
+        "topic": "Connect ratios to macro/industry realities (commodity price swings, FX, interest rates) and risk mitigation (hedging, contracts)",
+        "supports": [
+          "Worked Example Tata Steel: Risk analysis (macroeconomic, industry factors)"
+        ]
+      },
+      {
+        "topic": "Use ratio thresholds in credit/investment decisions and covenants; explain why 'ideal' ratios vary by sector and strategy",
+        "supports": [
+          "MBA Pathway: Benchmarking and lender use",
+          "CFI eBook: Interpretation cautions"
+        ]
+      }
+    ],
+    "coverage_map": []
+  },
+  "warnings": [],
+  "generation_metadata": {
+    "model": "gpt-5",
+    "temperature": 0.1,
+    "timestamp": "2026-01-18T14:23:48.974Z"
+  },
+  "created_at": "2026-01-18T14:26:00.327Z",
+  "updated_at": "2026-01-18T14:26:00.327Z",
+  "reviewed_by": null,
+  "review_status": "pending",
+  "id": "deck_Accounting-and-Finance::modules::2_1768746360327",
+  "saved_at": "2026-01-18T14:26:00.328Z",
+  "file_path": "/Users/viditkbhatnagar/codes/AgiOnlineDashboard/server/tmp/decks/Accounting-and-Finance__modules__2-1768746360327.json"
+}

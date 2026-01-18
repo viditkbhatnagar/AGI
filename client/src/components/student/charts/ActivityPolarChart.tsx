@@ -67,7 +67,7 @@ export default function ActivityPolarChart({ dailyWatchTimes }: ActivityPolarCha
         }
       },
       polar: {
-        radius: ['20%', '75%']
+        radius: ['15%', '95%']
       },
       radiusAxis: {
         type: 'value',
@@ -158,11 +158,11 @@ export default function ActivityPolarChart({ dailyWatchTimes }: ActivityPolarCha
 
   if (dailyWatchTimes.length === 0) {
     return (
-      <div className="w-full h-[200px] flex items-center justify-center text-slate-400 text-sm">
+      <div className="w-full h-[320px] flex items-center justify-center text-slate-400 text-sm">
         No activity data
       </div>
     );
   }
 
-  return <div ref={chartRef} className="w-full h-[200px]" />;
+  return <div ref={chartRef} className="w-full h-[320px]" />;
 }
