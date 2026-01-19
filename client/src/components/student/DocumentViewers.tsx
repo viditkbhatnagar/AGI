@@ -350,7 +350,63 @@ export function DocumentViewer({
     );
   }
 
-  // For all other document types (PDFs, etc.), use iframe
+  // Check if it's a PDF
+  const isPDF = extension === 'pdf' || mimeType.includes('pdf') || fileUrl.toLowerCase().includes('.pdf');
+
+  // For PDFs, use Google Docs Viewer for a cleaner experience (no sidebar, scrollable)
+  if (isPDF) {
+    console.log('📄 Using Google Docs Viewer for PDF');
+    const googleViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(fileUrl)}&embedded=true`;
+    
+    return (
+      <div className="w-full h-[70vh] md:h-[75vh] relative bg-slate-100">
+        {loading && (
+          <div className="absolute inset-0 bg-white flex items-center justify-center z-30 rounded">
+            <div className="text-center p-8">
+              <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-emerald-600" />
+              <p className="text-lg font-medium text-gray-700 mb-2">Loading PDF</p>
+              <p className="text-sm text-gray-500">Please wait...</p>
+            </div>
+          </div>
+        )}
+        
+        {error && (
+          <div className="absolute inset-0 bg-gray-50 flex items-center justify-center z-10">
+            <div className="text-center p-6">
+              <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-700 mb-2">Preview Not Available</h3>
+              <p className="text-gray-500 mb-4">Unable to display this document inline.</p>
+              <Button
+                onClick={() => window.open(fileUrl, '_blank')}
+              >
+                Open Document
+              </Button>
+            </div>
+          </div>
+        )}
+        
+        <iframe
+          src={googleViewerUrl}
+          className="w-full h-full border-0 rounded"
+          title={fileName || 'PDF Document'}
+          style={{ opacity: loading ? 0 : 1 }}
+          onLoad={() => {
+            console.log('✅ PDF loaded via Google Docs Viewer');
+            setTimeout(() => {
+              setLoading(false);
+            }, 1000);
+          }}
+          onError={() => {
+            console.error('❌ PDF failed to load');
+            setLoading(false);
+            setError(true);
+          }}
+        />
+      </div>
+    );
+  }
+
+  // For all other document types, use iframe
   console.log('📄 Using generic iframe viewer');
   
   return (

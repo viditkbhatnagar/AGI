@@ -20,9 +20,10 @@ interface StudentSidebarProps {
   className?: string;
   isMobile?: boolean;
   onClose?: () => void;
+  isCollapsed?: boolean;
 }
 
-export function StudentSidebar({ className, isMobile, onClose }: StudentSidebarProps) {
+export function StudentSidebar({ className, isMobile, onClose, isCollapsed }: StudentSidebarProps) {
   const [location] = useLocation();
   const { student, logout } = useAuth();
   

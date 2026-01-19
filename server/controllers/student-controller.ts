@@ -52,22 +52,29 @@ export const getDashboard = async (req: Request, res: Response) => {
     // Gather module data asynchronously to allow awaiting quiz fetches
     const moduleData = await Promise.all(
       course.modules.map(async (module, idx) => {
-        // Video progress
+        // Video progress - deduplicate by videoIndex and cap at 100%
         const totalVideos = module.videos.length;
         const watchedVideos = new Set(
           watchRecords
-            .filter(wt => wt.moduleIndex === idx)
-            .map(wt => wt.videoIndex)
+            .filter((wt: any) => wt.moduleIndex === idx && wt.videoIndex < totalVideos)
+            .map((wt: any) => wt.videoIndex)
         ).size;
         const percentWatched = totalVideos
-          ? (watchedVideos / totalVideos) * 100
+          ? Math.min(100, (watchedVideos / totalVideos) * 100)
           : 0;
 
-        // Document progress
+        // Document progress - deduplicate by docUrl and only count docs that exist in module
         const totalDocs = module.documents.length;
-        const viewedDocs = docRecords.filter(dv => dv.moduleIndex === idx).length;
+        const moduleDocUrls = new Set(
+          module.documents.map((doc: any) => doc.fileUrl || doc.url).filter(Boolean)
+        );
+        const viewedDocs = new Set(
+          docRecords
+            .filter((dv: any) => dv.moduleIndex === idx && moduleDocUrls.has(dv.docUrl))
+            .map((dv: any) => dv.docUrl)
+        ).size;
         const percentViewed = totalDocs
-          ? (viewedDocs / totalDocs) * 100
+          ? Math.min(100, (viewedDocs / totalDocs) * 100)
           : 0;
 
         // Quiz progress
@@ -336,9 +343,17 @@ export const getDashboardByCourse = async (req: Request, res: Response) => {
         ).size;
         const percentWatched = totalVideos ? (watchedVideos / totalVideos) * 100 : 0;
 
+        // Document progress - deduplicate by docUrl and only count docs that exist in module
         const totalDocs = module.documents.length;
-        const viewedDocs = docRecords.filter(dv => dv.moduleIndex === idx).length;
-        const percentViewed = totalDocs ? (viewedDocs / totalDocs) * 100 : 0;
+        const moduleDocUrls = new Set(
+          module.documents.map((doc: any) => doc.fileUrl || doc.url).filter(Boolean)
+        );
+        const viewedDocs = new Set(
+          docRecords
+            .filter((dv: any) => dv.moduleIndex === idx && moduleDocUrls.has(dv.docUrl))
+            .map((dv: any) => dv.docUrl)
+        ).size;
+        const percentViewed = totalDocs ? Math.min(100, (viewedDocs / totalDocs) * 100) : 0;
 
         const quizDone = quizRecords.some(qa => qa.moduleIndex === idx);
         const quizPercent = quizDone ? 100 : 0;
@@ -740,11 +755,18 @@ export const getCourses = async (req: Request, res: Response) => {
           ? (watchedVideos / totalVideos) * 100
           : 0;
 
-        // Document progress
+        // Document progress - deduplicate by docUrl and only count docs that exist in module
         const totalDocs = module.documents.length;
-        const viewedDocs = docRecords.filter(dv => dv.moduleIndex === idx).length;
+        const moduleDocUrls = new Set(
+          module.documents.map((doc: any) => doc.fileUrl || doc.url).filter(Boolean)
+        );
+        const viewedDocs = new Set(
+          docRecords
+            .filter((dv: any) => dv.moduleIndex === idx && moduleDocUrls.has(dv.docUrl))
+            .map((dv: any) => dv.docUrl)
+        ).size;
         const percentViewed = totalDocs > 0
-          ? (viewedDocs / totalDocs) * 100
+          ? Math.min(100, (viewedDocs / totalDocs) * 100)
           : 0;
 
         // Quiz progress
@@ -845,11 +867,18 @@ export const getCourseDetail = async (req: Request, res: Response) => {
           ? (watchedVideos / totalVideos) * 100
           : 0;
 
-        // Document progress
+        // Document progress - deduplicate by docUrl and only count docs that exist in module
         const totalDocs = module.documents.length;
-        const viewedDocs = docRecords.filter((dv: any) => dv.moduleIndex === idx).length;
+        const moduleDocUrls = new Set(
+          module.documents.map((doc: any) => doc.fileUrl || doc.url).filter(Boolean)
+        );
+        const viewedDocs = new Set(
+          docRecords
+            .filter((dv: any) => dv.moduleIndex === idx && moduleDocUrls.has(dv.docUrl))
+            .map((dv: any) => dv.docUrl)
+        ).size;
         const percentViewed = totalDocs
-          ? (viewedDocs / totalDocs) * 100
+          ? Math.min(100, (viewedDocs / totalDocs) * 100)
           : 0;
 
         // Quiz progress

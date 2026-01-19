@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import express from "express";
 import { createServer, type Server } from "http";
+import { WebSocketServer } from "ws";
 import { storage } from "./storage";
 import { auth } from "./middleware/auth";
 import { requireAdmin, requireStudent, requireAuth, requireAdminAccess, requireTeacher, requireTeachingAccess } from "./middleware/require-auth";
@@ -20,6 +21,7 @@ import * as documentProxyController from "./controllers/document-proxy-controlle
 import * as feedbackController from "./controllers/feedback-controller";
 import * as certificateController from "./controllers/certificate-controller";
 import * as loginHistoryController from "./controllers/loginHistory-controller";
+import * as aiLearningController from "./controllers/ai-learning-controller";
 import quizRepositoryRoutes from "./routes/quizRepository";
 import flashcardRoutes, {
   moduleFlashcardsRoute,
@@ -29,6 +31,7 @@ import { generateFlashcardsFromModule } from "./services/flashcard/flashcardCont
 import orchestratorRoutes from "./services/flashcard/orchestratorRoutes";
 import productionFlashcardRoutes from "./services/flashcard/productionRoutes";
 import apiUsageRoutes from "./services/apiUsage/routes";
+import { setupVoiceAgentWebSocket } from "./services/voice-agent/voiceAgentHandler";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // AUTH ROUTES
@@ -280,7 +283,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // API USAGE TRACKING ROUTES
   app.use("/api/admin/api-usage", auth, requireAdminAccess, apiUsageRoutes);
 
+  // AI LEARNING ROUTES (Explain Page feature)
+  app.post("/api/documents/explain", auth, requireStudent, aiLearningController.explainPage);
+  app.get("/api/documents/page-count", auth, requireStudent, aiLearningController.getPDFPageCount);
+
   const httpServer = createServer(app);
+
+  // Set up WebSocket server for voice agent on a specific path
+  // Use noServer mode to avoid conflicts with Vite's HMR WebSocket
+  const wss = new WebSocketServer({ noServer: true });
+  setupVoiceAgentWebSocket(wss);
+
+  // Handle upgrade requests manually to route to correct WebSocket server
+  httpServer.on('upgrade', (request, socket, head) => {
+    const pathname = new URL(request.url || '', `http://${request.headers.host}`).pathname;
+    
+    // Only handle /ws/voice path for our voice agent
+    if (pathname === '/ws/voice') {
+      wss.handleUpgrade(request, socket, head, (ws) => {
+        wss.emit('connection', ws, request);
+      });
+    }
+    // Let other WebSocket connections (like Vite HMR) pass through
+  });
 
   return httpServer;
 }

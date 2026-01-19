@@ -103,12 +103,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
-import {
   ArrowLeft,
   BookOpen,
   Check,
@@ -130,7 +124,18 @@ import {
   ArrowUp,
   ArrowDown,
   CalendarDays,
-  Loader2
+  Loader2,
+  Trophy,
+  Target,
+  Sparkles,
+  PlayCircle,
+  Award,
+  Zap,
+  GraduationCap,
+  Layers,
+  X,
+  Phone,
+  Mic
 } from "lucide-react";
 import { Link } from "wouter";
 import { Badge } from "@/components/ui/badge";
@@ -143,6 +148,8 @@ import FinalExamForm from "@/components/student/FinalExamForm";
 import FinalExamResults from "@/components/student/FinalExamResults";
 import { DocumentViewer } from "@/components/student/DocumentViewers";
 import { FlashcardViewer } from "@/components/student/FlashcardViewer";
+import { ExplanationPanel } from "@/components/student/ExplanationPanel";
+import { VoiceAgentModal } from "@/components/student/VoiceAgentModal";
 
 // Function to get appropriate icon based on file type
 function getDocumentIcon(document: any): React.ComponentType<any> {
@@ -245,6 +252,89 @@ interface CourseDetailProps {
   slug: string;
 }
 
+// Progress Ring Component
+function ProgressRing({ progress, size = 120, strokeWidth = 8 }: { progress: number; size?: number; strokeWidth?: number }) {
+  const radius = (size - strokeWidth) / 2;
+  const circumference = radius * 2 * Math.PI;
+  const offset = circumference - (progress / 100) * circumference;
+
+  return (
+    <div className="relative" style={{ width: size, height: size }}>
+      <svg className="transform -rotate-90" width={size} height={size}>
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          strokeWidth={strokeWidth}
+          stroke="currentColor"
+          fill="transparent"
+          className="text-white/20"
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          strokeWidth={strokeWidth}
+          stroke="currentColor"
+          fill="transparent"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          strokeLinecap="round"
+          className="text-white transition-all duration-700 ease-out"
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="text-2xl font-bold text-white">{Math.round(progress)}%</span>
+        <span className="text-xs text-white/70">Complete</span>
+      </div>
+    </div>
+  );
+}
+
+// Mini Progress Ring for Module Cards
+function MiniProgressRing({ progress, size = 40 }: { progress: number; size?: number }) {
+  // Clamp progress to 0-100
+  const clampedProgress = Math.min(100, Math.max(0, progress));
+  const radius = (size - 4) / 2;
+  const circumference = radius * 2 * Math.PI;
+  const offset = circumference - (clampedProgress / 100) * circumference;
+  const color = clampedProgress === 100 ? '#22c55e' : clampedProgress > 0 ? '#3b82f6' : '#e2e8f0';
+
+  return (
+    <div className="relative" style={{ width: size, height: size }}>
+      <svg className="transform -rotate-90" width={size} height={size}>
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          strokeWidth={4}
+          stroke="#e2e8f0"
+          fill="transparent"
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          strokeWidth={4}
+          stroke={color}
+          fill="transparent"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          strokeLinecap="round"
+          className="transition-all duration-500"
+        />
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-center">
+        {clampedProgress === 100 ? (
+          <Check className="h-4 w-4 text-green-500" />
+        ) : (
+          <span className="text-[10px] font-bold text-slate-600">{Math.round(clampedProgress)}%</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function CourseDetail({ slug }: CourseDetailProps) {
   const queryClient = useQueryClient();
   const { data, isLoading, error } = useQuery({
@@ -299,10 +389,6 @@ export function CourseDetail({ slug }: CourseDetailProps) {
     ? Math.round(bestScores.reduce((sum, s) => sum + s, 0) / bestScores.length)
     : null;
 
-  // const courseProgress = totalModules > 0
-  // ? Math.round((completedModulesCount / totalModules) * 100)
-  // : 0;
-
   // Determine which module is the current one (first not completed)
   const currentModuleIndex = course?.modules.findIndex((m: any) => !m.isCompleted) ?? -1;
 
@@ -334,6 +420,13 @@ export function CourseDetail({ slug }: CourseDetailProps) {
   const [showFinalExam, setShowFinalExam] = useState(false);
   const [finalExamData, setFinalExamData] = useState<any>(null);
   const [finalExamResults, setFinalExamResults] = useState<any>(null);
+
+  // Selected module for expanded view
+  const [selectedModuleIndex, setSelectedModuleIndex] = useState<number | null>(null);
+
+  // AI Learning Features state
+  const [showExplanationPanel, setShowExplanationPanel] = useState(false);
+  const [showVoiceAgentModal, setShowVoiceAgentModal] = useState(false);
 
   // Check URL params for showFinalExam
   useEffect(() => {
@@ -570,20 +663,22 @@ export function CourseDetail({ slug }: CourseDetailProps) {
 
   if (error || !data) {
     return (
-      <div className="p-6">
-        <div className="mb-6">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 p-6">
+        <div className="max-w-7xl mx-auto">
           <Link href="/student/courses">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="mb-6">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Courses
             </Button>
           </Link>
+          <div className="rounded-2xl bg-white border border-red-200 p-8 text-center">
+            <div className="size-16 rounded-full bg-red-100 mx-auto mb-4 flex items-center justify-center">
+              <X className="size-8 text-red-500" />
+            </div>
+            <h2 className="text-xl font-bold text-slate-800 mb-2">Error Loading Course</h2>
+            <p className="text-slate-500">Unable to load course data. Please try again later.</p>
+          </div>
         </div>
-        <Card>
-          <CardContent className="p-6">
-            <p className="text-red-500">Error loading course data. Please try again later.</p>
-          </CardContent>
-        </Card>
       </div>
     );
   }
@@ -661,6 +756,27 @@ export function CourseDetail({ slug }: CourseDetailProps) {
     });
     queryClient.invalidateQueries({ queryKey: ['studentDashboard'] });
     queryClient.invalidateQueries({ queryKey: ['courseDetail', slug] });
+
+    // For PDFs, try to get the actual page count from backend
+    if (docUrl.toLowerCase().includes('.pdf')) {
+      try {
+        const pageCountResponse = await fetch(
+          `/api/documents/page-count?documentUrl=${encodeURIComponent(docUrl)}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (pageCountResponse.ok) {
+          const { pageCount } = await pageCountResponse.json();
+          if (pageCount && pageCount > 0) {
+            setTotalPages(pageCount);
+            console.log(`📄 Actual PDF page count: ${pageCount}`);
+          }
+        }
+      } catch (error) {
+        console.log('Could not fetch PDF page count, using estimate');
+      }
+    }
 
     // Use the original URL without modifications to avoid 400 errors
     console.log('🌤️ Using original Cloudinary URL without transformations');
@@ -761,6 +877,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
     setQuizModuleIndex(null);
     setQuizQuestions([]);
     setSelectedFlashcardModule(null);
+    setSelectedModuleIndex(null);
   };
 
   // Helper function to clear document content only
@@ -773,6 +890,9 @@ export function CourseDetail({ slug }: CourseDetailProps) {
     setIsDocLoading(false);
     setDocLoadFailed(false);
     setSelectedDocument(null);
+    // Close AI learning features
+    setShowExplanationPanel(false);
+    setShowVoiceAgentModal(false);
   };
 
   // Helper function to clear video content only
@@ -794,104 +914,159 @@ export function CourseDetail({ slug }: CourseDetailProps) {
     setSelectedFlashcardModule(null);
   };
 
+  // Get "Up Next" recommendation
+  const getUpNextContent = () => {
+    if (currentModuleIndex === -1 || !course?.modules) return null;
+    const currentModule = course.modules[currentModuleIndex];
+    if (!currentModule) return null;
+
+    // Check for unwatched videos first
+    const unwatchedVideo = currentModule.videos?.find((v: any) => !v.watched);
+    if (unwatchedVideo) {
+      return {
+        type: 'video' as const,
+        title: unwatchedVideo.title || 'Continue Video',
+        moduleTitle: currentModule.title,
+        moduleIndex: currentModuleIndex,
+        content: unwatchedVideo
+      };
+    }
+
+    // Check for unviewed documents
+    const unviewedDoc = currentModule.documents?.find((d: any) => !d.viewed);
+    if (unviewedDoc) {
+      return {
+        type: 'document' as const,
+        title: unviewedDoc.title || 'Continue Reading',
+        moduleTitle: currentModule.title,
+        moduleIndex: currentModuleIndex,
+        content: unviewedDoc
+      };
+    }
+
+    // Check for quiz
+    const hasQuiz = (Array.isArray(currentModule?.questions) && currentModule.questions.length > 0) ||
+      (!!currentModule && typeof currentModule.quizId !== 'undefined' && !!currentModule.quizId);
+    if (hasQuiz && !currentModule.lastQuizScore) {
+      return {
+        type: 'quiz' as const,
+        title: 'Take Module Quiz',
+        moduleTitle: currentModule.title,
+        moduleIndex: currentModuleIndex,
+        content: currentModule
+      };
+    }
+
+    return null;
+  };
+
+  const upNextContent = getUpNextContent();
+
+  // Check if final exam is available
+  const isFinalExamEligible = completedCount === totalModules && totalModules > 0;
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <Link href="/student/courses">
-              <Button variant="outline" size="sm" className="mr-4">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Courses
-              </Button>
-            </Link>
-            <h1 className="text-2xl font-bold text-gray-800">{course?.title || 'My Course'}</h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
+      {/* Hero Header Section */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-[#18548b] via-[#1a6ab0] to-[#2563eb]">
+        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '24px 24px' }} />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+
+        <div className="relative max-w-7xl mx-auto px-4 py-6">
+          {/* Back Button */}
+          <Link href="/student/courses">
+            <Button variant="ghost" size="sm" className="text-white/80 hover:text-white hover:bg-white/10 mb-4">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Courses
+            </Button>
+          </Link>
+
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+            {/* Course Info */}
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-2">
+                <Badge className="bg-white/20 text-white border-0 text-xs">
+                  <GraduationCap className="h-3 w-3 mr-1" />
+                  {course?.type || 'Professional Certificate'}
+                </Badge>
+                {isFinalExamEligible && (
+                  <Badge className="bg-amber-400/90 text-amber-900 border-0 text-xs animate-pulse">
+                    <Trophy className="h-3 w-3 mr-1" />
+                    Ready for Final Exam
+                  </Badge>
+                )}
+              </div>
+              <h1 className="text-2xl lg:text-3xl font-bold text-white mb-2">{course?.title || 'My Course'}</h1>
+              <p className="text-white/70 text-sm max-w-xl line-clamp-2">{course?.description}</p>
+            </div>
+
+            {/* Progress Ring */}
+            <div className="flex items-center gap-6">
+              <ProgressRing progress={course?.progress ?? 0} />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Course Progress Tab */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="space-y-3">
-          {/* Progress Bar */}
-          <div className="w-full">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-bold text-gray-700">Course Progress</span>
-              <span className="text-sm font-semibold text-blue-600">{(course?.progress ?? 0) ? Math.round(course.progress) : 0}%</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-in-out"
-                style={{ width: `${course?.progress ?? 0}%` }}
-              ></div>
-            </div>
-          </div>
-
-          {/* Data Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
-            {/* Modules Completed */}
-            <div className="text-center">
-              <p className="text-sm font-medium text-gray-500 mb-1">Modules Completed</p>
-              <p className="text-xl font-bold text-gray-800">
-                {completedCount} / {totalModules}
-              </p>
-              <p className="text-xs text-gray-600">
-                {(course?.progress ?? 0) < 100 ? "In Progress" : "Completed"}
-              </p>
+      {/* Stats Strip */}
+      <div className="bg-white border-b border-slate-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 py-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {/* Modules Card */}
+            <div className="rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 p-3 border border-blue-100/50">
+              <div className="flex items-center gap-2 mb-1">
+                <div className="size-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                  <Layers className="size-4 text-blue-600" />
+                </div>
+                <span className="text-xs font-medium text-slate-500">Modules</span>
+              </div>
+              <p className="text-xl font-bold text-slate-800">{completedCount} / {totalModules}</p>
+              <p className="text-xs text-slate-500">{completedCount === totalModules ? 'All Complete!' : 'In Progress'}</p>
             </div>
 
-            {/* Overall Progress */}
-            <div className="text-center">
-              <p className="text-sm font-medium text-gray-500 mb-1">Content Watched</p>
-              <p className="text-xl font-bold text-blue-600">
-                {(course?.progress ?? 0) ? Math.round(course.progress) : 0}%
-              </p>
-              <p className="text-xs text-gray-600">
-                Total Progress
-              </p>
+            {/* Progress Card */}
+            <div className="rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 p-3 border border-emerald-100/50">
+              <div className="flex items-center gap-2 mb-1">
+                <div className="size-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                  <Target className="size-4 text-emerald-600" />
+                </div>
+                <span className="text-xs font-medium text-slate-500">Progress</span>
+              </div>
+              <p className="text-xl font-bold text-emerald-600">{Math.round(course?.progress ?? 0)}%</p>
+              <p className="text-xs text-slate-500">Content Watched</p>
             </div>
 
-            {/* Quiz Performance */}
-            <div className="text-center">
-              <p className="text-sm font-medium text-gray-500 mb-1">Quiz Average</p>
-              {quizPerformance !== null ? (
-                <>
-                  <p className="text-xl font-bold text-green-600">
-                    {quizPerformance}%
-                  </p>
-                  <p className="text-xs text-gray-600">
-                    {bestScores.length} quiz{bestScores.length > 1 ? 'es' : ''} taken
-                  </p>
-                </>
-              ) : (
-                <>
-                  <p className="text-xl font-bold text-gray-400">
-                    --
-                  </p>
-                  <p className="text-xs text-gray-600">
-                    No quizzes yet
-                  </p>
-                </>
-              )}
+            {/* Quiz Average Card */}
+            <div className="rounded-xl bg-gradient-to-br from-violet-50 to-purple-50 p-3 border border-violet-100/50">
+              <div className="flex items-center gap-2 mb-1">
+                <div className="size-8 rounded-lg bg-violet-500/10 flex items-center justify-center">
+                  <Zap className="size-4 text-violet-600" />
+                </div>
+                <span className="text-xs font-medium text-slate-500">Quiz Avg</span>
+              </div>
+              <p className="text-xl font-bold text-violet-600">{quizPerformance ?? '--'}%</p>
+              <p className="text-xs text-slate-500">{bestScores.length > 0 ? `${bestScores.length} quiz${bestScores.length > 1 ? 'es' : ''} taken` : 'No quizzes yet'}</p>
             </div>
 
-            {/* Course Valid Until */}
-            <div className="text-center">
-              <p className="text-sm font-medium text-gray-500 mb-1">Valid Until</p>
-              <p className="text-lg font-bold text-gray-800">
+            {/* Validity Card */}
+            <div className="rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 p-3 border border-amber-100/50">
+              <div className="flex items-center gap-2 mb-1">
+                <div className="size-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                  <CalendarDays className="size-4 text-amber-600" />
+                </div>
+                <span className="text-xs font-medium text-slate-500">Valid Until</span>
+              </div>
+              <p className="text-lg font-bold text-slate-800">
                 {new Date(course?.enrollment?.validUntil || '').toLocaleDateString('en-US', {
                   month: 'short',
                   day: 'numeric',
                   year: 'numeric'
                 })}
               </p>
-              <p className="text-xs text-gray-600">
+              <p className="text-xs text-slate-500">
                 {course?.enrollment?.validUntil
-                  ? `${Math.ceil(
-                    (new Date(course.enrollment.validUntil).getTime() - new Date().getTime()) /
-                    (1000 * 60 * 60 * 24 * 30)
-                  )} months left`
+                  ? `${Math.max(0, Math.ceil((new Date(course.enrollment.validUntil).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24 * 30)))} months left`
                   : "No expiry"}
               </p>
             </div>
@@ -899,549 +1074,468 @@ export function CourseDetail({ slug }: CourseDetailProps) {
         </div>
       </div>
 
-      {/* Main Content Layout */}
-      <div className="flex h-[calc(100vh-160px)] overflow-hidden">
-        {/* Left Sidebar - Content Navigator */}
-        <div className="w-80 bg-white border-r border-gray-200 flex flex-col h-full">
-          <div className="p-4 border-b border-gray-200 flex-shrink-0">
-            <h2 className="text-lg font-semibold text-gray-800">Content Navigator</h2>
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 py-5">
+        {/* Notice */}
+        {notice && (
+          <div className="mb-4">
+            <Alert className="border-amber-200 bg-amber-50">
+              <Sparkles className="h-4 w-4 text-amber-600" />
+              <AlertTitle className="text-amber-800">Notice</AlertTitle>
+              <AlertDescription className="text-amber-700">{notice}</AlertDescription>
+            </Alert>
           </div>
+        )}
 
-          <div className="flex-1 overflow-y-auto overflow-x-hidden">
-            {course?.modules.map((module: any, moduleIndex: number) => {
-              // Progress percentages are intentionally not shown in the navigator.
+        <div className="flex flex-col lg:flex-row gap-5">
+          {/* Left Column - Module Grid & Up Next */}
+          <div className="lg:w-[380px] flex-shrink-0 space-y-4">
+            {/* Up Next Card */}
+            {upNextContent && !selectedVideoUrl && !selectedDocUrl && !showFinalExam && quizModuleIndex === null && !selectedFlashcardModule && (
+              <div className="rounded-2xl bg-gradient-to-br from-[#18548b] to-[#2563eb] p-4 text-white shadow-lg relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
+                <div className="relative z-10">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Sparkles className="size-4" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-white/80">Up Next</span>
+                  </div>
+                  <h3 className="font-semibold mb-1">{upNextContent.title}</h3>
+                  <p className="text-xs text-white/70 mb-3">{upNextContent.moduleTitle}</p>
+                  <Button
+                    size="sm"
+                    className="w-full bg-white text-[#18548b] hover:bg-white/90 font-semibold"
+                    onClick={() => {
+                      if (upNextContent.type === 'video') {
+                        clearDocumentContent();
+                        clearQuizContent();
+                        setSelectedVideoUrl(upNextContent.content.url);
+                      } else if (upNextContent.type === 'document') {
+                        clearVideoContent();
+                        clearQuizContent();
+                        const doc = upNextContent.content;
+                        const docUrl = doc.type === 'upload' ? doc.fileUrl : doc.url;
+                        if (docUrl) handleDocPreview(docUrl, doc);
+                      } else if (upNextContent.type === 'quiz') {
+                        handleTakeQuiz(upNextContent.moduleIndex);
+                      }
+                    }}
+                  >
+                    <PlayCircle className="size-4 mr-2" />
+                    Continue
+                  </Button>
+                </div>
+              </div>
+            )}
 
-              // DEBUG: Log module data to console
-              console.log(`Module ${moduleIndex}:`, {
-                title: module.title,
-                description: module.description,
-                hasDescription: !!module.description,
-                descriptionType: typeof module.description,
-                allKeys: Object.keys(module),
-                keysList: Object.keys(module).join(', '),
-                courseSlug: window.location.pathname.split('/').pop()
-              });
+            {/* Final Exam Floating Card */}
+            {isFinalExamEligible && !showFinalExam && (
+              <div className="rounded-2xl bg-gradient-to-br from-amber-400 via-orange-400 to-amber-500 p-4 text-white shadow-lg relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-white/20 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
+                <div className="relative z-10">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="size-10 rounded-xl bg-white/20 flex items-center justify-center">
+                      <Trophy className="size-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold">Final Examination</h3>
+                      <p className="text-xs text-white/80">All modules completed!</p>
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    className="w-full bg-white text-amber-600 hover:bg-white/90 font-semibold"
+                    onClick={handleTakeFinalExam}
+                  >
+                    <Award className="size-4 mr-2" />
+                    Take Final Exam
+                  </Button>
+                </div>
+              </div>
+            )}
 
-              // Show all properties for first module
-              if (moduleIndex === 0) {
-                console.log('🔍 FULL MODULE 0 DATA:', module);
-              }
+            {/* Module Grid */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">Course Modules</h2>
+                <span className="text-xs text-slate-400">{totalModules} modules</span>
+              </div>
 
-              return (
-                <div key={moduleIndex} className="border-b border-gray-100">
-                  <div className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div
-                        className="flex items-center cursor-pointer flex-1"
-                        onClick={() => {
-                          // Clear any open content when switching modules
+              <div className="grid grid-cols-1 gap-2">
+                {course?.modules.map((module: any, moduleIndex: number) => {
+                  const isSelected = selectedModuleIndex === moduleIndex;
+                  
+                  // Use backend-calculated percentComplete (now correctly capped at 100%)
+                  // with a fallback dynamic calculation for safety
+                  const getModuleProgress = () => {
+                    // Prefer backend value if available and valid
+                    if (typeof module.percentComplete === 'number' && module.percentComplete >= 0 && module.percentComplete <= 100) {
+                      return module.percentComplete;
+                    }
+                    
+                    // Fallback: calculate dynamically
+                    const videos = module.videos || [];
+                    const documents = module.documents || [];
+                    const hasQuiz = (module.questions?.length > 0) || module.quizId;
+                    
+                    let totalItems = 0;
+                    let completedItems = 0;
+                    
+                    if (videos.length > 0) {
+                      totalItems += videos.length;
+                      completedItems += videos.filter((v: any) => v.watched).length;
+                    }
+                    
+                    if (documents.length > 0) {
+                      totalItems += documents.length;
+                      completedItems += documents.filter((d: any) => d.viewed).length;
+                    }
+                    
+                    if (hasQuiz) {
+                      totalItems += 1;
+                      if (module.lastQuizScore !== null && module.lastQuizScore !== undefined) {
+                        completedItems += 1;
+                      }
+                    }
+                    
+                    if (totalItems === 0) return module.isCompleted ? 100 : 0;
+                    return Math.min(100, Math.round((completedItems / totalItems) * 100));
+                  };
+                  
+                  const moduleProgress = getModuleProgress();
+                  const isCompleted = module.isCompleted || moduleProgress === 100;
+                  const isCurrent = moduleIndex === currentModuleIndex;
+
+                  return (
+                    <div
+                      key={moduleIndex}
+                      className={`
+                        rounded-xl border transition-all duration-200 cursor-pointer
+                        ${isSelected
+                          ? 'bg-white border-blue-200 shadow-md ring-2 ring-blue-500/20'
+                          : 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-sm'
+                        }
+                        ${isCurrent && !isSelected ? 'border-l-4 border-l-blue-500' : ''}
+                      `}
+                      onClick={() => {
+                        if (isSelected) {
+                          setSelectedModuleIndex(null);
+                        } else {
                           clearAllContent();
-
-                          // Set selected module for description display
+                          setSelectedModuleIndex(moduleIndex);
                           setSelectedModule({
                             index: moduleIndex,
                             title: module.title,
                             description: module.description
                           });
-
-                          setExpanded(prev => {
-                            const next = [...prev];
-                            next[moduleIndex] = !next[moduleIndex];
-                            return next;
-                          });
-                        }}
-                      >
-                        {expanded[moduleIndex] ? (
-                          <ChevronDown className="h-4 w-4 mr-2 text-gray-500" />
-                        ) : (
-                          <ChevronRight className="h-4 w-4 mr-2 text-gray-500" />
-                        )}
-                        <h3 className="font-medium text-gray-800">{module.title}</h3>
+                        }
+                      }}
+                    >
+                      {/* Module Header */}
+                      <div className="p-3 flex items-center gap-3">
+                        <MiniProgressRing progress={moduleProgress} />
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-medium text-slate-800 text-sm truncate">{module.title}</h3>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            {module.videos?.length > 0 && (
+                              <span className="text-[10px] text-slate-400 flex items-center gap-0.5">
+                                <Video className="size-3" />
+                                {module.videos.length}
+                              </span>
+                            )}
+                            {module.documents?.length > 0 && (
+                              <span className="text-[10px] text-slate-400 flex items-center gap-0.5">
+                                <FileText className="size-3" />
+                                {module.documents.length}
+                              </span>
+                            )}
+                            {(module.questions?.length > 0 || module.quizId) && (
+                              <span className="text-[10px] text-slate-400 flex items-center gap-0.5">
+                                <BookOpen className="size-3" />
+                                Quiz
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <ChevronDown className={`size-4 text-slate-400 transition-transform ${isSelected ? 'rotate-180' : ''}`} />
                       </div>
 
-                    </div>
+                      {/* Expanded Content */}
+                      {isSelected && (
+                        <div className="px-3 pb-3 border-t border-slate-100 pt-2 space-y-2">
+                          {/* Module Description */}
+                          {module.description && (
+                            <p className="text-xs text-slate-500 mb-2 line-clamp-2">{module.description}</p>
+                          )}
 
-                    {expanded[moduleIndex] && (
-                      <div className="mt-3 ml-6 space-y-2">
-                        {/* Presentations Section - Only PPTX files */}
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <div
-                              className="flex items-center justify-between py-2 cursor-pointer hover:bg-gray-50 rounded px-2"
-                              onClick={(e) => {
-                                const presentations = module.documents?.filter((doc: any) => {
-                                  const fileName = doc.fileName || doc.title || '';
-                                  const fileType = doc.fileType || '';
-                                  const url = doc.fileUrl || doc.url || '';
-
-                                  const extension = fileName.toLowerCase().split('.').pop() ||
-                                    url.toLowerCase().split('.').pop() || '';
-                                  const mimeType = fileType.toLowerCase();
-
-                                  return ['ppt', 'pptx'].includes(extension) ||
-                                    mimeType.includes('presentation') ||
-                                    mimeType.includes('powerpoint');
-                                }) || [];
-
-                                if (presentations.length === 0) {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  showNotice('No presentations are available for this module.');
-                                }
-                              }}
-                            >
-                              <div className="flex items-center">
-                                <Presentation className="h-4 w-4 mr-2 text-orange-600" />
-                                <span className="text-sm text-gray-700">PRESENTATIONS</span>
-                                <ChevronDown className="h-3 w-3 ml-1 text-gray-400" />
-                              </div>
-                            </div>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent className="w-64" align="start">
-                            {(() => {
-                              const presentations = module.documents?.filter((doc: any) => {
-                                const fileName = doc.fileName || doc.title || '';
-                                const fileType = doc.fileType || '';
-                                const url = doc.fileUrl || doc.url || '';
-
-                                const extension = fileName.toLowerCase().split('.').pop() ||
-                                  url.toLowerCase().split('.').pop() || '';
-                                const mimeType = fileType.toLowerCase();
-
-                                return ['ppt', 'pptx'].includes(extension) ||
-                                  mimeType.includes('presentation') ||
-                                  mimeType.includes('powerpoint');
-                              }) || [];
-
-                              return presentations.length > 0 ? (
-                                presentations.map((doc: any, docIdx: number) => (
-                                  <DropdownMenuItem
-                                    key={docIdx}
-                                    className="cursor-pointer"
-                                    onClick={() => {
-                                      // Clear video and quiz when opening document
-                                      clearVideoContent();
-                                      clearQuizContent();
-
-                                      // Open document - handle both upload and link types properly
-                                      let documentUrl;
-                                      if (doc.type === 'upload') {
-                                        // For uploaded documents, use fileUrl
-                                        documentUrl = doc.fileUrl;
-                                      } else {
-                                        // For link documents, use url
-                                        documentUrl = doc.url;
-                                      }
-
-                                      console.log('Presentation type:', doc.type, 'URL:', documentUrl, 'Full doc:', doc);
-
-                                      if (documentUrl) {
-                                        handleDocPreview(documentUrl, doc);
-                                      } else {
-                                        console.error('No valid URL found for presentation:', doc);
-                                      }
-                                    }}
-                                  >
-                                    <div className="flex items-center justify-between w-full">
-                                      <div className="flex items-center">
-                                        <Presentation className="h-4 w-4 mr-2 text-orange-600" />
-                                        <span className="text-sm">{doc.title || `Presentation ${docIdx + 1}`}</span>
-                                      </div>
-                                      {doc.viewed && (
-                                        <Check className="h-3 w-3 text-green-600" />
-                                      )}
-                                    </div>
-                                  </DropdownMenuItem>
-                                ))
-                              ) : (
-                                <DropdownMenuItem disabled>
-                                  <span className="text-sm text-gray-500">No presentations available</span>
-                                </DropdownMenuItem>
-                              );
-                            })()}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-
-                        {/* Reading Materials Section - Excluding PPTX files */}
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <div
-                              className="flex items-center justify-between py-2 cursor-pointer hover:bg-gray-50 rounded px-2"
-                              onClick={(e) => {
-                                const readingMaterials = module.documents?.filter((doc: any) => {
-                                  const fileName = doc.fileName || doc.title || '';
-                                  const fileType = doc.fileType || '';
-                                  const url = doc.fileUrl || doc.url || '';
-
-                                  const extension = fileName.toLowerCase().split('.').pop() ||
-                                    url.toLowerCase().split('.').pop() || '';
-                                  const mimeType = fileType.toLowerCase();
-
-                                  // Exclude presentations (PPTX) from reading materials
-                                  return !(['ppt', 'pptx'].includes(extension) ||
-                                    mimeType.includes('presentation') ||
-                                    mimeType.includes('powerpoint'));
-                                }) || [];
-
-                                if (readingMaterials.length === 0) {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  showNotice('No reading materials are available for this module.');
-                                }
-                              }}
-                            >
-                              <div className="flex items-center">
-                                <FileText className="h-4 w-4 mr-2 text-green-600" />
-                                <span className="text-sm text-gray-700">READING MATERIALS</span>
-                                <ChevronDown className="h-3 w-3 ml-1 text-gray-400" />
-                              </div>
-                            </div>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent className="w-64" align="start">
-                            {(() => {
-                              const readingMaterials = module.documents?.filter((doc: any) => {
-                                const fileName = doc.fileName || doc.title || '';
-                                const fileType = doc.fileType || '';
-                                const url = doc.fileUrl || doc.url || '';
-
-                                const extension = fileName.toLowerCase().split('.').pop() ||
-                                  url.toLowerCase().split('.').pop() || '';
-                                const mimeType = fileType.toLowerCase();
-
-                                // Exclude presentations (PPTX) from reading materials
-                                return !(['ppt', 'pptx'].includes(extension) ||
-                                  mimeType.includes('presentation') ||
-                                  mimeType.includes('powerpoint'));
-                              }) || [];
-
-                              return readingMaterials.length > 0 ? (
-                                readingMaterials.map((doc: any, docIdx: number) => (
-                                  <DropdownMenuItem
-                                    key={docIdx}
-                                    className="cursor-pointer"
-                                    onClick={() => {
-                                      // Clear video and quiz when opening document
-                                      clearVideoContent();
-                                      clearQuizContent();
-
-                                      // Open document - handle both upload and link types properly
-                                      let documentUrl;
-                                      if (doc.type === 'upload') {
-                                        // For uploaded documents, use fileUrl
-                                        documentUrl = doc.fileUrl;
-                                      } else {
-                                        // For link documents, use url
-                                        documentUrl = doc.url;
-                                      }
-
-                                      console.log('Reading material type:', doc.type, 'URL:', documentUrl, 'Full doc:', doc);
-
-                                      if (documentUrl) {
-                                        handleDocPreview(documentUrl, doc);
-                                      } else {
-                                        console.error('No valid URL found for reading material:', doc);
-                                      }
-                                    }}
-                                  >
-                                    <div className="flex items-center justify-between w-full">
-                                      <div className="flex items-center">
-                                        {(() => {
-                                          const IconComponent = getDocumentIcon(doc);
-                                          const iconColor = getDocumentIconColor(doc);
-                                          return <IconComponent className={`h-4 w-4 mr-2 ${iconColor}`} />;
-                                        })()}
-                                        <span className="text-sm">{doc.title || `Document ${docIdx + 1}`}</span>
-                                      </div>
-                                      {doc.viewed && (
-                                        <Check className="h-3 w-3 text-green-600" />
-                                      )}
-                                    </div>
-                                  </DropdownMenuItem>
-                                ))
-                              ) : (
-                                <DropdownMenuItem disabled>
-                                  <span className="text-sm text-gray-500">No reading materials available</span>
-                                </DropdownMenuItem>
-                              );
-                            })()}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-
-                        {/* Video Section */}
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <div
-                              className="flex items-center justify-between py-2 cursor-pointer hover:bg-gray-50 rounded px-2"
-                              onClick={(e) => {
-                                if (!module.videos || module.videos.length === 0) {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  showNotice('No videos are available for this module.');
-                                }
-                              }}
-                            >
-                              <div className="flex items-center">
-                                <Video className="h-4 w-4 mr-2 text-blue-600" />
-                                <span className="text-sm text-gray-700">VIDEOS</span>
-                                <ChevronDown className="h-3 w-3 ml-1 text-gray-400" />
-                              </div>
-                            </div>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent className="w-64" align="start">
-                            {module.videos && module.videos.length > 0 ? (
-                              module.videos.map((video: any, vidIdx: number) => (
-                                <DropdownMenuItem
+                          {/* Videos */}
+                          {module.videos?.length > 0 && (
+                            <div className="space-y-1">
+                              <p className="text-[10px] font-bold text-slate-400 uppercase">Videos</p>
+                              {module.videos.map((video: any, vidIdx: number) => (
+                                <button
                                   key={vidIdx}
-                                  className="cursor-pointer"
-                                  onClick={() => {
-                                    // Clear document and quiz when playing video
+                                  className="w-full flex items-center gap-2 p-2 rounded-lg bg-blue-50/50 hover:bg-blue-100/50 transition-colors text-left"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
                                     clearDocumentContent();
                                     clearQuizContent();
-
-                                    // Set video
+                                    clearFlashcardContent();
                                     setSelectedVideoUrl(video.url);
                                     setSelectedVideoIndex(vidIdx);
                                     lastSentRef.current = 0;
                                   }}
                                 >
-                                  <div className="flex items-center justify-between w-full">
-                                    <div className="flex items-center">
-                                      <Play className="h-4 w-4 mr-2 text-blue-600" />
-                                      <span className="text-sm">{video.title || `Video ${vidIdx + 1}`}</span>
-                                    </div>
-                                    {video.watched && (
-                                      <Check className="h-3 w-3 text-green-600" />
-                                    )}
+                                  <div className={`size-6 rounded-full flex items-center justify-center ${video.watched ? 'bg-green-500' : 'bg-blue-500'}`}>
+                                    {video.watched ? <Check className="size-3 text-white" /> : <Play className="size-3 text-white" />}
                                   </div>
-                                </DropdownMenuItem>
-                              ))
-                            ) : (
-                              <DropdownMenuItem disabled>
-                                <span className="text-sm text-gray-500">No videos available</span>
-                              </DropdownMenuItem>
+                                  <span className="text-xs text-slate-700 flex-1 truncate">{video.title || `Video ${vidIdx + 1}`}</span>
+                                </button>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Documents */}
+                          {module.documents?.length > 0 && (
+                            <div className="space-y-1">
+                              <p className="text-[10px] font-bold text-slate-400 uppercase">Materials</p>
+                              {module.documents.map((doc: any, docIdx: number) => {
+                                const DocIcon = getDocumentIcon(doc);
+                                const iconColor = getDocumentIconColor(doc);
+                                return (
+                                  <button
+                                    key={docIdx}
+                                    className="w-full flex items-center gap-2 p-2 rounded-lg bg-emerald-50/50 hover:bg-emerald-100/50 transition-colors text-left"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      clearVideoContent();
+                                      clearQuizContent();
+                                      clearFlashcardContent();
+                                      const documentUrl = doc.type === 'upload' ? doc.fileUrl : doc.url;
+                                      if (documentUrl) handleDocPreview(documentUrl, doc);
+                                    }}
+                                  >
+                                    <div className={`size-6 rounded-full flex items-center justify-center ${doc.viewed ? 'bg-green-500' : 'bg-slate-200'}`}>
+                                      {doc.viewed ? <Check className="size-3 text-white" /> : <DocIcon className={`size-3 ${iconColor}`} />}
+                                    </div>
+                                    <span className="text-xs text-slate-700 flex-1 truncate">{doc.title || `Document ${docIdx + 1}`}</span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
+
+                          {/* Quiz & Flashcards */}
+                          <div className="flex gap-2 pt-1">
+                            {(module.questions?.length > 0 || module.quizId) && (
+                              <button
+                                className="flex-1 flex items-center justify-center gap-1.5 p-2 rounded-lg bg-violet-50 hover:bg-violet-100 transition-colors"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  clearVideoContent();
+                                  clearDocumentContent();
+                                  clearFlashcardContent();
+                                  setSelectedContent({ type: 'quiz', moduleIndex, content: module });
+                                }}
+                              >
+                                <BookOpen className="size-3.5 text-violet-600" />
+                                <span className="text-xs font-medium text-violet-700">Quiz</span>
+                              </button>
                             )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                            <button
+                              className="flex-1 flex items-center justify-center gap-1.5 p-2 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                clearVideoContent();
+                                clearDocumentContent();
+                                clearQuizContent();
+                                setSelectedFlashcardModule({ index: moduleIndex, title: module.title });
+                              }}
+                            >
+                              <Layers className="size-3.5 text-indigo-600" />
+                              <span className="text-xs font-medium text-indigo-700">Flashcards</span>
+                            </button>
+                          </div>
 
-                        {/* Quizzes Section */}
-                        <div
-                          className="flex items-center justify-between py-2 cursor-pointer hover:bg-gray-50 rounded px-2"
-                          onClick={() => {
-                            const hasQuizConfigured =
-                              (Array.isArray(module?.questions) && module.questions.length > 0) ||
-                              (!!module && typeof module.quizId !== 'undefined' && !!module.quizId) ||
-                              (Array.isArray((module as any).quizzes) && (module as any).quizzes.length > 0);
-
-                            if (!hasQuizConfigured) {
-                              showNotice('No quiz is available for this module.');
-                              return;
-                            }
-                            {
-                              // Clear video and document when opening quiz
-                              clearVideoContent();
-                              clearDocumentContent();
-
-                              setSelectedContent({
-                                type: 'quiz',
-                                moduleIndex,
-                                content: module
-                              });
-                            }
-                          }}
-                        >
-                          <div className="flex items-center">
-                            <BookOpen className="h-4 w-4 mr-2 text-purple-600" />
-                            <span className="text-sm text-gray-700">QUIZZES</span>
+                          {/* Live Classes & Recordings */}
+                          <div className="flex gap-2">
+                            <LiveClassesForModule courseSlug={courseSlug} moduleIndex={moduleIndex} />
+                            <RecordingsForModule
+                              courseSlug={courseSlug}
+                              moduleIndex={moduleIndex}
+                              onRecordingClick={(recordingUrl: string) => {
+                                clearVideoContent();
+                                clearQuizContent();
+                                const embedUrl = toGoogleVideoEmbedUrl(recordingUrl);
+                                setSelectedDocUrl(embedUrl);
+                                setIsDocLoading(true);
+                              }}
+                            />
                           </div>
                         </div>
-
-                        {/* Flashcards Section */}
-                        <div
-                          className="flex items-center justify-between py-2 cursor-pointer hover:bg-gray-50 rounded px-2"
-                          onClick={() => {
-                            // Clear other content
-                            clearVideoContent();
-                            clearDocumentContent();
-                            clearQuizContent();
-
-                            // Set flashcard mode
-                            setSelectedFlashcardModule({
-                              index: moduleIndex,
-                              title: module.title
-                            });
-                          }}
-                        >
-                          <div className="flex items-center">
-                            <BookOpen className="h-4 w-4 mr-2 text-indigo-600" />
-                            <span className="text-sm text-gray-700">FLASHCARDS</span>
-                          </div>
-                        </div>
-
-                        {/* Live Classes Section */}
-                        <LiveClassesForModule courseSlug={courseSlug} moduleIndex={moduleIndex} />
-
-                        {/* Recordings Section */}
-                        <RecordingsForModule
-                          courseSlug={courseSlug}
-                          moduleIndex={moduleIndex}
-                          onRecordingClick={(recordingUrl: string) => {
-                            // Clear other content when playing recording
-                            clearVideoContent();
-                            clearQuizContent();
-
-                            // Convert Google Drive URL to embeddable format and set as document
-                            const embedUrl = toGoogleVideoEmbedUrl(recordingUrl);
-                            setSelectedDocUrl(embedUrl);
-                            setIsDocLoading(true);
-                          }}
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-
-            {/* Final Examination Section - Always available for enrolled students */}
-            <div className="border-b border-gray-100">
-              <div className="p-4">
-                <div className="flex items-center cursor-pointer">
-                  <div className="h-4 w-4 mr-2" /> {/* Spacer for alignment */}
-                  <h3 className="font-medium text-gray-800 flex items-center">
-                    <Badge className="mr-2 bg-yellow-100 text-yellow-800 border-yellow-300">
-                      Final Exam
-                    </Badge>
-                    Final Examination
-                  </h3>
-                </div>
-
-                <div className="mt-3 ml-6">
-                  <div className="flex items-center justify-between py-2 px-2 bg-yellow-50 rounded border border-yellow-200">
-                    <div className="flex items-center">
-                      <BookOpen className="h-4 w-4 mr-2 text-yellow-600" />
-                      <span className="text-sm text-gray-700">Take Final Examination</span>
+                      )}
                     </div>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="bg-yellow-600 text-white hover:bg-yellow-700 border-yellow-600"
-                      onClick={handleTakeFinalExam}
-                    >
-                      Start
-                    </Button>
-                  </div>
-                </div>
+                  );
+                })}
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Right Content Area */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden h-full">
-          {/* Content Display Area */}
-          <div className="p-6 min-h-full">
-            {notice && (
-              <div className="mb-4">
-                <Alert>
-                  <AlertTitle>Notice</AlertTitle>
-                  <AlertDescription>{notice}</AlertDescription>
-                </Alert>
-              </div>
-            )}
-            {/* Media Player Area */}
+          {/* Right Column - Content Area */}
+          <div className="flex-1 min-w-0">
+            {/* Video Player */}
             {selectedVideoUrl && (
-              <div ref={mediaRef} className="mb-6 relative pt-[56.25%]">
-                <ReactPlayer
-                  url={selectedVideoUrl}
-                  controls
-                  width="100%"
-                  height="100%"
-                  className="absolute top-0 left-0"
-                  onProgress={({ playedSeconds }) => {
-                    recordWatchTimeThrottled(playedSeconds);
-                  }}
-                  onEnded={() => {
-                    const finalDelta = lastSentRef.current ? lastSentRef.current : 0;
-                    if (finalDelta > 0) recordWatchTime(finalDelta);
-                    // Refresh progress when video ends
-                    queryClient.invalidateQueries({ queryKey: ['courseDetail', slug] });
-                  }}
-                />
-              </div>
-            )}
-
-            {selectedDocUrl && (
-              <div ref={mediaRef} className="mb-6">
-                {/* Document Header */}
-                <div className="bg-white border border-gray-200 rounded-t-lg p-4 flex items-center justify-between">
-                  <div className="flex items-center">
-                    <span className="text-sm text-gray-600 font-medium">Reading Material</span>
-                    {baseDocUrl && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="ml-4"
-                        onClick={() => {
-                          console.log('🔗 Opening document in new tab:', baseDocUrl);
-                          window.open(baseDocUrl, '_blank', 'noopener,noreferrer');
-                        }}
-                      >
-                        Open in New Tab
-                      </Button>
-                    )}
+              <div className="rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden">
+                <div className="bg-gradient-to-r from-blue-500 to-indigo-500 px-4 py-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-white">
+                    <PlayCircle className="size-5" />
+                    <span className="font-medium text-sm">Now Playing</span>
                   </div>
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => {
-                      setSelectedDocUrl(null);
-                      setCurrentPage(1);
-                      setTotalPages(1);
-                      setCurrentDocType(null);
-                      setBaseDocUrl('');
-                      setIsDocLoading(false);
-                      setDocLoadFailed(false);
-                      setSelectedDocument(null);
-                    }}
+                    className="text-white hover:bg-white/20"
+                    onClick={clearVideoContent}
                   >
-                    ✕
+                    <X className="size-4" />
                   </Button>
                 </div>
+                <div ref={mediaRef} className="relative pt-[56.25%]">
+                  <ReactPlayer
+                    url={selectedVideoUrl}
+                    controls
+                    width="100%"
+                    height="100%"
+                    className="absolute top-0 left-0"
+                    onProgress={({ playedSeconds }) => {
+                      recordWatchTimeThrottled(playedSeconds);
+                    }}
+                    onEnded={() => {
+                      const finalDelta = lastSentRef.current ? lastSentRef.current : 0;
+                      if (finalDelta > 0) recordWatchTime(finalDelta);
+                      queryClient.invalidateQueries({ queryKey: ['courseDetail', slug] });
+                    }}
+                  />
+                </div>
+              </div>
+            )}
 
-                {/* Document Setup Loading */}
-                {isDocLoading && (
-                  <div className="border-l border-r border-b border-gray-200 rounded-b-lg bg-white">
-                    <div className="w-full h-[60vh] md:h-[70vh] flex items-center justify-center">
-                      <div className="text-center p-8">
-                        <Loader2 className="h-16 w-16 animate-spin mx-auto mb-6 text-blue-600" />
-                        <p className="text-xl font-medium text-gray-700 mb-3">Preparing Document</p>
-                        <p className="text-sm text-gray-500">Setting up document viewer...</p>
-                        <div className="mt-4 w-64 mx-auto bg-gray-200 rounded-full h-1.5">
-                          <div className="bg-blue-600 h-1.5 rounded-full animate-pulse" style={{ width: '30%' }}></div>
-                        </div>
-                      </div>
+            {/* Document Viewer with Explanation Panel */}
+            {selectedDocUrl && (
+              <div className="flex gap-4">
+                {/* Document Viewer */}
+                <div className={`rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden flex-1 transition-all duration-300 ${showExplanationPanel ? 'w-[60%]' : 'w-full'}`}>
+                  <div className="bg-gradient-to-r from-emerald-500 to-teal-500 px-4 py-3 flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-white">
+                      <FileText className="size-5" />
+                      <span className="font-medium text-sm">Reading Material</span>
+                      {currentPage > 0 && (
+                        <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full">
+                          Page {currentPage}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {/* AI Explain Button */}
+                      {baseDocUrl && baseDocUrl.toLowerCase().includes('.pdf') && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className={`text-white hover:bg-white/20 text-xs ${showExplanationPanel ? 'bg-white/20' : ''}`}
+                          onClick={() => setShowExplanationPanel(!showExplanationPanel)}
+                        >
+                          <Sparkles className="size-4 mr-1" />
+                          {showExplanationPanel ? 'Hide' : 'Explain'}
+                        </Button>
+                      )}
+                      {/* Voice Chat Button */}
+                      {baseDocUrl && baseDocUrl.toLowerCase().includes('.pdf') && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-white hover:bg-white/20 text-xs"
+                          onClick={() => setShowVoiceAgentModal(true)}
+                        >
+                          <Mic className="size-4 mr-1" />
+                          Voice Chat
+                        </Button>
+                      )}
+                      {baseDocUrl && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-white hover:bg-white/20 text-xs"
+                          onClick={() => window.open(baseDocUrl, '_blank', 'noopener,noreferrer')}
+                        >
+                          Open in New Tab
+                        </Button>
+                      )}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-white hover:bg-white/20"
+                        onClick={clearDocumentContent}
+                      >
+                        <X className="size-4" />
+                      </Button>
                     </div>
                   </div>
-                )}
 
-                {/* Document Viewer */}
-                {!isDocLoading && (
-                  <div className="border-l border-r border-b border-gray-200 rounded-b-lg">
+                  {isDocLoading ? (
+                    <div className="h-[60vh] flex items-center justify-center">
+                      <div className="text-center">
+                        <Loader2 className="size-12 animate-spin mx-auto mb-4 text-emerald-600" />
+                        <p className="text-slate-600 font-medium">Loading document...</p>
+                      </div>
+                    </div>
+                  ) : (
                     <DocumentViewer
                       fileUrl={selectedDocUrl}
                       fileName={selectedDocument?.fileName || selectedDocument?.title}
                       fileType={selectedDocument?.fileType}
+                    />
+                  )}
+
+                  {/* AI Features Page Selector */}
+                  {baseDocUrl && baseDocUrl.toLowerCase().includes('.pdf') && totalPages > 1 && (
+                    <div className="flex items-center justify-center gap-3 py-2 px-4 bg-gradient-to-r from-violet-50 to-purple-50 border-t border-violet-100">
+                      <Sparkles className="size-4 text-violet-500" />
+                      <span className="text-sm text-slate-600">For AI features, select page:</span>
+                      <input
+                        type="number"
+                        min={1}
+                        max={totalPages}
+                        value={currentPage}
+                        onChange={(e) => {
+                          const page = parseInt(e.target.value, 10);
+                          if (page >= 1 && page <= totalPages) {
+                            setCurrentPage(page);
+                          }
+                        }}
+                        className="w-16 h-8 text-center text-sm border border-violet-200 rounded-md focus:ring-2 focus:ring-violet-300 focus:border-violet-400"
+                      />
+                      <span className="text-sm text-slate-500">of {totalPages}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Explanation Panel - Side by Side */}
+                {showExplanationPanel && baseDocUrl && baseDocUrl.toLowerCase().includes('.pdf') && (
+                  <div className="w-[350px] flex-shrink-0 rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <ExplanationPanel
+                      isOpen={showExplanationPanel}
+                      onClose={() => setShowExplanationPanel(false)}
+                      documentUrl={baseDocUrl}
+                      documentTitle={selectedDocument?.title || selectedDocument?.fileName || 'Document'}
+                      pageNumber={currentPage}
                     />
                   </div>
                 )}
               </div>
             )}
 
-
-
-
+            {/* Flashcard Viewer */}
             {selectedFlashcardModule && (
-              <div className="mb-6 h-[700px] bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+              <div className="rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden h-[600px]">
                 <FlashcardViewer
                   moduleIndex={selectedFlashcardModule.index}
                   courseSlug={courseSlug}
@@ -1450,28 +1544,49 @@ export function CourseDetail({ slug }: CourseDetailProps) {
               </div>
             )}
 
+            {/* Quiz Section */}
             {selectedContent.type === 'quiz' && selectedContent.content && (
-              <Card className="mb-6">
-                <div className="px-5 py-4 border-b border-gray-200">
-                  <h3 className="text-lg font-medium text-gray-800">{selectedContent.content?.title || `Module ${(selectedContent.moduleIndex || 0) + 1}`} Quiz</h3>
-                </div>
-                <CardContent className="p-5">
-                  <div className="p-4 bg-purple-50 rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <BookOpen className="h-5 w-5 mr-3 text-purple-600" />
-                        <span className="text-gray-800">Module Quiz</span>
-                      </div>
-                      <Button
-                        onClick={() => handleTakeQuiz(selectedContent.moduleIndex || 0)}
-                      >
-                        {selectedContent.content.lastQuizScore !== null ? 'Retake Quiz' : 'Take Quiz'}
-                      </Button>
-                    </div>
-
+              <div className="rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden">
+                <div className="bg-gradient-to-r from-violet-500 to-purple-500 px-4 py-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-white">
+                    <BookOpen className="size-5" />
+                    <span className="font-medium text-sm">{selectedContent.content?.title || `Module ${(selectedContent.moduleIndex || 0) + 1}`} Quiz</span>
                   </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-white hover:bg-white/20"
+                    onClick={() => setSelectedContent({ type: null })}
+                  >
+                    <X className="size-4" />
+                  </Button>
+                </div>
 
-                  {/* Quiz Scores Table */}
+                <div className="p-5">
+                  {/* Take Quiz Button */}
+                  {quizModuleIndex === null && (
+                    <div className="rounded-xl bg-gradient-to-br from-violet-50 to-purple-50 p-4 mb-4 border border-violet-100">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="size-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
+                            <Zap className="size-5 text-violet-600" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-slate-800">Module Quiz</h4>
+                            <p className="text-xs text-slate-500">Test your knowledge</p>
+                          </div>
+                        </div>
+                        <Button
+                          className="bg-violet-600 hover:bg-violet-700"
+                          onClick={() => handleTakeQuiz(selectedContent.moduleIndex || 0)}
+                        >
+                          {selectedContent.content.lastQuizScore !== null ? 'Retake Quiz' : 'Take Quiz'}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Quiz Attempts History */}
                   {(() => {
                     const moduleIndex = selectedContent.moduleIndex || 0;
                     const moduleTitle = selectedContent.content.title;
@@ -1482,152 +1597,53 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                         new Date(b.attemptedAt).getTime() - new Date(a.attemptedAt).getTime()
                       );
 
-                    // Sort attempts freshest first
                     const descendingAttempts = moduleAttempts.slice().sort(
                       (a: any, b: any) => new Date(b.attemptedAt).getTime() - new Date(a.attemptedAt).getTime()
                     );
 
-                    // Reverse so oldest attempt is first, newest last
                     const orderedAttempts = moduleAttempts.slice().reverse();
 
                     if (moduleAttempts && moduleAttempts.length > 0) {
                       return (
-                        <div className="mt-6">
-                          {attemptsQuery?.isLoading && <p className="text-sm text-gray-500">Loading recent attempts...</p>}
+                        <div className="mt-4">
+                          <h4 className="text-sm font-semibold text-slate-700 mb-3">Quiz History</h4>
+                          {attemptsQuery?.isLoading && <p className="text-sm text-slate-500">Loading attempts...</p>}
                           {!attemptsQuery?.isLoading && orderedAttempts.length > 0 && (
-                            <>
-                              {(() => {
-                                // Compute best score for this module's attempts (for use in table)
-                                const bestScore = orderedAttempts.length
-                                  ? Math.max(...orderedAttempts.map((a: any) => a.score))
-                                  : 0;
-                                return (
-                                  <table className="w-full text-sm text-left border border-gray-200 table-auto bg-gray-50">
-                                    <thead>
-                                      <tr>
-                                        <th
-                                          colSpan={descendingAttempts.length + 2}
-                                          className="bg-gray-200 px-2 py-2 text-gray-1000 font-bold text-center"
-                                        >
-                                          {`Your Last 5 Quiz Scores For ${moduleTitle}`}
-                                        </th>
-                                      </tr>
-                                      <tr>
-                                        <th className="border-t border-gray-200 px-2 py-1 font-medium text-center">Date</th>
-                                        {descendingAttempts.map((attempt: any, idx: number) => (
-                                          <th
-                                            key={attempt.attemptedAt + '-date-header'}
-                                            className="border-t border-l border-gray-200 px-2 py-1 font-medium text-center"
-                                          >
-                                            {new Date(attempt.attemptedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}, {new Date(attempt.attemptedAt).toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' })}
-                                          </th>
-                                        ))}
-                                        <th className="border-t border-l border-gray-200 px-2 py-1 font-medium text-center">
-                                          Your Best
-                                        </th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      <tr className="border-t border-gray-200">
-                                        <td className="border-t border-gray-200 px-2 py-1 text-center font-medium">Scores</td>
-                                        {descendingAttempts.map((attempt: any, idx: number) => {
-                                          const totalQuestions = course.modules[moduleIndex].questions.length;
-                                          const correctCount = Math.round((attempt.score / 100) * totalQuestions);
-                                          const scoreClass = attempt.score >= 80
-                                            ? 'text-green-600'
-                                            : attempt.score >= 40
-                                              ? 'text-yellow-600'
-                                              : 'text-red-600';
-                                          return (
-                                            <td
-                                              key={attempt.attemptedAt + '-score'}
-                                              className={`border-l border-gray-200 px-2 py-1 text-center font-bold ${scoreClass}`}
-                                            >
-                                              {attempt.score}% ({correctCount} of {totalQuestions})
-                                              {idx === 0 && (
-                                                <strong className="text-gray-800 block mt-1">Your last score</strong>
-                                              )}
-                                              {(() => {
-                                                // No delta for the very newest score (first column)
-                                                if (idx === 0) return null;
-
-                                                // If this is the oldest score shown (right‑most column) there's nothing earlier to compare with
-                                                if (idx === descendingAttempts.length - 1) return null;
-
-                                                // Compare this attempt with the one that was taken immediately before it (the cell to the right)
-                                                const referenceScore = descendingAttempts[idx + 1].score;
-                                                const currentScore = attempt.score;
-                                                const diff = currentScore - referenceScore;
-
-                                                // Show explicit "No change" text when the scores are identical
-                                                if (diff === 0) {
-                                                  return (
-                                                    <div className="text-xs text-gray-500 mt-1">
-                                                      No change
-                                                    </div>
-                                                  );
-                                                }
-
-                                                const isUp = diff > 0;
-                                                const Icon = isUp ? ArrowUp : ArrowDown;
-                                                const colorClass = isUp ? 'text-green-600' : 'text-red-600';
-
-                                                return (
-                                                  <div className={`text-xs ${colorClass} flex items-center justify-center mt-1`}>
-                                                    <Icon className="inline-block h-4 w-4" />
-                                                    <span className="ml-1">
-                                                      {Math.abs(diff)}% {isUp ? 'higher' : 'lower'} than last time
-                                                    </span>
-                                                  </div>
-                                                );
-                                              })()}
-                                              {idx === descendingAttempts.length - 1 && (
-                                                <div className="text-xs text-gray-500 mt-1">
-                                                  Considering this as threshold
-                                                </div>
-                                              )}
-                                            </td>
-                                          );
-                                        })}
-                                        {(() => {
-                                          // Compute best attempt object and best date string
-                                          const bestAttempt = orderedAttempts.reduce(
-                                            (prev: any, curr: any) => curr.score > prev.score ? curr : prev,
-                                            orderedAttempts[0]
-                                          );
-                                          const bestScore = orderedAttempts.length
-                                            ? Math.max(...orderedAttempts.map((a: any) => a.score))
-                                            : 0;
-                                          const totalQuestions = course.modules[moduleIndex].questions.length;
-                                          const correctCount = Math.round((bestScore / 100) * totalQuestions);
-                                          const scoreClass = bestScore >= 80
-                                            ? 'text-green-600'
-                                            : bestScore >= 40
-                                              ? 'text-yellow-600'
-                                              : 'text-red-600';
-                                          let bestDateStr = '';
-                                          if (bestAttempt && bestAttempt.attemptedAt) {
-                                            const bestDate = new Date(bestAttempt.attemptedAt);
-                                            bestDateStr = `${bestDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}, ${bestDate.toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' })}`;
-                                          }
-                                          return (
-                                            <td className={`border-l border-gray-200 px-2 py-1 text-center font-bold ${scoreClass}`}>
-                                              <div className={`font-bold ${scoreClass}`}>
-                                                {bestScore}% ({correctCount} of {totalQuestions})
-                                              </div>
-                                              <strong><div className="text-sm font-bold text-gray-900 mt-1">
-                                                Scored On - {bestDateStr}
-                                              </div>
-                                              </strong>
-                                            </td>
-                                          );
-                                        })()}
-                                      </tr>
-                                    </tbody>
-                                  </table>
-                                );
-                              })()}
-                            </>
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-sm border border-slate-200 rounded-lg overflow-hidden">
+                                <thead>
+                                  <tr className="bg-slate-50">
+                                    <th className="px-3 py-2 text-left text-xs font-semibold text-slate-600">Date</th>
+                                    {descendingAttempts.map((attempt: any, idx: number) => (
+                                      <th key={attempt.attemptedAt + '-header'} className="px-3 py-2 text-center text-xs font-semibold text-slate-600">
+                                        {new Date(attempt.attemptedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                      </th>
+                                    ))}
+                                    <th className="px-3 py-2 text-center text-xs font-semibold text-slate-600 bg-green-50">Best</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <td className="px-3 py-2 text-slate-700 font-medium">Score</td>
+                                    {descendingAttempts.map((attempt: any, idx: number) => {
+                                      const scoreClass = attempt.score >= 80
+                                        ? 'text-green-600 bg-green-50'
+                                        : attempt.score >= 40
+                                          ? 'text-amber-600 bg-amber-50'
+                                          : 'text-red-600 bg-red-50';
+                                      return (
+                                        <td key={attempt.attemptedAt + '-score'} className={`px-3 py-2 text-center font-bold ${scoreClass}`}>
+                                          {attempt.score}%
+                                        </td>
+                                      );
+                                    })}
+                                    <td className="px-3 py-2 text-center font-bold text-green-600 bg-green-50">
+                                      {Math.max(...orderedAttempts.map((a: any) => a.score))}%
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
                           )}
                         </div>
                       );
@@ -1635,12 +1651,12 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                     return null;
                   })()}
 
-                  {/* Inline Quiz Display */}
+                  {/* Active Quiz */}
                   {quizModuleIndex !== null && quizQuestions.length > 0 && (
-                    <div className="mt-6 border-t border-gray-200 pt-6">
+                    <div className="mt-4 border-t border-slate-200 pt-4">
                       <div className="flex items-center justify-between mb-4">
-                        <h4 className="text-lg font-semibold text-gray-800">
-                          {selectedContent.content?.title || `Module ${(selectedContent.moduleIndex || 0) + 1}`} Quiz
+                        <h4 className="text-lg font-semibold text-slate-800">
+                          Answer the Questions
                         </h4>
                         <Button
                           variant="outline"
@@ -1653,27 +1669,26 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                           Close Quiz
                         </Button>
                       </div>
-                      <div className="quiz-container">
-                        <QuizForm
-                          questions={quizQuestions}
-                          onSubmit={handleQuizSubmit}
-                        />
-                      </div>
+                      <QuizForm
+                        questions={quizQuestions}
+                        onSubmit={handleQuizSubmit}
+                      />
                     </div>
                   )}
-
-
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             )}
 
-            {/* Final Exam Display - Independent of content selection */}
+            {/* Final Exam Display */}
             {showFinalExam && finalExamData && (
-              <Card className="mb-6">
-                <div className="px-5 py-4 border-b border-gray-200">
-                  <h3 className="text-lg font-medium text-gray-800">Final Examination</h3>
+              <div className="rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden">
+                <div className="bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-white">
+                    <Trophy className="size-5" />
+                    <span className="font-medium text-sm">Final Examination</span>
+                  </div>
                 </div>
-                <CardContent className="p-5">
+                <div className="p-5">
                   <FinalExamForm
                     title={finalExamData.title}
                     description={finalExamData.description}
@@ -1681,17 +1696,20 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                     onSubmit={handleFinalExamSubmit}
                     onCancel={handleFinalExamCancel}
                   />
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             )}
 
-            {/* Final Exam Results Display - Independent of content selection */}
+            {/* Final Exam Results Display */}
             {finalExamResults && (
-              <Card className="mb-6">
-                <div className="px-5 py-4 border-b border-gray-200">
-                  <h3 className="text-lg font-medium text-gray-800">Final Exam Results</h3>
+              <div className="rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden">
+                <div className="bg-gradient-to-r from-emerald-500 to-green-500 px-4 py-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-white">
+                    <Award className="size-5" />
+                    <span className="font-medium text-sm">Exam Results</span>
+                  </div>
                 </div>
-                <CardContent className="p-5">
+                <div className="p-5">
                   <FinalExamResults
                     score={finalExamResults.score}
                     maxScore={finalExamResults.maxScore}
@@ -1704,133 +1722,104 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                     onClose={() => setFinalExamResults(null)}
                     requiresManualGrading={finalExamResults.requiresManualGrading}
                   />
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             )}
 
-            {/* Default Content - Module Description or Updates */}
-            {!selectedContent.type && !selectedVideoUrl && !selectedDocUrl && (
-              <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
-                {/* Module Description or Updates */}
-                <Card>
-                  <div className="px-5 py-4 border-b border-gray-200">
-                    <h3 className="text-lg font-medium text-gray-800">
-                      {selectedModule ? `${selectedModule.title} - Module Description` : 'Updates'}
-                    </h3>
+            {/* Default State - Welcome Message */}
+            {!selectedVideoUrl && !selectedDocUrl && !showFinalExam && !finalExamResults && !selectedFlashcardModule && selectedContent.type !== 'quiz' && (
+              <div className="rounded-2xl bg-white border border-slate-200 p-8 text-center">
+                <div className="max-w-md mx-auto">
+                  <div className="size-20 rounded-2xl bg-gradient-to-br from-blue-100 to-indigo-100 mx-auto mb-4 flex items-center justify-center">
+                    <PlayCircle className="size-10 text-blue-600" />
                   </div>
-                  <CardContent className="p-5">
-                    {selectedModule ? (
-                      selectedModule.description ? (
-                        <div>
-                          <p className="text-gray-800 whitespace-pre-wrap">{selectedModule.description}</p>
-                        </div>
-                      ) : (
-                        <p className="text-gray-600">No description available for {selectedModule.title}</p>
-                      )
-                    ) : (
-                      <p className="text-gray-600">There are no current updates for {course?.title || 'My Course'}</p>
-                    )}
-                  </CardContent>
-                </Card>
-
-                {/* Announcements */}
-                {/* <Card>
-                  <div className="px-5 py-4 border-b border-gray-200">
-                    <h3 className="text-lg font-medium text-gray-800">Announcements</h3>
-                  </div>
-                  <CardContent className="p-5">
-                    <div className="space-y-4">
-                      <div>
-                        <h4 className="text-lg font-semibold text-gray-800 mb-2">Welcome Derek!</h4>
-                        <p className="text-sm text-gray-500 mb-2">Posted Oct 7, 2020 4:38 PM</p>
-                        <p className="text-gray-600 mb-2">
-                          This course features videos, reading materials, and quizzes to help you learn at your own pace.
-                        </p>
-                        <p className="text-gray-600">Enjoy!</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card> */}
+                  <h3 className="text-xl font-bold text-slate-800 mb-2">Ready to Learn?</h3>
+                  <p className="text-slate-500 mb-4">
+                    Select a module from the left to start watching videos, reading materials, or taking quizzes.
+                  </p>
+                  {upNextContent && (
+                    <Button
+                      className="bg-[#18548b] hover:bg-[#134775]"
+                      onClick={() => {
+                        if (upNextContent.type === 'video') {
+                          clearDocumentContent();
+                          clearQuizContent();
+                          setSelectedVideoUrl(upNextContent.content.url);
+                        } else if (upNextContent.type === 'document') {
+                          clearVideoContent();
+                          clearQuizContent();
+                          const doc = upNextContent.content;
+                          const docUrl = doc.type === 'upload' ? doc.fileUrl : doc.url;
+                          if (docUrl) handleDocPreview(docUrl, doc);
+                        } else if (upNextContent.type === 'quiz') {
+                          handleTakeQuiz(upNextContent.moduleIndex);
+                        }
+                      }}
+                    >
+                      <PlayCircle className="size-4 mr-2" />
+                      Continue Learning
+                    </Button>
+                  )}
+                </div>
               </div>
             )}
           </div>
         </div>
       </div>
 
-
-
-
+      {/* Voice Agent Modal */}
+      <VoiceAgentModal
+        isOpen={showVoiceAgentModal}
+        onClose={() => setShowVoiceAgentModal(false)}
+        documentUrl={baseDocUrl}
+        documentTitle={selectedDocument?.title || selectedDocument?.fileName || 'Document'}
+        pageNumber={currentPage}
+      />
     </div>
   );
 }
 
 function CourseDetailSkeleton() {
   return (
-    <div className="p-4 md:p-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-        <div>
-          <Skeleton className="h-9 w-32 mb-2" />
-          <Skeleton className="h-8 w-64" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
+      {/* Hero Skeleton */}
+      <div className="bg-gradient-to-r from-slate-300 to-slate-400 animate-pulse">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <Skeleton className="h-8 w-32 mb-4 bg-white/20" />
+          <div className="flex items-center justify-between">
+            <div>
+              <Skeleton className="h-8 w-64 mb-2 bg-white/20" />
+              <Skeleton className="h-4 w-96 bg-white/20" />
+            </div>
+            <Skeleton className="size-[120px] rounded-full bg-white/20" />
+          </div>
         </div>
       </div>
 
-      <Card className="mb-6">
-        <div className="px-5 py-4 border-b border-gray-200">
-          <Skeleton className="h-6 w-40" />
-        </div>
-        <CardContent className="p-5">
-          <div className="space-y-3">
-            {/* Progress Bar Skeleton */}
-            <div className="w-full">
-              <div className="flex items-center justify-between mb-2">
-                <Skeleton className="h-4 w-32" />
-                <Skeleton className="h-4 w-12" />
-              </div>
-              <Skeleton className="w-full h-2 rounded-full" />
-            </div>
-
-            {/* Data Grid Skeleton */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="text-center">
-                  <Skeleton className="h-4 w-24 mx-auto mb-2" />
-                  <Skeleton className="h-6 w-16 mx-auto mb-1" />
-                  <Skeleton className="h-3 w-20 mx-auto" />
-                </div>
-              ))}
-            </div>
+      {/* Stats Skeleton */}
+      <div className="bg-white border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="grid grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map((i) => (
+              <Skeleton key={i} className="h-24 rounded-xl" />
+            ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      <Card>
-        <div className="px-5 py-4 border-b border-gray-200">
-          <Skeleton className="h-6 w-40" />
+      {/* Content Skeleton */}
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="flex gap-6">
+          <div className="w-[380px] space-y-3">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <Skeleton key={i} className="h-20 rounded-xl" />
+            ))}
+          </div>
+          <div className="flex-1">
+            <Skeleton className="h-[400px] rounded-2xl" />
+          </div>
         </div>
-        <div className="divide-y divide-gray-200">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="p-5">
-              <div className="flex items-start">
-                <Skeleton className="h-8 w-8 rounded-full" />
-                <div className="ml-4 flex-1">
-                  <div className="flex flex-col md:flex-row justify-between">
-                    <div className="w-full md:w-2/3">
-                      <Skeleton className="h-6 w-48 mb-2" />
-                      <Skeleton className="h-4 w-64 mb-4" />
-                    </div>
-                    <Skeleton className="h-9 w-28 mt-2 md:mt-0" />
-                  </div>
-                  <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-2">
-                    {[1, 2, 3].map((j) => (
-                      <Skeleton key={j} className="h-5 w-28" />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </Card>
+      </div>
     </div>
   );
 }
@@ -1900,65 +1889,34 @@ function LiveClassesForModule({ courseSlug, moduleIndex }: LiveClassesForModuleP
   }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <div className="flex items-center justify-between py-2 cursor-pointer hover:bg-gray-50 rounded px-2">
-          <div className="flex items-center">
-            <CalendarDays className="h-4 w-4 mr-2 text-orange-600" />
-            <span className="text-sm text-gray-700">LIVE CLASSES</span>
-            <ChevronDown className="h-3 w-3 ml-1 text-gray-400" />
-          </div>
-        </div>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-80" align="start">
-        {liveClasses.map((liveClass: any, idx: number) => {
-          const isEnabled = isLiveClassEnabled(liveClass);
-          const buttonText = getLiveClassButtonText(liveClass);
+    <div className="flex-1">
+      {liveClasses.slice(0, 1).map((liveClass: any, idx: number) => {
+        const isEnabled = isLiveClassEnabled(liveClass);
+        const buttonText = getLiveClassButtonText(liveClass);
 
-          return (
-            <DropdownMenuItem key={idx} className="cursor-pointer p-3">
-              <div className="flex items-center justify-between w-full">
-                <div className="flex-1 mr-3">
-                  <div className="flex items-center mb-1">
-                    <CalendarDays className="h-4 w-4 mr-2 text-orange-600" />
-                    <span className="text-sm font-medium">{liveClass.title}</span>
-                  </div>
-                  <div className="text-xs text-gray-500 mb-1">
-                    {formatDateTime(liveClass.startTime)}
-                  </div>
-                  {liveClass.description && (
-                    <div className="text-xs text-gray-600">
-                      {liveClass.description}
-                    </div>
-                  )}
-                </div>
-                <Button
-                  size="sm"
-                  variant={isEnabled ? "default" : "outline"}
-                  disabled={!isEnabled}
-                  className={`${isEnabled
-                    ? buttonText === 'Join Now'
-                      ? 'bg-green-600 hover:bg-green-700'
-                      : buttonText === 'Join Soon'
-                        ? 'bg-orange-600 hover:bg-orange-700'
-                        : 'bg-blue-600 hover:bg-blue-700'
-                    : 'bg-gray-400 text-gray-700 cursor-not-allowed'
-                    } ${isEnabled ? 'text-white' : ''}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (isEnabled && liveClass.meetLink) {
-                      window.open(liveClass.meetLink, '_blank');
-                    }
-                  }}
-                >
-                  {buttonText}
-                </Button>
-              </div>
-            </DropdownMenuItem>
-          );
-        })}
-      </DropdownMenuContent>
-    </DropdownMenu>
+        return (
+          <button
+            key={idx}
+            className={`w-full flex items-center justify-center gap-1.5 p-2 rounded-lg transition-colors ${isEnabled
+                ? 'bg-orange-100 hover:bg-orange-200'
+                : 'bg-slate-100 cursor-not-allowed'
+              }`}
+            disabled={!isEnabled}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (isEnabled && liveClass.meetLink) {
+                window.open(liveClass.meetLink, '_blank');
+              }
+            }}
+          >
+            <CalendarDays className={`size-3.5 ${isEnabled ? 'text-orange-600' : 'text-slate-400'}`} />
+            <span className={`text-xs font-medium ${isEnabled ? 'text-orange-700' : 'text-slate-500'}`}>
+              {buttonText}
+            </span>
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
@@ -1996,44 +1954,22 @@ function RecordingsForModule({ courseSlug, moduleIndex, onRecordingClick }: Reco
   }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <div
-          className="flex items-center justify-between py-2 cursor-pointer hover:bg-gray-50 rounded px-2"
-        >
-          <div className="flex items-center">
-            <Film className="h-4 w-4 mr-2 text-red-600" />
-            <span className="text-sm text-gray-700">RECORDINGS</span>
-            <ChevronDown className="h-3 w-3 ml-1 text-gray-400" />
-          </div>
-        </div>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-64" align="start">
-        {recordings.map((recording: any) => (
-          <DropdownMenuItem
-            key={recording._id}
-            className="cursor-pointer"
-            onClick={() => {
-              if (recording.fileUrl) {
-                onRecordingClick(recording.fileUrl);
-              }
-            }}
-          >
-            <div className="flex items-center justify-between w-full">
-              <div className="flex items-center">
-                <Play className="h-4 w-4 mr-2 text-red-600" />
-                <div className="flex flex-col">
-                  <span className="text-sm">{recording.title}</span>
-                  <span className="text-xs text-gray-500">
-                    {new Date(recording.classDate).toLocaleDateString()}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <div className="flex-1">
+      <button
+        className="w-full flex items-center justify-center gap-1.5 p-2 rounded-lg bg-red-50 hover:bg-red-100 transition-colors"
+        onClick={(e) => {
+          e.stopPropagation();
+          if (recordings[0]?.fileUrl) {
+            onRecordingClick(recordings[0].fileUrl);
+          }
+        }}
+      >
+        <Film className="size-3.5 text-red-600" />
+        <span className="text-xs font-medium text-red-700">
+          {recordings.length} Recording{recordings.length > 1 ? 's' : ''}
+        </span>
+      </button>
+    </div>
   );
 }
 

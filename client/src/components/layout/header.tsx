@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import logo from "@/components/layout/AGI Logo.png";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { User, LogOut, Menu, UserIcon, HelpCircle, Brain, UserPlus, MessageSquare } from "lucide-react";
+import { User, LogOut, Menu, UserIcon, HelpCircle, Brain, UserPlus, MessageSquare, PanelLeftClose, PanelLeft } from "lucide-react";
 import { useAuth } from "@/lib/auth-provider";
 import { useConditionalRender } from '@/lib/permissions-provider';
 import { cn } from "@/lib/utils";
@@ -17,6 +17,8 @@ import {
 interface HeaderProps {
   onMobileMenuToggle?: () => void;
   isStudentLayout?: boolean;
+  onSidebarToggle?: () => void;
+  isSidebarCollapsed?: boolean;
 }
 
 // Navigation link types and constants
@@ -100,7 +102,7 @@ const NavItem = ({ href, label }: NavLink) => {
   );
 };
 
-export function Header({ onMobileMenuToggle, isStudentLayout }: HeaderProps) {
+export function Header({ onMobileMenuToggle, isStudentLayout, onSidebarToggle, isSidebarCollapsed }: HeaderProps) {
   const [now, setNow] = useState(new Date());
   const { userRole, logout } = useAuth();
   const { renderIfCanCreate } = useConditionalRender();
@@ -148,17 +150,35 @@ export function Header({ onMobileMenuToggle, isStudentLayout }: HeaderProps) {
   // Student Layout Header (simpler, cleaner design)
   if (isStudentLayout) {
     return (
-      <header className="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-4 md:px-8 sticky top-0 z-30">
-        {/* Mobile Menu Toggle */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="md:hidden p-2 text-slate-500 hover:text-[#18548b]"
-          onClick={onMobileMenuToggle}
-          title="Menu"
-        >
-          <Menu className="h-6 w-6" />
-        </Button>
+      <header className="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-4 md:px-6 sticky top-0 z-30">
+        {/* Left Side - Mobile Menu & Sidebar Toggle */}
+        <div className="flex items-center gap-2">
+          {/* Mobile Menu Toggle */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden p-2 text-slate-500 hover:text-[#18548b]"
+            onClick={onMobileMenuToggle}
+            title="Menu"
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+
+          {/* Desktop Sidebar Toggle */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hidden md:flex p-2 text-slate-500 hover:text-[#18548b] hover:bg-slate-100 transition-colors"
+            onClick={onSidebarToggle}
+            title={isSidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+          >
+            {isSidebarCollapsed ? (
+              <PanelLeft className="h-5 w-5" />
+            ) : (
+              <PanelLeftClose className="h-5 w-5" />
+            )}
+          </Button>
+        </div>
 
         {/* Spacer for layout balance */}
         <div className="flex-1" />
