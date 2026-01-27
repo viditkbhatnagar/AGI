@@ -25,28 +25,6 @@ function toGooglePreviewUrl(url: string, page: number = 1) {
 
   return url;
 }
-
-// Convert Google Drive URL to embeddable video format
-function toGoogleVideoEmbedUrl(url: string) {
-  // Extract file ID from various Google Drive URL formats
-  const patterns = [
-    /\/file\/d\/([a-zA-Z0-9-_]+)/,     // /file/d/ID
-    /\/d\/([a-zA-Z0-9-_]+)/,           // /d/ID  
-    /id=([a-zA-Z0-9-_]+)/              // ?id=ID
-  ];
-
-  for (const pattern of patterns) {
-    const match = url.match(pattern);
-    if (match) {
-      const fileId = match[1];
-      // Return embeddable video URL
-      return `https://drive.google.com/file/d/${fileId}/preview`;
-    }
-  }
-
-  return url; // Return original if no match
-}
-
 // Detect document type and estimate pages
 function getDocumentTypeAndPages(url: string | undefined): { type: 'slides' | 'document' | 'spreadsheet' | 'pdf', estimatedPages: number } {
   if (!url) {
@@ -394,6 +372,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
 
   const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | null>(null);
   const [selectedDocUrl, setSelectedDocUrl] = useState<string | null>(null);
+  const [selectedRecordingUrl, setSelectedRecordingUrl] = useState<string | null>(null);
   const [selectedVideoIndex, setSelectedVideoIndex] = useState<number>(0);
   const lastSentRef = useRef<number>(0);
 
@@ -914,6 +893,11 @@ export function CourseDetail({ slug }: CourseDetailProps) {
     setSelectedFlashcardModule(null);
   };
 
+  // Helper function to clear recording content only
+  const clearRecordingContent = () => {
+    setSelectedRecordingUrl(null);
+  };
+
   // Get "Up Next" recommendation
   const getUpNextContent = () => {
     if (currentModuleIndex === -1 || !course?.modules) return null;
@@ -1363,11 +1347,15 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                               courseSlug={courseSlug}
                               moduleIndex={moduleIndex}
                               onRecordingClick={(recordingUrl: string) => {
-                                clearVideoContent();
+                                clearDocumentContent();
                                 clearQuizContent();
-                                const embedUrl = toGoogleVideoEmbedUrl(recordingUrl);
-                                setSelectedDocUrl(embedUrl);
-                                setIsDocLoading(true);
+                                clearVideoContent();
+                                // Handle different recording URL types (SharePoint, Google Drive)
+                                let embedUrl = recordingUrl;
+                                if (recordingUrl.includes('drive.google.com')) {
+                                  embedUrl = recordingUrl.replace('/view', '/preview');
+                                }
+                                setSelectedRecordingUrl(embedUrl);
                               }}
                             />
                           </div>
@@ -1414,6 +1402,35 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                       if (finalDelta > 0) recordWatchTime(finalDelta);
                       queryClient.invalidateQueries({ queryKey: ['courseDetail', slug] });
                     }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Recording Player (SharePoint/Google Drive) */}
+            {selectedRecordingUrl && (
+              <div className="rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden mb-4">
+                <div className="bg-gradient-to-r from-red-500 to-orange-500 px-4 py-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-white">
+                    <PlayCircle className="size-5" />
+                    <span className="font-medium text-sm">Live Class Recording</span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-white hover:bg-white/20"
+                    onClick={clearRecordingContent}
+                  >
+                    <X className="size-4" />
+                  </Button>
+                </div>
+                <div className="aspect-video bg-gray-100">
+                  <iframe
+                    className="w-full h-full border-0"
+                    src={selectedRecordingUrl}
+                    title="Live Class Recording"
+                    allowFullScreen
+                    allow="autoplay; encrypted-media"
                   />
                 </div>
               </div>
