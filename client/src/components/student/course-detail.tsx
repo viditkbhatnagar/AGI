@@ -376,6 +376,10 @@ export function CourseDetail({ slug }: CourseDetailProps) {
   const [selectedVideoIndex, setSelectedVideoIndex] = useState<number>(0);
   const lastSentRef = useRef<number>(0);
 
+  // Track which module the currently playing/viewing content belongs to.
+  // This prevents misattribution when currentModuleIndex changes after module completion.
+  const activeContentModuleIndex = useRef<number>(currentModuleIndex);
+
   // Document navigation state
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
@@ -682,7 +686,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
       },
       body: JSON.stringify({
         slug,
-        moduleIndex: currentModuleIndex,
+        moduleIndex: activeContentModuleIndex.current,
         videoIndex: selectedVideoIndex,
         duration: secondsDelta,
       }),
@@ -729,7 +733,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
       },
       body: JSON.stringify({
         slug,
-        moduleIndex: currentModuleIndex,
+        moduleIndex: activeContentModuleIndex.current,
         docUrl,
       }),
     });
@@ -1089,6 +1093,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                     size="sm"
                     className="w-full bg-white text-[#18548b] hover:bg-white/90 font-semibold"
                     onClick={() => {
+                      activeContentModuleIndex.current = upNextContent.moduleIndex;
                       if (upNextContent.type === 'video') {
                         clearDocumentContent();
                         clearQuizContent();
@@ -1264,6 +1269,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                                     clearDocumentContent();
                                     clearQuizContent();
                                     clearFlashcardContent();
+                                    activeContentModuleIndex.current = moduleIndex;
                                     setSelectedVideoUrl(video.url);
                                     setSelectedVideoIndex(vidIdx);
                                     lastSentRef.current = 0;
@@ -1294,6 +1300,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                                       clearVideoContent();
                                       clearQuizContent();
                                       clearFlashcardContent();
+                                      activeContentModuleIndex.current = moduleIndex;
                                       const documentUrl = doc.type === 'upload' ? doc.fileUrl : doc.url;
                                       if (documentUrl) handleDocPreview(documentUrl, doc);
                                     }}
@@ -1758,6 +1765,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                     <Button
                       className="bg-[#18548b] hover:bg-[#134775]"
                       onClick={() => {
+                        activeContentModuleIndex.current = upNextContent.moduleIndex;
                         if (upNextContent.type === 'video') {
                           clearDocumentContent();
                           clearQuizContent();

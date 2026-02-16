@@ -541,22 +541,97 @@ export const reorderModules = async (req: Request, res: Response) => {
   try {
     const { slug } = req.params;
     const { modules } = req.body;
-    
+
     if (!modules || !Array.isArray(modules)) {
       return res.status(400).json({ message: 'Invalid modules data' });
     }
-    
+
     const course = await Course.findOne({ slug });
-    
+
     if (!course) {
       return res.status(404).json({ message: 'Course not found' });
     }
-    
+
+    // Build old→new index mapping using module title as stable key
+    const oldModules = course.modules;
+    const indexMap = new Map<number, number>();
+    oldModules.forEach((oldMod: any, oldIdx: number) => {
+      const newIdx = modules.findIndex((newMod: any) => newMod.title === oldMod.title);
+      if (newIdx !== -1 && newIdx !== oldIdx) {
+        indexMap.set(oldIdx, newIdx);
+      }
+    });
+
     // Update the modules array with the new order
     course.modules = modules;
-    
     await course.save();
-    
+
+    // If indices actually changed, migrate all student progress data
+    if (indexMap.size > 0) {
+      // Migrate enrollment data (completedModules, quizAttempts)
+      const enrollments = await Enrollment.find({ courseSlug: slug });
+      for (const enrollment of enrollments) {
+        let changed = false;
+
+        enrollment.completedModules = enrollment.completedModules.map((cm: any) => {
+          const newIdx = indexMap.get(cm.moduleIndex);
+          if (newIdx !== undefined) { changed = true; return { ...cm.toObject?.() ?? cm, moduleIndex: newIdx }; }
+          return cm;
+        });
+
+        enrollment.quizAttempts = enrollment.quizAttempts.map((qa: any) => {
+          const newIdx = indexMap.get(qa.moduleIndex);
+          if (newIdx !== undefined) { changed = true; return { ...qa.toObject?.() ?? qa, moduleIndex: newIdx }; }
+          return qa;
+        });
+
+        if (changed) await enrollment.save();
+      }
+
+      // Migrate student watchTime and docViews
+      const affectedStudentIds = enrollments.map(e => e.studentId);
+      const students = await Student.find({ _id: { $in: affectedStudentIds } });
+
+      for (const student of students) {
+        let changed = false;
+
+        student.watchTime = student.watchTime.map((wt: any) => {
+          const obj = wt.toObject?.() ?? wt;
+          if ((!obj.courseSlug || obj.courseSlug === slug) && indexMap.has(obj.moduleIndex)) {
+            changed = true;
+            return { ...obj, moduleIndex: indexMap.get(obj.moduleIndex)!, courseSlug: slug };
+          }
+          return obj;
+        });
+
+        student.docViews = student.docViews.map((dv: any) => {
+          const obj = dv.toObject?.() ?? dv;
+          if ((!obj.courseSlug || obj.courseSlug === slug) && indexMap.has(obj.moduleIndex)) {
+            changed = true;
+            return { ...obj, moduleIndex: indexMap.get(obj.moduleIndex)!, courseSlug: slug };
+          }
+          return obj;
+        });
+
+        if (changed) await student.save();
+      }
+
+      // Migrate Quiz moduleIndex references
+      const Quiz = (await import('../models/quiz')).default;
+      // Use temporary offset to avoid collisions during remapping
+      const TEMP_OFFSET = 10000;
+      for (const [oldIdx, newIdx] of indexMap) {
+        await Quiz.updateMany(
+          { courseSlug: slug, moduleIndex: oldIdx },
+          { $set: { moduleIndex: newIdx + TEMP_OFFSET } }
+        );
+      }
+      await Quiz.updateMany(
+        { courseSlug: slug, moduleIndex: { $gte: TEMP_OFFSET } },
+        [{ $set: { moduleIndex: { $subtract: ['$moduleIndex', TEMP_OFFSET] } } }]
+      );
+    }
+
     res.status(200).json({
       message: 'Module order updated successfully',
       course

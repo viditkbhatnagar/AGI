@@ -52,25 +52,26 @@ export const getDashboard = async (req: Request, res: Response) => {
     // Gather module data asynchronously to allow awaiting quiz fetches
     const moduleData = await Promise.all(
       course.modules.map(async (module, idx) => {
-        // Video progress - deduplicate by videoIndex and cap at 100%
+        // Video progress - deduplicate by videoIndex, scope to course, cap at 100%
+        const courseSlug = enrollment.courseSlug;
         const totalVideos = module.videos.length;
         const watchedVideos = new Set(
           watchRecords
-            .filter((wt: any) => wt.moduleIndex === idx && wt.videoIndex < totalVideos)
+            .filter((wt: any) => wt.moduleIndex === idx && wt.videoIndex < totalVideos && (!wt.courseSlug || wt.courseSlug === courseSlug))
             .map((wt: any) => wt.videoIndex)
         ).size;
         const percentWatched = totalVideos
           ? Math.min(100, (watchedVideos / totalVideos) * 100)
           : 0;
 
-        // Document progress - deduplicate by docUrl and only count docs that exist in module
+        // Document progress - deduplicate by docUrl, scope to course, only count docs that exist in module
         const totalDocs = module.documents.length;
         const moduleDocUrls = new Set(
           module.documents.map((doc: any) => doc.fileUrl || doc.url).filter(Boolean)
         );
         const viewedDocs = new Set(
           docRecords
-            .filter((dv: any) => dv.moduleIndex === idx && moduleDocUrls.has(dv.docUrl))
+            .filter((dv: any) => dv.moduleIndex === idx && moduleDocUrls.has(dv.docUrl) && (!dv.courseSlug || dv.courseSlug === courseSlug))
             .map((dv: any) => dv.docUrl)
         ).size;
         const percentViewed = totalDocs
@@ -336,21 +337,21 @@ export const getDashboardByCourse = async (req: Request, res: Response) => {
     // Build per-module data
     const moduleData = await Promise.all(
       course.modules.map(async (module, idx) => {
-        // same computation as getDashboard...
+        // Video progress - deduplicate by videoIndex, scope to course, cap at 100%
         const totalVideos = module.videos.length;
         const watchedVideos = new Set(
-          watchRecords.filter(wt => wt.moduleIndex === idx).map(wt => wt.videoIndex)
+          watchRecords.filter((wt: any) => wt.moduleIndex === idx && wt.videoIndex < totalVideos && (!wt.courseSlug || wt.courseSlug === slug)).map((wt: any) => wt.videoIndex)
         ).size;
-        const percentWatched = totalVideos ? (watchedVideos / totalVideos) * 100 : 0;
+        const percentWatched = totalVideos ? Math.min(100, (watchedVideos / totalVideos) * 100) : 0;
 
-        // Document progress - deduplicate by docUrl and only count docs that exist in module
+        // Document progress - deduplicate by docUrl, scope to course, only count docs that exist in module
         const totalDocs = module.documents.length;
         const moduleDocUrls = new Set(
           module.documents.map((doc: any) => doc.fileUrl || doc.url).filter(Boolean)
         );
         const viewedDocs = new Set(
           docRecords
-            .filter((dv: any) => dv.moduleIndex === idx && moduleDocUrls.has(dv.docUrl))
+            .filter((dv: any) => dv.moduleIndex === idx && moduleDocUrls.has(dv.docUrl) && (!dv.courseSlug || dv.courseSlug === slug))
             .map((dv: any) => dv.docUrl)
         ).size;
         const percentViewed = totalDocs ? Math.min(100, (viewedDocs / totalDocs) * 100) : 0;
@@ -541,7 +542,7 @@ export const recordWatchTime = async (req: Request, res: Response) => {
       return res.status(401).json({ message: 'Not authenticated' });
     }
 
-    const { moduleIndex, videoIndex, duration } = req.body;
+    const { slug, moduleIndex, videoIndex, duration } = req.body;
 
     if (typeof moduleIndex !== 'number' || typeof videoIndex !== 'number' || typeof duration !== 'number') {
       return res.status(400).json({ message: 'Invalid input data' });
@@ -561,6 +562,7 @@ export const recordWatchTime = async (req: Request, res: Response) => {
         $push: {
           watchTime: {
             date: new Date(),
+            courseSlug: slug || undefined,
             moduleIndex,
             videoIndex,
             duration
@@ -583,7 +585,7 @@ export const recordDocumentView = async (req: Request, res: Response) => {
       return res.status(401).json({ message: 'Not authenticated' });
     }
 
-    const { moduleIndex, docUrl } = req.body;
+    const { slug, moduleIndex, docUrl } = req.body;
     if (typeof moduleIndex !== 'number' || typeof docUrl !== 'string') {
       return res.status(400).json({ message: 'Invalid input data' });
     }
@@ -597,7 +599,7 @@ export const recordDocumentView = async (req: Request, res: Response) => {
     // Add document view record if not already viewed
     await Student.updateOne(
       { userId: userObjectId, 'docViews.docUrl': { $ne: docUrl } },
-      { $push: { docViews: { date: new Date(), moduleIndex, docUrl } } }
+      { $push: { docViews: { date: new Date(), courseSlug: slug || undefined, moduleIndex, docUrl } } }
     );
 
     res.status(200).json({ message: 'Document view recorded successfully' });
@@ -743,26 +745,27 @@ export const getCourses = async (req: Request, res: Response) => {
       if (!course) continue;
 
       // Process each module
+      const courseSlug = enrollment.courseSlug;
       const modules = course.modules.map((module, idx) => {
-        // Video progress
+        // Video progress - scope to course, cap at 100%
         const totalVideos = module.videos.length;
         const watchedVideos = new Set(
           watchRecords
-            .filter(wt => wt.moduleIndex === idx)
-            .map(wt => wt.videoIndex)
+            .filter((wt: any) => wt.moduleIndex === idx && wt.videoIndex < totalVideos && (!wt.courseSlug || wt.courseSlug === courseSlug))
+            .map((wt: any) => wt.videoIndex)
         ).size;
         const percentWatched = totalVideos > 0
-          ? (watchedVideos / totalVideos) * 100
+          ? Math.min(100, (watchedVideos / totalVideos) * 100)
           : 0;
 
-        // Document progress - deduplicate by docUrl and only count docs that exist in module
+        // Document progress - scope to course, deduplicate by docUrl, only count docs that exist in module
         const totalDocs = module.documents.length;
         const moduleDocUrls = new Set(
           module.documents.map((doc: any) => doc.fileUrl || doc.url).filter(Boolean)
         );
         const viewedDocs = new Set(
           docRecords
-            .filter((dv: any) => dv.moduleIndex === idx && moduleDocUrls.has(dv.docUrl))
+            .filter((dv: any) => dv.moduleIndex === idx && moduleDocUrls.has(dv.docUrl) && (!dv.courseSlug || dv.courseSlug === courseSlug))
             .map((dv: any) => dv.docUrl)
         ).size;
         const percentViewed = totalDocs > 0
@@ -856,25 +859,25 @@ export const getCourseDetail = async (req: Request, res: Response) => {
     // Compute per-module data (including percentComplete and completion status)
     const moduleData = await Promise.all(
       course.modules.map(async (module: any, idx: number) => {
-        // Video progress
+        // Video progress - deduplicate by videoIndex, scope to course, cap at 100%
         const totalVideos = module.videos.length;
         const watchedVideos = new Set(
           watchRecords
-            .filter((wt: any) => wt.moduleIndex === idx)
+            .filter((wt: any) => wt.moduleIndex === idx && wt.videoIndex < totalVideos && (!wt.courseSlug || wt.courseSlug === slug))
             .map((wt: any) => wt.videoIndex)
         ).size;
         const percentWatched = totalVideos
-          ? (watchedVideos / totalVideos) * 100
+          ? Math.min(100, (watchedVideos / totalVideos) * 100)
           : 0;
 
-        // Document progress - deduplicate by docUrl and only count docs that exist in module
+        // Document progress - deduplicate by docUrl, scope to course, only count docs that exist in module
         const totalDocs = module.documents.length;
         const moduleDocUrls = new Set(
           module.documents.map((doc: any) => doc.fileUrl || doc.url).filter(Boolean)
         );
         const viewedDocs = new Set(
           docRecords
-            .filter((dv: any) => dv.moduleIndex === idx && moduleDocUrls.has(dv.docUrl))
+            .filter((dv: any) => dv.moduleIndex === idx && moduleDocUrls.has(dv.docUrl) && (!dv.courseSlug || dv.courseSlug === slug))
             .map((dv: any) => dv.docUrl)
         ).size;
         const percentViewed = totalDocs

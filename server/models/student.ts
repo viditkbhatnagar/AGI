@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 interface IWatchTime {
   date: Date;
+  courseSlug?: string;
   moduleIndex: number;
   videoIndex: number;
   duration: number; // in seconds
@@ -9,6 +10,7 @@ interface IWatchTime {
 
 interface IDocView {
   date: Date;
+  courseSlug?: string;
   moduleIndex: number;
   docUrl: string;
 }
@@ -108,6 +110,7 @@ const StudentSchema = new Schema<IStudentDocument>({
   watchTime: {
     type: [{
       date: { type: Date, default: Date.now },
+      courseSlug: { type: String },
       moduleIndex: { type: Number, required: true },
       videoIndex: { type: Number, required: true },
       duration: { type: Number, required: true }
@@ -117,6 +120,7 @@ const StudentSchema = new Schema<IStudentDocument>({
   docViews: {
     type: [{
       date: { type: Date, default: Date.now },
+      courseSlug: { type: String },
       moduleIndex: { type: Number, required: true },
       docUrl: { type: String, required: true }
     }],
