@@ -96,10 +96,10 @@ export const getDashboard = async (req: Request, res: Response) => {
           ? Math.max(...moduleAttempts.map(a => a.score || 0))
           : 0;
 
-        // Final completion percentage
-        const percentComplete = Math.round(
-          (percentWatched + percentViewed + quizPercent) / 3
-        );
+        // Final completion percentage — if module is already marked complete, always show 100%
+        const percentComplete = completedSet.has(idx)
+          ? 100
+          : Math.round((percentWatched + percentViewed + quizPercent) / 3);
 
         // Dynamically fetch quiz for this module, if any
         let quiz: any = null;
@@ -901,10 +901,10 @@ export const getCourseDetail = async (req: Request, res: Response) => {
           ? Math.max(...moduleAttempts.map((a: any) => a.score || 0))
           : 0;
 
-        // Final completion percentage
-        const percentComplete = Math.round(
-          (percentWatched + percentViewed + quizPercent) / 3
-        );
+        // Final completion percentage — if module is already marked complete, always show 100%
+        const percentComplete = completedSet.has(idx)
+          ? 100
+          : Math.round((percentWatched + percentViewed + quizPercent) / 3);
 
         // Dynamically fetch quiz for this module, if any
         let quiz: any = null;
