@@ -1195,10 +1195,16 @@ export const submitQuizAttempt = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Quiz not found' });
     }
     // Score the answers
+    // A question is "pass-through" if all choices are identical (e.g. placeholder "Click me" quizzes)
+    // or if correctIndex is negative — any answer counts as correct for those questions.
     const total = quiz.questions.length;
     let correct = 0;
     quiz.questions.forEach((q, idx) => {
-      if (answers[idx] === q.correctIndex) correct++;
+      const allChoicesIdentical =
+        q.choices.length > 0 &&
+        new Set(q.choices.map((c: string) => c.trim().toLowerCase())).size === 1;
+      const isPassThrough = q.correctIndex < 0 || allChoicesIdentical;
+      if (isPassThrough || answers[idx] === q.correctIndex) correct++;
     });
     const score = Math.round((correct / total) * 100);
 

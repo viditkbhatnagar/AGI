@@ -101,7 +101,12 @@ const QuizForm: React.FC<QuizFormProps> = ({ questions, onSubmit }) => {
   );
 
   if (showResults) {
-    const correctCount = results.filter(r => r.selected === r.correct).length;
+    const correctCount = results.filter(r => {
+      const allChoicesIdentical =
+        r.options.length > 0 &&
+        new Set(r.options.map(o => o.trim().toLowerCase())).size === 1;
+      return r.correct < 0 || allChoicesIdentical || r.selected === r.correct;
+    }).length;
     const percentage = Math.round((correctCount / results.length) * 100);
     
     return (
@@ -125,7 +130,10 @@ const QuizForm: React.FC<QuizFormProps> = ({ questions, onSubmit }) => {
         <div className="space-y-6">
           {pagedResults.map((r, i) => {
             const questionIndex = resultPage * RESULTS_PER_PAGE + i;
-            const isCorrect = r.selected === r.correct;
+            const allChoicesIdentical =
+              r.options.length > 0 &&
+              new Set(r.options.map(o => o.trim().toLowerCase())).size === 1;
+            const isCorrect = r.correct < 0 || allChoicesIdentical || r.selected === r.correct;
             
             return (
               <div key={questionIndex} className={`p-4 border rounded-lg ${
