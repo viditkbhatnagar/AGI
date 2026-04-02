@@ -951,7 +951,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
   const upNextContent = getUpNextContent();
 
   // Check if final exam is available
-  const isFinalExamEligible = completedCount === totalModules && totalModules > 0;
+  const isFinalExamEligible = totalModules > 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
@@ -1127,7 +1127,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                     </div>
                     <div>
                       <h3 className="font-bold">Final Examination</h3>
-                      <p className="text-xs text-white/80">All modules completed!</p>
+                      <p className="text-xs text-white/80">Test your knowledge</p>
                     </div>
                   </div>
                   <Button

@@ -151,10 +151,10 @@ export const getDashboard = async (req: Request, res: Response) => {
     const FinalExamination = (await import('../models/finalExamination')).default;
     const finalExam = await FinalExamination.findOne({ courseSlug: enrollment.courseSlug, isActive: true });
     const finalExamAttempts = enrollment.finalExamAttempts || [];
-    const canAttemptFinalExam = completedModulesCount === totalModules && finalExam && finalExamAttempts.length < (finalExam.maxAttempts || 3);
+    const canAttemptFinalExam = !!finalExam && finalExamAttempts.length < (finalExam.maxAttempts || 3);
     const finalExamStatus = {
       available: !!finalExam,
-      eligible: completedModulesCount === totalModules,
+      eligible: true,
       canAttempt: canAttemptFinalExam,
       attempts: finalExamAttempts.length,
       maxAttempts: finalExam?.maxAttempts || 3,
@@ -425,10 +425,10 @@ export const getDashboardByCourse = async (req: Request, res: Response) => {
     const FinalExamination = (await import('../models/finalExamination')).default;
     const finalExam = await FinalExamination.findOne({ courseSlug: slug, isActive: true });
     const finalExamAttempts = enrollment.finalExamAttempts || [];
-    const canAttemptFinalExam = completedModulesCount === totalModules && finalExam && finalExamAttempts.length < (finalExam.maxAttempts || 3);
+    const canAttemptFinalExam = !!finalExam && finalExamAttempts.length < (finalExam.maxAttempts || 3);
     const finalExamStatus = {
       available: !!finalExam,
-      eligible: completedModulesCount === totalModules,
+      eligible: true,
       canAttempt: canAttemptFinalExam,
       attempts: finalExamAttempts.length,
       maxAttempts: finalExam?.maxAttempts || 3,
