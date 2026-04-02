@@ -379,21 +379,13 @@ const FinalExamForm: React.FC<FinalExamFormProps> = ({
           </div>
 
           {/* Navigation */}
-          <div className="flex justify-between items-center">
-            <Button
-              variant="outline"
-              onClick={handlePrevious}
-              disabled={currentQuestion === 0}
-            >
-              Previous
-            </Button>
-            
-            <div className="flex gap-2">
+          <div className="space-y-3">
+            <div className="flex flex-wrap gap-2 justify-center">
               {questions.map((question, idx) => {
-                const isAnswered = question.type === 'mcq' 
+                const isAnswered = question.type === 'mcq'
                   ? (typeof answers[idx] === 'number' && answers[idx] >= 0)
                   : (typeof answers[idx] === 'object' && answers[idx].content.trim());
-                
+
                 return (
                   <button
                     key={idx}
@@ -411,16 +403,24 @@ const FinalExamForm: React.FC<FinalExamFormProps> = ({
                 );
               })}
             </div>
-            
-            {currentQuestion < questions.length - 1 ? (
-              <Button onClick={handleNext}>
-                Next
+            <div className="flex justify-between items-center">
+              <Button
+                variant="outline"
+                onClick={handlePrevious}
+                disabled={currentQuestion === 0}
+              >
+                Previous
               </Button>
-            ) : (
-              <Button onClick={handleSubmit} variant="default">
-                Submit Exam
-              </Button>
-            )}
+              {currentQuestion < questions.length - 1 ? (
+                <Button onClick={handleNext}>
+                  Next
+                </Button>
+              ) : (
+                <Button onClick={handleSubmit} variant="default">
+                  Submit Exam
+                </Button>
+              )}
+            </div>
           </div>
 
           {/* Bottom Actions */}
