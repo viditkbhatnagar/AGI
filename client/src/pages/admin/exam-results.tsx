@@ -23,8 +23,13 @@ import {
   XCircle,
   Clock,
   Edit,
-  ChevronDown
+  ChevronDown,
+  Award,
+  ExternalLink,
+  Loader2,
+  AlertTriangle
 } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 interface StudentExamResult {
   studentId: string;
@@ -63,6 +68,9 @@ interface StudentExamResult {
     gradedAt?: string;
   }>;
   totalAttempts: number;
+  hasCertificate?: boolean;
+  certificateId?: string;
+  certificateUrl?: string;
 }
 
 // Certificate Issuance Cell Component
@@ -75,7 +83,7 @@ const CertificateIssuanceCell = ({ result, onUpdate }: CertificateIssuanceCellPr
   const { toast } = useToast();
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const updateCertificateIssuance = async (online: boolean, offline: boolean) => {
+  const issueCertificate = async () => {
     setIsUpdating(true);
     try {
       const token = localStorage.getItem('token');
@@ -88,25 +96,27 @@ const CertificateIssuanceCell = ({ result, onUpdate }: CertificateIssuanceCellPr
         body: JSON.stringify({
           studentId: result.studentId,
           courseSlug: result.courseSlug,
-          online,
-          offline
+          online: true,
+          offline: result.certificateIssuance?.offline || false
         }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('Failed to update certificate issuance');
+        throw new Error(data.message || 'Failed to issue certificate');
       }
 
       toast({
-        title: "Success",
-        description: "Certificate issuance status updated successfully",
+        title: "Certificate Issued",
+        description: `Certificate issued successfully for ${result.studentName}`,
       });
 
       onUpdate();
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to update certificate issuance status",
+        description: error.message || "Failed to issue certificate",
         variant: "destructive",
       });
     } finally {
@@ -114,30 +124,139 @@ const CertificateIssuanceCell = ({ result, onUpdate }: CertificateIssuanceCellPr
     }
   };
 
-  const handleOnlineChange = (checked: boolean) => {
-    updateCertificateIssuance(checked, result.certificateIssuance?.offline || false);
+  const handleOfflineChange = async (checked: boolean) => {
+    setIsUpdating(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/admin/certificate-issuance', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` })
+        },
+        body: JSON.stringify({
+          studentId: result.studentId,
+          courseSlug: result.courseSlug,
+          online: result.certificateIssuance?.online || false,
+          offline: checked
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to update');
+
+      toast({
+        title: "Updated",
+        description: `Offline certificate status updated`,
+      });
+
+      onUpdate();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update offline status",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
-  const handleOfflineChange = (checked: boolean) => {
-    updateCertificateIssuance(result.certificateIssuance?.online || false, checked);
-  };
+  const hasPassed = result.latestAttempt?.passed === true;
 
+  // Certificate already issued
+  if (result.hasCertificate) {
+    return (
+      <div className="space-y-2">
+        <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+          <Award className="h-3 w-3 mr-1" />
+          Issued
+        </Badge>
+        {result.certificateUrl && (
+          <a
+            href={result.certificateUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center text-xs text-blue-600 hover:text-blue-800"
+          >
+            <ExternalLink className="h-3 w-3 mr-1" />
+            View Certificate
+          </a>
+        )}
+        <div className="flex items-center space-x-2 mt-1">
+          <Checkbox
+            id={`offline-${result.studentId}-${result.courseSlug}`}
+            checked={result.certificateIssuance?.offline || false}
+            onCheckedChange={handleOfflineChange}
+            disabled={isUpdating}
+          />
+          <label
+            htmlFor={`offline-${result.studentId}-${result.courseSlug}`}
+            className="text-xs text-gray-600"
+          >
+            Offline sent
+          </label>
+        </div>
+        {result.certificateIssuance?.updatedBy && (
+          <div className="text-xs text-gray-500">
+            By: {result.certificateIssuance.updatedBy}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Student has not passed — cannot issue
+  if (!hasPassed) {
+    return (
+      <div className="space-y-1">
+        <span className="text-xs text-gray-400 flex items-center">
+          <AlertTriangle className="h-3 w-3 mr-1" />
+          No passing attempt
+        </span>
+      </div>
+    );
+  }
+
+  // Student passed but no certificate yet — show Issue button
   return (
     <div className="space-y-2">
-      <div className="flex items-center space-x-2">
-        <Checkbox
-          id={`online-${result.studentId}-${result.courseSlug}`}
-          checked={result.certificateIssuance?.online || false}
-          onCheckedChange={handleOnlineChange}
-          disabled={isUpdating}
-        />
-        <label
-          htmlFor={`online-${result.studentId}-${result.courseSlug}`}
-          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        >
-          Online
-        </label>
-      </div>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={isUpdating}
+            className="text-green-700 border-green-300 hover:bg-green-50"
+          >
+            {isUpdating ? (
+              <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+            ) : (
+              <Award className="h-3 w-3 mr-1" />
+            )}
+            Issue Certificate
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Issue Certificate</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will issue a digital certificate via Certifier.io for:
+              <br /><br />
+              <strong>Student:</strong> {result.studentName}<br />
+              <strong>Course:</strong> {result.courseName}<br />
+              <strong>Score:</strong> {result.latestAttempt?.score}%
+              <br /><br />
+              The student will receive the certificate via email. This action calls the Certifier.io API.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={issueCertificate}>
+              Issue Certificate
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <div className="flex items-center space-x-2">
         <Checkbox
           id={`offline-${result.studentId}-${result.courseSlug}`}
@@ -147,19 +266,11 @@ const CertificateIssuanceCell = ({ result, onUpdate }: CertificateIssuanceCellPr
         />
         <label
           htmlFor={`offline-${result.studentId}-${result.courseSlug}`}
-          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          className="text-xs text-gray-600"
         >
-          Offline
+          Offline sent
         </label>
       </div>
-      {result.certificateIssuance?.updatedAt && (
-        <div className="text-xs text-gray-500">
-          Updated: {new Date(result.certificateIssuance.updatedAt).toLocaleDateString()}
-          {result.certificateIssuance.updatedBy && (
-            <div>By: {result.certificateIssuance.updatedBy}</div>
-          )}
-        </div>
-      )}
     </div>
   );
 };
@@ -275,6 +386,10 @@ export default function ExamResults() {
           return result.latestAttempt?.requiresManualGrading && !result.latestAttempt.gradedBy;
         } else if (statusFilter === 'graded') {
           return result.latestAttempt?.gradedBy;
+        } else if (statusFilter === 'certificate-issued') {
+          return result.hasCertificate === true;
+        } else if (statusFilter === 'passed-no-cert') {
+          return result.latestAttempt?.passed && !result.hasCertificate;
         } else if (statusFilter === 'no-exam') {
           return !result.hasFinalExam;
         }
@@ -457,6 +572,8 @@ export default function ExamResults() {
                   <SelectItem value="submitted">Submitted</SelectItem>
                   <SelectItem value="pending">Pending Review</SelectItem>
                   <SelectItem value="graded">Graded</SelectItem>
+                  <SelectItem value="certificate-issued">Certificate Issued</SelectItem>
+                  <SelectItem value="passed-no-cert">Passed (No Certificate)</SelectItem>
                   <SelectItem value="no-exam">No Exam</SelectItem>
                 </SelectContent>
               </Select>

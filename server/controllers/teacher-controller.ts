@@ -746,36 +746,124 @@ export const getAllTeachers = async (req: Request, res: Response) => {
 };
 
 // Update certificate issuance status (admin only)
+// When 'online' is toggled true, this triggers Certifier.io API to issue the certificate
 export const updateCertificateIssuance = async (req: Request, res: Response) => {
   try {
     const { studentId, courseSlug, online, offline } = req.body;
-    const adminUsername = req.user?.username;
+    const adminUsername = req.user?.username || req.user?.email || 'admin';
 
     if (!studentId || !courseSlug) {
       return res.status(400).json({ message: 'Student ID and course slug are required' });
     }
 
     // Find the enrollment
-    const enrollment = await Enrollment.findOne({ 
-      studentId: new mongoose.Types.ObjectId(studentId), 
-      courseSlug 
+    const enrollment = await Enrollment.findOne({
+      studentId: new mongoose.Types.ObjectId(studentId),
+      courseSlug
     });
 
     if (!enrollment) {
       return res.status(404).json({ message: 'Enrollment not found' });
     }
 
-    // Update certificate issuance status
+    const wasOnline = enrollment.certificateIssuance?.online || false;
+    const nowOnline = Boolean(online);
+
+    // If toggling online from false → true, issue certificate via Certifier.io
+    if (nowOnline && !wasOnline) {
+      // Find the best passing attempt
+      const passingAttempt = (enrollment.finalExamAttempts || [])
+        .filter(a => a.passed && a.score != null)
+        .sort((a, b) => (b.score || 0) - (a.score || 0))[0];
+
+      if (!passingAttempt) {
+        return res.status(400).json({
+          message: 'Cannot issue certificate: student has no passing exam attempt'
+        });
+      }
+
+      // Check for existing active certificate
+      const existingCert = enrollment.certificates?.find(
+        c => c.courseSlug === courseSlug && c.status === 'issued'
+      );
+      if (existingCert) {
+        // Certificate already exists — just update the flag
+        enrollment.certificateIssuance = {
+          online: true,
+          offline: Boolean(offline),
+          updatedAt: new Date(),
+          updatedBy: adminUsername
+        };
+        await enrollment.save();
+        return res.status(200).json({
+          message: 'Certificate already issued for this course',
+          certificateId: existingCert.certificateId,
+          certificateUrl: existingCert.certificateUrl,
+          certificateIssuance: enrollment.certificateIssuance
+        });
+      }
+
+      // Issue via Certifier.io
+      try {
+        const { issueCertificateForPassedExam } = await import('./certificate-controller');
+
+        const result = await issueCertificateForPassedExam(
+          enrollment.studentId,
+          courseSlug,
+          passingAttempt.attemptNumber,
+          passingAttempt.score!,
+          adminUsername
+        );
+
+        if (!result.success) {
+          return res.status(500).json({
+            message: 'Failed to issue certificate via Certifier.io',
+            error: result.message
+          });
+        }
+
+        console.log(`🎓 Certificate issued by admin ${adminUsername} for student ${studentId}, course ${courseSlug}`);
+      } catch (certError) {
+        console.error('❌ Error during certificate issuance:', certError);
+        return res.status(500).json({
+          message: 'Error during certificate issuance. Please try again.'
+        });
+      }
+
+      // Re-fetch enrollment after issueCertificateForPassedExam saved certificate data
+      // to avoid overwriting it with our stale copy
+      const freshEnrollment = await Enrollment.findOne({
+        studentId: new mongoose.Types.ObjectId(studentId),
+        courseSlug
+      });
+
+      if (freshEnrollment) {
+        freshEnrollment.certificateIssuance = {
+          online: true,
+          offline: Boolean(offline),
+          updatedAt: new Date(),
+          updatedBy: adminUsername
+        };
+        await freshEnrollment.save();
+      }
+
+      return res.status(200).json({
+        message: 'Certificate issued successfully via Certifier.io',
+        certificateIssuance: { online: true, offline: Boolean(offline), updatedAt: new Date(), updatedBy: adminUsername }
+      });
+    }
+
+    // Update certificate issuance flags (non-certificate path: offline toggle, or online false→false)
     enrollment.certificateIssuance = {
-      online: Boolean(online),
+      online: nowOnline,
       offline: Boolean(offline),
       updatedAt: new Date(),
-      updatedBy: adminUsername || 'admin'
+      updatedBy: adminUsername
     };
 
     await enrollment.save();
 
-    res.status(200).json({ 
+    res.status(200).json({
       message: 'Certificate issuance status updated successfully',
       certificateIssuance: enrollment.certificateIssuance
     });

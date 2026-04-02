@@ -230,6 +230,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const finalExamController = await import("./controllers/finalExamination-controller");
 
   // Admin final exam routes
+  app.post("/api/admin/final-exams/generate-from-document", auth, requireAdmin, finalExamController.documentUploadMiddleware, finalExamController.generateFromDocument);
   app.get("/api/admin/final-exams", auth, requireAdminAccess, finalExamController.getAllFinalExams);
   app.get("/api/admin/final-exams/:courseSlug", auth, requireAdminAccess, finalExamController.getFinalExamByCourse);
   app.post("/api/admin/final-exams", auth, requireAdmin, finalExamController.createOrUpdateFinalExam);

@@ -71,6 +71,7 @@
     "axios": "^1.11.0",
     "bcrypt": "^5.1.1",
     "bullmq": "^5.66.0",
+    "canvas": "^3.2.3",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.7.0",
     "clsx": "^2.1.1",

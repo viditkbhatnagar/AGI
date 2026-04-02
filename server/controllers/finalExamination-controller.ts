@@ -8,6 +8,35 @@ import { User } from '../models/user';
 import { sendEmail } from '../utils/mailer';
 import { renderFinalExamSubmissionNotificationHtml, renderFinalExamGradingNotificationHtml } from '../utils/emailTemplates';
 import mongoose from 'mongoose';
+import multer from 'multer';
+import { extractDocumentContent, extractQuestionsWithAI } from '../services/quizRepositoryService';
+import type { QuizQuestion } from '../services/quizRepositoryService';
+
+// Multer config for document upload (same pattern as quiz repository)
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+  fileFilter: (_req, file, cb) => {
+    const allowedTypes = [
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.ms-excel',
+      'text/csv',
+      'text/plain'
+    ];
+    const allowedExtensions = ['.doc', '.docx', '.xlsx', '.xls', '.csv', '.txt'];
+    const ext = '.' + (file.originalname.split('.').pop()?.toLowerCase() || '');
+
+    if (allowedTypes.includes(file.mimetype) || allowedExtensions.includes(ext)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only Word, Excel, CSV, and TXT files are allowed'));
+    }
+  }
+});
+
+export const documentUploadMiddleware = upload.single('document');
 
 // Admin: Create or update final examination for a course
 export const createOrUpdateFinalExam = async (req: Request, res: Response) => {
@@ -459,7 +488,16 @@ export const getAllStudentExamResults = async (req: Request, res: Response) => {
           offline: false,
           updatedAt: null,
           updatedBy: null
-        }
+        },
+        hasCertificate: (enrollment.certificates || []).some(
+          (c: any) => c.courseSlug === courseSlug && c.status === 'issued'
+        ),
+        certificateId: (enrollment.certificates || []).find(
+          (c: any) => c.courseSlug === courseSlug && c.status === 'issued'
+        )?.certificateId,
+        certificateUrl: (enrollment.certificates || []).find(
+          (c: any) => c.courseSlug === courseSlug && c.status === 'issued'
+        )?.certificateUrl
       };
     });
 
@@ -509,33 +547,8 @@ export const updateStudentExamScore = async (req: Request, res: Response) => {
     enrollment.finalExamAttempts = attempts;
     await enrollment.save();
 
-    // Check if student passed with >= 60% and issue certificate if needed
-    const PASSING_THRESHOLD = 60; // 60% passing threshold as requested
-    const gradedAttempt = attempts[attemptIndex];
-    
-    if (gradedAttempt.passed && gradedAttempt.score && gradedAttempt.score >= PASSING_THRESHOLD) {
-      try {
-        // Import certificate controller function
-        const { issueCertificateForPassedExam } = await import('./certificate-controller');
-        
-        const certificateResult = await issueCertificateForPassedExam(
-          enrollment.studentId,
-          courseSlug,
-          gradedAttempt.attemptNumber,
-          gradedAttempt.score,
-          req.user.username || req.user.email
-        );
-        
-        if (certificateResult.success) {
-          console.log(`🎓 Certificate issued successfully for student ${enrollment.studentId}, course ${courseSlug}`);
-        } else {
-          console.warn(`⚠️  Failed to issue certificate: ${certificateResult.message}`);
-        }
-      } catch (certError) {
-        console.error('❌ Error during certificate issuance:', certError);
-        // Don't fail the entire grading process if certificate issuance fails
-      }
-    }
+    // Certificate issuance is now admin-controlled via the "Issue Certificate" action
+    // on the exam results dashboard (POST /api/admin/certificate-issuance)
 
     // Send email notification to student about grading
     try {
@@ -660,4 +673,60 @@ export const getStudentExamSubmission = async (req: Request, res: Response) => {
     console.error('Get student exam submission error:', error);
     res.status(500).json({ message: 'Server error' });
   }
-}; 
+};
+
+// Admin: Generate final exam MCQ questions from an uploaded document
+export const generateFromDocument = async (req: Request, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Not authenticated' });
+    }
+
+    const file = req.file;
+    if (!file) {
+      return res.status(400).json({ message: 'No document uploaded' });
+    }
+
+    console.log(`📄 Generating MCQs from document: ${file.originalname} (${file.mimetype})`);
+
+    // Extract text content from the document
+    const content = await extractDocumentContent(file.buffer, file.originalname, file.mimetype);
+
+    if (!content || content.trim().length < 50) {
+      return res.status(400).json({
+        message: 'Could not extract enough content from the document. Please try a different file.'
+      });
+    }
+
+    // Generate MCQ questions using Gemini AI
+    const quizQuestions = await extractQuestionsWithAI(content, file.mimetype);
+
+    if (!quizQuestions || quizQuestions.length === 0) {
+      return res.status(400).json({
+        message: 'Could not generate questions from the document content. Please try a different file.'
+      });
+    }
+
+    // Convert QuizQuestion format → FinalExam MCQ format
+    const optionKeys = ['A', 'B', 'C', 'D'] as const;
+    const finalExamQuestions = quizQuestions.map((q: QuizQuestion) => ({
+      type: 'mcq' as const,
+      text: q.question,
+      choices: optionKeys.map(k => q.options[k]),
+      correctIndex: optionKeys.indexOf(q.correctAnswer)
+    }));
+
+    console.log(`✅ Generated ${finalExamQuestions.length} MCQ questions from ${file.originalname}`);
+
+    res.status(200).json({
+      questions: finalExamQuestions,
+      totalGenerated: finalExamQuestions.length,
+      documentName: file.originalname
+    });
+  } catch (error: any) {
+    console.error('Generate from document error:', error);
+    res.status(500).json({
+      message: error.message || 'Failed to generate questions from document'
+    });
+  }
+};

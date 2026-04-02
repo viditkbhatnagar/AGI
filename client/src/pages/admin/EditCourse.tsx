@@ -103,6 +103,7 @@ function FinalExaminationSection({ courseSlug }: { courseSlug: string }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [uploadingFiles, setUploadingFiles] = useState<Record<number, boolean>>({});
+  const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
 
   // Fetch existing final exam for this course
@@ -236,6 +237,64 @@ function FinalExaminationSection({ courseSlug }: { courseSlug: string }) {
       ...finalExam,
       questions: updatedQuestions
     });
+  };
+
+  const generateFromDocument = async (file: File) => {
+    setIsGenerating(true);
+    try {
+      const token = localStorage.getItem('token');
+      const formData = new FormData();
+      formData.append('document', file);
+
+      const response = await fetch('/api/admin/final-exams/generate-from-document', {
+        method: 'POST',
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` })
+        },
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to generate questions');
+      }
+
+      if (!data.questions || data.questions.length === 0) {
+        throw new Error('No questions were generated from the document');
+      }
+
+      // If no exam exists, initialize one with the generated questions
+      if (!finalExam) {
+        setFinalExam({
+          courseSlug,
+          title: 'Final Assessment',
+          description: `MCQ questions generated from: ${data.documentName}`,
+          questions: data.questions
+        });
+        setShowForm(true);
+      } else {
+        // Append generated questions to existing ones
+        setFinalExam({
+          ...finalExam,
+          questions: [...finalExam.questions, ...data.questions]
+        });
+      }
+
+      toast({
+        title: 'Questions Generated',
+        description: `${data.totalGenerated} MCQ questions generated from ${data.documentName}. Review and save when ready.`,
+      });
+    } catch (error: any) {
+      console.error('Generate from document error:', error);
+      toast({
+        title: 'Generation Failed',
+        description: error.message || 'Failed to generate questions from document',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleQuestionDocumentUpload = async (questionIndex: number, file: File) => {
@@ -444,10 +503,44 @@ function FinalExaminationSection({ courseSlug }: { courseSlug: string }) {
           <div className="text-center py-8">
             <GraduationCap className="h-12 w-12 text-gray-300 mx-auto mb-4" />
             <p className="text-gray-500 mb-4">No final examination created for this course.</p>
-            <Button type="button" onClick={initializeNewExam}>
-              <Plus className="h-4 w-4 mr-2" />
-              Create Final Examination
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button type="button" onClick={initializeNewExam}>
+                <Plus className="h-4 w-4 mr-2" />
+                Create Manually
+              </Button>
+              <div className="relative">
+                <input
+                  type="file"
+                  accept=".doc,.docx,.xlsx,.xls,.csv,.txt"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) generateFromDocument(file);
+                    e.target.value = '';
+                  }}
+                  className="hidden"
+                  id="generate-from-doc-init"
+                  disabled={isGenerating}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={isGenerating}
+                  onClick={() => document.getElementById('generate-from-doc-init')?.click()}
+                >
+                  {isGenerating ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-4 w-4 mr-2" />
+                      Generate from Document
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
           </div>
         ) : !showForm && finalExam ? (
           <div className="space-y-4">
@@ -498,7 +591,7 @@ function FinalExaminationSection({ courseSlug }: { courseSlug: string }) {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <Label className="text-lg font-semibold">Questions</Label>
-                <div className="flex space-x-2">
+                <div className="flex flex-wrap gap-2">
                   <Button
                     type="button"
                     variant="outline"
@@ -508,15 +601,39 @@ function FinalExaminationSection({ courseSlug }: { courseSlug: string }) {
                     <Plus className="h-4 w-4 mr-2" />
                     Add MCQ
                   </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => addQuestion('essay')}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Essay
-                  </Button>
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept=".doc,.docx,.xlsx,.xls,.csv,.txt"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) generateFromDocument(file);
+                        e.target.value = '';
+                      }}
+                      className="hidden"
+                      id="generate-from-doc-edit"
+                      disabled={isGenerating}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={isGenerating}
+                      onClick={() => document.getElementById('generate-from-doc-edit')?.click()}
+                    >
+                      {isGenerating ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="h-4 w-4 mr-2" />
+                          Generate from Document
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 </div>
               </div>
 
