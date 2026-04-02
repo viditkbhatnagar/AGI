@@ -932,18 +932,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
       };
     }
 
-    // Check for quiz
-    const hasQuiz = (Array.isArray(currentModule?.questions) && currentModule.questions.length > 0) ||
-      (!!currentModule && typeof currentModule.quizId !== 'undefined' && !!currentModule.quizId);
-    if (hasQuiz && !currentModule.lastQuizScore) {
-      return {
-        type: 'quiz' as const,
-        title: 'Take Module Quiz',
-        moduleTitle: currentModule.title,
-        moduleIndex: currentModuleIndex,
-        content: currentModule
-      };
-    }
+    // Module quizzes removed — only final MCQ exam remains
 
     return null;
   };
@@ -1025,18 +1014,6 @@ export function CourseDetail({ slug }: CourseDetailProps) {
               <p className="text-xs text-slate-500">Content Watched</p>
             </div>
 
-            {/* Quiz Average Card */}
-            <div className="rounded-xl bg-gradient-to-br from-violet-50 to-purple-50 p-3 border border-violet-100/50">
-              <div className="flex items-center gap-2 mb-1">
-                <div className="size-8 rounded-lg bg-violet-500/10 flex items-center justify-center">
-                  <Zap className="size-4 text-violet-600" />
-                </div>
-                <span className="text-xs font-medium text-slate-500">Quiz Avg</span>
-              </div>
-              <p className="text-xl font-bold text-violet-600">{quizPerformance ?? '--'}%</p>
-              <p className="text-xs text-slate-500">{bestScores.length > 0 ? `${bestScores.length} quiz${bestScores.length > 1 ? 'es' : ''} taken` : 'No quizzes yet'}</p>
-            </div>
-
             {/* Validity Card */}
             <div className="rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 p-3 border border-amber-100/50">
               <div className="flex items-center gap-2 mb-1">
@@ -1104,8 +1081,6 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                         const doc = upNextContent.content;
                         const docUrl = doc.type === 'upload' ? doc.fileUrl : doc.url;
                         if (docUrl) handleDocPreview(docUrl, doc);
-                      } else if (upNextContent.type === 'quiz') {
-                        handleTakeQuiz(upNextContent.moduleIndex);
                       }
                     }}
                   >
@@ -1161,31 +1136,23 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                       return module.percentComplete;
                     }
                     
-                    // Fallback: calculate dynamically
+                    // Fallback: calculate dynamically (quiz excluded — only final MCQ matters)
                     const videos = module.videos || [];
                     const documents = module.documents || [];
-                    const hasQuiz = (module.questions?.length > 0) || module.quizId;
-                    
+
                     let totalItems = 0;
                     let completedItems = 0;
-                    
+
                     if (videos.length > 0) {
                       totalItems += videos.length;
                       completedItems += videos.filter((v: any) => v.watched).length;
                     }
-                    
+
                     if (documents.length > 0) {
                       totalItems += documents.length;
                       completedItems += documents.filter((d: any) => d.viewed).length;
                     }
-                    
-                    if (hasQuiz) {
-                      totalItems += 1;
-                      if (module.lastQuizScore !== null && module.lastQuizScore !== undefined) {
-                        completedItems += 1;
-                      }
-                    }
-                    
+
                     if (totalItems === 0) return module.isCompleted ? 100 : 0;
                     return Math.min(100, Math.round((completedItems / totalItems) * 100));
                   };
@@ -1237,12 +1204,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                                 {module.documents.length}
                               </span>
                             )}
-                            {(module.questions?.length > 0 || module.quizId) && (
-                              <span className="text-[10px] text-slate-400 flex items-center gap-0.5">
-                                <BookOpen className="size-3" />
-                                Quiz
-                              </span>
-                            )}
+                            {/* Module quiz badge hidden — only final MCQ exam */}
                           </div>
                         </div>
                         <ChevronDown className={`size-4 text-slate-400 transition-transform ${isSelected ? 'rotate-180' : ''}`} />
@@ -1315,23 +1277,8 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                             </div>
                           )}
 
-                          {/* Quiz & Flashcards */}
+                          {/* Flashcards */}
                           <div className="flex gap-2 pt-1">
-                            {(module.questions?.length > 0 || module.quizId) && (
-                              <button
-                                className="flex-1 flex items-center justify-center gap-1.5 p-2 rounded-lg bg-violet-50 hover:bg-violet-100 transition-colors"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  clearVideoContent();
-                                  clearDocumentContent();
-                                  clearFlashcardContent();
-                                  setSelectedContent({ type: 'quiz', moduleIndex, content: module });
-                                }}
-                              >
-                                <BookOpen className="size-3.5 text-violet-600" />
-                                <span className="text-xs font-medium text-violet-700">Quiz</span>
-                              </button>
-                            )}
                             <button
                               className="flex-1 flex items-center justify-center gap-1.5 p-2 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors"
                               onClick={(e) => {
@@ -1568,140 +1515,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
               </div>
             )}
 
-            {/* Quiz Section */}
-            {selectedContent.type === 'quiz' && selectedContent.content && (
-              <div className="rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden">
-                <div className="bg-gradient-to-r from-violet-500 to-purple-500 px-4 py-3 flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-white">
-                    <BookOpen className="size-5" />
-                    <span className="font-medium text-sm">{selectedContent.content?.title || `Module ${(selectedContent.moduleIndex || 0) + 1}`} Quiz</span>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-white hover:bg-white/20"
-                    onClick={() => setSelectedContent({ type: null })}
-                  >
-                    <X className="size-4" />
-                  </Button>
-                </div>
-
-                <div className="p-5">
-                  {/* Take Quiz Button */}
-                  {quizModuleIndex === null && (
-                    <div className="rounded-xl bg-gradient-to-br from-violet-50 to-purple-50 p-4 mb-4 border border-violet-100">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="size-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
-                            <Zap className="size-5 text-violet-600" />
-                          </div>
-                          <div>
-                            <h4 className="font-semibold text-slate-800">Module Quiz</h4>
-                            <p className="text-xs text-slate-500">Test your knowledge</p>
-                          </div>
-                        </div>
-                        <Button
-                          className="bg-violet-600 hover:bg-violet-700"
-                          onClick={() => handleTakeQuiz(selectedContent.moduleIndex || 0)}
-                        >
-                          {selectedContent.content.lastQuizScore !== null ? 'Retake Quiz' : 'Take Quiz'}
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Quiz Attempts History */}
-                  {(() => {
-                    const moduleIndex = selectedContent.moduleIndex || 0;
-                    const moduleTitle = selectedContent.content.title;
-                    const attemptsQuery = attemptsQueries[moduleIndex];
-                    const moduleAttempts = ((attemptsQuery?.data as any)?.attempts ?? [])
-                      .slice()
-                      .sort((a: any, b: any) =>
-                        new Date(b.attemptedAt).getTime() - new Date(a.attemptedAt).getTime()
-                      );
-
-                    const descendingAttempts = moduleAttempts.slice().sort(
-                      (a: any, b: any) => new Date(b.attemptedAt).getTime() - new Date(a.attemptedAt).getTime()
-                    );
-
-                    const orderedAttempts = moduleAttempts.slice().reverse();
-
-                    if (moduleAttempts && moduleAttempts.length > 0) {
-                      return (
-                        <div className="mt-4">
-                          <h4 className="text-sm font-semibold text-slate-700 mb-3">Quiz History</h4>
-                          {attemptsQuery?.isLoading && <p className="text-sm text-slate-500">Loading attempts...</p>}
-                          {!attemptsQuery?.isLoading && orderedAttempts.length > 0 && (
-                            <div className="overflow-x-auto">
-                              <table className="w-full text-sm border border-slate-200 rounded-lg overflow-hidden">
-                                <thead>
-                                  <tr className="bg-slate-50">
-                                    <th className="px-3 py-2 text-left text-xs font-semibold text-slate-600">Date</th>
-                                    {descendingAttempts.map((attempt: any, idx: number) => (
-                                      <th key={attempt.attemptedAt + '-header'} className="px-3 py-2 text-center text-xs font-semibold text-slate-600">
-                                        {new Date(attempt.attemptedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                                      </th>
-                                    ))}
-                                    <th className="px-3 py-2 text-center text-xs font-semibold text-slate-600 bg-green-50">Best</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  <tr>
-                                    <td className="px-3 py-2 text-slate-700 font-medium">Score</td>
-                                    {descendingAttempts.map((attempt: any, idx: number) => {
-                                      const scoreClass = attempt.score >= 80
-                                        ? 'text-green-600 bg-green-50'
-                                        : attempt.score >= 40
-                                          ? 'text-amber-600 bg-amber-50'
-                                          : 'text-red-600 bg-red-50';
-                                      return (
-                                        <td key={attempt.attemptedAt + '-score'} className={`px-3 py-2 text-center font-bold ${scoreClass}`}>
-                                          {attempt.score}%
-                                        </td>
-                                      );
-                                    })}
-                                    <td className="px-3 py-2 text-center font-bold text-green-600 bg-green-50">
-                                      {Math.max(...orderedAttempts.map((a: any) => a.score))}%
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    }
-                    return null;
-                  })()}
-
-                  {/* Active Quiz */}
-                  {quizModuleIndex !== null && quizQuestions.length > 0 && (
-                    <div className="mt-4 border-t border-slate-200 pt-4">
-                      <div className="flex items-center justify-between mb-4">
-                        <h4 className="text-lg font-semibold text-slate-800">
-                          Answer the Questions
-                        </h4>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            setQuizModuleIndex(null);
-                            setQuizQuestions([]);
-                          }}
-                        >
-                          Close Quiz
-                        </Button>
-                      </div>
-                      <QuizForm
-                        questions={quizQuestions}
-                        onSubmit={handleQuizSubmit}
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
+            {/* Module quiz section removed — only final MCQ exam */}
 
             {/* Final Exam Display */}
             {showFinalExam && finalExamData && (
@@ -1759,7 +1573,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                   </div>
                   <h3 className="text-xl font-bold text-slate-800 mb-2">Ready to Learn?</h3>
                   <p className="text-slate-500 mb-4">
-                    Select a module from the left to start watching videos, reading materials, or taking quizzes.
+                    Select a module from the left to start watching videos and reading materials.
                   </p>
                   {upNextContent && (
                     <Button
@@ -1776,8 +1590,6 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                           const doc = upNextContent.content;
                           const docUrl = doc.type === 'upload' ? doc.fileUrl : doc.url;
                           if (docUrl) handleDocPreview(docUrl, doc);
-                        } else if (upNextContent.type === 'quiz') {
-                          handleTakeQuiz(upNextContent.moduleIndex);
                         }
                       }}
                     >
