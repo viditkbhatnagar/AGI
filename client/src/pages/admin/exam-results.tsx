@@ -161,7 +161,7 @@ const CertificateIssuanceCell = ({ result, onUpdate }: CertificateIssuanceCellPr
     }
   };
 
-  const hasPassed = result.latestAttempt?.passed === true;
+  const hasAttempted = result.latestAttempt !== null;
 
   // Certificate already issued
   if (result.hasCertificate) {
@@ -205,19 +205,19 @@ const CertificateIssuanceCell = ({ result, onUpdate }: CertificateIssuanceCellPr
     );
   }
 
-  // Student has not passed — cannot issue
-  if (!hasPassed) {
+  // Student has not attempted — cannot issue
+  if (!hasAttempted) {
     return (
       <div className="space-y-1">
         <span className="text-xs text-gray-400 flex items-center">
           <AlertTriangle className="h-3 w-3 mr-1" />
-          No passing attempt
+          Not attempted
         </span>
       </div>
     );
   }
 
-  // Student passed but no certificate yet — show Issue button
+  // Student attempted — show Issue button
   return (
     <div className="space-y-2">
       <AlertDialog>
@@ -388,8 +388,8 @@ export default function ExamResults() {
           return result.latestAttempt?.gradedBy;
         } else if (statusFilter === 'certificate-issued') {
           return result.hasCertificate === true;
-        } else if (statusFilter === 'passed-no-cert') {
-          return result.latestAttempt?.passed && !result.hasCertificate;
+        } else if (statusFilter === 'attempted-no-cert') {
+          return result.latestAttempt && !result.hasCertificate;
         } else if (statusFilter === 'no-exam') {
           return !result.hasFinalExam;
         }
@@ -573,7 +573,7 @@ export default function ExamResults() {
                   <SelectItem value="pending">Pending Review</SelectItem>
                   <SelectItem value="graded">Graded</SelectItem>
                   <SelectItem value="certificate-issued">Certificate Issued</SelectItem>
-                  <SelectItem value="passed-no-cert">Passed (No Certificate)</SelectItem>
+                  <SelectItem value="attempted-no-cert">Attempted (No Certificate)</SelectItem>
                   <SelectItem value="no-exam">No Exam</SelectItem>
                 </SelectContent>
               </Select>

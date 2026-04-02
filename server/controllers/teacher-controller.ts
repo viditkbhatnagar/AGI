@@ -771,14 +771,14 @@ export const updateCertificateIssuance = async (req: Request, res: Response) => 
 
     // If toggling online from false → true, issue certificate via Certifier.io
     if (nowOnline && !wasOnline) {
-      // Find the best passing attempt
-      const passingAttempt = (enrollment.finalExamAttempts || [])
-        .filter(a => a.passed && a.score != null)
+      // Find the best attempt (any attempt qualifies — no passing threshold required)
+      const bestAttempt = (enrollment.finalExamAttempts || [])
+        .filter(a => a.score != null)
         .sort((a, b) => (b.score || 0) - (a.score || 0))[0];
 
-      if (!passingAttempt) {
+      if (!bestAttempt) {
         return res.status(400).json({
-          message: 'Cannot issue certificate: student has no passing exam attempt'
+          message: 'Cannot issue certificate: student has not attempted the final exam'
         });
       }
 
@@ -810,8 +810,8 @@ export const updateCertificateIssuance = async (req: Request, res: Response) => 
         const result = await issueCertificateForPassedExam(
           enrollment.studentId,
           courseSlug,
-          passingAttempt.attemptNumber,
-          passingAttempt.score!,
+          bestAttempt.attemptNumber,
+          bestAttempt.score!,
           adminUsername
         );
 
