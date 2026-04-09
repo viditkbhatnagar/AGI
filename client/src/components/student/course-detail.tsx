@@ -1361,9 +1361,17 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                                 let embedUrl = recordingUrl;
                                 if (recordingUrl.includes('drive.google.com')) {
                                   embedUrl = recordingUrl.replace('/view', '/preview');
-                                } else if (recordingUrl.includes('sharepoint.com') || recordingUrl.includes('1drv.ms') || recordingUrl.includes('onedrive.live.com')) {
-                                  // SharePoint/OneDrive share links refuse iframe embedding unless
-                                  // converted to embed view via action=embedview.
+                                } else if (recordingUrl.includes('sharepoint.com')) {
+                                  // SharePoint share links (e.g. /:v:/g/personal/USER/IQ...?nav=...&e=...)
+                                  // refuse to be iframe-embedded directly. Convert to the
+                                  // _layouts/15/embed.aspx?share=<token> form which is embeddable.
+                                  const m = recordingUrl.match(/^(https:\/\/[^/]+)\/:[a-z]:\/[a-z]\/personal\/([^/]+)\/([^/?#]+)/i);
+                                  if (m) {
+                                    embedUrl = `${m[1]}/personal/${m[2]}/_layouts/15/embed.aspx?share=${m[3]}`;
+                                  } else if (!/embed\.aspx/i.test(recordingUrl) && !/[?&]action=embedview/i.test(recordingUrl)) {
+                                    embedUrl = recordingUrl + (recordingUrl.includes('?') ? '&' : '?') + 'action=embedview';
+                                  }
+                                } else if (recordingUrl.includes('1drv.ms') || recordingUrl.includes('onedrive.live.com')) {
                                   if (!/[?&]action=embedview/i.test(recordingUrl)) {
                                     embedUrl = recordingUrl + (recordingUrl.includes('?') ? '&' : '?') + 'action=embedview';
                                   }
