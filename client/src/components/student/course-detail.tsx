@@ -1361,6 +1361,12 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                                 let embedUrl = recordingUrl;
                                 if (recordingUrl.includes('drive.google.com')) {
                                   embedUrl = recordingUrl.replace('/view', '/preview');
+                                } else if (recordingUrl.includes('sharepoint.com') || recordingUrl.includes('1drv.ms') || recordingUrl.includes('onedrive.live.com')) {
+                                  // SharePoint/OneDrive share links refuse iframe embedding unless
+                                  // converted to embed view via action=embedview.
+                                  if (!/[?&]action=embedview/i.test(recordingUrl)) {
+                                    embedUrl = recordingUrl + (recordingUrl.includes('?') ? '&' : '?') + 'action=embedview';
+                                  }
                                 }
                                 setSelectedRecordingUrl(embedUrl);
                               }}
