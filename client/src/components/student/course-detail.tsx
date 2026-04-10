@@ -373,6 +373,8 @@ export function CourseDetail({ slug }: CourseDetailProps) {
   const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | null>(null);
   const [selectedDocUrl, setSelectedDocUrl] = useState<string | null>(null);
   const [selectedRecordingUrl, setSelectedRecordingUrl] = useState<string | null>(null);
+  // 'iframe' for Google Drive embeds, 'video' for resolved SharePoint direct URLs
+  const [recordingMode, setRecordingMode] = useState<'iframe' | 'video'>('iframe');
   const [selectedVideoIndex, setSelectedVideoIndex] = useState<number>(0);
   const lastSentRef = useRef<number>(0);
 
@@ -900,6 +902,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
   // Helper function to clear recording content only
   const clearRecordingContent = () => {
     setSelectedRecordingUrl(null);
+    setRecordingMode('iframe');
   };
 
   // Get "Up Next" recommendation
@@ -1353,35 +1356,42 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                             <RecordingsForModule
                               courseSlug={courseSlug}
                               moduleIndex={moduleIndex}
-                              onRecordingClick={(recordingUrl: string) => {
+                              onRecordingClick={async (recordingUrl: string) => {
                                 clearDocumentContent();
                                 clearQuizContent();
                                 clearVideoContent();
-                                // Handle different recording URL types (SharePoint, Google Drive)
-                                let embedUrl = recordingUrl;
+                                // Handle different recording URL types
                                 if (recordingUrl.includes('drive.google.com')) {
-                                  embedUrl = recordingUrl.replace('/view', '/preview');
-                                } else if (recordingUrl.includes('sharepoint.com')) {
-                                  // SharePoint share links (e.g. /:v:/g/personal/USER/TOKEN?nav=...&e=...)
-                                  // refuse to be iframe-embedded directly. Convert to the
-                                  // _layouts/15/embed.aspx form with video streaming params.
-                                  const m = recordingUrl.match(/^(https:\/\/[^/]+)\/:[a-z]:\/[a-z]\/personal\/([^/]+)\/([^/?#]+)/i);
-                                  if (m) {
-                                    // Extract the sharing password (e= param) from the original URL
-                                    const eMatch = recordingUrl.match(/[?&]e=([^&#]+)/);
-                                    const eParam = eMatch ? `&e=${eMatch[1]}` : '';
-                                    // streamContent=true is required for SharePoint to render the
-                                    // video player instead of a blank document preview
-                                    embedUrl = `${m[1]}/personal/${m[2]}/_layouts/15/embed.aspx?share=${m[3]}${eParam}&embed=%7B%22ust%22%3Atrue%2C%22hv%22%3A%22CopyEmbedCode%22%7D&referrer=StreamWebApp&streamContent=true`;
-                                  } else if (!/embed\.aspx/i.test(recordingUrl) && !/[?&]action=embedview/i.test(recordingUrl)) {
-                                    embedUrl = recordingUrl + (recordingUrl.includes('?') ? '&' : '?') + 'action=embedview';
+                                  // Google Drive: use iframe embed
+                                  setRecordingMode('iframe');
+                                  setSelectedRecordingUrl(recordingUrl.replace('/view', '/preview'));
+                                } else if (
+                                  recordingUrl.includes('sharepoint.com') ||
+                                  recordingUrl.includes('1drv.ms') ||
+                                  recordingUrl.includes('onedrive.live.com')
+                                ) {
+                                  // SharePoint/OneDrive: resolve to direct download URL via backend,
+                                  // then play with ReactPlayer (iframes don't work reliably for SP videos)
+                                  try {
+                                    const token = localStorage.getItem('token');
+                                    const res = await fetch(
+                                      `/api/recordings/resolve-url?url=${encodeURIComponent(recordingUrl)}`,
+                                      { headers: { Authorization: `Bearer ${token}` } }
+                                    );
+                                    if (!res.ok) throw new Error('Failed to resolve URL');
+                                    const data = await res.json();
+                                    setRecordingMode('video');
+                                    setSelectedRecordingUrl(data.downloadUrl);
+                                  } catch (err) {
+                                    console.error('Failed to resolve SharePoint URL:', err);
+                                    // Fallback: open in new tab
+                                    window.open(recordingUrl, '_blank');
                                   }
-                                } else if (recordingUrl.includes('1drv.ms') || recordingUrl.includes('onedrive.live.com')) {
-                                  if (!/[?&]action=embedview/i.test(recordingUrl)) {
-                                    embedUrl = recordingUrl + (recordingUrl.includes('?') ? '&' : '?') + 'action=embedview';
-                                  }
+                                } else {
+                                  // Other URLs: try iframe directly
+                                  setRecordingMode('iframe');
+                                  setSelectedRecordingUrl(recordingUrl);
                                 }
-                                setSelectedRecordingUrl(embedUrl);
                               }}
                             />
                           </div>
@@ -1451,13 +1461,22 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                   </Button>
                 </div>
                 <div className="aspect-video bg-gray-100">
-                  <iframe
-                    className="w-full h-full border-0"
-                    src={selectedRecordingUrl}
-                    title="Live Class Recording"
-                    allowFullScreen
-                    allow="autoplay; encrypted-media"
-                  />
+                  {recordingMode === 'video' ? (
+                    <ReactPlayer
+                      url={selectedRecordingUrl}
+                      controls
+                      width="100%"
+                      height="100%"
+                    />
+                  ) : (
+                    <iframe
+                      className="w-full h-full border-0"
+                      src={selectedRecordingUrl}
+                      title="Live Class Recording"
+                      allowFullScreen
+                      allow="autoplay; encrypted-media"
+                    />
+                  )}
                 </div>
               </div>
             )}

@@ -279,4 +279,66 @@ export const getRecording = async (req: Request, res: Response) => {
     console.error('Error fetching recording:', error);
     res.status(500).json({ message: 'Failed to fetch recording' });
   }
-}; 
+};
+
+/**
+ * Resolve a SharePoint/OneDrive share URL to a direct download URL.
+ * Uses the SharePoint REST API v2.0 shares endpoint which works for
+ * "Anyone with the link" shares without needing Graph API credentials.
+ */
+export const resolveSharePointUrl = async (req: Request, res: Response) => {
+  try {
+    const { url } = req.query;
+    if (!url || typeof url !== 'string') {
+      return res.status(400).json({ message: 'url query parameter required' });
+    }
+
+    // Only allow sharepoint.com / onedrive URLs
+    if (!url.includes('sharepoint.com') && !url.includes('1drv.ms') && !url.includes('onedrive.live.com')) {
+      return res.status(400).json({ message: 'Not a SharePoint/OneDrive URL' });
+    }
+
+    // Encode the share URL as a sharing token:
+    // 1. Base64 encode the URL
+    // 2. Replace + with -, / with _, trim trailing =
+    // 3. Prepend u!
+    const base64 = Buffer.from(url).toString('base64');
+    const shareToken = 'u!' + base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+    // Extract the host from the URL for the API call
+    const parsedUrl = new URL(url);
+    const apiUrl = `${parsedUrl.origin}/_api/v2.0/shares/${shareToken}/driveItem?$select=id,name,@content.downloadUrl,file`;
+
+    console.log(`🎥 [resolveSharePointUrl] Resolving: ${url.substring(0, 80)}...`);
+
+    const response = await fetch(apiUrl, {
+      headers: { 'Accept': 'application/json' },
+    });
+
+    if (!response.ok) {
+      console.warn(`🎥 [resolveSharePointUrl] SharePoint API returned ${response.status}`);
+      // Fallback: try the download.aspx approach
+      const m = url.match(/^(https:\/\/[^/]+)\/:[a-z]:\/[a-z]\/personal\/([^/]+)\/([^/?#]+)/i);
+      const eMatch = url.match(/[?&]e=([^&#]+)/);
+      if (m) {
+        const downloadUrl = `${m[1]}/personal/${m[2]}/_layouts/15/download.aspx?share=${m[3]}${eMatch ? '&e=' + eMatch[1] : ''}`;
+        return res.json({ downloadUrl, fallback: true });
+      }
+      return res.status(502).json({ message: 'Failed to resolve SharePoint URL' });
+    }
+
+    const data = await response.json();
+    const downloadUrl = data['@content.downloadUrl'];
+
+    if (!downloadUrl) {
+      console.warn('🎥 [resolveSharePointUrl] No download URL in response');
+      return res.status(502).json({ message: 'No download URL available - file may not be shared publicly' });
+    }
+
+    console.log(`🎥 [resolveSharePointUrl] Resolved successfully`);
+    res.json({ downloadUrl, name: data.name, mimeType: data.file?.mimeType });
+  } catch (error) {
+    console.error('Error resolving SharePoint URL:', error);
+    res.status(500).json({ message: 'Failed to resolve SharePoint URL' });
+  }
+};

@@ -222,6 +222,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/student/recordings", auth, requireStudent, recordingController.getStudentRecordings);
   app.get("/api/student/recordings/course/:courseSlug", auth, requireStudent, recordingController.getStudentRecordingsByCourse);
   app.get("/api/recordings/course/:courseSlug/module/:moduleIndex", auth, requireAuth, recordingController.getRecordingsByCourseAndModule);
+  // Resolve SharePoint/OneDrive share URLs to direct download URLs
+  app.get("/api/recordings/resolve-url", auth, recordingController.resolveSharePointUrl);
 
   // QUIZ SCORES ROUTES (Admin)
   app.get("/api/admin/quiz-scores", auth, requireAdminAccess, adminController.getAllStudentsQuizScores);
