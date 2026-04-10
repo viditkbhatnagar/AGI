@@ -1362,12 +1362,17 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                                 if (recordingUrl.includes('drive.google.com')) {
                                   embedUrl = recordingUrl.replace('/view', '/preview');
                                 } else if (recordingUrl.includes('sharepoint.com')) {
-                                  // SharePoint share links (e.g. /:v:/g/personal/USER/IQ...?nav=...&e=...)
+                                  // SharePoint share links (e.g. /:v:/g/personal/USER/TOKEN?nav=...&e=...)
                                   // refuse to be iframe-embedded directly. Convert to the
-                                  // _layouts/15/embed.aspx?share=<token> form which is embeddable.
+                                  // _layouts/15/embed.aspx form with video streaming params.
                                   const m = recordingUrl.match(/^(https:\/\/[^/]+)\/:[a-z]:\/[a-z]\/personal\/([^/]+)\/([^/?#]+)/i);
                                   if (m) {
-                                    embedUrl = `${m[1]}/personal/${m[2]}/_layouts/15/embed.aspx?share=${m[3]}`;
+                                    // Extract the sharing password (e= param) from the original URL
+                                    const eMatch = recordingUrl.match(/[?&]e=([^&#]+)/);
+                                    const eParam = eMatch ? `&e=${eMatch[1]}` : '';
+                                    // streamContent=true is required for SharePoint to render the
+                                    // video player instead of a blank document preview
+                                    embedUrl = `${m[1]}/personal/${m[2]}/_layouts/15/embed.aspx?share=${m[3]}${eParam}&embed=%7B%22ust%22%3Atrue%2C%22hv%22%3A%22CopyEmbedCode%22%7D&referrer=StreamWebApp&streamContent=true`;
                                   } else if (!/embed\.aspx/i.test(recordingUrl) && !/[?&]action=embedview/i.test(recordingUrl)) {
                                     embedUrl = recordingUrl + (recordingUrl.includes('?') ? '&' : '?') + 'action=embedview';
                                   }
