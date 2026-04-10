@@ -283,8 +283,10 @@ export const getRecording = async (req: Request, res: Response) => {
 
 /**
  * Resolve a SharePoint/OneDrive share URL to a direct download URL.
- * Uses the SharePoint REST API v2.0 shares endpoint which works for
- * "Anyone with the link" shares without needing Graph API credentials.
+ *
+ * Strategy: construct the download.aspx URL from the share link, then
+ * follow the redirect chain server-side to obtain the actual CDN URL
+ * that can be played directly in a <video> element / ReactPlayer.
  */
 export const resolveSharePointUrl = async (req: Request, res: Response) => {
   try {
@@ -298,45 +300,66 @@ export const resolveSharePointUrl = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Not a SharePoint/OneDrive URL' });
     }
 
-    // Encode the share URL as a sharing token:
-    // 1. Base64 encode the URL
-    // 2. Replace + with -, / with _, trim trailing =
-    // 3. Prepend u!
+    console.log(`🎥 [resolveSharePointUrl] Resolving: ${url.substring(0, 100)}...`);
+
+    // Build the download URL from the share link
+    const m = url.match(/^(https:\/\/[^/]+)\/:[a-z]:\/[a-z]\/personal\/([^/]+)\/([^/?#]+)/i);
+    const eMatch = url.match(/[?&]e=([^&#]+)/);
+
+    let downloadPageUrl: string;
+    if (m) {
+      downloadPageUrl = `${m[1]}/personal/${m[2]}/_layouts/15/download.aspx?share=${m[3]}${eMatch ? '&e=' + eMatch[1] : ''}`;
+    } else {
+      // For non-standard formats, try appending download=1
+      downloadPageUrl = url + (url.includes('?') ? '&' : '?') + 'download=1';
+    }
+
+    console.log(`🎥 [resolveSharePointUrl] Fetching download URL: ${downloadPageUrl.substring(0, 100)}...`);
+
+    // Follow the redirect chain to get the actual CDN URL.
+    // Use redirect:'manual' so we can capture the Location header
+    // without downloading the entire file.
+    const response = await fetch(downloadPageUrl, {
+      redirect: 'manual',
+    });
+
+    // SharePoint returns 302/303 to the actual file CDN URL
+    const location = response.headers.get('location');
+
+    if (location) {
+      console.log(`🎥 [resolveSharePointUrl] Got redirect to CDN URL`);
+      return res.json({ downloadUrl: location });
+    }
+
+    // If no redirect, try following fully to see final URL
+    if (response.ok || response.status === 200) {
+      // The response itself might be the file — we can't use this directly
+      // Try the templink approach instead
+      console.warn(`🎥 [resolveSharePointUrl] Got 200 instead of redirect, trying templink`);
+    }
+
+    // Fallback: try the _api/v2.0/shares approach
     const base64 = Buffer.from(url).toString('base64');
     const shareToken = 'u!' + base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-
-    // Extract the host from the URL for the API call
     const parsedUrl = new URL(url);
     const apiUrl = `${parsedUrl.origin}/_api/v2.0/shares/${shareToken}/driveItem?$select=id,name,@content.downloadUrl,file`;
 
-    console.log(`🎥 [resolveSharePointUrl] Resolving: ${url.substring(0, 80)}...`);
-
-    const response = await fetch(apiUrl, {
+    const apiResponse = await fetch(apiUrl, {
       headers: { 'Accept': 'application/json' },
     });
 
-    if (!response.ok) {
-      console.warn(`🎥 [resolveSharePointUrl] SharePoint API returned ${response.status}`);
-      // Fallback: try the download.aspx approach
-      const m = url.match(/^(https:\/\/[^/]+)\/:[a-z]:\/[a-z]\/personal\/([^/]+)\/([^/?#]+)/i);
-      const eMatch = url.match(/[?&]e=([^&#]+)/);
-      if (m) {
-        const downloadUrl = `${m[1]}/personal/${m[2]}/_layouts/15/download.aspx?share=${m[3]}${eMatch ? '&e=' + eMatch[1] : ''}`;
-        return res.json({ downloadUrl, fallback: true });
+    if (apiResponse.ok) {
+      const data = await apiResponse.json();
+      const cdnUrl = data['@content.downloadUrl'];
+      if (cdnUrl) {
+        console.log(`🎥 [resolveSharePointUrl] Resolved via shares API`);
+        return res.json({ downloadUrl: cdnUrl });
       }
-      return res.status(502).json({ message: 'Failed to resolve SharePoint URL' });
     }
 
-    const data = await response.json();
-    const downloadUrl = data['@content.downloadUrl'];
-
-    if (!downloadUrl) {
-      console.warn('🎥 [resolveSharePointUrl] No download URL in response');
-      return res.status(502).json({ message: 'No download URL available - file may not be shared publicly' });
-    }
-
-    console.log(`🎥 [resolveSharePointUrl] Resolved successfully`);
-    res.json({ downloadUrl, name: data.name, mimeType: data.file?.mimeType });
+    // Final fallback: return download.aspx URL and let the client try it
+    console.warn(`🎥 [resolveSharePointUrl] All strategies failed, returning download.aspx URL`);
+    res.json({ downloadUrl: downloadPageUrl });
   } catch (error) {
     console.error('Error resolving SharePoint URL:', error);
     res.status(500).json({ message: 'Failed to resolve SharePoint URL' });

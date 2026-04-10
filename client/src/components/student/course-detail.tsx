@@ -1383,9 +1383,20 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                                     setRecordingMode('video');
                                     setSelectedRecordingUrl(data.downloadUrl);
                                   } catch (err) {
-                                    console.error('Failed to resolve SharePoint URL:', err);
-                                    // Fallback: open in new tab
-                                    window.open(recordingUrl, '_blank');
+                                    console.error('Failed to resolve SharePoint URL, using iframe fallback:', err);
+                                    // Fallback: try iframe with embed.aspx
+                                    const m = recordingUrl.match(/^(https:\/\/[^/]+)\/:[a-z]:\/[a-z]\/personal\/([^/]+)\/([^/?#]+)/i);
+                                    const eMatch = recordingUrl.match(/[?&]e=([^&#]+)/);
+                                    if (m) {
+                                      const eParam = eMatch ? `&e=${eMatch[1]}` : '';
+                                      setRecordingMode('iframe');
+                                      setSelectedRecordingUrl(
+                                        `${m[1]}/personal/${m[2]}/_layouts/15/embed.aspx?share=${m[3]}${eParam}&streamContent=true`
+                                      );
+                                    } else {
+                                      setRecordingMode('iframe');
+                                      setSelectedRecordingUrl(recordingUrl);
+                                    }
                                   }
                                 } else {
                                   // Other URLs: try iframe directly
