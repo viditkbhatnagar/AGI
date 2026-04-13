@@ -500,6 +500,23 @@ export const updateLiveClass = async (req: Request, res: Response) => {
       }
     }
     
+    // In-app notifications for live class update
+    try {
+      const studentsForNotif = await Student.find({ _id: { $in: liveClass.studentIds } }).select('userId');
+      const userIds = studentsForNotif.map((s: any) => s.userId).filter(Boolean);
+      createBulkNotifications(userIds, 'student', {
+        type: 'live_class_updated',
+        title: 'Live Class Updated',
+        message: timingChanged
+          ? `The live class "${liveClass.title}" has been rescheduled to ${new Date(liveClass.startTime).toLocaleString()}.`
+          : `The live class "${liveClass.title}" has been updated.`,
+        courseSlug: liveClass.courseSlug,
+        actionUrl: `/student/courses/${liveClass.courseSlug}`,
+      });
+    } catch (notifErr) {
+      console.error('Failed to create live class update notifications:', notifErr);
+    }
+
     res.status(200).json({
       message: 'Live class updated successfully',
       liveClass
@@ -587,8 +604,21 @@ export const deleteLiveClass = async (req: Request, res: Response) => {
       console.error('Error sending live class cancellation emails:', mailError);
     }
     
+    // In-app notifications for cancellation
+    try {
+      const studentsForNotif = await Student.find({ _id: { $in: classStudentIds } }).select('userId');
+      const userIds = studentsForNotif.map((s: any) => s.userId).filter(Boolean);
+      createBulkNotifications(userIds, 'student', {
+        type: 'live_class_cancelled',
+        title: 'Live Class Cancelled',
+        message: `The live class "${classTitle}" has been cancelled.`,
+      });
+    } catch (notifErr) {
+      console.error('Failed to create cancellation notifications:', notifErr);
+    }
+
     await LiveClass.deleteOne({ _id: id });
-    
+
     res.status(200).json({ message: 'Live class deleted successfully' });
   } catch (error) {
     console.error('Delete live class error:', error);

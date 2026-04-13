@@ -6,6 +6,7 @@ import { Enrollment } from '../models/enrollment';
 import { Course } from '../models/course';
 import { TeacherAssignment } from '../models/teacher-assignment';
 import mongoose from 'mongoose';
+import { createBulkNotifications } from '../services/notificationService';
 
 // Get student's enrollment data and feedback status for all courses
 export const getStudentFeedbackData = async (req: Request, res: Response) => {
@@ -268,6 +269,37 @@ export const submitCourseFeedback = async (req: Request, res: Response) => {
       });
 
       await newFeedback.save();
+
+      // Notify admins and assigned teachers about new feedback
+      try {
+        const adminUsers = await User.find({ role: { $in: ['admin', 'superadmin'] } }).select('_id');
+        const teacherAssignments = await TeacherAssignment.find({ courseSlug }).select('teacherId');
+        const teacherUsers = await User.find({
+          _id: { $in: teacherAssignments.map((ta: any) => ta.teacherId) },
+        }).select('_id');
+        const adminIds = adminUsers.map((u: any) => u._id);
+        const teacherIds = teacherUsers.map((u: any) => u._id);
+        if (adminIds.length > 0) {
+          createBulkNotifications(adminIds, 'admin', {
+            type: 'feedback_submitted',
+            title: 'New Student Feedback',
+            message: `${studentName} submitted feedback for ${course.title} (${overallRating}/5 stars).`,
+            courseSlug,
+            actionUrl: `/admin/feedbacks`,
+          });
+        }
+        if (teacherIds.length > 0) {
+          createBulkNotifications(teacherIds, 'teacher', {
+            type: 'feedback_submitted',
+            title: 'New Student Feedback',
+            message: `${studentName} submitted feedback for ${course.title} (${overallRating}/5 stars).`,
+            courseSlug,
+            actionUrl: `/admin/feedbacks`,
+          });
+        }
+      } catch (notifErr) {
+        console.error('Failed to create feedback notifications:', notifErr);
+      }
 
       res.json({
         message: 'Feedback submitted successfully',

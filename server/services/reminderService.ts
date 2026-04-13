@@ -5,6 +5,7 @@ import { LiveClass } from '../models/liveclass';
 import { Student } from '../models/student';
 import { renderLiveClassReminderHtml } from '../utils/emailTemplates';
 import path from 'path';
+import { createBulkNotifications } from './notificationService';
 
 // Track which reminders have been sent to avoid duplicates
 const sentReminders = new Set<string>();
@@ -101,7 +102,16 @@ export const sendLiveClassReminders = async () => {
 
           // Mark reminder as sent
           sentReminders.add(reminderKey);
-          
+
+          // In-app notifications for reminder
+          const userIds = students.map((s: any) => s.userId?._id).filter(Boolean);
+          createBulkNotifications(userIds, 'student', {
+            type: 'live_class_reminder',
+            title: 'Class Starting Soon',
+            message: `Your live class "${liveClass.title}" starts in 30 minutes. Join now!`,
+            actionUrl: liveClass.meetLink,
+          });
+
           console.log(`✅ Reminder emails sent to ${students.length} students for class: ${liveClass.title}`);
         }
       } catch (error) {

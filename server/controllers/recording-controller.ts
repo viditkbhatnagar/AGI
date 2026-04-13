@@ -4,6 +4,7 @@ import { Course } from '../models/course';
 import { Student } from '../models/student';
 import { Enrollment } from '../models/enrollment';
 import { LiveClass } from '../models/liveclass';
+import { createBulkNotifications } from '../services/notificationService';
 // No longer needed - we're using Google Drive links instead of file uploads
 
 // Admin: Get all recordings
@@ -138,6 +139,24 @@ export const createRecording = async (req: Request, res: Response) => {
     });
 
     await recording.save();
+
+    // Notify all students enrolled in this course about the new recording
+    try {
+      const enrollments = await Enrollment.find({ courseSlug }).select('studentId');
+      const studentIds = enrollments.map((e: any) => e.studentId);
+      const students = await Student.find({ _id: { $in: studentIds } }).select('userId');
+      const userIds = students.map((s: any) => s.userId).filter(Boolean);
+      createBulkNotifications(userIds, 'student', {
+        type: 'recording_uploaded',
+        title: 'New Recording Available',
+        message: `A new recording "${title}" has been uploaded for your course.`,
+        courseSlug,
+        actionUrl: `/student/courses/${courseSlug}`,
+      });
+    } catch (notifErr) {
+      console.error('Failed to create recording notifications:', notifErr);
+    }
+
     res.status(201).json(recording);
   } catch (error) {
     console.error('Error creating recording:', error);

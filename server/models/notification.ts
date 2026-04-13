@@ -3,12 +3,18 @@ import mongoose, { Schema, Document } from 'mongoose';
 export type NotificationType =
   | 'enrollment_created'
   | 'live_class_scheduled'
+  | 'live_class_updated'
+  | 'live_class_cancelled'
+  | 'live_class_reminder'
   | 'exam_graded'
   | 'exam_submitted'
   | 'quiz_result'
   | 'module_completed'
   | 'course_completed'
   | 'certificate_ready'
+  | 'recording_uploaded'
+  | 'feedback_submitted'
+  | 'access_changed'
   | 'general';
 
 export interface INotification {
@@ -34,12 +40,18 @@ const NotificationSchema = new Schema<INotificationDocument>({
     enum: [
       'enrollment_created',
       'live_class_scheduled',
+      'live_class_updated',
+      'live_class_cancelled',
+      'live_class_reminder',
       'exam_graded',
       'exam_submitted',
       'quiz_result',
       'module_completed',
       'course_completed',
       'certificate_ready',
+      'recording_uploaded',
+      'feedback_submitted',
+      'access_changed',
       'general',
     ],
   },

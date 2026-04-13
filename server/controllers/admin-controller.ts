@@ -8,6 +8,7 @@ import { Course } from '../models/course';
 import { Enrollment } from '../models/enrollment';
 import { LiveClass } from '../models/liveclass';
 import { renderWelcomeHtml } from '../utils/emailTemplates';
+import { createNotification } from '../services/notificationService';
 import mongoose from 'mongoose';
 
 // Get all students
@@ -639,6 +640,17 @@ export const toggleStudentAccess = async (req: Request, res: Response) => {
     }
 
     console.log('Updated user access:', { userId: user._id, accessEnabled: user.accessEnabled });
+
+    // In-app notification for access change
+    createNotification({
+      recipientId: user._id as any,
+      recipientRole: 'student',
+      type: 'access_changed',
+      title: accessEnabled ? 'Access Restored' : 'Access Suspended',
+      message: accessEnabled
+        ? 'Your account access has been restored. You can now access all your courses.'
+        : 'Your account access has been temporarily suspended. Please contact support for assistance.',
+    });
 
     res.status(200).json({
       message: `Student access ${accessEnabled ? 'enabled' : 'disabled'} successfully`,
