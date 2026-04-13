@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import logo from "@/components/layout/AGI Logo.png";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { User, LogOut, Menu, UserIcon, HelpCircle, Brain, UserPlus, MessageSquare, PanelLeftClose, PanelLeft } from "lucide-react";
+import { User, LogOut, Menu, UserIcon, HelpCircle, Brain, UserPlus, MessageSquare, PanelLeftClose, PanelLeft, Check } from "lucide-react";
 import { useAuth } from "@/lib/auth-provider";
 import { useConditionalRender } from '@/lib/permissions-provider';
 import { cn } from "@/lib/utils";
@@ -13,6 +13,91 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
+interface NotificationItem {
+  _id: string;
+  type: string;
+  title: string;
+  message: string;
+  isRead: boolean;
+  actionUrl?: string;
+  createdAt: string;
+}
+
+function useNotifications() {
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const { isAuthenticated } = useAuth();
+
+  const fetchNotifications = useCallback(async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    try {
+      const res = await fetch("/api/notifications?limit=10", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setNotifications(data.notifications || []);
+        setUnreadCount(data.unreadCount || 0);
+      }
+    } catch {
+      // silently fail
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 30_000);
+    return () => clearInterval(interval);
+  }, [isAuthenticated, fetchNotifications]);
+
+  const markAsRead = useCallback(async (id: string) => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    try {
+      await fetch(`/api/notifications/${id}/read`, {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setNotifications((prev) =>
+        prev.map((n) => (n._id === id ? { ...n, isRead: true } : n))
+      );
+      setUnreadCount((c) => Math.max(0, c - 1));
+    } catch {
+      // silently fail
+    }
+  }, []);
+
+  const markAllAsRead = useCallback(async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    try {
+      await fetch("/api/notifications/read-all", {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+      setUnreadCount(0);
+    } catch {
+      // silently fail
+    }
+  }, []);
+
+  return { notifications, unreadCount, markAsRead, markAllAsRead, refetch: fetchNotifications };
+}
+
+function formatTimeAgo(dateStr: string) {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "Just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
 
 interface HeaderProps {
   onMobileMenuToggle?: () => void;
@@ -108,6 +193,8 @@ export function Header({ onMobileMenuToggle, isStudentLayout, onSidebarToggle, i
   const { renderIfCanCreate } = useConditionalRender();
   const [location, navigate] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
+  const [notifOpen, setNotifOpen] = useState(false);
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 1000);
@@ -199,12 +286,66 @@ export function Header({ onMobileMenuToggle, isStudentLayout, onSidebarToggle, i
           </div>
 
           {/* Notifications Button */}
-          <button className="relative p-2 text-slate-500 hover:text-[#18548b] transition-colors rounded-full hover:bg-slate-100">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-            </svg>
-            <span className="absolute top-2 right-2 size-2 bg-[#FF7F11] rounded-full ring-2 ring-white" />
-          </button>
+          <DropdownMenu open={notifOpen} onOpenChange={setNotifOpen}>
+            <DropdownMenuTrigger asChild>
+              <button className="relative p-2 text-slate-500 hover:text-[#18548b] transition-colors rounded-full hover:bg-slate-100">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+                {unreadCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center bg-[#FF7F11] text-white text-[10px] font-bold rounded-full ring-2 ring-white px-1">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-80 mt-2 max-h-96 overflow-y-auto">
+              <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-slate-800">Notifications</h3>
+                {unreadCount > 0 && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); markAllAsRead(); }}
+                    className="text-xs text-[#18548b] hover:underline"
+                  >
+                    Mark all read
+                  </button>
+                )}
+              </div>
+              {notifications.length === 0 ? (
+                <div className="py-8 px-4 text-center text-sm text-slate-500">
+                  No notifications yet
+                </div>
+              ) : (
+                notifications.map((n) => (
+                  <div
+                    key={n._id}
+                    className={cn(
+                      "px-4 py-3 border-b border-slate-50 cursor-pointer hover:bg-slate-50 transition-colors",
+                      !n.isRead && "bg-blue-50/50"
+                    )}
+                    onClick={() => {
+                      if (!n.isRead) markAsRead(n._id);
+                      setNotifOpen(false);
+                      if (n.actionUrl) navigate(n.actionUrl);
+                    }}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <p className={cn("text-sm", !n.isRead ? "font-semibold text-slate-900" : "text-slate-700")}>
+                          {n.title}
+                        </p>
+                        <p className="text-xs text-slate-500 mt-0.5 line-clamp-2">{n.message}</p>
+                      </div>
+                      {!n.isRead && (
+                        <span className="mt-1 size-2 shrink-0 bg-[#18548b] rounded-full" />
+                      )}
+                    </div>
+                    <p className="text-[10px] text-slate-400 mt-1">{formatTimeAgo(n.createdAt)}</p>
+                  </div>
+                ))
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           {/* User Dropdown */}
           <DropdownMenu>

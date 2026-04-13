@@ -8,6 +8,7 @@ import mongoose from 'mongoose';
 import Quiz from '../models/quiz';
 import { Description } from '@radix-ui/react-toast';
 import { format, startOfMonth } from 'date-fns';
+import { createNotification } from '../services/notificationService';
 
 // Get student dashboard data
 export const getDashboard = async (req: Request, res: Response) => {
@@ -1224,6 +1225,17 @@ export const submitQuizAttempt = async (req: Request, res: Response) => {
       { studentId: student._id, courseSlug: slug, 'completedModules.moduleIndex': { $ne: moduleIdx } },
       { $push: { completedModules: { moduleIndex: moduleIdx, completed: true, completedAt: new Date() } } }
     );
+
+    // In-app notification for quiz result
+    createNotification({
+      recipientId: new mongoose.Types.ObjectId(req.user!.id),
+      recipientRole: 'student',
+      type: 'quiz_result',
+      title: 'Quiz Completed',
+      message: `You scored ${score}% on Module ${moduleIdx + 1} quiz.`,
+      courseSlug: slug,
+      actionUrl: `/student/courses/${slug}`,
+    });
 
     return res.status(200).json({ score, moduleIndex: moduleIdx });
   } catch (error) {

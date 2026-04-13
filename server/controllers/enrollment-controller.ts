@@ -3,6 +3,7 @@ import { Enrollment } from '../models/enrollment';
 import { Student } from '../models/student';
 import { Course } from '../models/course';
 import mongoose from 'mongoose';
+import { createNotification } from '../services/notificationService';
 import Quiz from '../models/quiz';
 
 // Create a new enrollment
@@ -53,6 +54,17 @@ export const createEnrollment = async (req: Request, res: Response) => {
     student.enrollment = newEnrollment._id;
     await student.save();
     
+    // In-app notification for student
+    createNotification({
+      recipientId: student.userId,
+      recipientRole: 'student',
+      type: 'enrollment_created',
+      title: 'New Course Enrollment',
+      message: `You have been enrolled in ${course.title}.`,
+      courseSlug,
+      actionUrl: `/student/courses/${courseSlug}`,
+    });
+
     res.status(201).json({
       message: 'Enrollment created successfully',
       enrollment: newEnrollment
@@ -250,7 +262,19 @@ export const completeModule = async (req: Request, res: Response) => {
     }
     
     await enrollment.save();
-    
+
+    // In-app notification for module completion
+    const moduleName = course.modules[moduleIndex]?.title || `Module ${moduleIndex + 1}`;
+    createNotification({
+      recipientId: student.userId,
+      recipientRole: 'student',
+      type: 'module_completed',
+      title: 'Module Completed',
+      message: `You completed "${moduleName}" in ${course.title}.`,
+      courseSlug,
+      actionUrl: `/student/courses/${courseSlug}`,
+    });
+
     res.status(200).json({
       message: 'Module marked as completed',
       moduleIndex

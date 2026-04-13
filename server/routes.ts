@@ -22,6 +22,7 @@ import * as feedbackController from "./controllers/feedback-controller";
 import * as certificateController from "./controllers/certificate-controller";
 import * as loginHistoryController from "./controllers/loginHistory-controller";
 import * as aiLearningController from "./controllers/ai-learning-controller";
+import * as notificationController from "./controllers/notification-controller";
 import quizRepositoryRoutes from "./routes/quizRepository";
 import flashcardRoutes, {
   moduleFlashcardsRoute,
@@ -59,6 +60,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/student/profile", auth, requireStudent, studentController.getProfile);
   app.put("/api/student/profile", auth, requireStudent, studentController.updateProfile);
   app.put("/api/student/notify-settings", auth, requireStudent, studentController.updateNotifySettings);
+
+  // NOTIFICATION ROUTES (any authenticated user)
+  app.get("/api/notifications", auth, requireAuth, notificationController.getNotifications);
+  app.get("/api/notifications/count", auth, requireAuth, notificationController.getUnreadCount);
+  app.put("/api/notifications/read-all", auth, requireAuth, notificationController.markAllAsRead);
+  app.put("/api/notifications/:id/read", auth, requireAuth, notificationController.markAsRead);
   app.get("/api/student/courses", auth, requireStudent, studentController.getCourses);
   app.get("/api/student/courses/:slug", auth, requireStudent, studentController.getCourseDetail);
 

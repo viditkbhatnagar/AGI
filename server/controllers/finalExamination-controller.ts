@@ -11,6 +11,7 @@ import mongoose from 'mongoose';
 import multer from 'multer';
 import { extractDocumentContent, extractQuestionsWithAI } from '../services/quizRepositoryService';
 import type { QuizQuestion } from '../services/quizRepositoryService';
+import { createNotification } from '../services/notificationService';
 
 // Multer config for document upload (same pattern as quiz repository)
 const upload = multer({
@@ -586,7 +587,26 @@ export const updateStudentExamScore = async (req: Request, res: Response) => {
       // Don't fail the entire request if email fails
     }
 
-    res.status(200).json({ 
+    // In-app notification for student about exam grading
+    try {
+      const studentDoc = await Student.findById(studentId);
+      if (studentDoc) {
+        const courseName = (await Course.findOne({ slug: courseSlug }))?.title || courseSlug;
+        createNotification({
+          recipientId: studentDoc.userId,
+          recipientRole: 'student',
+          type: 'exam_graded',
+          title: 'Exam Graded',
+          message: `Your final exam for ${courseName} has been graded. Score: ${score}% — ${passed ? 'Passed' : 'Not passed'}.`,
+          courseSlug,
+          actionUrl: `/student/courses/${courseSlug}`,
+        });
+      }
+    } catch (notifErr) {
+      console.error('Failed to create exam grading notification:', notifErr);
+    }
+
+    res.status(200).json({
       message: 'Score updated successfully',
       updatedAttempt: attempts[attemptIndex]
     });

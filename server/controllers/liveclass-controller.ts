@@ -8,6 +8,7 @@ import { Enrollment } from '../models/enrollment';
 import { renderLiveClassHtml, renderLiveClassUpdateHtml, renderLiveClassCancellationHtml, renderLiveClassReminderHtml, renderTeacherLiveClassHtml } from '../utils/emailTemplates';
 import { User } from '../models/user';
 import { TeacherAssignment } from '../models/teacher-assignment';
+import { createBulkNotifications } from '../services/notificationService';
 import path from 'path';
 import ics from 'ics';
 
@@ -239,6 +240,21 @@ export const createLiveClass = async (req: Request, res: Response) => {
     }
     // -- TEACHER EMAIL NOTIFICATION LOGIC END --
     // -- EMAIL NOTIFICATION LOGIC END --
+
+    // In-app notifications for students
+    try {
+      const studentsForNotif = await Student.find({ _id: { $in: studentObjectIds } }).select('userId');
+      const userIds = studentsForNotif.map((s: any) => s.userId).filter(Boolean);
+      createBulkNotifications(userIds, 'student', {
+        type: 'live_class_scheduled',
+        title: 'Live Class Scheduled',
+        message: `A live class "${title}" has been scheduled for ${new Date(startTime).toLocaleString()}.`,
+        courseSlug,
+        actionUrl: `/student/courses/${courseSlug}`,
+      });
+    } catch (notifErr) {
+      console.error('Failed to create live class notifications:', notifErr);
+    }
 
     res.status(201).json({
       message: 'Live class created successfully',

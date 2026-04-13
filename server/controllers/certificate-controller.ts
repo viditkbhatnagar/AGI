@@ -8,6 +8,7 @@ import { sendEmail } from '../utils/mailer';
 import { renderCertificateIssuedHtml } from '../utils/emailTemplates';
 import mongoose from 'mongoose';
 import path from 'path';
+import { createNotification } from '../services/notificationService';
 
 // Dynamic group selection is now handled in the Certifier service
 // Groups are automatically selected based on course name:
@@ -148,6 +149,18 @@ export const issueCertificateForPassedExam = async (
       student: student.name,
       course: course.title,
       score: score
+    });
+
+    // In-app notification for certificate
+    // student.userId is populated (full User doc), so use user._id
+    createNotification({
+      recipientId: user._id,
+      recipientRole: 'student',
+      type: 'certificate_ready',
+      title: 'Certificate Issued',
+      message: `Your certificate for ${course.title} is ready! You can download it from your Certifications page.`,
+      courseSlug,
+      actionUrl: `/student/certifications`,
     });
 
     return {

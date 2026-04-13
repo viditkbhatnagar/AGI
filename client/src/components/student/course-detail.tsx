@@ -453,27 +453,32 @@ export function CourseDetail({ slug }: CourseDetailProps) {
 
     const token = localStorage.getItem("token");
     if (!token) return;
-    const res = await fetch(`/api/student/quiz/${courseSlug}/${moduleIndex}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    if (!res.ok) {
-      console.error("Failed to load quiz");
-      // Notify if quiz missing/unavailable
-      showNotice('No quiz is available for this module.');
-      return;
+    try {
+      const res = await fetch(`/api/student/quiz/${courseSlug}/${moduleIndex}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) {
+        console.error("Failed to load quiz, status:", res.status);
+        showNotice('No quiz is available for this module.');
+        return;
+      }
+      const data = await res.json();
+      const questions = data?.questions;
+      if (!questions || !Array.isArray(questions) || questions.length === 0) {
+        showNotice('No quiz is available for this module.');
+        return;
+      }
+      const mapped = questions.map((q: any) => ({
+        prompt: q.text ?? q.prompt,
+        options: q.choices ?? q.options,
+        correctIndex: q.correctIndex
+      }));
+      setQuizQuestions(mapped);
+      setQuizModuleIndex(moduleIndex);
+    } catch (err) {
+      console.error("Error loading quiz:", err);
+      showNotice('Failed to load quiz. Please try again or use a different browser.');
     }
-    const { questions } = await res.json();
-    if (!questions || !Array.isArray(questions) || questions.length === 0) {
-      showNotice('No quiz is available for this module.');
-      return;
-    }
-    const mapped = questions.map((q: any) => ({
-      prompt: q.text ?? q.prompt,
-      options: q.choices ?? q.options,
-      correctIndex: q.correctIndex
-    }));
-    setQuizQuestions(mapped);
-    setQuizModuleIndex(moduleIndex);
   };
 
 
