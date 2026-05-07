@@ -122,6 +122,7 @@ import { useParams } from "wouter";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 import QuizForm from "@/components/student/QuizForm";
+import { ErrorBoundary } from "@/components/error-boundary";
 import FinalExamForm from "@/components/student/FinalExamForm";
 import FinalExamResults from "@/components/student/FinalExamResults";
 import { DocumentViewer } from "@/components/student/DocumentViewers";
@@ -1747,10 +1748,18 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                           Close Quiz
                         </Button>
                       </div>
-                      <QuizForm
-                        questions={quizQuestions}
-                        onSubmit={handleQuizSubmit}
-                      />
+                      <ErrorBoundary
+                        fallbackTitle="Quiz failed to load"
+                        onReset={() => {
+                          setQuizModuleIndex(null);
+                          setQuizQuestions([]);
+                        }}
+                      >
+                        <QuizForm
+                          questions={quizQuestions}
+                          onSubmit={handleQuizSubmit}
+                        />
+                      </ErrorBoundary>
                     </div>
                   )}
                 </div>

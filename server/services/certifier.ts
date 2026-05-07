@@ -42,29 +42,48 @@ class CertifierService {
     }
   }
 
+  // Slugs of CPD-accredited courses (per CPD Standards Office Multiple Submission).
+  // CPD courses route to a parallel set of Certifier groups whose design is the
+  // CPD-certified template; the badge tier (director/manager/professional) is still
+  // selected by keyword on the course title.
+  private static readonly CPD_COURSE_SLUGS = new Set<string>([
+    'Certified-Human-Resource-Professional',          // CHRP
+    'certified-human-resource-manager',               // CHRM
+    'Certified-Logistics-Manager',                    // CLM
+    'Certified-Sustainability-And-Leadership',        // Sustainability L&M
+    'Certified-Project-Management-Professional',      // CPMP
+    'Certified-Project-Manager',                      // CPM
+    'certified-supply-chain-professional',            // CSCP
+    'certified-digital-marketing-professional',       // CDMP
+    'certified-purchasing-and-procurement-professional', // CPPP (legacy slug)
+    'Certified-Purchasing-and-Procurement-Professional', // CPPP (current slug)
+  ]);
+
   /**
-   * Dynamic group selection based on course name
+   * Dynamic group selection based on course name and CPD eligibility.
+   * Tier (director/manager/professional) is picked by title keyword;
+   * CPD vs non-CPD is picked by slug membership in CPD_COURSE_SLUGS.
    */
-  private selectGroupId(courseTitle: string): string {
+  private selectGroupId(courseTitle: string, courseSlug?: string): string {
     const courseLower = courseTitle.toLowerCase();
-    
-    // Check for director-related keywords
+    const isCpd = courseSlug ? CertifierService.CPD_COURSE_SLUGS.has(courseSlug) : false;
+
     if (courseLower.includes('director') || courseLower.includes('directors')) {
-      return '01k7s2jdz7x947af5s80xpfqnm'; // AGI-Director group
+      return isCpd
+        ? '01kr13vgmszbrqfz74dhzxa94m'  // AGI-Director-CPD
+        : '01k7s2jdz7x947af5s80xpfqnm'; // AGI-Director
     }
-    
-    // Check for manager-related keywords
+
     if (courseLower.includes('manager') || courseLower.includes('managers')) {
-      return '01k7rrxc2fddy1bkbsx0rt3tgv'; // AGI-Manager group
+      return isCpd
+        ? '01kr13xt9f10qdapz81q4qt414'  // AGI-Manager-CPD
+        : '01k7rrxc2fddy1bkbsx0rt3tgv'; // AGI-Manager
     }
-    
-    // Check for professional-related keywords (or default)
-    if (courseLower.includes('professional') || courseLower.includes('professionals')) {
-      return '01k6fv17x6fw24jgpnvbqervt6'; // AGI-Professional group
-    }
-    
-    // Default to professional group
-    return '01k6fv17x6fw24jgpnvbqervt6'; // AGI-Professional group (default)
+
+    // Professional (or default fallback)
+    return isCpd
+      ? '01kr13zg22m68bkqzenhy8v0g9'  // AGI-Professional-CPD
+      : '01k6fv17x6fw24jgpnvbqervt6'; // AGI-Professional
   }
 
   /**
@@ -93,7 +112,7 @@ class CertifierService {
       }
 
       // Use dynamic group selection instead of passed groupId
-      const selectedGroupId = this.selectGroupId(recipient.courseTitle);
+      const selectedGroupId = this.selectGroupId(recipient.courseTitle, recipient.courseSlug);
       
       // Process course name for badge (remove "Certified")
       const badgeCourseName = this.processCourseNameForBadge(recipient.courseTitle);

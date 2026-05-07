@@ -34,27 +34,33 @@ function isNewQuestion(question: QuizQuestion): question is NewQuestion {
 }
 
 // Convert new format to legacy format for submission
-function getCorrectIndex(question: QuizQuestion): number {
+function getCorrectIndex(question: QuizQuestion | undefined | null): number {
+  if (!question) return -1;
   if (isNewQuestion(question)) {
     return ['A', 'B', 'C', 'D'].indexOf(question.correctAnswer);
   }
-  return question.correctIndex;
+  return typeof question.correctIndex === 'number' ? question.correctIndex : -1;
 }
 
-// Get options array from either format
-function getOptions(question: QuizQuestion): string[] {
+// Get options array from either format. Always returns an array of strings;
+// any missing/null option becomes an empty string so renders never crash.
+function getOptions(question: QuizQuestion | undefined | null): string[] {
+  if (!question) return [];
   if (isNewQuestion(question)) {
-    return [question.options.A, question.options.B, question.options.C, question.options.D];
+    const o = question.options ?? ({} as NewQuestion['options']);
+    return [o?.A ?? '', o?.B ?? '', o?.C ?? '', o?.D ?? ''];
   }
-  return question.options;
+  if (!Array.isArray(question.options)) return [];
+  return question.options.map((o) => (typeof o === 'string' ? o : String(o ?? '')));
 }
 
 // Get question text from either format
-function getQuestionText(question: QuizQuestion): string {
+function getQuestionText(question: QuizQuestion | undefined | null): string {
+  if (!question) return '';
   if (isNewQuestion(question)) {
-    return question.question;
+    return question.question ?? '';
   }
-  return question.prompt;
+  return question.prompt ?? '';
 }
 
 const QuizForm: React.FC<QuizFormProps> = ({ questions, onSubmit }) => {
@@ -204,18 +210,39 @@ const QuizForm: React.FC<QuizFormProps> = ({ questions, onSubmit }) => {
     );
   }
 
+  if (!questions || questions.length === 0) {
+    return (
+      <div className="p-6 text-sm text-gray-600 bg-white border rounded-lg">
+        This quiz has no questions to display. Please contact support.
+      </div>
+    );
+  }
+
+  const q = questions[current];
+  if (!q) {
+    console.error('[QuizForm] Question at index out of range', { current, total: questions.length });
+    return (
+      <div className="p-6 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg">
+        Could not load this question. Please close the quiz and try again.
+      </div>
+    );
+  }
+  const options = getOptions(q);
+  if (options.length === 0) {
+    console.error('[QuizForm] Question has no options', { current, q });
+  }
+
   return (
     <div className="bg-white">
       <form onSubmit={e => { e.preventDefault(); handleSubmit(); }}>
         {(() => {
-          const q = questions[current];
           return (
             <div key={current} className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-800 mb-8 leading-relaxed">
                 {getQuestionText(q)}
               </h2>
               <div className="space-y-4">
-                {getOptions(q).map((opt, optIdx) => (
+                {options.map((opt, optIdx) => (
                   <label
                     key={optIdx}
                     className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all hover:bg-gray-50 ${
