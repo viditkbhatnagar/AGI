@@ -241,36 +241,44 @@ const QuizForm: React.FC<QuizFormProps> = ({ questions, onSubmit }) => {
               <h2 className="text-2xl font-semibold text-gray-800 mb-8 leading-relaxed">
                 {getQuestionText(q)}
               </h2>
-              <div className="space-y-4">
-                {options.map((opt, optIdx) => (
-                  <label
-                    key={optIdx}
-                    className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all hover:bg-gray-50 ${
-                      answers[current] === optIdx 
-                        ? 'border-blue-600 bg-blue-50' 
-                        : 'border-gray-200'
-                    }`}
-                  >
-                    <div className="flex items-center">
-                      <div className={`w-8 h-8 rounded-full border-2 mr-4 flex items-center justify-center font-bold text-sm ${
-                        answers[current] === optIdx 
-                          ? 'border-blue-600 bg-blue-600 text-white' 
-                          : 'border-gray-300 text-gray-600'
-                      }`}>
-                        {['A', 'B', 'C', 'D'][optIdx]}
+              <div role="radiogroup" aria-label="Answer options" className="space-y-4">
+                {options.map((opt, optIdx) => {
+                  const checked = answers[current] === optIdx;
+                  return (
+                    <div
+                      key={optIdx}
+                      role="radio"
+                      aria-checked={checked}
+                      tabIndex={checked || (answers[current] === -1 && optIdx === 0) ? 0 : -1}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleOptionChange(current, optIdx);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === ' ' || e.key === 'Enter') {
+                          e.preventDefault();
+                          handleOptionChange(current, optIdx);
+                        }
+                      }}
+                      className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+                        checked
+                          ? 'border-blue-600 bg-blue-50'
+                          : 'border-gray-200'
+                      }`}
+                    >
+                      <div className="flex items-center">
+                        <div className={`w-8 h-8 rounded-full border-2 mr-4 flex items-center justify-center font-bold text-sm ${
+                          checked
+                            ? 'border-blue-600 bg-blue-600 text-white'
+                            : 'border-gray-300 text-gray-600'
+                        }`}>
+                          {['A', 'B', 'C', 'D'][optIdx]}
+                        </div>
+                        <span className="text-lg text-gray-700">{opt}</span>
                       </div>
-                      <span className="text-lg text-gray-700">{opt}</span>
                     </div>
-                    <input
-                      type="radio"
-                      name={`question-${current}`}
-                      value={optIdx}
-                      checked={answers[current] === optIdx}
-                      onChange={() => handleOptionChange(current, optIdx)}
-                      className="sr-only"
-                    />
-                  </label>
-                ))}
+                  );
+                })}
               </div>
             </div>
           );
