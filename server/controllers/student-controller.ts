@@ -862,11 +862,12 @@ export const getCourseDetail = async (req: Request, res: Response) => {
       course.modules.map(async (module: any, idx: number) => {
         // Video progress - deduplicate by videoIndex, scope to course, cap at 100%
         const totalVideos = module.videos.length;
-        const watchedVideos = new Set(
+        const watchedVideoIdxSet = new Set<number>(
           watchRecords
             .filter((wt: any) => wt.moduleIndex === idx && wt.videoIndex < totalVideos && (!wt.courseSlug || wt.courseSlug === slug))
             .map((wt: any) => wt.videoIndex)
-        ).size;
+        );
+        const watchedVideos = watchedVideoIdxSet.size;
         const percentWatched = totalVideos
           ? Math.min(100, (watchedVideos / totalVideos) * 100)
           : 0;
@@ -876,11 +877,12 @@ export const getCourseDetail = async (req: Request, res: Response) => {
         const moduleDocUrls = new Set(
           module.documents.map((doc: any) => doc.fileUrl || doc.url).filter(Boolean)
         );
-        const viewedDocs = new Set(
+        const viewedDocUrlSet = new Set<string>(
           docRecords
             .filter((dv: any) => dv.moduleIndex === idx && moduleDocUrls.has(dv.docUrl) && (!dv.courseSlug || dv.courseSlug === slug))
             .map((dv: any) => dv.docUrl)
-        ).size;
+        );
+        const viewedDocs = viewedDocUrlSet.size;
         const percentViewed = totalDocs
           ? Math.min(100, (viewedDocs / totalDocs) * 100)
           : 0;
@@ -919,11 +921,26 @@ export const getCourseDetail = async (req: Request, res: Response) => {
           quiz = await Quiz.findOne({ courseSlug: course.slug, moduleIndex: idx });
         }
         const isCompleted = completedSet.has(idx);
+        // Enrich videos and documents with per-item progress flags so the UI
+        // can render watched/viewed indicators without recomputing client-side.
+        // If the whole module is marked complete, treat every item as done so
+        // the sidebar shows green checks consistent with the module state.
+        const videosEnriched = module.videos.map((v: any, vIdx: number) => ({
+          ...(v.toObject ? v.toObject() : v),
+          watched: isCompleted || watchedVideoIdxSet.has(vIdx),
+        }));
+        const documentsEnriched = module.documents.map((d: any) => {
+          const docUrl = d.fileUrl || d.url;
+          return {
+            ...(d.toObject ? d.toObject() : d),
+            viewed: isCompleted || (docUrl ? viewedDocUrlSet.has(docUrl) : false),
+          };
+        });
         return {
           title: module.title,
           description: module.description || "", // Add missing description field
-          videos: module.videos,
-          documents: module.documents,
+          videos: videosEnriched,
+          documents: documentsEnriched,
           quizId: module.quizId,
           percentComplete,
           isCompleted,
