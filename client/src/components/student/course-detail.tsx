@@ -1447,6 +1447,18 @@ export function CourseDetail({ slug }: CourseDetailProps) {
                     width="100%"
                     height="100%"
                     className="absolute top-0 left-0"
+                    config={{
+                      youtube: {
+                        // youtube-nocookie host bypasses Edge's tracking prevention,
+                        // which silently blocks the regular youtube.com embed.
+                        embedOptions: { host: 'https://www.youtube-nocookie.com' },
+                        playerVars: {
+                          origin: typeof window !== 'undefined' ? window.location.origin : undefined,
+                          rel: 0,
+                          modestbranding: 1,
+                        },
+                      },
+                    }}
                     onProgress={({ playedSeconds }) => {
                       recordWatchTimeThrottled(playedSeconds);
                     }}
