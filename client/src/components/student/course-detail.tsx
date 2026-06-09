@@ -616,11 +616,16 @@ export function CourseDetail({ slug }: CourseDetailProps) {
 
   useEffect(() => {
     if ((selectedVideoUrl || selectedDocUrl) && mediaRef.current) {
-      // Scroll within the right content area only, not the entire page
-      const rightContentArea = mediaRef.current.closest('.overflow-y-auto');
-      if (rightContentArea) {
-        rightContentArea.scrollTop = 0;
-      }
+      // Bring the player into view. On tablet/mobile the content area stacks
+      // below the module list (flex-col under lg), so the player renders off
+      // screen; previously we scrolled the page container to the top, which
+      // left the player hidden and looked like "nothing plays". Scrolling the
+      // player element into view works for both the stacked and side-by-side
+      // layouts. rAF lets the just-mounted player settle its box first.
+      const player = mediaRef.current;
+      requestAnimationFrame(() => {
+        player.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
     }
   }, [selectedVideoUrl, selectedDocUrl]);
 
@@ -1512,7 +1517,7 @@ export function CourseDetail({ slug }: CourseDetailProps) {
 
             {/* Document Viewer with Explanation Panel */}
             {selectedDocUrl && (
-              <div className="flex gap-4">
+              <div ref={mediaRef} className="flex gap-4">
                 {/* Document Viewer */}
                 <div className={`rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden flex-1 transition-all duration-300 ${showExplanationPanel ? 'w-[60%]' : 'w-full'}`}>
                   <div className="bg-gradient-to-r from-emerald-500 to-teal-500 px-4 py-3 flex items-center justify-between">
