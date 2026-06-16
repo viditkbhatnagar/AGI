@@ -732,10 +732,10 @@ export const getCourses = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Student not found' });
     }
 
-    // Grab all watch‐time, doc‐view and quiz‐attempt records
+    // Grab all watch‐time and doc‐view records (stored on the student).
+    // Quiz attempts live on each enrollment, so they are read per-course below.
     const watchRecords = student.watchTime || [];
     const docRecords   = student.docViews   || [];
-    const quizRecords  = student.quizAttempts || [];
 
     // Get all enrollments for this student
     const enrollments = await Enrollment.find({ studentId: student._id });
@@ -747,6 +747,11 @@ export const getCourses = async (req: Request, res: Response) => {
 
       // Process each module
       const courseSlug = enrollment.courseSlug;
+      // Quiz attempts are stored on the enrollment, not the student, so read
+      // them here (matches getDashboard / getCourseDetail). Sourcing these from
+      // student.quizAttempts previously left quizRecords empty, so every
+      // module's quiz component scored 0 on the course card.
+      const quizRecords = enrollment.quizAttempts || [];
       // Modules the student has finished (authoritative), so a completed module
       // always reads as 100% here just like it does in getCourseDetail.
       const completedSet = new Set(
