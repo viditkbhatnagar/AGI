@@ -340,7 +340,7 @@ export const recordQuizAttempt = async (req: Request, res: Response) => {
       score,
       maxScore,
       attemptedAt: new Date(),
-      passed: score >= Math.round(maxScore * 0.7)
+      passed: score >= 70 // score is a 0–100 percentage; pass mark is 70%
     });
     
     await enrollment.save();
@@ -351,7 +351,7 @@ export const recordQuizAttempt = async (req: Request, res: Response) => {
       moduleIndex: moduleIdx,
       score,
       maxScore,
-      passed: score >= Math.round(maxScore * 0.7)
+      passed: score >= 70 // score is a 0–100 percentage; pass mark is 70%
     });
   } catch (error) {
     console.error('Record quiz attempt error:', error);

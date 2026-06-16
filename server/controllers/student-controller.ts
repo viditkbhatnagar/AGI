@@ -9,6 +9,70 @@ import Quiz from '../models/quiz';
 import { Description } from '@radix-ui/react-toast';
 import { format, startOfMonth } from 'date-fns';
 import { createNotification } from '../services/notificationService';
+import { moduleCompletionPercent, isModuleContentComplete } from '../utils/progress';
+
+/**
+ * Module indexes that have a quiz defined for a course, so progress maths can
+ * tell "no quiz exists" apart from "quiz not taken yet".
+ */
+async function getQuizModuleIndexes(courseSlug: string): Promise<Set<number>> {
+  const quizzes = await Quiz.find({ courseSlug }).select('moduleIndex').lean();
+  return new Set(quizzes.map((q: any) => q.moduleIndex));
+}
+
+/**
+ * Auto-complete a quiz-less module once the student has finished all of its
+ * existing content. Quiz-bearing modules are completed by the quiz-submit path,
+ * so this only fills the gap for modules with no quiz, which otherwise can never
+ * enter completedModules and would hold a course below 100% forever. It never
+ * fabricates completion: a module with unfinished or no content is left alone.
+ */
+async function reconcileQuizlessModuleCompletion(
+  studentId: mongoose.Types.ObjectId,
+  courseSlug: string,
+  moduleIndex: number
+): Promise<void> {
+  // Quiz-bearing modules are handled by submitQuizAttempt — skip them cheaply.
+  if (await Quiz.exists({ courseSlug, moduleIndex })) return;
+
+  const course = await Course.findOne({ slug: courseSlug });
+  const module = course?.modules?.[moduleIndex];
+  if (!course || !module) return;
+
+  const student = await Student.findById(studentId);
+  if (!student) return;
+
+  const totalVideos = module.videos.length;
+  const totalDocs = module.documents.length;
+  const watchedVideos = new Set(
+    (student.watchTime || [])
+      .filter((wt: any) => wt.moduleIndex === moduleIndex && wt.videoIndex < totalVideos && (!wt.courseSlug || wt.courseSlug === courseSlug))
+      .map((wt: any) => wt.videoIndex)
+  ).size;
+  const moduleDocUrls = new Set(
+    module.documents.map((doc: any) => doc.fileUrl || doc.url).filter(Boolean)
+  );
+  const viewedDocs = new Set(
+    (student.docViews || [])
+      .filter((dv: any) => dv.moduleIndex === moduleIndex && moduleDocUrls.has(dv.docUrl) && (!dv.courseSlug || dv.courseSlug === courseSlug))
+      .map((dv: any) => dv.docUrl)
+  ).size;
+
+  const done = isModuleContentComplete({
+    totalVideos,
+    watchedVideos,
+    totalDocs,
+    viewedDocs,
+    quizExists: false,
+    quizAttempted: false,
+  });
+  if (!done) return;
+
+  await Enrollment.updateOne(
+    { studentId, courseSlug, 'completedModules.moduleIndex': { $ne: moduleIndex } },
+    { $push: { completedModules: { moduleIndex, completed: true, completedAt: new Date() } } }
+  );
+}
 
 // Get student dashboard data
 export const getDashboard = async (req: Request, res: Response) => {
@@ -48,6 +112,8 @@ export const getDashboard = async (req: Request, res: Response) => {
     const docRecords   = student.docViews    || [];
     // Now read quiz attempts from enrollment, not student
     const quizRecords  = enrollment.quizAttempts || [];
+
+    const quizModuleIndexes = await getQuizModuleIndexes(course.slug);
 
     // Compute per-module data (including percentComplete and completion status)
     // Gather module data asynchronously to allow awaiting quiz fetches
@@ -97,10 +163,18 @@ export const getDashboard = async (req: Request, res: Response) => {
           ? Math.max(...moduleAttempts.map(a => a.score || 0))
           : 0;
 
-        // Final completion percentage — if module is already marked complete, always show 100%
-        const percentComplete = completedSet.has(idx)
-          ? 100
-          : Math.round((percentWatched + percentViewed + quizPercent) / 3);
+        // Final completion percentage — average only the components that exist
+        // for this module (a missing quiz / docs / videos is excluded, not
+        // scored 0); a completed module always reads 100%.
+        const quizExists = quizModuleIndexes.has(idx);
+        const percentComplete = moduleCompletionPercent({
+          components: [
+            totalVideos > 0 ? percentWatched : null,
+            totalDocs > 0 ? percentViewed : null,
+            quizExists ? quizPercent : null,
+          ],
+          isCompleted: completedSet.has(idx),
+        });
 
         // Dynamically fetch quiz for this module, if any
         let quiz: any = null;
@@ -334,6 +408,7 @@ export const getDashboardByCourse = async (req: Request, res: Response) => {
 
     // Prepare completedModules set
     const completedSet = new Set(enrollment.completedModules.map(m => m.moduleIndex));
+    const quizModuleIndexes = await getQuizModuleIndexes(slug);
 
     // Build per-module data
     const moduleData = await Promise.all(
@@ -367,7 +442,17 @@ export const getDashboardByCourse = async (req: Request, res: Response) => {
           : null;
         const avgQuizScore = quizAttempts > 0 ? Math.max(...moduleAttempts.map(a => a.score || 0)) : 0;
 
-        const percentComplete = Math.round((percentWatched + percentViewed + quizPercent) / 3);
+        // Average only the components that exist for this module; a completed
+        // module reads 100% (consistent with getDashboard / getCourseDetail).
+        const quizExists = quizModuleIndexes.has(idx);
+        const percentComplete = moduleCompletionPercent({
+          components: [
+            totalVideos > 0 ? percentWatched : null,
+            totalDocs > 0 ? percentViewed : null,
+            quizExists ? quizPercent : null,
+          ],
+          isCompleted: completedSet.has(idx),
+        });
         let quiz: any = null;
         if (module.quizId) {
           if (mongoose.Types.ObjectId.isValid(module.quizId as any)) {
@@ -572,6 +657,16 @@ export const recordWatchTime = async (req: Request, res: Response) => {
       }
     );
 
+    // A quiz-less module has no quiz-submit completion trigger, so check here
+    // whether the student has now finished all of its content.
+    if (typeof slug === 'string') {
+      await reconcileQuizlessModuleCompletion(
+        student._id as mongoose.Types.ObjectId,
+        slug,
+        moduleIndex
+      ).catch(err => console.error('Module auto-complete check failed:', err));
+    }
+
     res.status(200).json({ message: 'Watch time recorded successfully' });
   } catch (error) {
     console.error('Record watch time error:', error);
@@ -602,6 +697,16 @@ export const recordDocumentView = async (req: Request, res: Response) => {
       { userId: userObjectId, 'docViews.docUrl': { $ne: docUrl } },
       { $push: { docViews: { date: new Date(), courseSlug: slug || undefined, moduleIndex, docUrl } } }
     );
+
+    // A quiz-less module has no quiz-submit completion trigger, so check here
+    // whether the student has now finished all of its content.
+    if (typeof slug === 'string') {
+      await reconcileQuizlessModuleCompletion(
+        student._id as mongoose.Types.ObjectId,
+        slug,
+        moduleIndex
+      ).catch(err => console.error('Module auto-complete check failed:', err));
+    }
 
     res.status(200).json({ message: 'Document view recorded successfully' });
   } catch (error) {
@@ -757,6 +862,7 @@ export const getCourses = async (req: Request, res: Response) => {
       const completedSet = new Set(
         enrollment.completedModules.map((m: any) => m.moduleIndex)
       );
+      const quizModuleIndexes = await getQuizModuleIndexes(courseSlug);
       const modules = course.modules.map((module, idx) => {
         // Video progress - scope to course, cap at 100%
         const totalVideos = module.videos.length;
@@ -787,14 +893,19 @@ export const getCourses = async (req: Request, res: Response) => {
         const quizDone = quizRecords.some(qa => qa.moduleIndex === idx);
         const quizPercent = quizDone ? 100 : 0;
 
-        // Final per‐module completion — a module the student has marked complete
-        // always counts as 100% (viewing every optional document is not required
-        // to finish a module). Otherwise derive it from the watched/viewed/quiz
-        // signals. This keeps the course-card % consistent with the course detail
-        // and dashboard surfaces, which already treat completed modules as 100%.
-        const percentComplete = completedSet.has(idx)
-          ? 100
-          : Math.round((percentWatched + percentViewed + quizPercent) / 3);
+        // Final per‐module completion — a completed module always counts as 100%;
+        // otherwise average only the components that exist (a missing quiz / docs
+        // / videos is excluded, not scored 0). Consistent with the detail and
+        // dashboard surfaces.
+        const quizExists = quizModuleIndexes.has(idx);
+        const percentComplete = moduleCompletionPercent({
+          components: [
+            totalVideos > 0 ? percentWatched : null,
+            totalDocs > 0 ? percentViewed : null,
+            quizExists ? quizPercent : null,
+          ],
+          isCompleted: completedSet.has(idx),
+        });
 
         return {
           title: module.title,
@@ -871,6 +982,8 @@ export const getCourseDetail = async (req: Request, res: Response) => {
     // Now read quiz attempts from enrollment, not student
     const quizRecords  = enrollment.quizAttempts || [];
 
+    const quizModuleIndexes = await getQuizModuleIndexes(slug);
+
     // Compute per-module data (including percentComplete and completion status)
     const moduleData = await Promise.all(
       course.modules.map(async (module: any, idx: number) => {
@@ -918,10 +1031,18 @@ export const getCourseDetail = async (req: Request, res: Response) => {
           ? Math.max(...moduleAttempts.map((a: any) => a.score || 0))
           : 0;
 
-        // Final completion percentage — if module is already marked complete, always show 100%
-        const percentComplete = completedSet.has(idx)
-          ? 100
-          : Math.round((percentWatched + percentViewed + quizPercent) / 3);
+        // Final completion percentage — average only the components that exist
+        // for this module (a missing quiz / docs / videos is excluded, not
+        // scored 0); a completed module always reads 100%.
+        const quizExists = quizModuleIndexes.has(idx);
+        const percentComplete = moduleCompletionPercent({
+          components: [
+            totalVideos > 0 ? percentWatched : null,
+            totalDocs > 0 ? percentViewed : null,
+            quizExists ? quizPercent : null,
+          ],
+          isCompleted: completedSet.has(idx),
+        });
 
         // Dynamically fetch quiz for this module, if any
         let quiz: any = null;
@@ -1246,7 +1367,7 @@ export const submitQuizAttempt = async (req: Request, res: Response) => {
       score,
       maxScore: quiz.questions.length,
       attemptedAt: new Date(),
-      passed: score >= Math.round(quiz.questions.length * 0.7),
+      passed: score >= 70, // score is already a 0–100 percentage; pass mark is 70%
       moduleIndex: moduleIdx // for dashboard compatibility
     });
     await enrollment.save();
