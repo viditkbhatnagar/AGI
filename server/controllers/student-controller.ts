@@ -747,6 +747,11 @@ export const getCourses = async (req: Request, res: Response) => {
 
       // Process each module
       const courseSlug = enrollment.courseSlug;
+      // Modules the student has finished (authoritative), so a completed module
+      // always reads as 100% here just like it does in getCourseDetail.
+      const completedSet = new Set(
+        enrollment.completedModules.map((m: any) => m.moduleIndex)
+      );
       const modules = course.modules.map((module, idx) => {
         // Video progress - scope to course, cap at 100%
         const totalVideos = module.videos.length;
@@ -777,10 +782,14 @@ export const getCourses = async (req: Request, res: Response) => {
         const quizDone = quizRecords.some(qa => qa.moduleIndex === idx);
         const quizPercent = quizDone ? 100 : 0;
 
-        // Final per‐module completion
-        const percentComplete = Math.round(
-          (percentWatched + percentViewed + quizPercent) / 3
-        );
+        // Final per‐module completion — a module the student has marked complete
+        // always counts as 100% (viewing every optional document is not required
+        // to finish a module). Otherwise derive it from the watched/viewed/quiz
+        // signals. This keeps the course-card % consistent with the course detail
+        // and dashboard surfaces, which already treat completed modules as 100%.
+        const percentComplete = completedSet.has(idx)
+          ? 100
+          : Math.round((percentWatched + percentViewed + quizPercent) / 3);
 
         return {
           title: module.title,
