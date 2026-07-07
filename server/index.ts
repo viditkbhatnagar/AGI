@@ -6,6 +6,7 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { connectDB } from "./db";
 import { startReminderService } from "./services/reminderService";
+import { agiUtahRouter } from "./agiUtah/http/agiUtahRouter";
 
 // ─── CORS ──────────────────────────────────────────────────────────────
 /**
@@ -105,6 +106,11 @@ app.use((req, res, next) => {
   startReminderService();
   
   const server = await registerRoutes(app);
+
+  // AGI Utah program routes. This router 404s unless AGI_UTAH_ENABLED is set, so mounting it
+  // is inert until the program is deliberately enabled. Isolated module — it uses only its own
+  // agiutah_* collections and does not affect existing routes or data.
+  app.use("/api/agi-utah", agiUtahRouter);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;

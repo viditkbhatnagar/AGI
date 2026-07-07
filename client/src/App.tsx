@@ -57,6 +57,10 @@ import CourseEditPage from "@/pages/admin/course-edit";
 import SandboxCourseEditPage from "@/pages/admin/sandbox-course-edit";
 import ScheduleLiveClass from "@/pages/admin/ScheduleLiveClass";
 
+// AGI Utah (isolated module). The page calls /api/agi-utah/*, which 404s unless
+// AGI_UTAH_ENABLED is set — so this route is inert until the program is enabled.
+import { AgiUtahApp } from "@/agiUtah/AgiUtahApp";
+
 function Router() {
   return (
     <Switch>
@@ -113,6 +117,9 @@ function Router() {
       <Route path="/admin/api-usage" component={AdminAPIUsage} />
       <Route path="/admin/dashboard" component={AdminDashboard} />
       <Route path="/admin" component={AdminDashboard} />
+
+      {/* AGI Utah */}
+      <Route path="/agi-utah" component={AgiUtahApp} />
 
       {/* Fallback to 404 */}
       <Route component={NotFound} />
