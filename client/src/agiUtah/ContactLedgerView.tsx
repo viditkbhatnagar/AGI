@@ -1,66 +1,70 @@
-import { useState, type ChangeEvent } from 'react';
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { StudentPicker } from './StudentPicker';
 import { useContactLedger } from './hooks';
-import { buttonClass, cardClass, inputClass, labelClass, labelTextClass, errorMessage } from './styles';
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : 'Unexpected error';
+}
 
 export function AgiUtahContactLedgerView() {
   const [studentRef, setStudentRef] = useState('');
-  const [submitted, setSubmitted] = useState('');
-  const ledger = useContactLedger(submitted, submitted.length > 0);
+  const ledger = useContactLedger(studentRef, studentRef.length > 0);
 
   return (
-    <section className="space-y-6">
-      <div className={cardClass}>
-        <h3 className="text-base font-semibold text-slate-900">Contact-hour / RSI ledger</h3>
-        <p className="text-sm text-slate-500">
-          Counts faculty-contact events (live attendance + faculty interaction) separately from self-directed engagement (AI tutor, content views). This is the accreditation record.
-        </p>
-        <div className="flex items-end gap-2">
-          <label className={`${labelClass} flex-1`}>
-            <span className={labelTextClass}>Student ref</span>
-            <input
-              className={inputClass}
-              value={studentRef}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => setStudentRef(e.target.value)}
-            />
-          </label>
-          <button className={buttonClass} onClick={() => setSubmitted(studentRef)}>
-            Load
-          </button>
-        </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Contact-hour / RSI ledger</CardTitle>
+        <CardDescription>
+          Faculty contact (live attendance + faculty interaction) vs. self-directed engagement (AI tutor, content views) — the accreditation record.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <StudentPicker value={studentRef} onChange={setStudentRef} />
 
-        {ledger.isLoading && <p className="text-sm text-slate-500">Loading…</p>}
-        {ledger.isError && <p className="text-sm text-red-600">{errorMessage(ledger.error)}</p>}
+        {ledger.isLoading && <p className="text-sm text-muted-foreground">Loading…</p>}
+        {ledger.isError && <p className="text-sm text-destructive">{errorMessage(ledger.error)}</p>}
         {ledger.data && (
-          <div className="space-y-3">
+          <>
             <div className="flex gap-4">
-              <div className="rounded-lg bg-emerald-50 px-4 py-3">
-                <div className="text-2xl font-semibold text-emerald-700">{ledger.data.contactEvents}</div>
-                <div className="text-xs text-emerald-700">contact events</div>
+              <div className="rounded-lg bg-emerald-50 px-4 py-3 dark:bg-emerald-950">
+                <div className="text-2xl font-semibold text-emerald-600">{ledger.data.contactEvents}</div>
+                <div className="text-xs text-emerald-700 dark:text-emerald-400">contact events</div>
               </div>
-              <div className="rounded-lg bg-slate-50 px-4 py-3">
-                <div className="text-2xl font-semibold text-slate-600">{ledger.data.engagementEvents}</div>
-                <div className="text-xs text-slate-500">engagement events</div>
+              <div className="rounded-lg bg-muted px-4 py-3">
+                <div className="text-2xl font-semibold text-muted-foreground">{ledger.data.engagementEvents}</div>
+                <div className="text-xs text-muted-foreground">engagement events</div>
               </div>
             </div>
-            <table className="w-full text-left text-sm">
-              <thead>
-                <tr className="text-slate-500">
-                  <th className="py-1 font-medium">Event type</th>
-                  <th className="py-1 font-medium">Count</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Object.entries(ledger.data.byType).map(([type, count]) => (
-                  <tr key={type} className="border-t border-slate-100">
-                    <td className="py-1 text-slate-700">{type}</td>
-                    <td className="py-1 text-slate-700">{count}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+            {Object.keys(ledger.data.byType).length > 0 && (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Event type</TableHead>
+                    <TableHead>Count</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {Object.entries(ledger.data.byType).map(([type, count]) => (
+                    <TableRow key={type}>
+                      <TableCell>{type}</TableCell>
+                      <TableCell>{count}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </>
         )}
-      </div>
-    </section>
+      </CardContent>
+    </Card>
   );
 }

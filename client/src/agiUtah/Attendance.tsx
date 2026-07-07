@@ -1,82 +1,90 @@
 import { useState, type ChangeEvent } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { StudentPicker } from './StudentPicker';
+import { COURSE_OPTIONS, ATTENDANCE_SOURCE_OPTIONS } from './constants';
 import { useRecordAttendance } from './hooks';
 import type { AttendanceInput } from './api';
-import { buttonClass, cardClass, inputClass, labelClass, labelTextClass, errorMessage } from './styles';
 
-const SOURCES: AttendanceInput['source'][] = ['live', 'recording', 'manual'];
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : 'Unexpected error';
+}
 
 export function AgiUtahAttendance() {
-  const [form, setForm] = useState<AttendanceInput>({
-    studentRef: '',
-    intakeKey: 'sep-2026',
-    courseCode: 'CR05',
-    weekIndex: 1,
-    source: 'live',
-  });
+  const [studentRef, setStudentRef] = useState('');
+  const [intakeKey, setIntakeKey] = useState('sep-2026');
+  const [courseCode, setCourseCode] = useState('CR05');
+  const [weekIndex, setWeekIndex] = useState(1);
+  const [source, setSource] = useState<AttendanceInput['source']>('live');
   const record = useRecordAttendance();
 
-  const setText = (field: 'studentRef' | 'intakeKey' | 'courseCode') => (e: ChangeEvent<HTMLInputElement>) =>
-    setForm((prev) => ({ ...prev, [field]: e.target.value }));
-
   return (
-    <section className="space-y-6">
-      <div className={cardClass}>
-        <h3 className="text-base font-semibold text-slate-900">Record live-session attendance</h3>
-        <p className="text-sm text-slate-500">
-          Records that a student attended (live or via recording). This logs a contact-hour event exactly once.
-        </p>
-        <div className="grid grid-cols-2 gap-3">
-          <label className={labelClass}>
-            <span className={labelTextClass}>Student ref</span>
-            <input className={inputClass} value={form.studentRef} onChange={setText('studentRef')} />
-          </label>
-          <label className={labelClass}>
-            <span className={labelTextClass}>Intake</span>
-            <input className={inputClass} value={form.intakeKey} onChange={setText('intakeKey')} />
-          </label>
-          <label className={labelClass}>
-            <span className={labelTextClass}>Course</span>
-            <input className={inputClass} value={form.courseCode} onChange={setText('courseCode')} />
-          </label>
-          <label className={labelClass}>
-            <span className={labelTextClass}>Week</span>
-            <input
-              className={inputClass}
+    <Card>
+      <CardHeader>
+        <CardTitle>Record live-session attendance</CardTitle>
+        <CardDescription>Records that a student attended (live or via recording). Logs a contact-hour event once.</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <StudentPicker value={studentRef} onChange={setStudentRef} />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label>Course</Label>
+            <Select value={courseCode} onValueChange={setCourseCode}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {COURSE_OPTIONS.map((o) => (
+                  <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5">
+            <Label>Intake</Label>
+            <Input value={intakeKey} onChange={(e: ChangeEvent<HTMLInputElement>) => setIntakeKey(e.target.value)} />
+          </div>
+          <div className="space-y-1.5">
+            <Label>Week</Label>
+            <Input
               type="number"
               min={1}
-              value={form.weekIndex}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setForm((prev) => ({ ...prev, weekIndex: Number(e.target.value) || 1 }))
-              }
+              value={weekIndex}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setWeekIndex(Number(e.target.value) || 1)}
             />
-          </label>
-          <label className={labelClass}>
-            <span className={labelTextClass}>Source</span>
-            <select
-              className={inputClass}
-              value={form.source}
-              onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                setForm((prev) => ({ ...prev, source: e.target.value as AttendanceInput['source'] }))
-              }
-            >
-              {SOURCES.map((source) => (
-                <option key={source} value={source}>
-                  {source}
-                </option>
-              ))}
-            </select>
-          </label>
+          </div>
+          <div className="space-y-1.5">
+            <Label>Source</Label>
+            <Select value={source} onValueChange={(v) => setSource(v as AttendanceInput['source'])}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {ATTENDANCE_SOURCE_OPTIONS.map((s) => (
+                  <SelectItem key={s} value={s}>{s}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-        <button className={buttonClass} disabled={record.isPending} onClick={() => record.mutate(form)}>
+        <Button
+          disabled={!studentRef || record.isPending}
+          onClick={() => record.mutate({ studentRef, intakeKey, courseCode, weekIndex, source })}
+        >
           {record.isPending ? 'Recording…' : 'Record attendance'}
-        </button>
-        {record.isError && <p className="text-sm text-red-600">{errorMessage(record.error)}</p>}
+        </Button>
+        {record.isError && <p className="text-sm text-destructive">{errorMessage(record.error)}</p>}
         {record.data && (
-          <p className="text-sm text-green-700">
+          <p className="text-sm text-emerald-600">
             {record.data.firstTime ? 'Recorded (contact-hour event logged).' : 'Already recorded — no duplicate.'}
           </p>
         )}
-      </div>
-    </section>
+      </CardContent>
+    </Card>
   );
 }

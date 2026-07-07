@@ -1,82 +1,86 @@
 import { useState, type ChangeEvent } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { StudentPicker } from './StudentPicker';
+import { COURSE_OPTIONS, GRADE_OPTIONS } from './constants';
 import { useGrade } from './hooks';
-import type { GradeInput } from './api';
-import { buttonClass, cardClass, inputClass, labelClass, labelTextClass, errorMessage } from './styles';
 
-const GRADE_LETTERS = ['A', 'A-', 'B+', 'B', 'B-', 'F', 'W', 'TR'];
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : 'Unexpected error';
+}
 
 export function AgiUtahFacultyGrading() {
-  const [form, setForm] = useState<GradeInput>({
-    studentRef: '',
-    courseCode: 'CR05',
-    attemptNo: 1,
-    gradeLetter: 'B',
-    gradedByRef: '',
-  });
+  const [studentRef, setStudentRef] = useState('');
+  const [courseCode, setCourseCode] = useState('CR05');
+  const [attemptNo, setAttemptNo] = useState(1);
+  const [gradeLetter, setGradeLetter] = useState('B');
   const grade = useGrade();
 
-  const setText = (field: 'studentRef' | 'courseCode' | 'gradedByRef') => (e: ChangeEvent<HTMLInputElement>) =>
-    setForm((prev) => ({ ...prev, [field]: e.target.value }));
-
   return (
-    <section className="space-y-6">
-      <div className={cardClass}>
-        <h3 className="text-base font-semibold text-slate-900">Post a grade</h3>
-        <p className="text-sm text-slate-500">
-          Posting a grade updates the transcript, recomputes academic progress, and issues any credential the student has now earned.
-        </p>
-        <div className="grid grid-cols-2 gap-3">
-          <label className={labelClass}>
-            <span className={labelTextClass}>Student ref</span>
-            <input className={inputClass} value={form.studentRef} onChange={setText('studentRef')} />
-          </label>
-          <label className={labelClass}>
-            <span className={labelTextClass}>Course</span>
-            <input className={inputClass} value={form.courseCode} onChange={setText('courseCode')} />
-          </label>
-          <label className={labelClass}>
-            <span className={labelTextClass}>Attempt no.</span>
-            <input
-              className={inputClass}
+    <Card>
+      <CardHeader>
+        <CardTitle>Post a grade</CardTitle>
+        <CardDescription>
+          Records the grade, recomputes academic progress, and issues any credential the student has now earned.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <StudentPicker value={studentRef} onChange={setStudentRef} />
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div className="space-y-1.5 sm:col-span-2">
+            <Label>Course</Label>
+            <Select value={courseCode} onValueChange={setCourseCode}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {COURSE_OPTIONS.map((o) => (
+                  <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5">
+            <Label>Attempt</Label>
+            <Input
               type="number"
               min={1}
-              value={form.attemptNo}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setForm((prev) => ({ ...prev, attemptNo: Number(e.target.value) || 1 }))
-              }
+              value={attemptNo}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setAttemptNo(Number(e.target.value) || 1)}
             />
-          </label>
-          <label className={labelClass}>
-            <span className={labelTextClass}>Grade</span>
-            <select
-              className={inputClass}
-              value={form.gradeLetter}
-              onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                setForm((prev) => ({ ...prev, gradeLetter: e.target.value }))
-              }
-            >
-              {GRADE_LETTERS.map((letter) => (
-                <option key={letter} value={letter}>
-                  {letter}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className={labelClass}>
-            <span className={labelTextClass}>Faculty ref (optional)</span>
-            <input className={inputClass} value={form.gradedByRef ?? ''} onChange={setText('gradedByRef')} />
-          </label>
+          </div>
         </div>
-        <button className={buttonClass} disabled={grade.isPending} onClick={() => grade.mutate(form)}>
+        <div className="space-y-1.5 sm:w-40">
+          <Label>Grade</Label>
+          <Select value={gradeLetter} onValueChange={setGradeLetter}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {GRADE_OPTIONS.map((g) => (
+                <SelectItem key={g} value={g}>{g}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <Button
+          disabled={!studentRef || grade.isPending}
+          onClick={() => grade.mutate({ studentRef, courseCode, attemptNo, gradeLetter })}
+        >
           {grade.isPending ? 'Posting…' : 'Post grade'}
-        </button>
-        {grade.isError && <p className="text-sm text-red-600">{errorMessage(grade.error)}</p>}
+        </Button>
+        {grade.isError && <p className="text-sm text-destructive">{errorMessage(grade.error)}</p>}
         {grade.data && (
-          <p className={`text-sm ${grade.data.passed ? 'text-green-700' : 'text-amber-700'}`}>
+          <p className={`text-sm ${grade.data.passed ? 'text-emerald-600' : 'text-amber-600'}`}>
             {grade.data.passed ? 'Passed' : 'Not passed'} — grade point {grade.data.gradePoint ?? 'n/a'}.
           </p>
         )}
-      </div>
-    </section>
+      </CardContent>
+    </Card>
   );
 }
