@@ -60,6 +60,7 @@ import ScheduleLiveClass from "@/pages/admin/ScheduleLiveClass";
 // AGI Utah (isolated module). The page calls /api/agi-utah/*, which 404s unless
 // AGI_UTAH_ENABLED is set — so this route is inert until the program is enabled.
 import { AgiUtahApp } from "@/agiUtah/AgiUtahApp";
+import { AgiUtahStudentPortal } from "@/agiUtah/StudentPortal";
 
 function Router() {
   return (
@@ -82,6 +83,7 @@ function Router() {
       <Route path="/student/profile" component={StudentProfile} />
       <Route path="/student/feedback" component={StudentFeedback} />
       <Route path="/student/support" component={StudentSupport} />
+      <Route path="/student/agi-utah" component={AgiUtahStudentPortal} />
       <Route path="/student/debug" component={StudentDebug} />
 
       {/* Teacher Routes */}

@@ -61,6 +61,7 @@ export * from './adapters/aiTutor';
 // Services
 export * from './services/emitEvent';
 export * from './services/bootstrapService';
+export * from './services/programEnrollmentService';
 export * from './services/schedulerService';
 export * from './services/enrollmentService';
 export * from './services/gradingService';

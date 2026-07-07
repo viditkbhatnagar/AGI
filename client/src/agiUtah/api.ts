@@ -68,8 +68,24 @@ export interface BootstrapResult {
   offerings: number;
 }
 
+export interface StudentOverview {
+  programs: Array<{ programKey: string; intakeKey: string; status: string; awardName: string }>;
+  courses: Array<{ courseCode: string; attemptNo: number; status: string; gradeLetter?: string; monthIndex: number }>;
+  credentials: Array<{ programKey: string; awardName: string; status: string; issuedAt: string }>;
+}
+
+export interface ProgramEnrollInput {
+  studentRef: string;
+  programKey: string;
+  intakeKey: string;
+}
+
 export const agiUtahApi = {
   bootstrap: () => post<BootstrapResult>('/bootstrap'),
+  createIntake: (input: { intakeKey: string; startYear: number; startMonth: number }) =>
+    post<BootstrapResult>('/bootstrap', input),
+  enrollInProgram: (input: ProgramEnrollInput) => post<{ enrolled: boolean }>('/programs/enroll', input),
+  studentOverview: (ref: string) => get<StudentOverview>(`/students/${encodeURIComponent(ref)}/overview`),
   loadCatalog: () => post<Record<string, number>>('/catalog/load'),
   expandIntake: (key: string) => post<{ offerings: number }>(`/intakes/${encodeURIComponent(key)}/expand`),
   enroll: (input: EnrollInput) => post<EnrollResult>('/enroll', input),

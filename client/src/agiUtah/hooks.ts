@@ -1,5 +1,11 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { agiUtahApi, type EnrollInput, type GradeInput, type AttendanceInput } from './api';
+import {
+  agiUtahApi,
+  type EnrollInput,
+  type GradeInput,
+  type AttendanceInput,
+  type ProgramEnrollInput,
+} from './api';
 
 /**
  * TanStack Query hooks for the AGI Utah API. Isolated: used only by the AGI Utah screens.
@@ -15,6 +21,25 @@ export function useLoadCatalog() {
 
 export function useExpandIntake() {
   return useMutation({ mutationFn: (key: string) => agiUtahApi.expandIntake(key) });
+}
+
+export function useCreateIntake() {
+  return useMutation({
+    mutationFn: (input: { intakeKey: string; startYear: number; startMonth: number }) =>
+      agiUtahApi.createIntake(input),
+  });
+}
+
+export function useEnrollInProgram() {
+  return useMutation({ mutationFn: (input: ProgramEnrollInput) => agiUtahApi.enrollInProgram(input) });
+}
+
+export function useStudentOverview(studentRef: string, enabled = true) {
+  return useQuery({
+    queryKey: ['agi-utah', 'overview', studentRef],
+    queryFn: () => agiUtahApi.studentOverview(studentRef),
+    enabled: enabled && studentRef.length > 0,
+  });
 }
 
 export function useEnroll() {

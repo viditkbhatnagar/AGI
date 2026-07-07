@@ -1,5 +1,5 @@
 import { useState, type ChangeEvent } from 'react';
-import { useBootstrap, useLoadCatalog, useExpandIntake } from './hooks';
+import { useBootstrap, useCreateIntake, useLoadCatalog, useExpandIntake } from './hooks';
 
 const buttonClass =
   'rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-50';
@@ -12,8 +12,13 @@ function errorMessage(error: unknown): string {
 export function AgiUtahAdminPanel() {
   const [intakeKey, setIntakeKey] = useState('sep-2026');
   const bootstrap = useBootstrap();
+  const createIntake = useCreateIntake();
   const loadCatalog = useLoadCatalog();
   const expandIntake = useExpandIntake();
+
+  const now = new Date();
+  const makeTestIntake = () =>
+    createIntake.mutate({ intakeKey: 'test-now', startYear: now.getFullYear(), startMonth: now.getMonth() + 1 });
 
   return (
     <section className="space-y-6">
@@ -74,6 +79,22 @@ export function AgiUtahAdminPanel() {
         {expandIntake.isError && <p className="text-sm text-red-600">{errorMessage(expandIntake.error)}</p>}
         {expandIntake.data && (
           <p className="text-sm text-green-700">Created {expandIntake.data.offerings} course offerings.</p>
+        )}
+      </div>
+
+      <div className={cardClass}>
+        <h3 className="text-base font-semibold text-slate-900">Test intake (opens now)</h3>
+        <p className="text-sm text-slate-500">
+          Creates a “test-now” intake starting this month, so enrollment windows are open today and you can run the full flow immediately.
+        </p>
+        <button className={buttonClass} disabled={createIntake.isPending} onClick={makeTestIntake}>
+          {createIntake.isPending ? 'Creating…' : 'Create “test-now” intake'}
+        </button>
+        {createIntake.isError && <p className="text-sm text-red-600">{errorMessage(createIntake.error)}</p>}
+        {createIntake.data && (
+          <p className="text-sm text-green-700">
+            Ready — {createIntake.data.offerings} offerings on intake “{createIntake.data.intakeKey}”. Enroll students with intake <strong>test-now</strong>.
+          </p>
         )}
       </div>
     </section>

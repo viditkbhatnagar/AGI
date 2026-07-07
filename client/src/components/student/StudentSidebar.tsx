@@ -9,9 +9,10 @@ import {
   LayoutDashboard, 
   LogOut, 
   MessageSquare,
-  Settings, 
+  Settings,
   HelpCircle,
   BarChart3,
+  School,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-provider";
 import logo from "@/components/layout/AGI Logo.png";
@@ -42,6 +43,7 @@ export function StudentSidebar({ className, isMobile, onClose, isCollapsed }: St
     { href: "/student/courses", icon: BookOpen, label: "Courses" },
     { href: "/student/final-examinations", icon: GraduationCap, label: "Grades" },
     { href: "/student/certificates", icon: Award, label: "Certificates" },
+    { href: "/student/agi-utah", icon: School, label: "AGI Utah" },
   ];
 
   const supportItems = [

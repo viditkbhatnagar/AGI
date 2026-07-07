@@ -10,6 +10,7 @@ import { postCourseGrade } from '../services/gradingService';
 import { recordAttendance } from '../services/attendanceService';
 import { computeContactLedger } from '../services/contactLedgerService';
 import { issueCredentialIfEarned, listEarnedUnissuedCredentials } from '../services/credentialService';
+import { enrollInProgram, getStudentOverview } from '../services/programEnrollmentService';
 
 /**
  * Self-contained Express router for the AGI Utah program, mounted at /api/agi-utah.
@@ -72,6 +73,25 @@ agiUtahRouter.post('/catalog/load', requireAdmin, async (_req, res) => {
 agiUtahRouter.post('/intakes/:key/expand', requireAdmin, async (req, res) => {
   try {
     ok(res, await expandIntake(req.params.key));
+  } catch (error) {
+    fail(res, error);
+  }
+});
+
+// Any authenticated user: enroll a student in a program (Certificate/Diploma/MBA).
+agiUtahRouter.post('/programs/enroll', requireAuth, async (req, res) => {
+  try {
+    const { studentRef, programKey, intakeKey } = req.body ?? {};
+    ok(res, await enrollInProgram({ studentRef, programKey, intakeKey }));
+  } catch (error) {
+    fail(res, error);
+  }
+});
+
+// A student's overview: their programs, course enrollments/grades, and credentials.
+agiUtahRouter.get('/students/:studentRef/overview', requireAuth, async (req, res) => {
+  try {
+    ok(res, await getStudentOverview(req.params.studentRef));
   } catch (error) {
     fail(res, error);
   }

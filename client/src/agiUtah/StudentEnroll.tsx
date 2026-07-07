@@ -1,5 +1,5 @@
 import { useState, type ChangeEvent } from 'react';
-import { useEnroll, useEarnedCredentials } from './hooks';
+import { useEnroll, useEnrollInProgram, useEarnedCredentials } from './hooks';
 import type { EnrollInput } from './api';
 
 const buttonClass =
@@ -19,6 +19,7 @@ export function AgiUtahStudentEnroll() {
     courseCode: 'CR05',
   });
   const enroll = useEnroll();
+  const enrollProgram = useEnrollInProgram();
   const earned = useEarnedCredentials(form.studentRef, form.studentRef.length > 0);
 
   const setField = (field: keyof EnrollInput) => (e: ChangeEvent<HTMLInputElement>) =>
@@ -27,7 +28,31 @@ export function AgiUtahStudentEnroll() {
   return (
     <section className="space-y-6">
       <div className={cardClass}>
-        <h3 className="text-base font-semibold text-slate-900">Enroll in a course</h3>
+        <h3 className="text-base font-semibold text-slate-900">1. Enroll in a program</h3>
+        <p className="text-sm text-slate-500">
+          Do this first — it places the student in a Certificate/Diploma/MBA. Uses the Student ref, Program, and Intake below.
+        </p>
+        <button
+          className={buttonClass}
+          disabled={enrollProgram.isPending}
+          onClick={() =>
+            enrollProgram.mutate({
+              studentRef: form.studentRef,
+              programKey: form.programKey,
+              intakeKey: form.intakeKey,
+            })
+          }
+        >
+          {enrollProgram.isPending ? 'Enrolling…' : 'Enroll in program'}
+        </button>
+        {enrollProgram.isError && <p className="text-sm text-red-600">{errorMessage(enrollProgram.error)}</p>}
+        {enrollProgram.data?.enrolled && (
+          <p className="text-sm text-green-700">Enrolled in {form.programKey}.</p>
+        )}
+      </div>
+
+      <div className={cardClass}>
+        <h3 className="text-base font-semibold text-slate-900">2. Enroll in a course</h3>
         <div className="grid grid-cols-2 gap-3">
           <label className="space-y-1 text-sm">
             <span className="text-slate-600">Student ref</span>
