@@ -19,6 +19,7 @@ import {
   Award,
   Clock,
   Activity,
+  School,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
@@ -54,6 +55,7 @@ const navSections: NavSection[] = [
       { label: "Sandbox Courses", href: "/admin/sandbox-courses", icon: FileText },
       { label: "Quiz Repository", href: "/admin/quiz-repository", icon: Brain },
       { label: "Progress", href: "/admin/enrollments", icon: GraduationCap },
+      { label: "AGI Utah", href: "/agi-utah", icon: School },
     ],
   },
   {
