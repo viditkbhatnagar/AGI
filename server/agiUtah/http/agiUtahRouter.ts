@@ -11,6 +11,7 @@ import { recordAttendance } from '../services/attendanceService';
 import { computeContactLedger } from '../services/contactLedgerService';
 import { issueCredentialIfEarned, listEarnedUnissuedCredentials } from '../services/credentialService';
 import { enrollInProgram, getStudentOverview } from '../services/programEnrollmentService';
+import { seedDemoStudent } from '../services/demoSeedService';
 
 /**
  * Self-contained Express router for the AGI Utah program, mounted at /api/agi-utah.
@@ -50,6 +51,17 @@ agiUtahRouter.get('/health', (_req, res) => ok(res, { status: 'ok' }));
 
 // Layer 2: everything below requires a valid JWT (populates req.user); role guards are per-route.
 agiUtahRouter.use(auth);
+
+// Admin: seed a fully-populated DEMO student (program + graded courses + a credential) for
+// testing/walkthroughs. Bypasses the enrollment window — demo convenience only.
+agiUtahRouter.post('/demo/seed-student', requireAdmin, async (req, res) => {
+  try {
+    const { studentRef, intakeKey } = req.body ?? {};
+    ok(res, await seedDemoStudent(studentRef, intakeKey ?? 'test-now'));
+  } catch (error) {
+    fail(res, error);
+  }
+});
 
 // Admin: one-click bootstrap — load catalog + create the intake + expand offerings.
 agiUtahRouter.post('/bootstrap', requireAdmin, async (req, res) => {
