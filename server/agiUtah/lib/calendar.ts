@@ -19,8 +19,17 @@ export interface CalendarEntry {
   enrollmentClosesAt: Date;
 }
 
-/** Week-1 enrollment window: enrollment closes this many days after the month opens. */
-export const ENROLLMENT_WINDOW_DAYS = 7;
+/**
+ * Week-1 enrollment window: enrollment closes this many days after the month opens.
+ * Defaults to 7 (first week of the month, the standing policy). It can be widened via the
+ * AGI_UTAH_ENROLLMENT_WINDOW_DAYS env var (e.g. during soft-launch/testing, when enrolment
+ * must be reachable on any day) without changing the code default.
+ */
+const DEFAULT_ENROLLMENT_WINDOW_DAYS = 7;
+export const ENROLLMENT_WINDOW_DAYS = (() => {
+  const override = Number(process.env.AGI_UTAH_ENROLLMENT_WINDOW_DAYS);
+  return Number.isFinite(override) && override > 0 ? override : DEFAULT_ENROLLMENT_WINDOW_DAYS;
+})();
 
 /** Adds `delta` months to a 1–12 month, rolling the year over as needed. */
 export function addMonths(year: number, month: number, delta: number): { year: number; month: number } {

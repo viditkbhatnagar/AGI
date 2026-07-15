@@ -1,6 +1,6 @@
 import express, { type Request, type Response, type NextFunction } from 'express';
 import { auth } from '../../middleware/auth';
-import { requireAdmin, requireAuth, requireTeachingAccess } from '../../middleware/require-auth';
+import { requireAdminAccess, requireAuth, requireTeachingAccess } from '../../middleware/require-auth';
 import { isAgiUtahEnabled } from '../config/featureFlags';
 import { loadAgiUtahCatalog } from '../loader/loadCatalog';
 import { expandIntake } from '../services/schedulerService';
@@ -54,7 +54,7 @@ agiUtahRouter.use(auth);
 
 // Admin: seed a fully-populated DEMO student (program + graded courses + a credential) for
 // testing/walkthroughs. Bypasses the enrollment window — demo convenience only.
-agiUtahRouter.post('/demo/seed-student', requireAdmin, async (req, res) => {
+agiUtahRouter.post('/demo/seed-student', requireAdminAccess, async (req, res) => {
   try {
     const { studentRef, intakeKey } = req.body ?? {};
     ok(res, await seedDemoStudent(studentRef, intakeKey ?? 'test-now'));
@@ -64,7 +64,7 @@ agiUtahRouter.post('/demo/seed-student', requireAdmin, async (req, res) => {
 });
 
 // Admin: one-click bootstrap — load catalog + create the intake + expand offerings.
-agiUtahRouter.post('/bootstrap', requireAdmin, async (req, res) => {
+agiUtahRouter.post('/bootstrap', requireAdminAccess, async (req, res) => {
   try {
     ok(res, await bootstrapAgiUtah(req.body ?? {}));
   } catch (error) {
@@ -73,7 +73,7 @@ agiUtahRouter.post('/bootstrap', requireAdmin, async (req, res) => {
 });
 
 // Admin: load/refresh the catalog only (idempotent).
-agiUtahRouter.post('/catalog/load', requireAdmin, async (_req, res) => {
+agiUtahRouter.post('/catalog/load', requireAdminAccess, async (_req, res) => {
   try {
     ok(res, await loadAgiUtahCatalog());
   } catch (error) {
@@ -82,7 +82,7 @@ agiUtahRouter.post('/catalog/load', requireAdmin, async (_req, res) => {
 });
 
 // Admin: expand an intake into monthly course offerings.
-agiUtahRouter.post('/intakes/:key/expand', requireAdmin, async (req, res) => {
+agiUtahRouter.post('/intakes/:key/expand', requireAdminAccess, async (req, res) => {
   try {
     ok(res, await expandIntake(req.params.key));
   } catch (error) {
@@ -159,7 +159,7 @@ agiUtahRouter.get('/students/:studentRef/earned-credentials', requireAuth, async
 });
 
 // Admin: issue a specific credential on request (idempotent).
-agiUtahRouter.post('/credentials/issue', requireAdmin, async (req, res) => {
+agiUtahRouter.post('/credentials/issue', requireAdminAccess, async (req, res) => {
   try {
     const { studentRef, programKey } = req.body ?? {};
     ok(res, await issueCredentialIfEarned(studentRef, programKey));

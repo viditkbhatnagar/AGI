@@ -13,6 +13,7 @@ import {
 import { StudentPicker } from './StudentPicker';
 import { COURSE_OPTIONS, GRADE_OPTIONS } from './constants';
 import { useGrade } from './hooks';
+import { useAuth } from '@/lib/auth-provider';
 
 function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : 'Unexpected error';
@@ -24,6 +25,7 @@ export function AgiUtahFacultyGrading() {
   const [attemptNo, setAttemptNo] = useState(1);
   const [gradeLetter, setGradeLetter] = useState('B');
   const grade = useGrade();
+  const { user } = useAuth();
 
   return (
     <Card>
@@ -70,7 +72,7 @@ export function AgiUtahFacultyGrading() {
         </div>
         <Button
           disabled={!studentRef || grade.isPending}
-          onClick={() => grade.mutate({ studentRef, courseCode, attemptNo, gradeLetter })}
+          onClick={() => grade.mutate({ studentRef, courseCode, attemptNo, gradeLetter, gradedByRef: user?.email })}
         >
           {grade.isPending ? 'Posting…' : 'Post grade'}
         </Button>
