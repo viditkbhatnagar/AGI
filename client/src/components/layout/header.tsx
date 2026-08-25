@@ -144,6 +144,7 @@ const ADMIN_LINKS: NavLink[] = [
   { label: "Quiz Scores", href: "/admin/quiz-scores" },
   { label: "Exam Results", href: "/admin/exam-results" },
   { label: "Last Logins", href: "/admin/last-logins" },
+  { label: "Video Health", href: "/admin/video-links" },
   { label: "Add Teacher", href: "/admin/teachers/new" }
 ];
 

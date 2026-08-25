@@ -23,6 +23,7 @@ import * as certificateController from "./controllers/certificate-controller";
 import * as loginHistoryController from "./controllers/loginHistory-controller";
 import * as aiLearningController from "./controllers/ai-learning-controller";
 import * as notificationController from "./controllers/notification-controller";
+import * as videoLinkController from "./controllers/videoLink-controller";
 import quizRepositoryRoutes from "./routes/quizRepository";
 import flashcardRoutes, {
   moduleFlashcardsRoute,
@@ -93,6 +94,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     courseController.listCourses
   );
   app.get("/api/admin/dashboard", auth, requireAdminAccess, adminController.getDashboardStats);
+  app.get("/api/admin/video-links", auth, requireAdminAccess, videoLinkController.getLatestVideoLinkReport);
+  app.post("/api/admin/video-links/scan", auth, requireAdmin, videoLinkController.triggerVideoLinkScan);
   app.get("/api/admin/students", auth, requireAdminAccess, adminController.getAllStudents);
   app.get("/api/admin/students/:id", auth, requireAdminAccess, adminController.getStudent);
   app.post("/api/admin/students", auth, requireAdmin, adminController.createStudent);
