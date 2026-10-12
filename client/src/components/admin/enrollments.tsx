@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { formatDate, formatTimeRemaining, getInitials } from "@/lib/utils";
+import { csvDate, downloadCsv } from "@/lib/csv";
 
 export function Enrollments() {
   
@@ -36,22 +37,12 @@ const itemsPerPage = 10;
       records.map((r: any) => [
         student?.name || '',
         r.courseSlug,
-        r.enrollDate.split('T')[0],
-        r.validUntil.split('T')[0],
+        csvDate(r.enrollDate),
+        csvDate(r.validUntil),
         `${r.percentComplete ?? 0}%`,
       ])
     );
-    const csvContent = [header, ...rows]
-      .map(r => r.map(cell => `"${cell.replace(/"/g, '""')}"`).join(','))
-      .join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `enrollments.${ext}`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    downloadCsv(`enrollments.${ext}`, [header, ...rows]);
   };
   
   const { data, isLoading, error } = useQuery({
