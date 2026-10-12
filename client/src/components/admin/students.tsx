@@ -26,6 +26,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { getInitials } from "@/lib/utils";
+import { csvDate, downloadCsv } from "@/lib/csv";
 // Add token retrieval helper if you have one, otherwise use localStorage directly
 
 import {
@@ -445,31 +446,23 @@ export function Students() {
   }, [selectedStudent, enrollments]);
   // Export current table to CSV
   const handleDownload = () => {
-    const header = ['Student ID','Name','Phone','Enrollment Date','Courses','Pathway'];
-    const rows = (filteredStudents || []).map(student => {
-      const id = student._id;
-      const name = student.name;
-      const phone = student.phone;
-      const enroll = studentEnrollDateMap.get(student._id)
-        ? new Date(studentEnrollDateMap.get(student._id)!).toISOString().split('T')[0]
-        : '';
+    const header = ['Student ID','Name','Email','Phone','Enrollment Date','Courses','Pathway'];
+    // Export in the same order the table is showing.
+    const rows = sortedStudents.map(student => {
       const coursesList = (studentCoursesMap.get(student._id) || [])
         .map(slug => courseMap.get(slug) || slug)
         .join(';');
-      const pathway = student.pathway;
-      return [id, name, phone, enroll, coursesList, pathway];
+      return [
+        student._id,
+        student.name,
+        (student.userId as any)?.email,
+        student.phone,
+        csvDate(studentEnrollDateMap.get(student._id)),
+        coursesList,
+        student.pathway,
+      ];
     });
-    const csvContent = [header, ...rows]
-      .map(r => r.map(cell => `"${cell.replace(/"/g, '""')}"`).join(','))
-      .join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', 'students.csv');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    downloadCsv('students.csv', [header, ...rows]);
   };
   
   if (isLoading) {
